@@ -1,0 +1,13 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="LGPL-3.0"
+
+[[mods]]
+modId = "immersiveconvergence"
+version = "${version}"
+displayName = "Immersive Convergence"
+description = "API for IE addons in 1.20.1."
+authors = "tgstyle"
+displayURL = "https://www.curseforge.com/minecraft/mc-mods/immersive-convergence"
+logoFile = "IClogo.png"
+credits = "tgstyle"

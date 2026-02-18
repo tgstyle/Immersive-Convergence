@@ -1,0 +1,24 @@
+pluginManagement {
+    repositories {
+        maven { url = 'https://files.minecraftforge.net/maven' }
+        maven { url = 'https://maven.parchmentmc.org' }
+        mavenCentral()
+        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+    }
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.toString() == 'org.spongepowered.mixin') {
+                useModule("org.spongepowered:mixingradle:${requested.version}")
+            }
+        }
+    }
+}
+
+// Load version.properties
+def propsFile = file('version.properties')
+def props = new Properties()
+props.load(new FileInputStream(propsFile))
+
+def version_minecraft = props['version_mc']
+def baseVersion = props['version']
+rootProject.name = "ImmersiveConvergence-${version_minecraft}-${baseVersion}"
