@@ -254,7 +254,7 @@ void minimizePNGFile(File file) {
             System.out.format("Reduced File size of %s from %d bytes to %d bytes (reduced by %.2f%%)\n",
                     file, size, newSize, ((double) (size - newSize)) / ((double) size) * 100.0)
         }
-    } catch (Exception e) {
+    } catch (Exception ignored) {
         System.out.println("optipng not found, skipping optimization for ${file}")
     }
 }
