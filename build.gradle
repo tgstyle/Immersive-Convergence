@@ -239,7 +239,17 @@ tasks.register('sourcesJar', Jar) {
     from sourceSets.main.allSource
 }
 
-artifacts { archives sourcesJar }
+tasks.register('devJar', Jar) {
+    dependsOn classes
+    archiveBaseName.set("ImmersiveConvergence-${version_minecraft}")
+    archiveClassifier.set('dev')
+    from sourceSets.main.output
+}
+
+artifacts {
+    archives sourcesJar
+    archives devJar
+}
 
 void minimizePNGFile(File file) {
     long size = file.length()
@@ -306,11 +316,10 @@ tasks.withType(Task).configureEach {
 processResources.dependsOn optimizePng
 jar.dependsOn bumpVersion
 sourcesJar.dependsOn bumpVersion
+devJar.dependsOn bumpVersion
+build.dependsOn devJar
 
 jar {
     archiveBaseName.set("ImmersiveConvergence-${version_minecraft}")
     archiveClassifier.set('')
-    manifest {
-        attributes "FMLModType": "LIBRARY"
-    }
 }

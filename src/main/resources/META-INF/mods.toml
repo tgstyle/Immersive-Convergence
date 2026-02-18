@@ -11,3 +11,17 @@ authors = "tgstyle"
 displayURL = "https://www.curseforge.com/minecraft/mc-mods/immersive-convergence"
 logoFile = "IClogo.png"
 credits = "tgstyle"
+
+[[dependencies.immersiveconvergence]]
+modId="forge"
+mandatory=true
+versionRange="[47.1.106,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.immersiveconvergence]]
+modId="minecraft"
+mandatory=true
+versionRange="[${version_mc}]"
+ordering="NONE"
+side="BOTH"

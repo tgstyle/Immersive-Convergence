@@ -8,6 +8,5 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = ICLib.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClientProxy extends CommonProxy {
-    @SubscribeEvent
-    public static void onClientSetup(FMLClientSetupEvent event) {}
+    @SubscribeEvent public static void onClientSetup(FMLClientSetupEvent event) {}
 }
