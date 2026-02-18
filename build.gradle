@@ -185,9 +185,8 @@ repositories {
 
 project.ext.lwjglVersion = "3.3.6"
 project.ext.lwjglNatives = "natives-linux"
-dependencies {
-    minecraft "net.minecraftforge:forge:${version_minecraft}-${version_forge}"
-}
+
+dependencies { minecraft "net.minecraftforge:forge:${version_minecraft}-${version_forge}" }
 
 def customGradle = rootProject.file('custom.gradle')
 if (customGradle.exists()) {
@@ -195,6 +194,11 @@ if (customGradle.exists()) {
 }
 
 tasks.register('bumpVersion') {
+    onlyIf {
+        def requested = gradle.startParameter.taskNames
+        if (requested.any { it.startsWith('run') || it.contains('Client') || it.contains('Server') }) { return false }
+        return requested.any { it in ['build', 'jar', 'sourcesJar', 'datagenJar'] }
+    }
     doLast {
         def props = new Properties()
         file('version.properties').withInputStream { props.load(it) }
@@ -228,17 +232,14 @@ tasks.register('signJar', SignJar) {
     }
 }
 
-build.dependsOn bumpVersion, signJar
-
 tasks.register('sourcesJar', Jar) {
     dependsOn classes
-    archiveClassifier = 'sources'
+    archiveBaseName.set("ImmersiveConvergence-${version_minecraft}")
+    archiveClassifier.set('sources')
     from sourceSets.main.allSource
 }
 
-artifacts {
-    archives sourcesJar
-}
+artifacts { archives sourcesJar }
 
 void minimizePNGFile(File file) {
     long size = file.length()
@@ -302,7 +303,7 @@ tasks.withType(Task).configureEach {
     }
 }
 
-processResources.dependsOn bumpVersion, optimizePng
+processResources.dependsOn optimizePng
 jar.dependsOn bumpVersion
 sourcesJar.dependsOn bumpVersion
 
