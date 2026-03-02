@@ -1,7 +1,11 @@
 # Links
-- [Immersive Technology on CurseForge](https://www.curseforge.com/minecraft/mc-mods/immersive-technology)
-- [Immersive Geology on CurseForge](https://www.curseforge.com/minecraft/mc-mods/immersive-geology)
 - [Official Discord for Immersive Technology](https://discord.gg/ujY2mV9)<br/>
+
+- [Immersive Technology on CurseForge](https://www.curseforge.com/minecraft/mc-mods/immersive-technology)
+- [Immersive Technology on Modrinth](https://modrinth.com/mod/mct-immersive-technology)
+
+- [Immersive Geology on CurseForge](https://www.curseforge.com/minecraft/mc-mods/immersive-geology)
+- [Immersive Geology on Modrinth](https://modrinth.com/mod/immersive-geology)
 
 # Immersive Convergence
 Common API for IE Addons.<br/>
