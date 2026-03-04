@@ -12,9 +12,11 @@ public class ICCommonConfig {
 
     public static final ForgeConfigSpec.IntValue MAX_RPM;
     public static final ForgeConfigSpec.DoubleValue MAX_HEAT;
+    public static final ForgeConfigSpec.DoubleValue MAX_RADIATION;
 
     public static int maxRpm = 7200;
     public static double maxHeat = 2000.0;
+    public static double maxRadiation = 10000;
 
     static {
         BUILDER.comment("Mechanical system global settings").push("mechanical");
@@ -27,6 +29,9 @@ public class ICCommonConfig {
         MAX_HEAT = BUILDER
                 .comment("Global maximum heat level for all heat-related devices. Default 2000.0")
                 .defineInRange("max_heat", 2000.0, 100.0, 10000.0);
+        MAX_RADIATION = BUILDER
+                .comment("Global maximum radiation level for all nuclear-related devices & players. Default 0.0")
+                .defineInRange("max_radiation", 0.0, 0.0, 10000.0);
         BUILDER.pop();
     }
 

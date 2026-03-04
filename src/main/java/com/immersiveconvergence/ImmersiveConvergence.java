@@ -2,10 +2,8 @@ package com.immersiveconvergence;
 
 import com.immersiveconvergence.api.HeatCapabilities;
 import com.immersiveconvergence.api.MechanicalCapabilities;
-import com.immersiveconvergence.api.capability.IHeatConsumer;
-import com.immersiveconvergence.api.capability.IHeatProvider;
-import com.immersiveconvergence.api.capability.IMechanicalEnergyConsumer;
-import com.immersiveconvergence.api.capability.IMechanicalEnergyProvider;
+import com.immersiveconvergence.api.RadiationCapabilities;
+import com.immersiveconvergence.api.capability.*;
 import com.immersiveconvergence.core.ICCommonConfig;
 import com.immersiveconvergence.core.lib.ICLib;
 import com.immersiveconvergence.core.proxy.ClientProxySupplier;
@@ -51,12 +49,16 @@ public class ImmersiveConvergence {
         HeatCapabilities.HEAT_CONSUMER_CAPABILITY = CapabilityManager.get(HEAT_CONSUMER_TOKEN);
         MechanicalCapabilities.MECHANICAL_PROVIDER_CAPABILITY = CapabilityManager.get(MECHANICAL_PROVIDER_TOKEN);
         MechanicalCapabilities.MECHANICAL_CONSUMER_CAPABILITY = CapabilityManager.get(MECHANICAL_CONSUMER_TOKEN);
+        RadiationCapabilities.RADIATION_PROVIDER_CAPABILITY = CapabilityManager.get(RADIATION_PROVIDER_TOKEN);
+        RadiationCapabilities.RADIATION_CONSUMER_CAPABILITY = CapabilityManager.get(RADIATION_CONSUMER_TOKEN);
     }
 
     private static final CapabilityToken<IHeatProvider> HEAT_PROVIDER_TOKEN = new CapabilityToken<>() {};
     private static final CapabilityToken<IHeatConsumer> HEAT_CONSUMER_TOKEN = new CapabilityToken<>() {};
     private static final CapabilityToken<IMechanicalEnergyProvider> MECHANICAL_PROVIDER_TOKEN = new CapabilityToken<>() {};
     private static final CapabilityToken<IMechanicalEnergyConsumer> MECHANICAL_CONSUMER_TOKEN = new CapabilityToken<>() {};
+    private static final CapabilityToken<IRadiationProvider> RADIATION_PROVIDER_TOKEN = new CapabilityToken<>() {};
+    private static final CapabilityToken<IRadiationConsumer> RADIATION_CONSUMER_TOKEN = new CapabilityToken<>() {};
 
     @SubscribeEvent public static void onServerStarting(ServerStartingEvent event) {
         ICLib.IC_LOGGER.info("HELLO FROM SERVER STARTING");
