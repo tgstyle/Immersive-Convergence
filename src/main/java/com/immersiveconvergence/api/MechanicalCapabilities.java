@@ -1,13 +1,25 @@
 package com.immersiveconvergence.api;
 
-import com.immersiveconvergence.core.ICCommonConfig;
 import com.immersiveconvergence.api.capability.IMechanicalEnergyConsumer;
 import com.immersiveconvergence.api.capability.IMechanicalEnergyProvider;
-import net.minecraftforge.common.capabilities.Capability;
+import com.immersiveconvergence.core.ICCommonConfig;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
+@SuppressWarnings("unused")
 public class MechanicalCapabilities {
-    public static int MAX_RPM = ICCommonConfig.maxRpm;
+    public static final int MAX_RPM = ICCommonConfig.maxRpm;
 
-    public static Capability<IMechanicalEnergyProvider> MECHANICAL_PROVIDER_CAPABILITY;
-    public static Capability<IMechanicalEnergyConsumer> MECHANICAL_CONSUMER_CAPABILITY;
+    public static final BlockCapability<IMechanicalEnergyProvider, Direction> MECHANICAL_PROVIDER =
+            BlockCapability.createSided(
+                    ResourceLocation.fromNamespaceAndPath("immersiveconvergence", "mechanical_provider"),
+                    IMechanicalEnergyProvider.class
+            );
+
+    public static final BlockCapability<IMechanicalEnergyConsumer, Direction> MECHANICAL_CONSUMER =
+            BlockCapability.createSided(
+                    ResourceLocation.fromNamespaceAndPath("immersiveconvergence", "mechanical_consumer"),
+                    IMechanicalEnergyConsumer.class
+            );
 }

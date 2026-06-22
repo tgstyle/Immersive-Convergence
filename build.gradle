@@ -1,12 +1,10 @@
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-import net.minecraftforge.gradle.common.tasks.SignJar
 
 plugins {
     id 'idea'
     id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '6.0.+'
-    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+    id 'net.neoforged.gradle.userdev' version '7.1.37'
     id 'org.jetbrains.gradle.plugin.idea-ext' version '1.1.6'
     id 'eclipse'
 }
@@ -27,46 +25,20 @@ version = versionProps.getProperty('version')
 ext.version_buildnumber = versionProps.getProperty('build_number')?.toInteger() ?: 0
 ext.stage = versionProps.getProperty('stage') ?: ''
 
-println "-> build.gradle applying version: $version (build ${version_buildnumber})"
+println "-> build.gradle applying version: $version (build ${version_buildnumber}) ${stage}"
 
-group = 'com.immersiveconvergence'
+group = 'mctmods.immersiveconvergence'
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 tasks.withType(Jar).configureEach {
-    zip64 = true
-}
-
-sourceSets {
-    main {
-        java {
-            srcDirs = ["$rootDir/src/main/java"]
-        }
-        resources {
-            srcDirs = [
-                    "$rootDir/src/main/resources",
-                    "$rootDir/src/generated/resources",
-            ]
-        }
-    }
-    gametest {
-        java {
-            srcDirs = ["$rootDir/src/gametest/java"]
-        }
-        resources {
-            srcDirs = ["$rootDir/src/gametest/resources"]
-        }
-        compileClasspath += main.compileClasspath
-        runtimeClasspath += main.runtimeClasspath
-        compileClasspath += main.output
-        runtimeClasspath += main.output
-    }
+    zip64 true
 }
 
 ext {
     mod_id = gradleProps['mod_id']
     version_minecraft = versionProps['version_mc']
-    version_forge = versionProps['version_forge']
+    version_neoforge = versionProps['version_neoforge']
     version_parchment = versionProps['version_parchment']
     mod_license = gradleProps['mod_license']
     mod_name = gradleProps['mod_name']
@@ -74,30 +46,32 @@ ext {
     mod_description = gradleProps['mod_description']
 }
 
-def version_replaces = { [
-        'version'      : project.version,
-        'build_number' : version_buildnumber,
-        'version_mc'   : version_minecraft,
-        'version_forge': version_forge,
-        'mod_license'  : mod_license,
-        'mod_name'     : mod_name,
-        'mod_authors'  : mod_authors,
-        'mod_description': mod_description,
-        'stage'        : stage,
-] as Map<String, Object> }
+def version_replaces = {
+    [
+            'version'        : project.version,
+            'build_number'   : version_buildnumber,
+            'version_mc'     : version_minecraft,
+            'version_neoforge' : version_neoforge,
+            'mod_license'    : mod_license,
+            'mod_name'       : mod_name,
+            'mod_authors'    : mod_authors,
+            'mod_description': mod_description,
+            'stage'          : stage,
+    ] as Map<String, Object>
+}
 
 def jsonPatterns = ["**/*.json", "**/*.mcmeta"]
 
 processResources {
     duplicatesStrategy = DuplicatesStrategy.FAIL
     inputs.properties(version_replaces())
-    filesMatching("META-INF/mods.toml") {
+    filesMatching("META-INF/neoforge.mods.toml") {
         expand version_replaces()
     }
     exclude ".cache"
     doLast {
-        fileTree(dir: getOutputs().getFiles().getAsPath(), includes: jsonPatterns).each {
-            File file -> file.setText(JsonOutput.toJson(new JsonSlurper().parse(file, 'UTF-8')))
+        fileTree(dir: outputs.files.asPath, includes: jsonPatterns).each { File file ->
+            file.text = JsonOutput.toJson(new JsonSlurper().parse(file, 'UTF-8'))
         }
     }
 }
@@ -105,59 +79,35 @@ processResources {
 tasks.register('copyModsTomlForIntelliJ', Copy) {
     from processResources.destinationDir
     into "$projectDir/out/production/resources"
-    include "META-INF/mods.toml"
+    include "META-INF/neoforge.mods.toml"
     dependsOn processResources
 }
 
-minecraft {
-    mappings channel: 'parchment', version: version_parchment + '-' + version_minecraft
-    accessTransformer { file('src/main/resources/META-INF/accesstransformer.cfg') }
-    runs {
-        client {
-            workingDirectory = project.file('run')
-            property 'forge.logging.markers', ''
-            property 'forge.enabledGameTestNamespaces', mod_id
-            ideaModule project.name + ".main"
-            mods {
-                immersiveconvergence {
-                    source(sourceSets.main as SourceSet)
-                }
-            }
-            args '--username', 'tgstyle'
-            args '--width', '1920'
-            args '--height', '1080'
-        }
-        server {
-            workingDirectory = project.file('run')
-            property 'forge.logging.markers', ''
-            property 'forge.enabledGameTestNamespaces', mod_id
-            arg '-nogui'
-            mods {
-                immersiveconvergence {
-                    source(sourceSets.main as SourceSet)
-                }
-            }
-        }
-        gameTestServer {
-            workingDirectory = project.file('run')
-            property 'forge.logging.markers', ''
-            property 'forge.enabledGameTestNamespaces', mod_id
-            ideaModule project.name + ".gametest"
-            mods {
-                immersiveconvergence {
-                    source(sourceSets.main as SourceSet)
-                    source(sourceSets.gametest as SourceSet)
-                }
-            }
-        }
+runs {
+    configureEach { run ->
+        println "DEBUG configureEach: name=${run.name}, class=${run.getClass().name}, project.mod_id=${project.mod_id}"
+
+        run.workingDirectory = project.file("run/${run.name}")
+
+        systemProperties = ['forge.logging.markers': '', 'forge.logging.console.level': 'debug']
+    }
+
+    client {
+        println "DEBUG client block: project.mod_id=${project.mod_id}"
+
+        systemProperties = ['neoforge.enabledGameTestNamespaces': project.mod_id as String]
+        arguments = ['--username', 'tgstyle', '--width', '1920', '--height', '1080']
+    }
+
+    server {
+        println "DEBUG server block: project.mod_id=${project.mod_id}"
+
+        systemProperties = ['neoforge.enabledGameTestNamespaces': project.mod_id as String]
+        arguments = ['--nogui']
     }
 }
 
 repositories {
-    maven {
-        name = 'Jared maven'
-        url = 'https://maven.blamejared.com/'
-    }
     maven {
         url = 'https://www.cursemaven.com'
         content {
@@ -165,28 +115,14 @@ repositories {
         }
     }
     maven {
-        url = "https://cfa2.cursemaven.com"
-        content {
-            includeGroup "curse.maven"
-        }
-    }
-    maven {
-        url = 'https://squiddev.cc/maven/'
-        content {
-            includeGroup("cc.tweaked")
-            includeModule("org.squiddev", "Cobalt")
-        }
-    }
-    maven {
-        name = 'ParchmentMC'
-        url = 'https://ldtteam.jfrog.io/artifactory/parchmentmc-public/'
+        name 'ParchmentMC'
+        url 'https://ldtteam.jfrog.io/artifactory/parchmentmc-public/'
     }
 }
 
-project.ext.lwjglVersion = "3.3.6"
-project.ext.lwjglNatives = "natives-linux"
-
-dependencies { minecraft "net.minecraftforge:forge:${version_minecraft}-${version_forge}" }
+dependencies {
+    implementation "net.neoforged:neoforge:${version_neoforge}"
+}
 
 def customGradle = rootProject.file('custom.gradle')
 if (customGradle.exists()) {
@@ -194,11 +130,6 @@ if (customGradle.exists()) {
 }
 
 tasks.register('bumpVersion') {
-    onlyIf {
-        def requested = gradle.startParameter.taskNames
-        if (requested.any { it.startsWith('run') || it.contains('Client') || it.contains('Server') }) { return false }
-        return requested.any { it in ['build', 'jar', 'sourcesJar', 'datagenJar'] }
-    }
     doLast {
         def props = new Properties()
         file('version.properties').withInputStream { props.load(it) }
@@ -206,9 +137,12 @@ tasks.register('bumpVersion') {
         def nextBuild = currentBuild + 1
         props['build_number'] = nextBuild.toString()
         file('version.properties').withOutputStream { props.store(it, null) }
+
         ext.version_buildnumber = nextBuild
-        def stage = props['stage']
-        def newVersion = "${props['version']}-b${nextBuild}-${stage}"
+        def stage = props['stage'] ?: ''
+        def stagePart = stage ? "-${stage}" : ""
+        def newVersion = "${props['version']}-b${nextBuild}${stagePart}"
+
         project.version = newVersion
         tasks.withType(Jar).configureEach {
             it.archiveVersion.set(newVersion)
@@ -216,88 +150,32 @@ tasks.register('bumpVersion') {
     }
 }
 
-tasks.register('signJar', SignJar) {
-    onlyIf {
-        project.hasProperty('keyStore')
-    }
-    if (project.hasProperty('keyStore')) {
-        keyStore = project.keyStore
-        alias = project.storeAlias
-        storePass = project.storePass
-        keyPass = project.storePass
-        inputFile = jar.archiveFile.get().asFile
-        outputFile = jar.archiveFile.get().asFile
-    } else {
-        logger.warn("No key store found, not signing the output jar\n")
-    }
-}
+build.dependsOn bumpVersion
 
 tasks.register('sourcesJar', Jar) {
     dependsOn classes
     archiveBaseName.set("ImmersiveConvergence-${version_minecraft}")
-    archiveClassifier.set('sources')
+    archiveClassifier = 'sources'
     from sourceSets.main.allSource
-}
-
-tasks.register('devJar', Jar) {
-    dependsOn classes
-    archiveBaseName.set("ImmersiveConvergence-${version_minecraft}")
-    archiveClassifier.set('dev')
-    from sourceSets.main.output
 }
 
 artifacts {
     archives sourcesJar
-    archives devJar
 }
 
-void minimizePNGFile(File file) {
-    long size = file.length()
-    ExecOperations execOps = project.services.get(ExecOperations)
-    try {
-        execOps.exec {
-            executable 'optipng'
-            args '-q', '-o7', '-zm1-9', '-strip', 'all', file.absolutePath
-        }
-        long newSize = file.length()
-        if (newSize < size) {
-            System.out.format("Reduced File size of %s from %d bytes to %d bytes (reduced by %.2f%%)\n",
-                    file, size, newSize, ((double) (size - newSize)) / ((double) size) * 100.0)
-        }
-    } catch (Exception ignored) {
-        System.out.println("optipng not found, skipping optimization for ${file}")
-    }
-}
-
-tasks.register('optimizePng') {
-    def pngPatterns = ["**/*.png"]
-    doLast {
-        for (dir in sourceSets.main.resources.srcDirs) {
-            fileTree(dir: dir, includes: pngPatterns).each { minimizePNGFile(it) }
-        }
-    }
-    onlyIf { gradle.taskGraph.hasTask(tasks.jar) }
-}
-
-tasks.register('genIntellijRunsDummy')
+tasks.register('genIntellijRunsDummy') {}
 
 tasks.register('speedUpPreRun') {
     doLast {
-        for (String s in ["Client", "Server"]) {
+        ["Client", "Server"].each { s ->
             def runConfigFile = file(".idea/runConfigurations/run${s}.xml")
             if (runConfigFile.exists()) {
-                ant.replace(
-                        file: runConfigFile,
-                        token: "prepareRun${s}",
-                        value: "prepareRuns"
-                )
+                ant.replace(file: runConfigFile, token: "prepareRun${s}", value: "prepareRuns")
                 def content = runConfigFile.text
                 if (!content.contains('-Dorg.gradle.logging.level=warn')) {
-                    ant.replace(
-                            file: runConfigFile,
+                    ant.replace(file: runConfigFile,
                             token: '<option name="VM_PARAMETERS" value="',
-                            value: '<option name="VM_PARAMETERS" value="-Dorg.gradle.logging.level=warn '
-                    )
+                            value: '<option name="VM_PARAMETERS" value="-Dorg.gradle.logging.level=warn ')
                 }
             }
         }
@@ -313,11 +191,19 @@ tasks.withType(Task).configureEach {
     }
 }
 
-processResources.dependsOn optimizePng
+idea {
+    project {
+        settings {
+            taskTriggers {
+                afterSync genIntellijRunsDummy
+            }
+        }
+    }
+}
+
+processResources.dependsOn bumpVersion
 jar.dependsOn bumpVersion
 sourcesJar.dependsOn bumpVersion
-devJar.dependsOn bumpVersion
-build.dependsOn devJar
 
 jar {
     archiveBaseName.set("ImmersiveConvergence-${version_minecraft}")
