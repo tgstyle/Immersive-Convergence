@@ -32,7 +32,7 @@ group = 'mctmods.immersiveconvergence'
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 tasks.withType(Jar).configureEach {
-    zip64 true
+    zip64 = true
 }
 
 ext {
@@ -159,9 +159,23 @@ tasks.register('sourcesJar', Jar) {
     from sourceSets.main.allSource
 }
 
+tasks.register('devJar', Jar) {
+    group = 'build'
+    description = 'Creates a deobfuscated dev jar for local cross-mod dependencies (used by ImmersiveTechnology)'
+    dependsOn classes
+    archiveBaseName.set("ImmersiveConvergence-${version_minecraft}")
+    archiveClassifier = 'dev'
+    from sourceSets.main.output
+}
+
 artifacts {
     archives sourcesJar
+    archives devJar
 }
+
+// Make sure devJar runs with normal builds
+assemble.dependsOn devJar
+build.dependsOn devJar
 
 tasks.register('genIntellijRunsDummy') {}
 
@@ -204,6 +218,7 @@ idea {
 processResources.dependsOn bumpVersion
 jar.dependsOn bumpVersion
 sourcesJar.dependsOn bumpVersion
+devJar.dependsOn bumpVersion
 
 jar {
     archiveBaseName.set("ImmersiveConvergence-${version_minecraft}")
