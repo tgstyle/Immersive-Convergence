@@ -46,6 +46,13 @@ ext {
     mod_description = gradleProps['mod_description']
 }
 
+subsystems {
+    parchment {
+        minecraftVersion = version_minecraft
+        mappingsVersion = version_parchment
+    }
+}
+
 def version_replaces = {
     [
             'version'        : project.version,
