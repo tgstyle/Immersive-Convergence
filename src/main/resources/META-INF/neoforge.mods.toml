@@ -9,13 +9,13 @@ displayName = "Immersive Convergence"
 description = "API for Immersive Engineering addons."
 authors = "tgstyle"
 displayURL = "https://www.curseforge.com/minecraft/mc-mods/immersive-convergence"
-logoFile = "logo.png"
+logoFile = "IClogo.png"
 credits = "tgstyle"
 
 [[dependencies.immersiveconvergence]]
 modId="neoforge"
 type="required"
-versionRange="[21.1,)"
+versionRange="[${version_neoforge_min},)"
 ordering="NONE"
 side="BOTH"
 

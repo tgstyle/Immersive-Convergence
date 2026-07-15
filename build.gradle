@@ -39,6 +39,7 @@ ext {
     mod_id = gradleProps['mod_id']
     version_minecraft = versionProps['version_mc']
     version_neoforge = versionProps['version_neoforge']
+    version_neoforge_min = versionProps['version_neoforge_min']
     version_parchment = versionProps['version_parchment']
     mod_license = gradleProps['mod_license']
     mod_name = gradleProps['mod_name']
@@ -59,6 +60,7 @@ def version_replaces = {
             'build_number'   : version_buildnumber,
             'version_mc'     : version_minecraft,
             'version_neoforge' : version_neoforge,
+            'version_neoforge_min' : version_neoforge_min,
             'mod_license'    : mod_license,
             'mod_name'       : mod_name,
             'mod_authors'    : mod_authors,
