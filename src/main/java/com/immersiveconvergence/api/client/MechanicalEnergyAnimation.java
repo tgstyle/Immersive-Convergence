@@ -2,6 +2,7 @@ package com.immersiveconvergence.api.client;
 
 import net.minecraft.nbt.NBTTagCompound;
 
+@SuppressWarnings("unused")
 public class MechanicalEnergyAnimation {
     protected float animationRotation;
     protected float animationMomentum;

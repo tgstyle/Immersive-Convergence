@@ -4,6 +4,7 @@ import com.immersiveconvergence.api.client.MechanicalEnergyAnimation;
 
 import net.minecraft.util.EnumFacing;
 
+@SuppressWarnings("unused")
 public interface IMechanicalEnergyConsumer {
     boolean isValid();
     boolean isMechanicalEnergyReceiver(EnumFacing facing);
