@@ -1,11 +1,13 @@
 package com.immersiveconvergence.api.capability;
 
-@SuppressWarnings("unused")
+import com.immersiveconvergence.api.client.MechanicalEnergyAnimation;
+
+import net.minecraft.util.EnumFacing;
+
 public interface IMechanicalEnergyProvider {
+    boolean isValid();
+    boolean isMechanicalEnergyTransmitter(EnumFacing facing);
     int getSpeed();
-    float getTorque();
-    int getMaxSpeed();
-    double getBaseMass();
-    double getDriveTorque();
-    double getFriction();
+    float getTorqueMultiplier();
+    MechanicalEnergyAnimation getAnimation();
 }

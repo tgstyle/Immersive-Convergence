@@ -1,66 +1,33 @@
 package com.immersiveconvergence;
 
-import com.immersiveconvergence.api.HeatCapabilities;
-import com.immersiveconvergence.api.MechanicalCapabilities;
-import com.immersiveconvergence.api.RadiationCapabilities;
-import com.immersiveconvergence.api.capability.*;
-import com.immersiveconvergence.core.ICCommonConfig;
-import com.immersiveconvergence.core.lib.ICLib;
-import com.immersiveconvergence.core.proxy.ClientProxySupplier;
-import com.immersiveconvergence.core.proxy.CommonProxy;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
-import net.minecraftforge.event.server.ServerStartingEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
+import com.immersiveconvergence.common.CommonProxy;
+import com.immersiveconvergence.common.util.ICLogger;
+
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-@SuppressWarnings("unused")
-@Mod(ICLib.MODID)
+@Mod(modid = ImmersiveConvergence.MODID, name = ImmersiveConvergence.NAME, acceptedMinecraftVersions = "[1.12.2,1.13)", dependencies = "required-after:immersiveengineering@[0.12-92,);" + "required-after:forge@[14.23.5.2860,);")
 public class ImmersiveConvergence {
-    public static final CommonProxy proxy = DistExecutor.safeRunForDist(() -> ClientProxySupplier::get, () -> CommonProxy::new);
 
-    public ImmersiveConvergence(FMLJavaModLoadingContext context) {
-        IEventBus modEventBus = context.getModEventBus();
-        modEventBus.addListener(this::commonSetup);
-        modEventBus.addListener(this::registerCapabilities);
-        ICLib.IC_LOGGER.info("Starting Proxy Mod Construction");
-        CommonProxy.modConstruction(modEventBus);
-        context.registerConfig(ModConfig.Type.COMMON, ICCommonConfig.SPEC);
-        MinecraftForge.EVENT_BUS.register(ImmersiveConvergence.class);
+    public static final String MODID = "immersiveconvergence";
+    public static final String NAME = "Immersive Convergence";
+
+    @SidedProxy(clientSide = "com.immersiveconvergence.client.ClientProxy", serverSide = "com.immersiveconvergence.common.CommonProxy")
+    public static CommonProxy proxy;
+
+    @Instance(MODID) public static ImmersiveConvergence instance;
+
+    @EventHandler public void preInit(FMLPreInitializationEvent event) {
+        ICLogger.logger = event.getModLog();
+        proxy.preInit();
     }
 
-    private void commonSetup(final FMLCommonSetupEvent event) {
-        ICLib.IC_LOGGER.info("HELLO FROM COMMON SETUP");
-    }
+    @EventHandler public void init(FMLInitializationEvent event) { proxy.init(); }
 
-    private void registerCapabilities(RegisterCapabilitiesEvent event) {
-        event.register(IHeatProvider.class);
-        event.register(IHeatConsumer.class);
-        event.register(IMechanicalEnergyProvider.class);
-        event.register(IMechanicalEnergyConsumer.class);
-        HeatCapabilities.HEAT_PROVIDER_CAPABILITY = CapabilityManager.get(HEAT_PROVIDER_TOKEN);
-        HeatCapabilities.HEAT_CONSUMER_CAPABILITY = CapabilityManager.get(HEAT_CONSUMER_TOKEN);
-        MechanicalCapabilities.MECHANICAL_PROVIDER_CAPABILITY = CapabilityManager.get(MECHANICAL_PROVIDER_TOKEN);
-        MechanicalCapabilities.MECHANICAL_CONSUMER_CAPABILITY = CapabilityManager.get(MECHANICAL_CONSUMER_TOKEN);
-        RadiationCapabilities.RADIATION_PROVIDER_CAPABILITY = CapabilityManager.get(RADIATION_PROVIDER_TOKEN);
-        RadiationCapabilities.RADIATION_CONSUMER_CAPABILITY = CapabilityManager.get(RADIATION_CONSUMER_TOKEN);
-    }
-
-    private static final CapabilityToken<IHeatProvider> HEAT_PROVIDER_TOKEN = new CapabilityToken<>() {};
-    private static final CapabilityToken<IHeatConsumer> HEAT_CONSUMER_TOKEN = new CapabilityToken<>() {};
-    private static final CapabilityToken<IMechanicalEnergyProvider> MECHANICAL_PROVIDER_TOKEN = new CapabilityToken<>() {};
-    private static final CapabilityToken<IMechanicalEnergyConsumer> MECHANICAL_CONSUMER_TOKEN = new CapabilityToken<>() {};
-    private static final CapabilityToken<IRadiationProvider> RADIATION_PROVIDER_TOKEN = new CapabilityToken<>() {};
-    private static final CapabilityToken<IRadiationConsumer> RADIATION_CONSUMER_TOKEN = new CapabilityToken<>() {};
-
-    @SubscribeEvent public static void onServerStarting(ServerStartingEvent event) {
-        ICLib.IC_LOGGER.info("HELLO FROM SERVER STARTING");
-    }
+    @EventHandler public void postInit(FMLPostInitializationEvent event) { proxy.postInit(); }
 }
