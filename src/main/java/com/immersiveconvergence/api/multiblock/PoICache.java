@@ -8,7 +8,7 @@ public class PoICache {
     public int position;
 
     public PoICache(EnumFacing facing, PoIJSONSchema poi, boolean isMirrored) {
-        this(LocalFacing.values()[poi.facing].LocalToGlobal(facing), poi.position, LocalFacing.values()[poi.facing], isMirrored);
+        this(poi.facing == null ? null : poi.facing.LocalToGlobal(facing), poi.position, poi.facing, isMirrored);
     }
 
     public PoICache(EnumFacing facing, int position, LocalFacing localFacing, boolean isMirrored) {

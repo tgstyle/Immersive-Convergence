@@ -4,17 +4,17 @@ import com.google.gson.annotations.SerializedName;
 import net.minecraft.util.EnumFacing;
 
 public enum LocalFacing {
-    @SerializedName("0")
+    @SerializedName("down")
     DOWN(0),
-    @SerializedName("1")
+    @SerializedName("up")
     UP(1),
-    @SerializedName("2")
-    FORWARD(2),
-    @SerializedName("3")
+    @SerializedName("front")
+    FRONT(2),
+    @SerializedName("back")
     BACK(3),
-    @SerializedName("4")
+    @SerializedName("left")
     LEFT(4),
-    @SerializedName("5")
+    @SerializedName("right")
     RIGHT(5);
 
     private final int index;
