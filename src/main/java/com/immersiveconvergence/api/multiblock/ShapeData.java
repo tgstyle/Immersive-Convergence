@@ -23,7 +23,7 @@ public final class ShapeData extends GenericShape {
     private final List<List<AxisAlignedBB>> shapes;
 
     private ShapeData(int width, int height, int length, MultiblockJSONSchema data, TemplateData template, BlockPos masterPos, BlockPos triggerPos, List<List<AxisAlignedBB>> shapes) {
-        super(width, height, length, null);
+        super(width, height, length);
         this.data = data;
         this.template = template;
         this.masterPos = masterPos;

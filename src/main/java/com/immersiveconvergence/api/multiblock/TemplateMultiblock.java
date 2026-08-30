@@ -34,9 +34,21 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
 
     @Override public float getManualScale() { return manualScale; }
 
+    protected IBlockState modifyTemplateState(IBlockState state) { return state; }
+
+    protected IBlockState templateState(int x, int y, int z) {
+        IBlockState state = template.getState(x, y, z);
+        return state == null ? null : modifyTemplateState(state);
+    }
+
+    protected IBlockState templateState(int position) {
+        IBlockState state = template.getState(position);
+        return state == null ? null : modifyTemplateState(state);
+    }
+
     @Override public boolean isBlockTrigger(IBlockState state) {
         if (template == null) { return false; }
-        return BlockMatcher.matches(template.getState(triggerPos.getX(), triggerPos.getY(), triggerPos.getZ()), state);
+        return BlockMatcher.matches(templateState(triggerPos.getX(), triggerPos.getY(), triggerPos.getZ()), state);
     }
 
     @Override public boolean createStructure(World world, BlockPos pos, EnumFacing side, EntityPlayer player) {
@@ -55,7 +67,7 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
         for (int h = 0; h < height; h++) {
             for (int l = 0; l < length; l++) {
                 for (int w = 0; w < width; w++) {
-                    if (template.getState(w, h, l) == null) { continue; }
+                    if (templateState(w, h, l) == null) { continue; }
                     int position = h * (width * length) + l * width + w;
                     BlockPos worldPos = localToWorld(origin, mirror ? (width - 1 - w) : w, h, l, side);
                     replaceStructureBlock(world, worldPos, masterWorldPos, position, mirror, side);
@@ -72,7 +84,7 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
         for (int h = 0; h < height; h++) {
             for (int l = 0; l < length; l++) {
                 for (int w = 0; w < width; w++) {
-                    IBlockState expected = template.getState(w, h, l);
+                    IBlockState expected = templateState(w, h, l);
                     if (expected == null) { continue; }
                     BlockPos blockPos = localToWorld(origin, mirror ? (width - 1 - w) : w, h, l, side);
                     if (!BlockMatcher.matches(expected, world.getBlockState(blockPos))) { return true; }
@@ -90,7 +102,7 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
             for (int h = 0; h < template.height; h++) {
                 for (int l = 0; l < template.length; l++) {
                     for (int w = 0; w < template.width; w++) {
-                        IBlockState state = template.getState(w, h, l);
+                        IBlockState state = templateState(w, h, l);
                         structureManual[h][l][w] = state == null ? ItemStack.EMPTY : BlockMatcher.stackFromState(state);
                     }
                 }
@@ -105,7 +117,7 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
             for (int h = 0; h < template.height; h++) {
                 for (int l = 0; l < template.length; l++) {
                     for (int w = 0; w < template.width; w++) {
-                        IBlockState state = template.getState(w, h, l);
+                        IBlockState state = templateState(w, h, l);
                         if (state != null) { counts.merge(state, 1, Integer::sum); }
                     }
                 }
@@ -127,7 +139,7 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
     }
 
     public ItemStack getOriginalBlock(int position) {
-        IBlockState state = template == null ? null : template.getState(position);
+        IBlockState state = template == null ? null : templateState(position);
         return state == null ? ItemStack.EMPTY : BlockMatcher.stackFromState(state);
     }
 

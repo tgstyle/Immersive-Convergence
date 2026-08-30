@@ -62,8 +62,6 @@ public final class Shapes {
         return -1;
     }
 
-    private static long lcm(int aa, int bb) { return ICMth.lcm(aa, bb); }
-
     public static VoxelShape or(VoxelShape shape1, VoxelShape shape2) { return join(shape1, shape2, BooleanOp.OR); }
 
     public static VoxelShape or(VoxelShape shape1, VoxelShape... others) {
@@ -92,7 +90,7 @@ public final class Shapes {
         int i = list1.size() - 1;
         int j = list2.size() - 1;
         if (list1 instanceof CubePointRange && list2 instanceof CubePointRange) {
-            long k = lcm(i, j);
+            long k = ICMth.lcm(i, j);
             if ((long)size * k <= 256L) { return new DiscreteCubeMerger(i, j); }
         }
         if (list1.getDouble(i) < list2.getDouble(0) - 1.0E-7D) { return new NonOverlappingMerger(list1, list2, false); }

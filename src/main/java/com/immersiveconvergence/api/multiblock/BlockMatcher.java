@@ -42,7 +42,7 @@ public class BlockMatcher {
         return new ItemStack(item, 1, state.getBlock().getMetaFromState(state));
     }
 
-    private static boolean hasOreName(ItemStack stack, String name) {
+    public static boolean hasOreName(ItemStack stack, String name) {
         for (int id : OreDictionary.getOreIDs(stack)) {
             if (OreDictionary.getOreName(id).equals(name)) { return true; }
         }
