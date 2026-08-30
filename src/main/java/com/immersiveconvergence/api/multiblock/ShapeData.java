@@ -73,9 +73,9 @@ public final class ShapeData extends GenericShape {
         if (data.pointsOfInterest != null) {
             for (PoIJSONSchema poi : data.pointsOfInterest) {
                 if (poi.pos == null || poi.pos.length != 3) { continue; }
-                poi.position = poi.pos[1] * (width * length) + poi.pos[2] * width + poi.pos[0];
-                if ("master".equals(poi.name)) { masterPos = new BlockPos(poi.pos[0], poi.pos[1], poi.pos[2]); }
-                else if ("trigger".equals(poi.name)) { triggerPos = new BlockPos(poi.pos[0], poi.pos[1], poi.pos[2]); }
+                poi.position = new BlockPos(poi.pos[0], poi.pos[1], length - 1 - poi.pos[2]);
+                if ("master".equals(poi.name)) { masterPos = poi.position; }
+                else if ("trigger".equals(poi.name)) { triggerPos = poi.position; }
             }
         }
         if (triggerPos == null) { triggerPos = masterPos; }
