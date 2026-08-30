@@ -10,8 +10,10 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 @SuppressWarnings("unused")
 public abstract class TemplateMultiblock implements MultiblockHandler.IMultiblock {
@@ -141,6 +143,23 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
     public ItemStack getOriginalBlock(int position) {
         IBlockState state = template == null ? null : templateState(position);
         return state == null ? ItemStack.EMPTY : BlockMatcher.stackFromState(state);
+    }
+
+    public Set<BlockPos> worldOffsetsFromMaster(EnumFacing facing, boolean mirrored) {
+        Set<BlockPos> offsets = new HashSet<>();
+        if (template == null) { return offsets; }
+        int width = template.width;
+        int masterX = mirrored ? width - 1 - masterPos.getX() : masterPos.getX();
+        BlockPos master = localToWorld(BlockPos.ORIGIN, masterX, masterPos.getY(), masterPos.getZ(), facing);
+        for (int h = 0; h < template.height; h++) {
+            for (int l = 0; l < template.length; l++) {
+                for (int w = 0; w < width; w++) {
+                    if (templateState(w, h, l) == null) { continue; }
+                    offsets.add(localToWorld(BlockPos.ORIGIN, mirrored ? width - 1 - w : w, h, l, facing).subtract(master));
+                }
+            }
+        }
+        return offsets;
     }
 
     protected static BlockPos localToWorld(BlockPos origin, int x, int y, int z, EnumFacing facing) {
