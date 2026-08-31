@@ -1,8 +1,5 @@
 package com.immersiveconvergence;
 
-import com.immersiveconvergence.api.HeatCapabilities;
-import com.immersiveconvergence.api.MechanicalCapabilities;
-import com.immersiveconvergence.api.RadiationCapabilities;
 import com.immersiveconvergence.api.capability.*;
 import com.immersiveconvergence.core.ICCommonConfig;
 import com.immersiveconvergence.core.lib.ICLib;

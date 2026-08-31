@@ -1,7 +1,5 @@
-package com.immersiveconvergence.api;
+package com.immersiveconvergence.api.capability;
 
-import com.immersiveconvergence.api.capability.IHeatProvider;
-import com.immersiveconvergence.api.capability.IHeatConsumer;
 import com.immersiveconvergence.core.ICCommonConfig;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;

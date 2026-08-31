@@ -1,6 +1,10 @@
-package com.immersiveconvergence.api.client.split.geometry;
+package com.immersiveconvergence.api.client.split;
 
 import com.immersiveconvergence.api.client.ModelUtils;
+import com.immersiveconvergence.api.client.split.geometry.Polygon;
+import com.immersiveconvergence.api.client.split.geometry.UVCoords;
+import com.immersiveconvergence.api.client.split.geometry.Vec3d;
+import com.immersiveconvergence.api.client.split.geometry.Vertex;
 
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;

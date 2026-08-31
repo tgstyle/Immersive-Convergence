@@ -1,8 +1,6 @@
-package com.immersiveconvergence.api;
+package com.immersiveconvergence.api.capability;
 
 import com.immersiveconvergence.core.ICCommonConfig;
-import com.immersiveconvergence.api.capability.IMechanicalEnergyConsumer;
-import com.immersiveconvergence.api.capability.IMechanicalEnergyProvider;
 import net.minecraftforge.common.capabilities.Capability;
 
 @SuppressWarnings("unused")
