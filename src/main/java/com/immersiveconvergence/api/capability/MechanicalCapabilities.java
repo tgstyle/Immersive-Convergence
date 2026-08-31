@@ -1,7 +1,5 @@
-package com.immersiveconvergence.api;
+package com.immersiveconvergence.api.capability;
 
-import com.immersiveconvergence.api.capability.IMechanicalEnergyConsumer;
-import com.immersiveconvergence.api.capability.IMechanicalEnergyProvider;
 import com.immersiveconvergence.core.ICCommonConfig;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;

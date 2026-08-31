@@ -3,16 +3,11 @@ package com.immersiveconvergence.api.client;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormatElement;
-import com.mojang.math.Transformation;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
-import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 @SuppressWarnings("unused")
 public class ModelUtils {
@@ -40,27 +35,6 @@ public class ModelUtils {
         int vertexLength = oldData.length / 4;
         for (int i = 0; i < 4; ++i) { System.arraycopy(oldData, i * vertexLength, newData, (3 - i) * vertexLength, vertexLength); }
         return new BakedQuad(newData, in.getTintIndex(), in.getDirection(), in.getSprite(), in.isShade());
-    }
-
-    public static Transformation fromItemTransform(ItemTransform transform, boolean leftHand) {
-        Vector3f translate = new Vector3f(transform.translation);
-        if (leftHand) { translate.setComponent(0, -translate.x()); }
-
-        float rx = transform.rotation.x();
-        float ry = transform.rotation.y();
-        float rz = transform.rotation.z();
-        if (leftHand) {
-            ry = -ry;
-            rz = -rz;
-        }
-        Quaternionf leftRotation = new Quaternionf().rotateXYZ(Mth.DEG_TO_RAD * rx, Mth.DEG_TO_RAD * ry, Mth.DEG_TO_RAD * rz);
-
-        rx = transform.rightRotation.x();
-        ry = transform.rightRotation.y() * (leftHand ? -1.0F : 1.0F);
-        rz = transform.rightRotation.z() * (leftHand ? -1.0F : 1.0F);
-        Quaternionf rightRotation = new Quaternionf().rotateXYZ(Mth.DEG_TO_RAD * rx, Mth.DEG_TO_RAD * ry, Mth.DEG_TO_RAD * rz);
-
-        return new Transformation(translate, leftRotation, new Vector3f(transform.scale), rightRotation);
     }
 
     public static class ITBakedQuadBuilder {

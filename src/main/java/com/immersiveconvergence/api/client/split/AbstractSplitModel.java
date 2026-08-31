@@ -1,7 +1,6 @@
 package com.immersiveconvergence.api.client.split;
 
 import com.immersiveconvergence.api.client.split.geometry.Polygon;
-import com.immersiveconvergence.api.client.split.geometry.PolygonUtils;
 import com.immersiveconvergence.api.client.split.geometry.SplitObjModel;
 import com.immersiveconvergence.api.client.split.geometry.SplitModel;
 import com.immersiveconvergence.api.client.split.geometry.ClumpedModel;
