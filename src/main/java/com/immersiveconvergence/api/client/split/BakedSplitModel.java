@@ -10,7 +10,6 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.core.BlockPos;
@@ -22,9 +21,11 @@ import net.minecraftforge.client.model.data.ModelData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Supplier;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("unused")
@@ -32,13 +33,11 @@ public class BakedSplitModel<T extends BakedModel> extends AbstractSplitModel<T>
     private final boolean dynamic;
     private final ResettableLazy<Map<Vec3i, List<BakedQuad>>> splitModels;
     private final LoadingCache<Object, Map<Vec3i, List<BakedQuad>>> subModelCache;
-    private final ItemTransforms itemTransforms;
     private final ICacheKeyProvider<Object> keyProvider;
 
-    public BakedSplitModel(T base, Set<Vec3i> parts, ModelState transform, Vec3i size, boolean dynamic, @Nullable ItemTransforms itemTransforms) {
-        super(base, size);
+    public BakedSplitModel(T base, Supplier<SplitData> splitData, ModelState transform, boolean dynamic) {
+        super(base, splitData);
         this.dynamic = dynamic;
-        this.itemTransforms = itemTransforms;
         if (dynamic) {
             if (!(base instanceof ICacheKeyProvider)) {
                 throw new RuntimeException("Dynamic split model requires the inner model to implement ICacheKeyProvider");
@@ -47,14 +46,15 @@ public class BakedSplitModel<T extends BakedModel> extends AbstractSplitModel<T>
             this.keyProvider = kp;
             this.subModelCache = CacheBuilder.newBuilder().maximumSize(1024).expireAfterAccess(10, TimeUnit.MINUTES).build(CacheLoader.from(key -> {
                 List<BakedQuad> baseQuads = this.keyProvider.getQuads(key);
-                return split(baseQuads, parts, transform);
+                return split(baseQuads, Objects.requireNonNull(splitData()).parts(), transform);
             }));
             this.splitModels = null;
         }
         else {
             this.splitModels = new ResettableLazy<>(() -> {
-                List<BakedQuad> quads = base.getQuads(null, null, ApiUtils.RANDOM_SOURCE, ModelData.EMPTY, null);
-                return split(quads, parts, transform);
+                List<BakedQuad> quads = new ArrayList<>(base.getQuads(null, null, ApiUtils.RANDOM_SOURCE, ModelData.EMPTY, null));
+                for (Direction side : Direction.values()) { quads.addAll(base.getQuads(null, side, ApiUtils.RANDOM_SOURCE, ModelData.EMPTY, null)); }
+                return split(quads, Objects.requireNonNull(splitData()).parts(), transform);
             });
             this.subModelCache = null;
             this.keyProvider = null;
@@ -68,6 +68,7 @@ public class BakedSplitModel<T extends BakedModel> extends AbstractSplitModel<T>
             return ImmutableList.of();
         }
         if (side != null) { return ImmutableList.of(); }
+        if (splitData() == null) { return ImmutableList.of(); }
         if (dynamic) {
             Object key = this.keyProvider.getKey(state, side, rand, data, renderType);
             if (key == null) { return ImmutableList.of(); }
@@ -76,9 +77,9 @@ public class BakedSplitModel<T extends BakedModel> extends AbstractSplitModel<T>
         else { return splitModels.get().getOrDefault(offset, ImmutableList.of()); }
     }
 
-    @Override @Nonnull public ItemTransforms getTransforms() { return dynamic ? super.getTransforms() : itemTransforms; }
 
     @Override protected void clearCache() {
+        super.clearCache();
         if (dynamic) { subModelCache.invalidateAll(); }
         else { splitModels.reset(); }
     }

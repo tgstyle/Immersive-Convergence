@@ -23,10 +23,12 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public abstract class AbstractSplitModel<T extends BakedModel> extends BakedModelWrapper<T> {
-    @Nonnull private final Vec3i size;
+    @Nonnull private final Supplier<SplitData> splitDataSource;
+    private volatile SplitData splitData;
 
     private static final Set<AbstractSplitModel<?>> WEAK_INSTANCES = Collections.newSetFromMap(new WeakHashMap<>());
 
@@ -34,10 +36,19 @@ public abstract class AbstractSplitModel<T extends BakedModel> extends BakedMode
         blusunrize.immersiveengineering.api.IEApi.renderCacheClearers.add(() -> WEAK_INSTANCES.forEach(AbstractSplitModel::clearCache));
     }
 
-    protected AbstractSplitModel(T base, @NotNull Vec3i size) {
+    protected AbstractSplitModel(T base, @NotNull Supplier<SplitData> splitData) {
         super(base);
-        this.size = size;
+        this.splitDataSource = splitData;
         WEAK_INSTANCES.add(this);
+    }
+
+    @Nullable protected SplitData splitData() {
+        SplitData data = splitData;
+        if (data == null) {
+            data = splitDataSource.get();
+            if (data != null) { splitData = data; }
+        }
+        return data;
     }
 
     @Override public boolean useAmbientOcclusion() { return false; }
@@ -49,6 +60,8 @@ public abstract class AbstractSplitModel<T extends BakedModel> extends BakedMode
     @Override @Nonnull public ModelData getModelData(@Nonnull BlockAndTintGetter world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull ModelData tileData) {
         ModelData baseData = super.getModelData(world, pos, state, tileData);
         BlockEntity te = world.getBlockEntity(pos);
+        SplitData data = splitData();
+        Vec3i size = data == null ? Vec3i.ZERO : data.size();
         BlockPos offset = null;
         if (te instanceof IModelOffsetProvider offsetProvider) { offset = offsetProvider.getModelOffset(state, size); }
         else if (state.getBlock() instanceof IModelOffsetProvider offsetProvider) { offset = offsetProvider.getModelOffset(state, size); }
@@ -75,5 +88,5 @@ public abstract class AbstractSplitModel<T extends BakedModel> extends BakedMode
         return map;
     }
 
-    protected abstract void clearCache();
+    protected void clearCache() { splitData = null; }
 }
