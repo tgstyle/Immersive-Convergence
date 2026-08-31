@@ -69,6 +69,8 @@ ext {
     version_forge = versionProps['version_forge']
     version_forge_min = versionProps['version_forge_min']
     version_parchment = versionProps['version_parchment']
+    version_ie_curse = versionProps['version_ie_curse']
+    version_ie_min = versionProps['version_ie_min']
     mod_license = gradleProps['mod_license']
     mod_name = gradleProps['mod_name']
     mod_authors = gradleProps['mod_authors']
@@ -81,6 +83,7 @@ def version_replaces = { [
         'version_mc'   : version_minecraft,
         'version_forge': version_forge,
         'version_forge_min': version_forge_min,
+        'version_ie_min': "${version_minecraft}-${version_ie_min}",
         'mod_license'  : mod_license,
         'mod_name'     : mod_name,
         'mod_authors'  : mod_authors,
@@ -188,7 +191,10 @@ repositories {
 project.ext.lwjglVersion = "3.3.6"
 project.ext.lwjglNatives = "natives-linux"
 
-dependencies { minecraft "net.minecraftforge:forge:${version_minecraft}-${version_forge}" }
+dependencies {
+    minecraft "net.minecraftforge:forge:${version_minecraft}-${version_forge}"
+    implementation fg.deobf("curse.maven:${version_ie_curse}")
+}
 
 def customGradle = rootProject.file('custom.gradle')
 if (customGradle.exists()) {
@@ -253,34 +259,6 @@ artifacts {
     archives devJar
 }
 
-void minimizePNGFile(File file) {
-    long size = file.length()
-    ExecOperations execOps = project.services.get(ExecOperations)
-    try {
-        execOps.exec {
-            executable 'optipng'
-            args '-q', '-o7', '-zm1-9', '-strip', 'all', file.absolutePath
-        }
-        long newSize = file.length()
-        if (newSize < size) {
-            System.out.format("Reduced File size of %s from %d bytes to %d bytes (reduced by %.2f%%)\n",
-                    file, size, newSize, ((double) (size - newSize)) / ((double) size) * 100.0)
-        }
-    } catch (Exception ignored) {
-        System.out.println("optipng not found, skipping optimization for ${file}")
-    }
-}
-
-tasks.register('optimizePng') {
-    def pngPatterns = ["**/*.png"]
-    doLast {
-        for (dir in sourceSets.main.resources.srcDirs) {
-            fileTree(dir: dir, includes: pngPatterns).each { minimizePNGFile(it) }
-        }
-    }
-    onlyIf { gradle.taskGraph.hasTask(tasks.jar) }
-}
-
 tasks.register('genIntellijRunsDummy')
 
 tasks.register('speedUpPreRun') {
@@ -315,7 +293,6 @@ tasks.withType(Task).configureEach {
     }
 }
 
-processResources.dependsOn optimizePng
 jar.dependsOn bumpVersion
 sourcesJar.dependsOn bumpVersion
 devJar.dependsOn bumpVersion

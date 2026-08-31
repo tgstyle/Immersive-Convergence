@@ -7,6 +7,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
 
+@SuppressWarnings("unused")
 public class HeatCapabilities {
     public static double MAX_HEAT = ICCommonConfig.maxHeat;
 

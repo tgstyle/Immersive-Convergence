@@ -25,3 +25,10 @@ mandatory=true
 versionRange="[${version_mc}]"
 ordering="NONE"
 side="BOTH"
+
+[[dependencies.immersiveconvergence]]
+modId="immersiveengineering"
+mandatory=true
+versionRange="[${version_ie_min},)"
+ordering="AFTER"
+side="BOTH"

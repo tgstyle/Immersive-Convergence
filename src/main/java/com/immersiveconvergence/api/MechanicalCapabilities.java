@@ -5,6 +5,7 @@ import com.immersiveconvergence.api.capability.IMechanicalEnergyConsumer;
 import com.immersiveconvergence.api.capability.IMechanicalEnergyProvider;
 import net.minecraftforge.common.capabilities.Capability;
 
+@SuppressWarnings("unused")
 public class MechanicalCapabilities {
     public static int MAX_RPM = ICCommonConfig.maxRpm;
 

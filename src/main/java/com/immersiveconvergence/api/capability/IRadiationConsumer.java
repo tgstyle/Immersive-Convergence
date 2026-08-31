@@ -3,8 +3,8 @@ package com.immersiveconvergence.api.capability;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
 
-public interface IRadiationConsumer
-{
+@SuppressWarnings("unused")
+public interface IRadiationConsumer {
     float getDoseRate();
     BlockPos getRadiationPos();
     BlockPos getPlayerPos();
