@@ -12,6 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,7 +38,9 @@ public class BakedSplitModel implements IBakedModel {
             synchronized (this) {
                 models = splitModels;
                 if (models == null) {
-                    models = PolygonUtils.split(base.getQuads(null, null, 0), parts);
+                    List<BakedQuad> baseQuads = new ArrayList<>(base.getQuads(null, null, 0));
+                    for (EnumFacing facing : EnumFacing.VALUES) { baseQuads.addAll(base.getQuads(null, facing, 0)); }
+                    models = PolygonUtils.split(baseQuads, parts);
                     splitModels = models;
                 }
             }

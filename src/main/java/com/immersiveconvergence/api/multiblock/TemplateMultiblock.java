@@ -162,7 +162,9 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
         return offsets;
     }
 
-    protected static BlockPos localToWorld(BlockPos origin, int x, int y, int z, EnumFacing facing) {
+    public static BlockPos localToWorld(BlockPos origin, int x, int y, int z, EnumFacing facing, boolean mirrored) { return localToWorld(origin, mirrored ? -x : x, y, z, facing); }
+
+    public static BlockPos localToWorld(BlockPos origin, int x, int y, int z, EnumFacing facing) {
         switch (facing) {
             case SOUTH: return origin.add(-x, y, z);
             case NORTH: return origin.add(x, y, -z);
