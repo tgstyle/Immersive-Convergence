@@ -1,36 +1,16 @@
 package com.immersiveconvergence.api.particles;
 
-import com.immersiveconvergence.ImmersiveConvergence;
-
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Random;
 
-@EventBusSubscriber(modid = ImmersiveConvergence.MODID, value = Side.CLIENT)
 @SideOnly(Side.CLIENT)
 public class ParticleCampfireSmoke extends Particle {
 
-    private static final int SPRITE_COUNT = 12;
-    private static final ResourceLocation[] SPRITE_NAMES = new ResourceLocation[SPRITE_COUNT];
     private final Random random;
-
-    static {
-        for (int i = 0; i < SPRITE_COUNT; i++) { SPRITE_NAMES[i] = new ResourceLocation(ImmersiveConvergence.MODID, "particle/big_smoke_" + i); }
-    }
-
-    @SubscribeEvent public static void onTextureStitch(TextureStitchEvent.Pre event) {
-        for (ResourceLocation name : SPRITE_NAMES) { event.getMap().registerSprite(name); }
-    }
 
     public ParticleCampfireSmoke(World world, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
         super(world, x, y, z);
@@ -43,9 +23,7 @@ public class ParticleCampfireSmoke extends Particle {
         this.motionY = ySpeed + this.random.nextFloat() / 500.0F;
         this.motionZ = zSpeed;
         this.particleAlpha = 0.9F;
-        TextureMap map = Minecraft.getMinecraft().getTextureMapBlocks();
-        TextureAtlasSprite sprite = map.getAtlasSprite(SPRITE_NAMES[this.random.nextInt(SPRITE_COUNT)].toString());
-        this.setParticleTexture(sprite);
+        this.setParticleTexture(SmokeSprites.random(this.random));
     }
 
     @Override public void onUpdate() {
