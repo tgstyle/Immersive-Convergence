@@ -1,6 +1,7 @@
 package com.immersiveconvergence.api.crafting;
 
 import com.immersiveconvergence.common.util.ICLogger;
+import com.immersiveconvergence.common.util.ICResources;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -47,7 +48,7 @@ public class MultiblockRecipeLoader {
             readFile(files, root, file);
             return true;
         }, true, true);
-        Path overrides = Loader.instance().getConfigDir().toPath().resolve(modid).resolve(folder);
+        Path overrides = ICResources.overrideRoot(modid).resolve(folder);
         try {
             Files.createDirectories(overrides);
             try (Stream<Path> stream = Files.walk(overrides)) { stream.filter(Files::isRegularFile).forEach(file -> readFile(files, overrides, file)); }

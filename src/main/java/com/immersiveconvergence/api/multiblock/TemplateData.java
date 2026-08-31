@@ -1,6 +1,7 @@
 package com.immersiveconvergence.api.multiblock;
 
 import com.immersiveconvergence.common.util.ICLogger;
+import com.immersiveconvergence.common.util.ICResources;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -10,7 +11,6 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTUtil;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Objects;
 
 public final class TemplateData {
     private static final HashMap<String, TemplateData> CACHE = new HashMap<>();
@@ -28,11 +28,8 @@ public final class TemplateData {
         String key = modid + ":" + id;
         if (CACHE.containsKey(key)) { return CACHE.get(key); }
         TemplateData data = null;
-        try {
-            InputStream stream = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResourceAsStream(String.format("assets/%s/structures/multiblocks/%s.nbt", modid, id)));
-            NBTTagCompound nbt = CompressedStreamTools.readCompressed(stream);
-            stream.close();
-            data = parse(nbt);
+        try (InputStream stream = ICResources.open(modid, "structures/multiblocks/" + id + ".nbt")) {
+            data = parse(CompressedStreamTools.readCompressed(stream));
         } catch (Exception e) { ICLogger.error("Couldn't load structure " + key + ": " + e); }
         CACHE.put(key, data);
         return data;

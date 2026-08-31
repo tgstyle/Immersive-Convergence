@@ -62,9 +62,10 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
             if (isInvalid(world, pos, side, true)) { return false; }
         }
         int width = template.width, height = template.height, length = template.length;
-        BlockPos origin = pos.offset(side, -triggerPos.getZ()).offset(side.rotateY(), mirror ? -(width - 1 - triggerPos.getX()) : -triggerPos.getX()).offset(EnumFacing.DOWN, triggerPos.getY());
+        BlockPos origin = originFor(pos, side, mirror);
         BlockPos masterWorldPos = localToWorld(origin, mirror ? (width - 1 - masterPos.getX()) : masterPos.getX(), masterPos.getY(), masterPos.getZ(), side);
-        ItemStack hammer = player.getHeldItemMainhand().getItem().getToolClasses(player.getHeldItemMainhand()).contains(Lib.TOOL_HAMMER) ? player.getHeldItemMainhand() : player.getHeldItemOffhand();
+        ItemStack mainhand = player.getHeldItemMainhand();
+        ItemStack hammer = mainhand.getItem().getToolClasses(mainhand).contains(Lib.TOOL_HAMMER) ? mainhand : player.getHeldItemOffhand();
         if (MultiblockHandler.fireMultiblockFormationEventPre(player, this, pos, hammer).isCanceled()) { return false; }
         for (int h = 0; h < height; h++) {
             for (int l = 0; l < length; l++) {
@@ -80,9 +81,14 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
         return true;
     }
 
+    protected BlockPos originFor(BlockPos pos, EnumFacing side, boolean mirror) {
+        int offsetX = mirror ? -(template.width - 1 - triggerPos.getX()) : -triggerPos.getX();
+        return pos.offset(side, -triggerPos.getZ()).offset(side.rotateY(), offsetX).offset(EnumFacing.DOWN, triggerPos.getY());
+    }
+
     protected boolean isInvalid(World world, BlockPos pos, EnumFacing side, boolean mirror) {
         int width = template.width, height = template.height, length = template.length;
-        BlockPos origin = pos.offset(side, -triggerPos.getZ()).offset(side.rotateY(), mirror ? -(width - 1 - triggerPos.getX()) : -triggerPos.getX()).offset(EnumFacing.DOWN, triggerPos.getY());
+        BlockPos origin = originFor(pos, side, mirror);
         for (int h = 0; h < height; h++) {
             for (int l = 0; l < length; l++) {
                 for (int w = 0; w < width; w++) {

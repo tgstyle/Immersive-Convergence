@@ -1,5 +1,7 @@
 package com.immersiveconvergence.api.block;
 
+import com.immersiveconvergence.ImmersiveConvergence;
+
 import blusunrize.immersiveengineering.api.ApiUtils;
 import blusunrize.immersiveengineering.api.DimensionBlockPos;
 import blusunrize.immersiveengineering.api.IEProperties;
@@ -46,6 +48,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.client.model.obj.OBJModel.OBJState;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.Properties;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -59,6 +62,7 @@ import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings({"deprecation", "unused"})
+@Mod.EventBusSubscriber(modid = ImmersiveConvergence.MODID)
 public abstract class ICBlockTileProvider<E extends Enum<E> & ICBlockBase.IBlockEnum> extends ICBlockBase<E> {
     private static final Map<DimensionBlockPos, TileEntity> tempTile = new HashMap<>();
 
@@ -118,7 +122,7 @@ public abstract class ICBlockTileProvider<E extends Enum<E> & ICBlockBase.IBlock
     @Override public void getDrops(@Nonnull NonNullList<ItemStack> drops, @Nonnull IBlockAccess world, @Nonnull BlockPos pos, @Nonnull IBlockState state, int fortune) {
         TileEntity tile = world.getTileEntity(pos);
         DimensionBlockPos dpos = new DimensionBlockPos(pos, world instanceof World ? ((World)world).provider.getDimension() : 0);
-        if (tile == null && tempTile.containsKey(dpos)) { tile = tempTile.get(dpos); }
+        if (tile == null) { tile = tempTile.get(dpos); }
         if (tile != null && (!(tile instanceof ITileDrop) || !((ITileDrop)tile).preventInventoryDrop())) {
             if (tile instanceof IIEInventory && ((IIEInventory)tile).getDroppedItems() != null) {
                 for (ItemStack s : ((IIEInventory)tile).getDroppedItems()) { if (!s.isEmpty()) { drops.add(s); } }

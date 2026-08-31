@@ -26,11 +26,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.BooleanSupplier;
 
 @Mod.EventBusSubscriber(modid = ImmersiveConvergence.MODID)
 public class QueueProcessor {
     public static final int DISASSEMBLE_QUEUE_SIZE = 8;
-    public static java.util.function.BooleanSupplier queueEnabled = () -> true;
+    public static BooleanSupplier queueEnabled = () -> true;
     public static final List<QueueProcessor> pendingQueues = new ArrayList<>();
     public static final Set<BlockPos> activeDisassemblies = new HashSet<>();
     private static final Comparator<BlockPos> Y_DESC_COMPARATOR = Comparator.comparingInt(pos -> -pos.getY());
@@ -80,7 +81,7 @@ public class QueueProcessor {
     public boolean isEmpty() { return queue.isEmpty() && allDrops.isEmpty(); }
 
     @SubscribeEvent public static void onServerTick(TickEvent.ServerTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) { return; }
+        if (event.phase != TickEvent.Phase.END || pendingQueues.isEmpty()) { return; }
         List<QueueProcessor> copy = new ArrayList<>(pendingQueues);
         for (QueueProcessor processor : copy) { processor.tick(); }
         pendingQueues.removeIf(QueueProcessor::isEmpty);

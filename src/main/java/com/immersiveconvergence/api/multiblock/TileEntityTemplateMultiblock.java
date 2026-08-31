@@ -3,7 +3,6 @@ package com.immersiveconvergence.api.multiblock;
 import com.immersiveconvergence.api.shapes.Shapes;
 import com.immersiveconvergence.api.shapes.VoxelShape;
 
-
 import blusunrize.immersiveengineering.api.crafting.IMultiblockRecipe;
 import blusunrize.immersiveengineering.common.blocks.IEBlockInterfaces.IPlayerInteraction;
 import blusunrize.immersiveengineering.common.blocks.TileEntityMultiblockPart;
@@ -12,7 +11,6 @@ import blusunrize.immersiveengineering.common.util.Utils;
 import blusunrize.immersiveengineering.common.util.inventory.IIEInventory;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
@@ -50,6 +48,8 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
     private boolean voxelShapeCacheMirrored;
     private VoxelShape aabbCacheShape;
     private List<AxisAlignedBB> aabbCache;
+    public boolean shouldDropOriginal = true;
+    public boolean shouldDropInventory = true;
 
     public TileEntityTemplateMultiblock(MachineTemplateMultiblock<?> instance, int energyCapacity, boolean redstoneControl) { super(instance, new int[]{instance.height, instance.length, instance.width}, energyCapacity, redstoneControl); }
 
@@ -81,9 +81,6 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
     protected abstract boolean canFillTankFrom(int iTank, EnumFacing side, FluidStack resource, BlockPos position);
 
     protected abstract boolean canDrainTankFrom(int iTank, EnumFacing side, BlockPos position);
-
-    public boolean shouldDropOriginal = true;
-    public boolean shouldDropInventory = true;
 
     @Override protected void setWorldCreate(@Nonnull World worldIn) { this.world = worldIn; }
 
@@ -203,7 +200,10 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
 
     @Override @Nonnull public int[] getOutputSlots() { return new int[0]; }
 
-    @Override @Nonnull public int[] getRedstonePos() { return master() == null ? new int[0] : Objects.requireNonNull(master()).getRedstonePos(); }
+    @Override @Nonnull public int[] getRedstonePos() {
+        M master = master();
+        return master == null ? new int[0] : master.getRedstonePos();
+    }
 
     @Override public boolean additionalCanProcessCheck(@Nonnull MultiblockProcess<R> process) { return false; }
 

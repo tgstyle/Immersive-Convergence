@@ -2,10 +2,12 @@ package com.immersiveconvergence.api.client.split;
 
 import com.immersiveconvergence.ImmersiveConvergence;
 import com.immersiveconvergence.api.multiblock.TemplateMultiblock;
+import com.immersiveconvergence.common.util.ICLogger;
 
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.IRegistry;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -15,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
@@ -49,7 +52,12 @@ public class SplitModelHandler {
             if (base == null) { continue; }
             BakedSplitModel wrapper = wrappers.get(key);
             if (wrapper == null) {
-                wrapper = new BakedSplitModel(base, machine.instance.get().worldOffsetsFromMaster(facingOf(mrl.getVariant()), mirroredOf(mrl.getVariant())));
+                Set<BlockPos> offsets = machine.instance.get().worldOffsetsFromMaster(facingOf(mrl.getVariant()), mirroredOf(mrl.getVariant()));
+                if (offsets.isEmpty()) {
+                    ICLogger.error("No template cells for " + mrl.getNamespace() + ":" + machine.masterFile + " - leaving its models unsplit");
+                    continue;
+                }
+                wrapper = new BakedSplitModel(base, offsets);
                 wrappers.put(key, wrapper);
             }
             registry.putObject(mrl, wrapper);

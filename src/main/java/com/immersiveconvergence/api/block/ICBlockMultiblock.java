@@ -1,13 +1,12 @@
 package com.immersiveconvergence.api.block;
 
 import com.immersiveconvergence.api.client.split.SplitModelProperties;
+import com.immersiveconvergence.api.multiblock.TileEntityTemplateMultiblock;
 
 import blusunrize.immersiveengineering.common.blocks.IEBlockInterfaces.IBlockBounds;
 import blusunrize.immersiveengineering.common.blocks.IEBlockInterfaces.ITileDrop;
 import blusunrize.immersiveengineering.common.blocks.TileEntityMultiblockPart;
 import blusunrize.immersiveengineering.common.util.inventory.IIEInventory;
-
-import com.immersiveconvergence.api.multiblock.TileEntityTemplateMultiblock;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
@@ -30,9 +29,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
-
 import java.util.Arrays;
-
+import java.util.Locale;
 
 @SuppressWarnings("unused")
 public abstract class ICBlockMultiblock<E extends Enum<E> & ICBlockBase.IBlockEnum> extends ICBlockTileProvider<E> {
@@ -51,8 +49,6 @@ public abstract class ICBlockMultiblock<E extends Enum<E> & ICBlockBase.IBlockEn
         array[properties.length] = SplitModelProperties.SUBMODEL_OFFSET;
         return array;
     }
-
-    @Override @Nonnull public IBlockState getActualState(@Nonnull IBlockState state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos) { return super.getActualState(state, world, pos); }
 
     @Override @Nonnull public IBlockState getExtendedState(@Nonnull IBlockState state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos) {
         state = super.getExtendedState(state, world, pos);
@@ -80,7 +76,7 @@ public abstract class ICBlockMultiblock<E extends Enum<E> & ICBlockBase.IBlockEn
 
     @Override public void breakBlock(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull IBlockState state) {
         TileEntity tileEntity = world.getTileEntity(pos);
-        if (tileEntity instanceof TileEntityMultiblockPart) {
+        if (tileEntity instanceof TileEntityTemplateMultiblock) {
             TileEntityTemplateMultiblock<?, ?, ?> tile = (TileEntityTemplateMultiblock<?, ?, ?>) tileEntity;
             if (tile.formed && tile.shouldDropInventory) {
                 IIEInventory master = tile.master();
@@ -125,12 +121,7 @@ public abstract class ICBlockMultiblock<E extends Enum<E> & ICBlockBase.IBlockEn
     @Override @Nonnull public AxisAlignedBB getSelectedBoundingBox(@Nonnull IBlockState state, @Nonnull World world, @Nonnull BlockPos pos) { return getBoundingBox(state, world, pos); }
 
     @Override @Nonnull public String getCustomStateMapping(int meta, boolean itemBlock) {
-        if (!itemBlock && enumValues[meta].name().toLowerCase(java.util.Locale.US).endsWith("_slave")) return "multiblockSlave";
+        if (!itemBlock && enumValues[meta].name().toLowerCase(Locale.US).endsWith("_slave")) { return "multiblockSlave"; }
         return "";
-    }
-
-    @Override
-    public boolean onBlockActivated(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull IBlockState state, @Nonnull EntityPlayer player, @Nonnull EnumHand hand, @Nonnull EnumFacing side, float hitX, float hitY, float hitZ) {
-        return super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
     }
 }

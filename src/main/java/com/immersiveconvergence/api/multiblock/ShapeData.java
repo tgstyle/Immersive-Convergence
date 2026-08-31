@@ -1,6 +1,7 @@
 package com.immersiveconvergence.api.multiblock;
 
 import com.immersiveconvergence.common.util.ICLogger;
+import com.immersiveconvergence.common.util.ICResources;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -11,11 +12,12 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 @SuppressWarnings("unused")
 public final class ShapeData extends GenericShape {
+    private static final Gson GSON = new Gson();
     public final MultiblockJSONSchema data;
     public final TemplateData template;
     public final BlockPos masterPos, triggerPos;
@@ -80,30 +82,26 @@ public final class ShapeData extends GenericShape {
         }
         if (triggerPos == null) { triggerPos = masterPos; }
 
-        ICLogger.info(id + " shape loaded: SHAPES size=" + shapes.size() + ", master pos=" + masterPos);
+        ICLogger.info(String.format("Loaded multiblock %s: %dx%dx%d, master at %s", id, width, height, length, masterPos));
         return new ShapeData(width, height, length, data, template, masterPos, triggerPos, shapes);
     }
 
     private static MultiblockJSONSchema loadJSON(String modid, String path) {
-        MultiblockJSONSchema data;
-        try {
-            InputStreamReader stream = new InputStreamReader(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResourceAsStream(String.format("assets/%s/%s", modid, path))));
-            JsonReader reader = new JsonReader(stream);
-            try {
-                data = new Gson().fromJson(reader, MultiblockJSONSchema.class);
-            } catch (JsonSyntaxException i) {
-                ICLogger.error(String.format("Syntax error in file %s", path));
-                throw i;
-            }
-        } catch (Exception e) {
+        try (JsonReader reader = new JsonReader(new InputStreamReader(ICResources.open(modid, path)))) {
+            return GSON.fromJson(reader, MultiblockJSONSchema.class);
+        }
+        catch (JsonSyntaxException e) {
+            ICLogger.error(String.format("Syntax error in file %s", path));
+            return null;
+        }
+        catch (Exception e) {
             ICLogger.error(String.format("Couldn't load file %s", path));
             return null;
         }
-        return data;
     }
 
     @Override public List<AxisAlignedBB> getShape(BlockPos posInMultiblock) {
         int index = posInMultiblock.getX() + posInMultiblock.getZ() * width + posInMultiblock.getY() * width * length;
-        return (index >= 0 && index < shapes.size()) ? shapes.get(index) : new ArrayList<>();
+        return (index >= 0 && index < shapes.size()) ? shapes.get(index) : Collections.emptyList();
     }
 }

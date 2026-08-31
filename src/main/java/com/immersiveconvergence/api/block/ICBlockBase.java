@@ -148,15 +148,15 @@ public class ICBlockBase<E extends Enum<E> & ICBlockBase.IBlockEnum> extends Blo
     }
 
     @Override public int getLightOpacity(@Nonnull IBlockState state, @Nonnull IBlockAccess w, @Nonnull BlockPos pos) {
-        int meta = getMetaFromState(state);
-        if (metaLightOpacities.containsKey(meta)) return metaLightOpacities.get(meta);
+        Integer opacity = metaLightOpacities.get(getMetaFromState(state));
+        if (opacity != null) { return opacity; }
         return super.getLightOpacity(state, w, pos);
     }
 
     @SuppressWarnings("deprecation")
     @Override public float getBlockHardness(@Nonnull IBlockState state, @Nonnull World world, @Nonnull BlockPos pos) {
-        int meta = getMetaFromState(state);
-        if (metaHardness.containsKey(meta)) return metaHardness.get(meta);
+        Float hardness = metaHardness.get(getMetaFromState(state));
+        if (hardness != null) { return hardness; }
         return super.getBlockHardness(state, world, pos);
     }
 
@@ -166,8 +166,8 @@ public class ICBlockBase<E extends Enum<E> & ICBlockBase.IBlockEnum> extends Blo
     }
 
     @Override public float getExplosionResistance(@Nonnull World world, @Nonnull BlockPos pos, Entity exploder, @Nonnull Explosion explosion) {
-        int meta = getMetaFromState(world.getBlockState(pos));
-        if (metaResistances.containsKey(meta)) return metaResistances.get(meta);
+        Float resistance = metaResistances.get(getMetaFromState(world.getBlockState(pos)));
+        if (resistance != null) { return resistance; }
         return super.getExplosionResistance(world, pos, exploder, explosion);
     }
 
@@ -225,8 +225,6 @@ public class ICBlockBase<E extends Enum<E> & ICBlockBase.IBlockEnum> extends Blo
         if (tempUnlistedProperties.length > 0) return new ExtendedBlockState(this, tempProperties, tempUnlistedProperties);
         return new BlockStateContainer(this, tempProperties);
     }
-
-    @Override public void onBlockPlacedBy(@Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull IBlockState state, @Nonnull EntityLivingBase placer, @Nonnull ItemStack stack) { super.onBlockPlacedBy(worldIn, pos, state, placer, stack); }
 
     @Override public int getMetaFromState(@Nonnull IBlockState state) {
         if (!this.equals(state.getBlock())) return 0;
