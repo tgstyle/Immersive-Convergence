@@ -20,9 +20,9 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.function.Consumer;
 
@@ -44,19 +44,19 @@ import java.util.function.Consumer;
     }
 
     public interface ICollisionBounds {
-        @NotNull VoxelShape getCollisionShape(CollisionContext var1);
+        @Nonnull VoxelShape getCollisionShape(CollisionContext var1);
     }
 
     public interface ISelectionBounds {
-        @NotNull VoxelShape getSelectionShape(@Nullable CollisionContext var1);
+        @Nonnull VoxelShape getSelectionShape(@Nullable CollisionContext var1);
     }
 
     public interface IBlockBounds extends ISelectionBounds, ICollisionBounds {
-        @NotNull VoxelShape getBlockBounds(@Nullable CollisionContext var1);
+        @Nonnull VoxelShape getBlockBounds(@Nullable CollisionContext var1);
 
-        @NotNull default VoxelShape getCollisionShape(CollisionContext ctx) { return getBlockBounds(ctx); }
+        @Nonnull default VoxelShape getCollisionShape(CollisionContext ctx) { return getBlockBounds(ctx); }
 
-        @NotNull default VoxelShape getSelectionShape(@Nullable CollisionContext ctx) { return getBlockBounds(ctx); }
+        @Nonnull default VoxelShape getSelectionShape(@Nullable CollisionContext ctx) { return getBlockBounds(ctx); }
     }
 
     public interface IMirrorAble extends IBlockStateProvider {
@@ -94,9 +94,9 @@ import java.util.function.Consumer;
     }
 
     public interface IBlockStateProvider {
-        @NotNull BlockState getState();
+        @Nonnull BlockState getState();
 
-        void setState(@NotNull BlockState var1);
+        void setState(@Nonnull BlockState var1);
     }
 
     public interface IAdditionalDrops {

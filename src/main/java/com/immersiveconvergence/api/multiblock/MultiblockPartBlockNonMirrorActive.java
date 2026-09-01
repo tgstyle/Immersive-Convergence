@@ -8,7 +8,8 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.Property;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 @SuppressWarnings({"unused", "RedundantSuppression"}) public class MultiblockPartBlockNonMirrorActive<S extends IMultiblockState> extends MultiblockPartBlockNonMirror<S> {
     public static final Property<Boolean> ACTIVE = ModProperties.ACTIVE;
@@ -17,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
         super(properties, registration);
     }
 
-    @Override protected void createBlockStateDefinition(@NotNull StateDefinition.Builder<Block, BlockState> builder) {
+    @Override protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(ACTIVE);
     }

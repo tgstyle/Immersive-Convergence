@@ -8,9 +8,9 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 public class ColoredSmokeParticle extends TextureSheetParticle {
@@ -61,7 +61,7 @@ public class ColoredSmokeParticle extends TextureSheetParticle {
         }
     }
 
-    @Override @NotNull public ParticleRenderType getRenderType() { return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT; }
+    @Override @Nonnull public ParticleRenderType getRenderType() { return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT; }
 
     @Override public float getQuadSize(float partialTicks) { return this.quadSize * Mth.clamp(((float)this.age + partialTicks) / (float)this.lifetime * 32.0F, 0.0F, 1.0F); }
 

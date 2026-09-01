@@ -25,11 +25,12 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.util.FakePlayer;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.util.Mth;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 @SuppressWarnings({"unused", "RedundantSuppression"}) public class MachineMultiblockPartBlock<S extends IMultiblockState> extends MultiblockPartBlock<S> {
     private final MultiblockRegistration<S> multiblockRef;

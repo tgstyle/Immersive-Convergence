@@ -19,7 +19,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.BakedModelWrapper;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.common.util.TriState;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -37,7 +36,7 @@ public abstract class SplitModelWrapper<T extends BakedModel> extends BakedModel
         IEApi.renderCacheClearers.add(() -> WEAK_INSTANCES.forEach(SplitModelWrapper::clearCache));
     }
 
-    protected SplitModelWrapper(T base, @NotNull Supplier<SplitData> splitData) {
+    protected SplitModelWrapper(T base, @Nonnull Supplier<SplitData> splitData) {
         super(base);
         this.splitDataSource = splitData;
         WEAK_INSTANCES.add(this);
@@ -56,7 +55,7 @@ public abstract class SplitModelWrapper<T extends BakedModel> extends BakedModel
 
     @Override @Nonnull public TriState useAmbientOcclusion(@Nonnull BlockState state, @Nonnull ModelData data, @Nonnull RenderType renderType) { return TriState.FALSE; }
 
-    @Override @Nonnull public ModelData getModelData(@NotNull BlockAndTintGetter world, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull ModelData tileData) {
+    @Override @Nonnull public ModelData getModelData(@Nonnull BlockAndTintGetter world, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull ModelData tileData) {
         ModelData baseData = super.getModelData(world, pos, state, tileData);
         BlockEntity te = world.getBlockEntity(pos);
         SplitData data = splitData();

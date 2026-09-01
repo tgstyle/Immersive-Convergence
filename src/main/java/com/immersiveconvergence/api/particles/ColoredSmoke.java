@@ -8,9 +8,10 @@ import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import java.util.function.Supplier;
+
+import javax.annotation.Nonnull;
 
 @SuppressWarnings({"unused", "RedundantSuppression"}) public record ColoredSmoke(Vector3f color, boolean collideHorizontal,
                            boolean collideVertical) implements ParticleOptions {
@@ -42,7 +43,7 @@ import java.util.function.Supplier;
     }
 
     @Override
-    @NotNull
+    @Nonnull
     public ParticleType<?> getType() {
         return typeSupplier.get();
     }

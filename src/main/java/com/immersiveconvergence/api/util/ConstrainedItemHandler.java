@@ -6,10 +6,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemStackHandler;
-import org.jetbrains.annotations.NotNull;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
+
+import javax.annotation.Nonnull;
 
 @SuppressWarnings({"unused", "RedundantSuppression"}) public class ConstrainedItemHandler implements IItemHandlerModifiable, Iterable<ItemStack> {
     private final ItemStackHandler rawHandler;
@@ -27,9 +28,9 @@ import java.util.function.Predicate;
 
     @Override public int getSlots() { return rawHandler.getSlots(); }
 
-    @Override @NotNull public ItemStack getStackInSlot(int slot) { return rawHandler.getStackInSlot(slot); }
+    @Override @Nonnull public ItemStack getStackInSlot(int slot) { return rawHandler.getStackInSlot(slot); }
 
-    @Override @NotNull public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+    @Override @Nonnull public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
         if (slot >= this.slotConstraints.size()) return stack;
         boolean allowInsert = this.slotConstraints.get(slot).allowInsert.test(stack);
         if (!allowInsert) return stack;
@@ -48,19 +49,19 @@ import java.util.function.Predicate;
         return result;
     }
 
-    @Override @NotNull public ItemStack extractItem(int slot, int amount, boolean simulate) {
+    @Override @Nonnull public ItemStack extractItem(int slot, int amount, boolean simulate) {
         if (slot >= this.slotConstraints.size() || !this.slotConstraints.get(slot).allowExtract()) return ItemStack.EMPTY;
         return rawHandler.extractItem(slot, amount, simulate);
     }
 
     @Override public int getSlotLimit(int slot) { return rawHandler.getSlotLimit(slot); }
 
-    @Override public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+    @Override public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
         if (slot >= this.slotConstraints.size()) return false;
         return this.slotConstraints.get(slot).allowInsert.test(stack);
     }
 
-    public void setStackInSlot(int slot, @NotNull ItemStack stack) {
+    public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
         ItemStack toSet = stack.copy();
         toSet.setCount(Math.min(toSet.getCount(), getSlotLimit(slot)));
         rawHandler.setStackInSlot(slot, toSet);
@@ -72,7 +73,7 @@ import java.util.function.Predicate;
 
     public ItemStackHandler getRawHandler() { return rawHandler; }
 
-    @NotNull @Override public Iterator<ItemStack> iterator() {
+    @Nonnull @Override public Iterator<ItemStack> iterator() {
         return new Iterator<>() {
             private int slot = 0;
 

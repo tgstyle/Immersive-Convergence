@@ -12,7 +12,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 @SuppressWarnings({"unused", "RedundantSuppression"}) public record MessageTileSync(BlockPos pos, CompoundTag nbt) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<MessageTileSync> TYPE = new CustomPacketPayload.Type<>(ICLib.rl("tilesync"));
@@ -25,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
             MessageTileSync::new
     );
 
-    @Override public CustomPacketPayload.@NotNull Type<? extends CustomPacketPayload> type() {
+    @Override public @Nonnull CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
 

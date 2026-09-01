@@ -18,12 +18,13 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.data.ModelData;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumMap;
 import java.util.Objects;
 import com.immersiveconvergence.api.network.ITileSyncReceiver;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 @SuppressWarnings({"unused", "RedundantSuppression"}) public abstract class BaseBlockEntity extends BlockEntity implements BlockInterfaces.IBlockStateProvider, ISubmodelOffsetProvider , ITileSyncReceiver {
     @Nullable private BlockState overrideBlockState = null;
@@ -31,14 +32,14 @@ import com.immersiveconvergence.api.network.ITileSyncReceiver;
 
     public BaseBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) { super(type, pos, state); }
 
-    @Override protected void loadAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
+    @Override protected void loadAdditional(@Nonnull CompoundTag tag, @Nonnull HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         readCustomNBT(tag, false);
     }
 
     public abstract void readCustomNBT(CompoundTag nbt, boolean descPacket);
 
-    @Override protected void saveAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
+    @Override protected void saveAdditional(@Nonnull CompoundTag tag, @Nonnull HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         writeCustomNBT(tag, false);
     }
@@ -49,14 +50,14 @@ import com.immersiveconvergence.api.network.ITileSyncReceiver;
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
-    @Override public void onDataPacket(@NotNull Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.@NotNull Provider registries) {
+    @Override public void onDataPacket(@Nonnull Connection net, ClientboundBlockEntityDataPacket pkt, @Nonnull HolderLookup.Provider registries) {
         CompoundTag nonNullTag = pkt.getTag();
         readCustomNBT(nonNullTag, true);
     }
 
-    @Override public void handleUpdateTag(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) { readCustomNBT(tag, true); }
+    @Override public void handleUpdateTag(@Nonnull CompoundTag tag, @Nonnull HolderLookup.Provider registries) { readCustomNBT(tag, true); }
 
-    @Override @NotNull public CompoundTag getUpdateTag(HolderLookup.@NotNull Provider registries) {
+    @Override @Nonnull public CompoundTag getUpdateTag(@Nonnull HolderLookup.Provider registries) {
         CompoundTag nbt = super.getUpdateTag(registries);
         writeCustomNBT(nbt, true);
         return nbt;
@@ -106,34 +107,34 @@ import com.immersiveconvergence.api.network.ITileSyncReceiver;
 
     public void setRemovedIE() { }
 
-    @NotNull public Level getLevelNonnull() { return Objects.requireNonNull(super.getLevel()); }
+    @Nonnull public Level getLevelNonnull() { return Objects.requireNonNull(super.getLevel()); }
 
     public void onEntityCollision(Level world, Entity entity) { }
 
     public void setOverrideState(@Nullable BlockState state) { overrideBlockState = state; }
 
-    @Override @NotNull public BlockState getBlockState() { if (overrideBlockState != null) { return overrideBlockState; } else { return super.getBlockState(); } }
+    @Override @Nonnull public BlockState getBlockState() { if (overrideBlockState != null) { return overrideBlockState; } else { return super.getBlockState(); } }
 
     @SuppressWarnings("deprecation")
-    @Override public void setBlockState(@NotNull BlockState newState) {
+    @Override public void setBlockState(@Nonnull BlockState newState) {
         BlockState old = getBlockState();
         super.setBlockState(newState);
         if (getType().isValid(old) && !getType().isValid(newState)) { setOverrideState(old); }
         else if (getType().isValid(newState)) { setOverrideState(null); }
     }
 
-    @Override public void setState(@NotNull BlockState state) { if (getLevelNonnull().getBlockState(worldPosition) == getState()) { getLevelNonnull().setBlockAndUpdate(worldPosition, state); } }
+    @Override public void setState(@Nonnull BlockState state) { if (getLevelNonnull().getBlockState(worldPosition) == getState()) { getLevelNonnull().setBlockAndUpdate(worldPosition, state); } }
 
-    @Override @NotNull public BlockState getState() { return getBlockState(); }
+    @Override @Nonnull public BlockState getState() { return getBlockState(); }
 
     protected void markChunkDirty() { if (level != null && level.hasChunk(worldPosition.getX() >> 4, worldPosition.getZ() >> 4)) { level.getChunkAt(worldPosition).setUnsaved(true); } }
 
-    @Override public void setLevel(@NotNull Level world) {
+    @Override public void setLevel(@Nonnull Level world) {
         super.setLevel(world);
         redstoneBySide.clear();
     }
 
-    @Override @NotNull public ModelData getModelData() {
+    @Override @Nonnull public ModelData getModelData() {
         BlockPos offset = getModelOffset(getState(), Vec3i.ZERO);
         if (offset != null) { return ModelData.builder().with(SplitModelProperties.SUBMODEL_OFFSET, offset).build(); }
         return ModelData.EMPTY;
