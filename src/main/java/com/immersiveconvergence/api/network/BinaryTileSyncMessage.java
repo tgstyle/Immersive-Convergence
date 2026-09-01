@@ -17,22 +17,22 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SuppressWarnings("unused")
-public class BinaryMessageTileSync implements IMessage {
+public class BinaryTileSyncMessage implements IMessage {
     BlockPos pos;
     ByteBuf buffer;
 
-    public static void sendToServer(BlockPos pos, ByteBuf buf) { ImmersiveConvergence.packetHandler.sendToServer(new BinaryMessageTileSync(pos, buf)); }
+    public static void sendToServer(BlockPos pos, ByteBuf buf) { ImmersiveConvergence.packetHandler.sendToServer(new BinaryTileSyncMessage(pos, buf)); }
 
-    public static void sendToPlayer(EntityPlayerMP player, BlockPos pos, ByteBuf buf) { ImmersiveConvergence.packetHandler.sendTo(new BinaryMessageTileSync(pos, buf), player); }
+    public static void sendToPlayer(EntityPlayerMP player, BlockPos pos, ByteBuf buf) { ImmersiveConvergence.packetHandler.sendTo(new BinaryTileSyncMessage(pos, buf), player); }
 
-    public static void sendToAllTracking(World world, BlockPos pos, ByteBuf buf) { ImmersiveConvergence.packetHandler.sendToAllTracking(new BinaryMessageTileSync(pos, buf), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 0)); }
+    public static void sendToAllTracking(World world, BlockPos pos, ByteBuf buf) { ImmersiveConvergence.packetHandler.sendToAllTracking(new BinaryTileSyncMessage(pos, buf), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 0)); }
 
-    public BinaryMessageTileSync(BlockPos tile, ByteBuf buffer) {
+    public BinaryTileSyncMessage(BlockPos tile, ByteBuf buffer) {
         this.pos = tile;
         this.buffer = buffer;
     }
 
-    public BinaryMessageTileSync() {}
+    public BinaryTileSyncMessage() {}
 
     @Override public void fromBytes(ByteBuf buf) {
         this.pos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
@@ -45,8 +45,8 @@ public class BinaryMessageTileSync implements IMessage {
         buffer.release();
     }
 
-    public static class HandlerServer implements IMessageHandler<BinaryMessageTileSync, IMessage> {
-        @Override public IMessage onMessage(BinaryMessageTileSync message, MessageContext ctx) {
+    public static class HandlerServer implements IMessageHandler<BinaryTileSyncMessage, IMessage> {
+        @Override public IMessage onMessage(BinaryTileSyncMessage message, MessageContext ctx) {
             EntityPlayerMP player = ctx.getServerHandler().player;
             WorldServer world = player.getServerWorld();
             world.addScheduledTask(() -> {
@@ -63,8 +63,8 @@ public class BinaryMessageTileSync implements IMessage {
     }
 
     @SideOnly(Side.CLIENT)
-    public static class HandlerClient implements IMessageHandler<BinaryMessageTileSync, IMessage> {
-        @Override public IMessage onMessage(BinaryMessageTileSync message, MessageContext ctx) {
+    public static class HandlerClient implements IMessageHandler<BinaryTileSyncMessage, IMessage> {
+        @Override public IMessage onMessage(BinaryTileSyncMessage message, MessageContext ctx) {
             Minecraft.getMinecraft().addScheduledTask(() -> {
                 try {
                     World world = Minecraft.getMinecraft().world;

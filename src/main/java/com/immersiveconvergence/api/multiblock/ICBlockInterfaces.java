@@ -12,11 +12,11 @@ public class ICBlockInterfaces {
         float[] getBlockBounds();
     }
 
-    public interface IAdvancedCollisionBounds extends IBlockBounds {
+    public interface ICollisionBounds extends IBlockBounds {
         List<AxisAlignedBB> getAdvancedCollisionBounds();
     }
 
-    public interface IAdvancedSelectionBounds extends IBlockBounds {
+    public interface ISelectionBounds extends IBlockBounds {
         List<AxisAlignedBB> getAdvancedSelectionBounds();
 
         boolean isOverrideBox(AxisAlignedBB var1, EntityPlayer var2, RayTraceResult var3, List<AxisAlignedBB> var4);

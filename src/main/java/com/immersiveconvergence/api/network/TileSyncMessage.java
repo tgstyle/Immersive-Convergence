@@ -16,16 +16,16 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SuppressWarnings("unused")
-public class MessageTileSync implements IMessage {
+public class TileSyncMessage implements IMessage {
     BlockPos pos;
     NBTTagCompound nbt;
 
-    public MessageTileSync(TileEntityIEBase tile, NBTTagCompound nbt) {
+    public TileSyncMessage(TileEntityIEBase tile, NBTTagCompound nbt) {
         this.pos = tile.getPos();
         this.nbt = nbt;
     }
 
-    public MessageTileSync() {}
+    public TileSyncMessage() {}
 
     @Override public void fromBytes(ByteBuf buf) {
         this.pos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
@@ -37,8 +37,8 @@ public class MessageTileSync implements IMessage {
         ByteBufUtils.writeTag(buf, this.nbt);
     }
 
-    public static class HandlerServer implements IMessageHandler<MessageTileSync, IMessage> {
-        @Override public IMessage onMessage(MessageTileSync message, MessageContext ctx) {
+    public static class HandlerServer implements IMessageHandler<TileSyncMessage, IMessage> {
+        @Override public IMessage onMessage(TileSyncMessage message, MessageContext ctx) {
             WorldServer world = ctx.getServerHandler().player.getServerWorld();
             world.addScheduledTask(() -> {
                 if (world.isBlockLoaded(message.pos)) {
@@ -51,8 +51,8 @@ public class MessageTileSync implements IMessage {
     }
 
     @SideOnly(Side.CLIENT)
-    public static class HandlerClient implements IMessageHandler<MessageTileSync, IMessage> {
-        @Override public IMessage onMessage(MessageTileSync message, MessageContext ctx) {
+    public static class HandlerClient implements IMessageHandler<TileSyncMessage, IMessage> {
+        @Override public IMessage onMessage(TileSyncMessage message, MessageContext ctx) {
             Minecraft.getMinecraft().addScheduledTask(() -> {
                 World world = Minecraft.getMinecraft().world;
                 if (world != null) {

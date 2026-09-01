@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public final class PolygonUtils {
-    private PolygonUtils() {}
+public final class QuadPolygonUtils {
+    private QuadPolygonUtils() {}
 
     public static Map<BlockPos, List<BakedQuad>> split(List<BakedQuad> in, Set<BlockPos> parts) {
         List<Polygon<ExtraQuadData>> polys = new ArrayList<>(in.size());

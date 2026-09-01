@@ -40,7 +40,7 @@ public class BakedSplitModel implements IBakedModel {
                 if (models == null) {
                     List<BakedQuad> baseQuads = new ArrayList<>(base.getQuads(null, null, 0));
                     for (EnumFacing facing : EnumFacing.VALUES) { baseQuads.addAll(base.getQuads(null, facing, 0)); }
-                    models = PolygonUtils.split(baseQuads, parts);
+                    models = QuadPolygonUtils.split(baseQuads, parts);
                     splitModels = models;
                 }
             }
