@@ -1,2 +1,4 @@
-gui.immersiveconvergence.input_tank_cleared=Tanque de entrada limpo
-gui.immersiveconvergence.input_tanks_cleared=Tanques de entrada limpos
+tile.immersiveconvergence.device.rotor_creative.name=Rotor criativo
+tile.immersiveconvergence.device.heat_creative.name=Aquecedor criativo
+gui.immersiveconvergence.rotor_creative.rpm=RPM
+gui.immersiveconvergence.apply=Aplicar

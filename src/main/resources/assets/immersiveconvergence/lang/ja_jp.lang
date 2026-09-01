@@ -1,2 +1,4 @@
-gui.immersiveconvergence.input_tank_cleared=入力タンクをクリアしました
-gui.immersiveconvergence.input_tanks_cleared=入力タンクをすべてクリアしました
+tile.immersiveconvergence.device.rotor_creative.name=クリエイティブローター
+tile.immersiveconvergence.device.heat_creative.name=クリエイティブヒーター
+gui.immersiveconvergence.rotor_creative.rpm=RPM
+gui.immersiveconvergence.apply=適用

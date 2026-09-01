@@ -22,6 +22,7 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
     public final TemplateData template;
     public final BlockPos masterPos, triggerPos;
     public final List<BlockPos> triggerPositions;
+    private Integer triggerRenderIndex;
     public final List<LocalFacing> triggerFacings;
     public final float manualScale;
     private ItemStack[][][] structureManual;
@@ -133,6 +134,27 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
     }
 
     protected abstract void replaceStructureBlock(World world, BlockPos worldPos, BlockPos masterWorldPos, int position, boolean mirrored, EnumFacing side);
+
+    public BlockPos primaryTrigger() { return triggerPositions.isEmpty() ? null : triggerPositions.get(0); }
+
+    public int primaryTriggerRenderIndex() {
+        if (triggerRenderIndex == null) {
+            BlockPos trigger = primaryTrigger();
+            int found = -1;
+            int index = 0;
+            for (int h = 0; h < template.height && found < 0; h++) {
+                for (int l = 0; l < template.length && found < 0; l++) {
+                    for (int w = 0; w < template.width; w++) {
+                        if (templateState(w, h, l) == null) { continue; }
+                        if (trigger != null && trigger.getX() == w && trigger.getY() == h && trigger.getZ() == l) { found = index; break; }
+                        index++;
+                    }
+                }
+            }
+            triggerRenderIndex = found;
+        }
+        return triggerRenderIndex;
+    }
 
     @Override public ItemStack[][][] getStructureManual() {
         if (structureManual == null && template != null) {

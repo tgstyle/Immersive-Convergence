@@ -25,6 +25,6 @@ public abstract class MixinIETileEntityMultiblockPart implements IAdvancedSelect
         TileEntityMultiblockPart<?> part = (TileEntityMultiblockPart<?>)(Object)this;
         if (part.pos < 0) { return null; }
         IEMultiblock template = IEMultiblockRegistry.templateFor(part);
-        return template == null ? null : template.boundsFor(part.pos, part.facing, part.mirrored);
+        return template == null ? null : template.boundsFor(part.pos, part.facing, part.mirrored, part.getPos());
     }
 }

@@ -69,6 +69,13 @@ public class IEMultiblock extends TemplateMultiblock {
         return bounds;
     }
 
+    public List<AxisAlignedBB> boundsFor(int position, EnumFacing facing, boolean mirrored, BlockPos origin) {
+        List<AxisAlignedBB> local = boundsFor(position, facing, mirrored);
+        List<AxisAlignedBB> offset = new ArrayList<>(local.size());
+        for (AxisAlignedBB aabb : local) { offset.add(aabb.offset(origin.getX(), origin.getY(), origin.getZ())); }
+        return offset;
+    }
+
     public float[] blockBoundsFor(int position, EnumFacing facing, boolean mirrored) {
         List<AxisAlignedBB> bounds = boundsFor(position, facing, mirrored);
         if (bounds.isEmpty()) { return new float[]{0f, 0f, 0f, 1f, 1f, 1f}; }

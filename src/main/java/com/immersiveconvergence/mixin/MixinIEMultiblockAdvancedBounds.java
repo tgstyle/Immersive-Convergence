@@ -5,6 +5,9 @@ import com.immersiveconvergence.common.multiblock.IEMultiblockRegistry;
 
 import blusunrize.immersiveengineering.common.blocks.TileEntityMultiblockPart;
 import blusunrize.immersiveengineering.common.blocks.metal.TileEntityArcFurnace;
+import blusunrize.immersiveengineering.common.blocks.metal.TileEntityAssembler;
+import blusunrize.immersiveengineering.common.blocks.metal.TileEntityAutoWorkbench;
+import blusunrize.immersiveengineering.common.blocks.metal.TileEntityBottlingMachine;
 import blusunrize.immersiveengineering.common.blocks.metal.TileEntityCrusher;
 import blusunrize.immersiveengineering.common.blocks.metal.TileEntityDieselGenerator;
 import blusunrize.immersiveengineering.common.blocks.metal.TileEntityExcavator;
@@ -19,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.List;
 
-@Mixin({TileEntityArcFurnace.class, TileEntityCrusher.class, TileEntityDieselGenerator.class, TileEntityExcavator.class, TileEntityFermenter.class, TileEntityMixer.class, TileEntityRefinery.class, TileEntitySqueezer.class})
+@Mixin({TileEntityArcFurnace.class, TileEntityAssembler.class, TileEntityAutoWorkbench.class, TileEntityBottlingMachine.class, TileEntityCrusher.class, TileEntityDieselGenerator.class, TileEntityExcavator.class, TileEntityFermenter.class, TileEntityMixer.class, TileEntityRefinery.class, TileEntitySqueezer.class})
 public abstract class MixinIEMultiblockAdvancedBounds {
     @Inject(method = "getAdvancedSelectionBounds", at = @At("HEAD"), cancellable = true, remap = false)
     private void injectSelectionBounds(CallbackInfoReturnable<List<AxisAlignedBB>> cir) {
@@ -37,6 +40,6 @@ public abstract class MixinIEMultiblockAdvancedBounds {
         TileEntityMultiblockPart<?> part = (TileEntityMultiblockPart<?>)(Object)this;
         if (part.pos < 0) { return null; }
         IEMultiblock template = IEMultiblockRegistry.templateFor(part);
-        return template == null ? null : template.boundsFor(part.pos, part.facing, part.mirrored);
+        return template == null ? null : template.boundsFor(part.pos, part.facing, part.mirrored, part.getPos());
     }
 }

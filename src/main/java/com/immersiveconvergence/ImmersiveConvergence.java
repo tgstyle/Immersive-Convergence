@@ -3,8 +3,15 @@ package com.immersiveconvergence;
 import com.immersiveconvergence.common.multiblock.IEMultiblockRegistry;
 import com.immersiveconvergence.common.multiblock.IEMultiblocks;
 import com.immersiveconvergence.common.CommonProxy;
+import com.immersiveconvergence.common.ICContent;
+import com.immersiveconvergence.common.registry.ICRegistryRemaps;
 import com.immersiveconvergence.common.util.ICLogger;
 
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Config.Type;
+import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -14,6 +21,8 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+
+import javax.annotation.Nonnull;
 
 @SuppressWarnings("unused")
 @Mod(modid = ImmersiveConvergence.MODID, name = ImmersiveConvergence.NAME, acceptedMinecraftVersions = "[1.12.2,1.13)", dependencies = "required-after:immersiveengineering@[0.12-92,);" + "required-after:mixinbooter@[10.7,);" + "required-after:forge@[14.23.3.2655,);")
@@ -28,8 +37,15 @@ public class ImmersiveConvergence {
 
     @Instance(MODID) public static ImmersiveConvergence instance;
 
+    public static final CreativeTabs creativeTab = new CreativeTabs(MODID) {
+        @Override @Nonnull public ItemStack createIcon() { return new ItemStack(ICContent.blockDevice, 1, 0); }
+    };
+
     @EventHandler public void preInit(FMLPreInitializationEvent event) {
         ICLogger.logger = event.getModLog();
+        ConfigManager.sync(MODID, Type.INSTANCE);
+        MinecraftForge.EVENT_BUS.register(ICRegistryRemaps.class);
+        ICContent.preInit();
         proxy.preInit();
     }
 

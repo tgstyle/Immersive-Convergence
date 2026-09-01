@@ -1,2 +1,4 @@
-gui.immersiveconvergence.input_tank_cleared=Serbatoio di ingresso svuotato
-gui.immersiveconvergence.input_tanks_cleared=Serbatoi di ingresso svuotati
+tile.immersiveconvergence.device.rotor_creative.name=Rotore creativo
+tile.immersiveconvergence.device.heat_creative.name=Riscaldatore creativo
+gui.immersiveconvergence.rotor_creative.rpm=giri/min
+gui.immersiveconvergence.apply=Applica

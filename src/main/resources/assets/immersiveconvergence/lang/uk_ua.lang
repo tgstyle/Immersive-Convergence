@@ -1,2 +1,4 @@
-gui.immersiveconvergence.input_tank_cleared=Вхідний резервуар очищено
-gui.immersiveconvergence.input_tanks_cleared=Вхідні резервуари очищено
+tile.immersiveconvergence.device.rotor_creative.name=Творчий ротор
+tile.immersiveconvergence.device.heat_creative.name=Творчий нагрівач
+gui.immersiveconvergence.rotor_creative.rpm=об/хв
+gui.immersiveconvergence.apply=Застосувати

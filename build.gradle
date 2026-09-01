@@ -57,6 +57,7 @@ minecraft {
     mcpMappingVersion = common.mcp_mappings.toString().split('-')[0]
     username = 'tgstyle'
     extraRunJvmArguments.addAll(
+            '-Dfml.coreMods.load=com.immersiveconvergence.core.ICMixin',
             '-Dforge.logging.console.level=debug'
     )
 }
@@ -127,6 +128,12 @@ processResources {
 
 jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes(
+                'FMLCorePlugin': 'com.immersiveconvergence.core.ICMixin',
+                'FMLCorePluginContainsFMLMod': 'true'
+        )
+    }
 }
 
 sourceSets.configureEach { it.output.resourcesDir = it.output.classesDirs.getFiles().iterator().next() }

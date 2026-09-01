@@ -26,6 +26,8 @@
     "MixinIETileEntitySilo"
   ],
   "client": [
-    "MixinIEClientProxySound"
+    "MixinIEClientProxySound",
+    "MixinIEManualConveyor",
+    "MixinIEManualTrigger"
   ]
 }
