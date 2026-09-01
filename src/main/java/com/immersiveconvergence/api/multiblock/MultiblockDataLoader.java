@@ -14,18 +14,16 @@ import java.util.Map;
 
 public class MultiblockDataLoader {
     private static final Map<String, MultiblockData> CACHE = new HashMap<>();
+    private static final Gson GSON = new Gson();
 
     public static MultiblockData loadMultiblockData(Class<?> owner, String modid, String multiblockName) {
         String key = modid + ":" + multiblockName;
-        if (CACHE.containsKey(key)) { return CACHE.get(key); }
+        MultiblockData cached = CACHE.get(key);
+        if (cached != null) { return cached; }
         MultiblockData data = null;
-        try {
-            InputStream is = owner.getResourceAsStream("/assets/" + modid + "/multiblocks/" + multiblockName + ".json");
+        try (InputStream is = owner.getResourceAsStream("/assets/" + modid + "/multiblocks/" + multiblockName + ".json")) {
             if (is != null) {
-                JsonReader reader = new JsonReader(new InputStreamReader(is));
-                Gson gson = new Gson();
-                data = gson.fromJson(reader, MultiblockData.class);
-                reader.close();
+                try (JsonReader reader = new JsonReader(new InputStreamReader(is))) { data = GSON.fromJson(reader, MultiblockData.class); }
                 for (PoIJSONSchema poi : data.pointsOfInterest) {
                     if (poi.facing != null) {
                         if (poi.facing.isJsonPrimitive()) {

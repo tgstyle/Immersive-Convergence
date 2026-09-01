@@ -76,6 +76,7 @@ public class QueueProcessor {
     }
 
     @SubscribeEvent public static void onServerTick(ServerTickEvent.Post event) {
+        if (pendingQueues.isEmpty()) { return; }
         List<QueueProcessor> copy = new ArrayList<>(pendingQueues);
         copy.forEach(QueueProcessor::tick);
         pendingQueues.removeIf(QueueProcessor::isEmpty);
