@@ -19,9 +19,10 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.Vec3;
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
+
+import javax.annotation.Nullable;
 
 @SuppressWarnings({"unused", "RedundantSuppression"}) public class ClientMultiblockProperties implements ClientMultiblocks.MultiblockManualData {
     private final MachineTemplateMultiblock multiblock;

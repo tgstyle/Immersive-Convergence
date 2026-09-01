@@ -14,11 +14,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.ModelData;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Stream;
 import com.immersiveconvergence.api.block.BlockInterfaces;
 import com.immersiveconvergence.api.util.IItemDropProvider;
+
+import javax.annotation.Nonnull;
 
 @SuppressWarnings({"unused", "RedundantSuppression"}) public class MachineBlockEntityDummy<State extends IMultiblockState> extends MultiblockBlockEntityDummy<State> implements ISubmodelOffsetProvider, BlockInterfaces.IPlayerInteraction, IItemDropProvider {
     private final MachineBlockEntityCommon<State> common;
@@ -39,5 +40,5 @@ import com.immersiveconvergence.api.util.IItemDropProvider;
 
     @Override public BlockPos getModelOffset(BlockState state, Vec3i size) { return common.getModelOffset(state, size); }
 
-    @Override @NotNull public ModelData getModelData() { return common.getModelData(); }
+    @Override @Nonnull public ModelData getModelData() { return common.getModelData(); }
 }

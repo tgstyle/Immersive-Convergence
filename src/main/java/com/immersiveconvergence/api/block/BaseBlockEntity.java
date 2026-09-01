@@ -17,13 +17,13 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.ModelData;
-import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.EnumMap;
 import java.util.Objects;
 import com.immersiveconvergence.api.network.ITileSyncReceiver;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 @SuppressWarnings({"RedundantSuppression", "deprecation", "unused"}) public abstract class BaseBlockEntity extends BlockEntity implements BlockInterfaces.IBlockStateProvider, ISubmodelOffsetProvider , ITileSyncReceiver {
     @Nullable private BlockState overrideBlockState = null;
@@ -31,14 +31,14 @@ import com.immersiveconvergence.api.network.ITileSyncReceiver;
 
     public BaseBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) { super(type, pos, state); }
 
-    @Override public void load(@NotNull CompoundTag nbtIn) {
+    @Override public void load(@Nonnull CompoundTag nbtIn) {
         super.load(nbtIn);
         readCustomNBT(nbtIn, false);
     }
 
     public abstract void readCustomNBT(CompoundTag nbt, boolean descPacket);
 
-    @Override protected void saveAdditional(@NotNull CompoundTag nbt) {
+    @Override protected void saveAdditional(@Nonnull CompoundTag nbt) {
         super.saveAdditional(nbt);
         writeCustomNBT(nbt, false);
     }
@@ -60,7 +60,7 @@ import com.immersiveconvergence.api.network.ITileSyncReceiver;
 
     @Override public void handleUpdateTag(CompoundTag tag) { readCustomNBT(tag, true); }
 
-    @Override @NotNull public CompoundTag getUpdateTag() {
+    @Override @Nonnull public CompoundTag getUpdateTag() {
         CompoundTag nbt = super.getUpdateTag();
         writeCustomNBT(nbt, true);
         return nbt;
@@ -118,27 +118,27 @@ import com.immersiveconvergence.api.network.ITileSyncReceiver;
 
     public void setOverrideState(@Nullable BlockState state) { overrideBlockState = state; }
 
-    @Override @NotNull public BlockState getBlockState() { if (overrideBlockState != null) { return overrideBlockState; } else { return super.getBlockState(); } }
+    @Override @Nonnull public BlockState getBlockState() { if (overrideBlockState != null) { return overrideBlockState; } else { return super.getBlockState(); } }
 
-    @Override public void setBlockState(@NotNull BlockState newState) {
+    @Override public void setBlockState(@Nonnull BlockState newState) {
         BlockState old = getBlockState();
         super.setBlockState(newState);
         if (getType().isValid(old) && !getType().isValid(newState)) { setOverrideState(old); }
         else if (getType().isValid(newState)) { setOverrideState(null); }
     }
 
-    @Override public void setState(@NotNull BlockState state) { if (getLevelNonnull().getBlockState(worldPosition) == getState()) { getLevelNonnull().setBlockAndUpdate(worldPosition, state); } }
+    @Override public void setState(@Nonnull BlockState state) { if (getLevelNonnull().getBlockState(worldPosition) == getState()) { getLevelNonnull().setBlockAndUpdate(worldPosition, state); } }
 
-    @Override @NotNull public BlockState getState() { return getBlockState(); }
+    @Override @Nonnull public BlockState getState() { return getBlockState(); }
 
     protected void markChunkDirty() { if (level != null && level.hasChunk(worldPosition.getX() >> 4, worldPosition.getZ() >> 4)) { level.getChunkAt(worldPosition).setUnsaved(true); } }
 
-    @Override public void setLevel(@NotNull Level world) {
+    @Override public void setLevel(@Nonnull Level world) {
         super.setLevel(world);
         redstoneBySide.clear();
     }
 
-    @Override @NotNull public ModelData getModelData() {
+    @Override @Nonnull public ModelData getModelData() {
         BlockPos offset = getModelOffset(getState(), Vec3i.ZERO);
         if (offset != null) { return ModelData.builder().with(SplitModelProperties.SUBMODEL_OFFSET, offset).build(); }
         return ModelData.EMPTY;

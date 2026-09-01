@@ -3,9 +3,7 @@ package com.immersiveconvergence.api.block;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.BiFunction;
-import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
-import org.jetbrains.annotations.NotNull;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -34,6 +32,9 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.network.NetworkHooks;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 @SuppressWarnings({"RedundantSuppression", "deprecation", "unused"}) public class ModEntityBlock<T extends BlockEntity> extends BaseBlock implements EntityBlock {
     private final BiFunction<BlockPos, BlockState, T> makeEntity;
     private BEClassInspectedData classData;
@@ -46,9 +47,9 @@ import net.minecraftforge.network.NetworkHooks;
     }
 
 
-    @Override @Nullable public BlockEntity newBlockEntity(@NotNull BlockPos pPos, @NotNull BlockState pState) { return makeEntity.apply(pPos, pState); }
+    @Override @Nullable public BlockEntity newBlockEntity(@Nonnull BlockPos pPos, @Nonnull BlockState pState) { return makeEntity.apply(pPos, pState); }
 
-    @Override @Nullable public <U extends BlockEntity> BlockEntityTicker<U> getTicker(Level world, @NotNull BlockState state, @NotNull BlockEntityType<U> type) { return getClassData().makeBaseTicker(world.isClientSide); }
+    @Override @Nullable public <U extends BlockEntity> BlockEntityTicker<U> getTicker(Level world, @Nonnull BlockState state, @Nonnull BlockEntityType<U> type) { return getClassData().makeBaseTicker(world.isClientSide); }
 
     private static final List<BooleanProperty> DEFAULT_OFF = ImmutableList.of(ModProperties.MULTIBLOCKSLAVE, ModProperties.ACTIVE, ModProperties.MIRRORED);
 
@@ -60,7 +61,7 @@ import net.minecraftforge.network.NetworkHooks;
         return ret;
     }
 
-    @Override public void onRemove(BlockState state, Level world, @NotNull BlockPos pos, BlockState newState, boolean isMoving) {
+    @Override public void onRemove(BlockState state, Level world, @Nonnull BlockPos pos, BlockState newState, boolean isMoving) {
         BlockEntity tile = world.getBlockEntity(pos);
         if (state.getBlock() != newState.getBlock()) {
             if (state.getBlock() != newState.getBlock()) {
@@ -71,7 +72,7 @@ import net.minecraftforge.network.NetworkHooks;
         super.onRemove(state, world, pos, newState, isMoving);
     }
 
-    @Override public void playerDestroy(@NotNull Level world, @NotNull Player player, @NotNull BlockPos pos, @NotNull BlockState state, BlockEntity tile, @NotNull ItemStack stack) {
+    @Override public void playerDestroy(@Nonnull Level world, @Nonnull Player player, @Nonnull BlockPos pos, @Nonnull BlockState state, BlockEntity tile, @Nonnull ItemStack stack) {
         if (tile instanceof BlockInterfaces.IAdditionalDrops) {
             Collection<ItemStack> stacks = ((BlockInterfaces.IAdditionalDrops) tile).getExtraDrops(player, state);
             if (!stacks.isEmpty()) { for (ItemStack s : stacks) { if (!s.isEmpty()) { popResource(world, pos, s); } } }
@@ -95,7 +96,7 @@ import net.minecraftforge.network.NetworkHooks;
         return item == Items.AIR ? ItemStack.EMPTY : new ItemStack(item, 1);
     }
 
-    @Override public boolean triggerEvent(@NotNull BlockState state, Level worldIn, @NotNull BlockPos pos, int eventID, int eventParam) {
+    @Override public boolean triggerEvent(@Nonnull BlockState state, Level worldIn, @Nonnull BlockPos pos, int eventID, int eventParam) {
         super.triggerEvent(state, worldIn, pos, eventID, eventParam);
         BlockEntity blockEntity = worldIn.getBlockEntity(pos);
         return blockEntity != null && blockEntity.triggerEvent(eventID, eventParam);
@@ -140,7 +141,7 @@ import net.minecraftforge.network.NetworkHooks;
         return super.screwdriverUseSide(side, player, hand, w, pos, hit);
     }
 
-    @Override @NotNull public InteractionResult use(@NotNull BlockState state, @NotNull Level world, @NotNull BlockPos pos, Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hit) {
+    @Override @Nonnull public InteractionResult use(@Nonnull BlockState state, @Nonnull Level world, @Nonnull BlockPos pos, Player player, @Nonnull InteractionHand hand, @Nonnull BlockHitResult hit) {
         InteractionResult superResult = super.use(state, world, pos, player, hand, hit);
         if (superResult.consumesAction()) { return superResult; }
         Direction side = hit.getDirection();
@@ -195,52 +196,52 @@ import net.minecraftforge.network.NetworkHooks;
         return dir.getClockWise(axis);
     }
 
-    @Override public void neighborChanged(@NotNull BlockState state, Level world, @NotNull BlockPos pos, @NotNull Block block, @NotNull BlockPos fromPos, boolean isMoving) {
+    @Override public void neighborChanged(@Nonnull BlockState state, Level world, @Nonnull BlockPos pos, @Nonnull Block block, @Nonnull BlockPos fromPos, boolean isMoving) {
         if (!world.isClientSide) {
             BlockEntity tile = world.getBlockEntity(pos);
             if (tile instanceof BaseBlockEntity) { ((BaseBlockEntity) tile).onNeighborBlockChange(fromPos); }
         }
     }
 
-    @Override @NotNull public VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter world, @NotNull BlockPos pos, @NotNull CollisionContext context) {
+    @Override @Nonnull public VoxelShape getShape(@Nonnull BlockState state, @Nonnull BlockGetter world, @Nonnull BlockPos pos, @Nonnull CollisionContext context) {
         BlockEntity te = world.getBlockEntity(pos);
         if (te instanceof BlockInterfaces.ISelectionBounds) { return ((BlockInterfaces.ISelectionBounds) te).getSelectionShape(context); }
         return super.getShape(state, world, pos, context);
     }
 
-    @Override @NotNull public VoxelShape getCollisionShape(@NotNull BlockState state, @NotNull BlockGetter world, @NotNull BlockPos pos, @NotNull CollisionContext context) {
+    @Override @Nonnull public VoxelShape getCollisionShape(@Nonnull BlockState state, @Nonnull BlockGetter world, @Nonnull BlockPos pos, @Nonnull CollisionContext context) {
         BlockEntity te = world.getBlockEntity(pos);
         if (te instanceof BlockInterfaces.ICollisionBounds collisionBounds) { return collisionBounds.getCollisionShape(context); }
         return super.getCollisionShape(state, world, pos, context);
     }
 
-    @Override @NotNull public VoxelShape getInteractionShape(@NotNull BlockState state, BlockGetter world, @NotNull BlockPos pos) {
+    @Override @Nonnull public VoxelShape getInteractionShape(@Nonnull BlockState state, BlockGetter world, @Nonnull BlockPos pos) {
         BlockEntity te = world.getBlockEntity(pos);
         if (te instanceof BlockInterfaces.ISelectionBounds) { return ((BlockInterfaces.ISelectionBounds) te).getSelectionShape(null); }
         return super.getInteractionShape(state, world, pos);
     }
 
-    @Override public boolean hasAnalogOutputSignal(@NotNull BlockState state) { return getClassData().hasComparatorOutput; }
+    @Override public boolean hasAnalogOutputSignal(@Nonnull BlockState state) { return getClassData().hasComparatorOutput; }
 
-    @Override public int getAnalogOutputSignal(@NotNull BlockState state, Level world, @NotNull BlockPos pos) {
+    @Override public int getAnalogOutputSignal(@Nonnull BlockState state, Level world, @Nonnull BlockPos pos) {
         BlockEntity te = world.getBlockEntity(pos);
         if (te instanceof BlockInterfaces.IComparatorOverride compOverride) { return compOverride.getComparatorInputOverride(); }
         return 0;
     }
 
-    @Override public int getSignal(@NotNull BlockState blockState, BlockGetter world, @NotNull BlockPos pos, @NotNull Direction side) {
+    @Override public int getSignal(@Nonnull BlockState blockState, BlockGetter world, @Nonnull BlockPos pos, @Nonnull Direction side) {
         BlockEntity te = world.getBlockEntity(pos);
         if (te instanceof BlockInterfaces.IRedstoneOutput rsOutput) { return rsOutput.getWeakRSOutput(side); }
         return 0;
     }
 
-    @Override public int getDirectSignal(@NotNull BlockState blockState, BlockGetter world, @NotNull BlockPos pos, @NotNull Direction side) {
+    @Override public int getDirectSignal(@Nonnull BlockState blockState, BlockGetter world, @Nonnull BlockPos pos, @Nonnull Direction side) {
         BlockEntity te = world.getBlockEntity(pos);
         if (te instanceof BlockInterfaces.IRedstoneOutput rsOutput) { return rsOutput.getStrongRSOutput(side); }
         return 0;
     }
 
-    @Override public boolean isSignalSource(@NotNull BlockState state) { return getClassData().emitsRedstone(); }
+    @Override public boolean isSignalSource(@Nonnull BlockState state) { return getClassData().emitsRedstone(); }
 
     @Override public boolean canConnectRedstone(BlockState state, BlockGetter world, BlockPos pos, Direction side) {
         BlockEntity te = world.getBlockEntity(pos);
@@ -248,7 +249,7 @@ import net.minecraftforge.network.NetworkHooks;
         return false;
     }
 
-    @Override public void entityInside(@NotNull BlockState state, Level world, @NotNull BlockPos pos, @NotNull Entity entity) {
+    @Override public void entityInside(@Nonnull BlockState state, Level world, @Nonnull BlockPos pos, @Nonnull Entity entity) {
         BlockEntity te = world.getBlockEntity(pos);
         if (te instanceof BaseBlockEntity) { ((BaseBlockEntity) te).onEntityCollision(world, entity); }
     }

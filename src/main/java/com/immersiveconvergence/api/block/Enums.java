@@ -1,8 +1,8 @@
 package com.immersiveconvergence.api.block;
 
 import net.minecraft.util.StringRepresentable;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.Locale;
 
 @SuppressWarnings({"unused", "RedundantSuppression"}) public class Enums {
@@ -18,7 +18,7 @@ import java.util.Locale;
             this.texture = texture;
         }
 
-        @NotNull public String getSerializedName() {
+        @Nonnull public String getSerializedName() {
             return this.toString().toLowerCase(Locale.ENGLISH);
         }
 

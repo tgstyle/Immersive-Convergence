@@ -29,7 +29,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.apache.commons.lang3.mutable.MutableObject;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -105,9 +104,9 @@ import java.util.function.Consumer;
     }
 
     public interface IBlockStateProvider {
-        @NotNull BlockState getState();
+        @Nonnull BlockState getState();
 
-        void setState(@NotNull BlockState var1);
+        void setState(@Nonnull BlockState var1);
     }
 
     public interface IAdditionalDrops {

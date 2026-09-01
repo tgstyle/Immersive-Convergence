@@ -3,7 +3,6 @@ package com.immersiveconvergence.api.multiblock;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import javax.annotation.Nullable;
 import com.immersiveconvergence.api.block.BlockInterfaces;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
@@ -14,6 +13,8 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
+
+import javax.annotation.Nullable;
 
 @SuppressWarnings({"unused", "RedundantSuppression"}) public class MasterDummyBEType<T extends BlockEntity & BlockInterfaces.IGeneralMultiblock> implements BiFunction<BlockPos, BlockState, T> {
     private final RegistryObject<BlockEntityType<T>> master;

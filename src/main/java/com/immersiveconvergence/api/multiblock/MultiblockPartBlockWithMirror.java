@@ -8,7 +8,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 @SuppressWarnings({"unused", "RedundantSuppression"}) public class MultiblockPartBlockWithMirror<S extends IMultiblockState> extends MachineMultiblockPartBlock<S> {
     public MultiblockPartBlockWithMirror(BlockBehaviour.Properties properties, MultiblockRegistration<S> multiblock) {
@@ -16,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
         Preconditions.checkState(multiblock.mirrorable());
     }
 
-    @Override protected void createBlockStateDefinition(StateDefinition.@NotNull Builder<Block, BlockState> builder) {
+    @Override protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(ModProperties.MIRRORED);
     }

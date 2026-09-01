@@ -21,11 +21,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.fluids.FluidStack;
-import org.jetbrains.annotations.NotNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 @SuppressWarnings({"unused", "RedundantSuppression"}) public class ModBlockItem extends BlockItem {
     public static final String ENERGY_KEY = "energy";
@@ -34,9 +34,9 @@ import java.util.Optional;
 
     public ModBlockItem(Block b) { this(b, new Item.Properties()); }
 
-    @Override @NotNull public String getDescriptionId(@NotNull ItemStack stack) { return getBlock().getDescriptionId(); }
+    @Override @Nonnull public String getDescriptionId(@Nonnull ItemStack stack) { return getBlock().getDescriptionId(); }
 
-    @Override public void appendHoverText(@NotNull ItemStack stack, @Nullable Level world, @NotNull List<Component> tooltip, @NotNull TooltipFlag advanced) {
+    @Override public void appendHoverText(@Nonnull ItemStack stack, @Nullable Level world, @Nonnull List<Component> tooltip, @Nonnull TooltipFlag advanced) {
         if (getBlock() instanceof IBlock ieBlock && ieBlock.hasFlavour()) {
             String flavourKey = BlockToolGates.descFlavour + ieBlock.getNameForFlavour();
             tooltip.add(TextUtils.applyFormat(Component.translatable(flavourKey), ChatFormatting.GRAY));
@@ -50,7 +50,7 @@ import java.util.Optional;
         }
     }
 
-    @Override protected boolean placeBlock(@NotNull BlockPlaceContext context, @NotNull BlockState newState) {
+    @Override protected boolean placeBlock(@Nonnull BlockPlaceContext context, @Nonnull BlockState newState) {
         if (getBlock() instanceof MultiblockPartBlock) { return false; }
         Block b = newState.getBlock();
         if (b instanceof BaseBlock ieBlock) {
@@ -61,7 +61,7 @@ import java.util.Optional;
         } else return super.placeBlock(context, newState);
     }
 
-    @Override protected boolean updateCustomBlockEntityTag(@NotNull BlockPos pos, @NotNull Level worldIn, @Nullable Player player, @NotNull ItemStack stack, BlockState state) {
+    @Override protected boolean updateCustomBlockEntityTag(@Nonnull BlockPos pos, @Nonnull Level worldIn, @Nullable Player player, @Nonnull ItemStack stack, BlockState state) {
         if (!state.hasProperty(ModProperties.MULTIBLOCKSLAVE)) return super.updateCustomBlockEntityTag(pos, worldIn, player, stack, state);
         else return false;
     }

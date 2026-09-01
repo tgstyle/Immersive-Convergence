@@ -7,7 +7,6 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 
@@ -23,5 +22,5 @@ import javax.annotation.Nonnull;
 
     public boolean canEquip(ItemStack stack, EquipmentSlot armorType, Entity entity) { return Mob.getEquipmentSlotForItem(stack) == armorType || getEquipmentSlot(stack) == armorType; }
 
-    @Override public int getBarColor(@NotNull ItemStack pStack) { return Mth.hsvToRgb(Math.max(0.0F, getBarWidth(pStack) / (float) MAX_BAR_WIDTH) / 3.0F, 1.0F, 1.0F); }
+    @Override public int getBarColor(@Nonnull ItemStack pStack) { return Mth.hsvToRgb(Math.max(0.0F, getBarWidth(pStack) / (float) MAX_BAR_WIDTH) / 3.0F, 1.0F, 1.0F); }
 }

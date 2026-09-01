@@ -17,10 +17,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.BakedModelWrapper;
 import net.minecraftforge.client.model.data.ModelData;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -35,7 +34,7 @@ public abstract class SplitModelWrapper<T extends BakedModel> extends BakedModel
         blusunrize.immersiveengineering.api.IEApi.renderCacheClearers.add(() -> WEAK_INSTANCES.forEach(SplitModelWrapper::clearCache));
     }
 
-    protected SplitModelWrapper(T base, @NotNull Supplier<SplitData> splitData) {
+    protected SplitModelWrapper(T base, @Nonnull Supplier<SplitData> splitData) {
         super(base);
         this.splitDataSource = splitData;
         WEAK_INSTANCES.add(this);

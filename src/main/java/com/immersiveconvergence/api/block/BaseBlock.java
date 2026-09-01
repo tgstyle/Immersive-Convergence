@@ -26,9 +26,10 @@ import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.ticks.ScheduledTick;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.jetbrains.annotations.NotNull;
-import javax.annotation.Nullable;
 import java.util.Objects;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 @SuppressWarnings({"RedundantSuppression", "deprecation", "unused"}) public class BaseBlock extends Block implements IBlock, SimpleWaterloggedBlock {
     protected final boolean notNormalBlock;
@@ -46,15 +47,15 @@ import java.util.Objects;
 
     public boolean hasFlavour() { return this.hasFlavour; }
 
-    @Override public int getLightBlock(@NotNull BlockState state, @NotNull BlockGetter worldIn, @NotNull BlockPos pos) {
+    @Override public int getLightBlock(@Nonnull BlockState state, @Nonnull BlockGetter worldIn, @Nonnull BlockPos pos) {
         return this.notNormalBlock ? 0 : super.getLightBlock(state, worldIn, pos);
     }
 
-    @Override public float getShadeBrightness(@NotNull BlockState state, @NotNull BlockGetter world, @NotNull BlockPos pos) {
+    @Override public float getShadeBrightness(@Nonnull BlockState state, @Nonnull BlockGetter world, @Nonnull BlockPos pos) {
         return this.notNormalBlock ? 1.0F : super.getShadeBrightness(state, world, pos);
     }
 
-    @Override public boolean propagatesSkylightDown(@NotNull BlockState state, @NotNull BlockGetter reader, @NotNull BlockPos pos) {
+    @Override public boolean propagatesSkylightDown(@Nonnull BlockState state, @Nonnull BlockGetter reader, @Nonnull BlockPos pos) {
         return this.notNormalBlock || super.propagatesSkylightDown(state, reader, pos);
     }
 
@@ -70,16 +71,16 @@ import java.util.Objects;
     @SuppressWarnings("unused")
     public boolean canIEBlockBePlaced(BlockState newState, BlockPlaceContext context) { return true; }
 
-    @Override public void setPlacedBy(@NotNull Level worldIn, @NotNull BlockPos pos, @NotNull BlockState state, LivingEntity placer, @NotNull ItemStack stack) {
+    @Override public void setPlacedBy(@Nonnull Level worldIn, @Nonnull BlockPos pos, @Nonnull BlockState state, LivingEntity placer, @Nonnull ItemStack stack) {
         super.setPlacedBy(worldIn, pos, state, placer, stack);
     }
 
-    @Override public boolean triggerEvent(@NotNull BlockState state, Level worldIn, @NotNull BlockPos pos, int eventID, int eventParam) {
+    @Override public boolean triggerEvent(@Nonnull BlockState state, Level worldIn, @Nonnull BlockPos pos, int eventID, int eventParam) {
         if (worldIn.isClientSide && eventID == 255) { worldIn.sendBlockUpdated(pos, state, state, 3); return true; }
         else { return super.triggerEvent(state, worldIn, pos, eventID, eventParam); }
     }
 
-    @Override @NotNull public InteractionResult use(@NotNull BlockState state, @NotNull Level world, @NotNull BlockPos pos, Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hit) {
+    @Override @Nonnull public InteractionResult use(@Nonnull BlockState state, @Nonnull Level world, @Nonnull BlockPos pos, Player player, @Nonnull InteractionHand hand, @Nonnull BlockHitResult hit) {
         ItemStack activeStack = player.getItemInHand(hand);
         if (BlockToolGates.isFormationTool.test(activeStack)) { return this.hammerUseSide(hit.getDirection(), player, hand, world, pos, hit); }
         else if (BlockToolGates.isScrewdriver.test(activeStack)) { return this.screwdriverUseSide(hit.getDirection(), player, hand, world, pos, hit); }
@@ -94,7 +95,7 @@ import java.util.Objects;
         return InteractionResult.PASS;
     }
 
-    @Override public boolean isPathfindable(@NotNull BlockState state, @NotNull BlockGetter worldIn, @NotNull BlockPos pos, @NotNull PathComputationType type) {
+    @Override public boolean isPathfindable(@Nonnull BlockState state, @Nonnull BlockGetter worldIn, @Nonnull BlockPos pos, @Nonnull PathComputationType type) {
         return false;
     }
 
@@ -111,33 +112,33 @@ import java.util.Objects;
         return state;
     }
 
-    @Override @NotNull public BlockState updateShape(BlockState stateIn, @NotNull Direction facing, @NotNull BlockState facingState, @NotNull LevelAccessor worldIn, @NotNull BlockPos currentPos, @NotNull BlockPos facingPos) {
+    @Override @Nonnull public BlockState updateShape(BlockState stateIn, @Nonnull Direction facing, @Nonnull BlockState facingState, @Nonnull LevelAccessor worldIn, @Nonnull BlockPos currentPos, @Nonnull BlockPos facingPos) {
         if (stateIn.hasProperty(BlockStateProperties.WATERLOGGED) && stateIn.getValue(BlockStateProperties.WATERLOGGED)) {
             worldIn.getFluidTicks().schedule(new ScheduledTick<>(Fluids.WATER, currentPos, Fluids.WATER.getTickDelay(worldIn), 0L));
         }
         return super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
     }
 
-    @Override @NotNull public FluidState getFluidState(BlockState state) {
+    @Override @Nonnull public FluidState getFluidState(BlockState state) {
         return state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED) ?
                 Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 
-    @Override public boolean canPlaceLiquid(@NotNull BlockGetter worldIn, @NotNull BlockPos pos, BlockState state, @NotNull Fluid fluidIn) {
+    @Override public boolean canPlaceLiquid(@Nonnull BlockGetter worldIn, @Nonnull BlockPos pos, BlockState state, @Nonnull Fluid fluidIn) {
         return state.hasProperty(BlockStateProperties.WATERLOGGED) && SimpleWaterloggedBlock.super.canPlaceLiquid(worldIn, pos, state, fluidIn);
     }
 
-    @Override public boolean placeLiquid(@NotNull LevelAccessor worldIn, @NotNull BlockPos pos, BlockState state, @NotNull FluidState fluidStateIn) {
+    @Override public boolean placeLiquid(@Nonnull LevelAccessor worldIn, @Nonnull BlockPos pos, BlockState state, @Nonnull FluidState fluidStateIn) {
         return state.hasProperty(BlockStateProperties.WATERLOGGED) && SimpleWaterloggedBlock.super.placeLiquid(worldIn, pos, state, fluidStateIn);
     }
 
-    @Override @NotNull public ItemStack pickupBlock(@NotNull LevelAccessor level, @NotNull BlockPos pos, BlockState state) {
+    @Override @Nonnull public ItemStack pickupBlock(@Nonnull LevelAccessor level, @Nonnull BlockPos pos, BlockState state) {
         return state.hasProperty(BlockStateProperties.WATERLOGGED) ? SimpleWaterloggedBlock.super.pickupBlock(level, pos, state) : ItemStack.EMPTY;
     }
 
     public boolean fitsIntoContainer() { return this.fitsIntoContainer; }
 
-    @Override @NotNull public BlockState rotate(@NotNull BlockState state, @NotNull Rotation rot) {
+    @Override @Nonnull public BlockState rotate(@Nonnull BlockState state, @Nonnull Rotation rot) {
         Property<Direction> facingProp = this.findFacingProperty(state);
         if (facingProp != null && this.canRotate()) {
             Direction currentDirection = state.getValue(facingProp);
@@ -147,7 +148,7 @@ import java.util.Objects;
         else { return super.rotate(state, rot); }
     }
 
-    @Override @NotNull public BlockState mirror(@NotNull BlockState state, @NotNull Mirror mirrorIn) {
+    @Override @Nonnull public BlockState mirror(@Nonnull BlockState state, @Nonnull Mirror mirrorIn) {
         if (mirrorIn == Mirror.NONE) { return state; }
         boolean handled = false;
         Property<Direction> facingProp = this.findFacingProperty(state);

@@ -8,11 +8,12 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Supplier;
+
+import javax.annotation.Nonnull;
 
 @SuppressWarnings({"deprecation", "unused", "RedundantSuppression"}) public record ColoredSmoke(Vector3f color, boolean collideHorizontal,
                            boolean collideVertical) implements ParticleOptions {
@@ -25,8 +26,8 @@ import java.util.function.Supplier;
     ).apply(inst, ColoredSmoke::new));
 
     public static final Deserializer<ColoredSmoke> DESERIALIZER = new Deserializer<>() {
-        @NotNull
-        public ColoredSmoke fromCommand(@NotNull ParticleType<ColoredSmoke> type, StringReader reader) throws CommandSyntaxException {
+        @Nonnull
+        public ColoredSmoke fromCommand(@Nonnull ParticleType<ColoredSmoke> type, StringReader reader) throws CommandSyntaxException {
             reader.expect(' ');
             float r = reader.readFloat();
             reader.expect(' ');
@@ -46,8 +47,8 @@ import java.util.function.Supplier;
             return new ColoredSmoke(r, g, b, collideHorizontal, collideVertical);
         }
 
-        @NotNull
-        public ColoredSmoke fromNetwork(@NotNull ParticleType<ColoredSmoke> type, FriendlyByteBuf buf) {
+        @Nonnull
+        public ColoredSmoke fromNetwork(@Nonnull ParticleType<ColoredSmoke> type, FriendlyByteBuf buf) {
             return new ColoredSmoke(buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readBoolean(), buf.readBoolean());
         }
     };
@@ -63,7 +64,7 @@ import java.util.function.Supplier;
     }
 
     @Override
-    @NotNull
+    @Nonnull
     public ParticleType<?> getType() {
         return typeSupplier.get();
     }
@@ -78,7 +79,7 @@ import java.util.function.Supplier;
     }
 
     @Override
-    @NotNull
+    @Nonnull
     public String writeToString() {
         return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %b %b", Objects.requireNonNull(ForgeRegistries.PARTICLE_TYPES.getKey(this.getType())), this.color.x(), this.color.y(), this.color.z(), this.collideHorizontal, this.collideVertical);
     }
