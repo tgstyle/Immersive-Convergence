@@ -1,5 +1,7 @@
 package com.immersiveconvergence;
 
+import com.immersiveconvergence.common.multiblock.IEMultiblockRegistry;
+import com.immersiveconvergence.common.multiblock.IEMultiblocks;
 import com.immersiveconvergence.common.CommonProxy;
 import com.immersiveconvergence.common.util.ICLogger;
 
@@ -14,7 +16,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 
 @SuppressWarnings("unused")
-@Mod(modid = ImmersiveConvergence.MODID, name = ImmersiveConvergence.NAME, acceptedMinecraftVersions = "[1.12.2,1.13)", dependencies = "required-after:immersiveengineering@[0.12-92,);" + "required-after:forge@[14.23.3.2655,);")
+@Mod(modid = ImmersiveConvergence.MODID, name = ImmersiveConvergence.NAME, acceptedMinecraftVersions = "[1.12.2,1.13)", dependencies = "required-after:immersiveengineering@[0.12-92,);" + "required-after:mixinbooter@[10.7,);" + "required-after:forge@[14.23.3.2655,);")
 public class ImmersiveConvergence {
 
     public static final String MODID = "immersiveconvergence";
@@ -31,7 +33,13 @@ public class ImmersiveConvergence {
         proxy.preInit();
     }
 
-    @EventHandler public void init(FMLInitializationEvent event) { proxy.init(); }
+    @EventHandler public void init(FMLInitializationEvent event) {
+        IEMultiblocks.init();
+        proxy.init();
+    }
 
-    @EventHandler public void postInit(FMLPostInitializationEvent event) { proxy.postInit(); }
+    @EventHandler public void postInit(FMLPostInitializationEvent event) {
+        IEMultiblockRegistry.loadAll();
+        proxy.postInit();
+    }
 }

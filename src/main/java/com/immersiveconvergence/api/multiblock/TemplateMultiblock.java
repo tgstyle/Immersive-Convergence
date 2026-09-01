@@ -12,6 +12,7 @@ import net.minecraft.world.World;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,6 +21,8 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
     public final String uniqueName;
     public final TemplateData template;
     public final BlockPos masterPos, triggerPos;
+    public final List<BlockPos> triggerPositions;
+    public final List<LocalFacing> triggerFacings;
     public final float manualScale;
     private ItemStack[][][] structureManual;
     private IngredientStack[] materials;
@@ -29,6 +32,8 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
         this.template = shape.template;
         this.masterPos = shape.masterPos;
         this.triggerPos = shape.triggerPos;
+        this.triggerPositions = shape.triggerPositions;
+        this.triggerFacings = shape.triggerFacings;
         this.manualScale = shape.manualScale;
     }
 
@@ -50,52 +55,77 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
 
     @Override public boolean isBlockTrigger(IBlockState state) {
         if (template == null) { return false; }
-        return BlockMatcher.matches(templateState(triggerPos.getX(), triggerPos.getY(), triggerPos.getZ()), state);
+        for (BlockPos trigger : triggerPositions) {
+            if (BlockMatcher.matches(templateState(trigger.getX(), trigger.getY(), trigger.getZ()), state)) { return true; }
+        }
+        return false;
     }
 
     @Override public boolean createStructure(World world, BlockPos pos, EnumFacing side, EntityPlayer player) {
         if (template == null) { return false; }
-        side = (side == EnumFacing.UP || side == EnumFacing.DOWN) ? EnumFacing.fromAngle(player.rotationYaw) : side.getOpposite();
+        side = facingFor(world, pos, side, player);
+        BlockPos trigger = null;
         boolean mirror = false;
-        if (isInvalid(world, pos, side, false)) {
-            mirror = true;
-            if (isInvalid(world, pos, side, true)) { return false; }
+        for (int i = 0; i < triggerPositions.size(); i++) {
+            BlockPos candidate = triggerPositions.get(i);
+            EnumFacing candidateSide = triggerFacings.get(i) == LocalFacing.BACK ? side.getOpposite() : side;
+            if (!isInvalid(world, pos, candidateSide, candidate, false)) { trigger = candidate; side = candidateSide; break; }
+            if (canMirror() && !isInvalid(world, pos, candidateSide, candidate, true)) {
+                trigger = candidate;
+                side = candidateSide;
+                mirror = true;
+                break;
+            }
         }
+        if (trigger == null) { return false; }
         int width = template.width, height = template.height, length = template.length;
-        BlockPos origin = originFor(pos, side, mirror);
-        BlockPos masterWorldPos = localToWorld(origin, mirror ? (width - 1 - masterPos.getX()) : masterPos.getX(), masterPos.getY(), masterPos.getZ(), side);
+        BlockPos origin = originFor(pos, side, trigger, mirror);
+        BlockPos masterWorldPos = localToWorld(origin, localX(masterPos.getX(), mirror), masterPos.getY(), masterPos.getZ(), side);
         ItemStack mainhand = player.getHeldItemMainhand();
         ItemStack hammer = mainhand.getItem().getToolClasses(mainhand).contains(Lib.TOOL_HAMMER) ? mainhand : player.getHeldItemOffhand();
-        if (MultiblockHandler.fireMultiblockFormationEventPre(player, this, pos, hammer).isCanceled()) { return false; }
+        if (!allowFormation(player, pos, hammer)) { return false; }
         for (int h = 0; h < height; h++) {
             for (int l = 0; l < length; l++) {
                 for (int w = 0; w < width; w++) {
                     if (templateState(w, h, l) == null) { continue; }
                     int position = h * (width * length) + l * width + w;
-                    BlockPos worldPos = localToWorld(origin, mirror ? (width - 1 - w) : w, h, l, side);
+                    BlockPos worldPos = localToWorld(origin, localX(w, mirror), h, l, side);
                     replaceStructureBlock(world, worldPos, masterWorldPos, position, mirror, side);
                 }
             }
         }
-        MultiblockHandler.fireMultiblockFormationEventPost(player, this, pos, hammer);
+        onFormed(player, pos, hammer);
         return true;
     }
 
-    protected BlockPos originFor(BlockPos pos, EnumFacing side, boolean mirror) {
-        int offsetX = mirror ? -(template.width - 1 - triggerPos.getX()) : -triggerPos.getX();
-        return pos.offset(side, -triggerPos.getZ()).offset(side.rotateY(), offsetX).offset(EnumFacing.DOWN, triggerPos.getY());
+    protected EnumFacing facingFor(World world, BlockPos pos, EnumFacing side, EntityPlayer player) { return (side == EnumFacing.UP || side == EnumFacing.DOWN) ? EnumFacing.fromAngle(player.rotationYaw) : side.getOpposite(); }
+
+    protected boolean cellMatches(World world, BlockPos worldPos, int x, int y, int z, IBlockState expected, EnumFacing side, boolean mirror) { return BlockMatcher.matches(expected, world.getBlockState(worldPos)); }
+
+    protected ItemStack stackFor(int x, int y, int z, IBlockState state) { return BlockMatcher.stackFromState(state); }
+
+    protected boolean canMirror() { return true; }
+
+    protected int localX(int x, boolean mirrored) { return mirrored ? template.width - 1 - x : x; }
+
+    protected boolean allowFormation(EntityPlayer player, BlockPos pos, ItemStack hammer) { return !MultiblockHandler.fireMultiblockFormationEventPre(player, this, pos, hammer).isCanceled(); }
+
+    protected void onFormed(EntityPlayer player, BlockPos pos, ItemStack hammer) { MultiblockHandler.fireMultiblockFormationEventPost(player, this, pos, hammer); }
+
+    protected BlockPos originFor(BlockPos pos, EnumFacing side, BlockPos trigger, boolean mirror) {
+        return pos.offset(side, -trigger.getZ()).offset(side.rotateY(), -localX(trigger.getX(), mirror)).offset(EnumFacing.DOWN, trigger.getY());
     }
 
-    protected boolean isInvalid(World world, BlockPos pos, EnumFacing side, boolean mirror) {
+    protected boolean isInvalid(World world, BlockPos pos, EnumFacing side, BlockPos trigger, boolean mirror) {
         int width = template.width, height = template.height, length = template.length;
-        BlockPos origin = originFor(pos, side, mirror);
+        BlockPos origin = originFor(pos, side, trigger, mirror);
         for (int h = 0; h < height; h++) {
             for (int l = 0; l < length; l++) {
                 for (int w = 0; w < width; w++) {
                     IBlockState expected = templateState(w, h, l);
                     if (expected == null) { continue; }
-                    BlockPos blockPos = localToWorld(origin, mirror ? (width - 1 - w) : w, h, l, side);
-                    if (!BlockMatcher.matches(expected, world.getBlockState(blockPos))) { return true; }
+                    BlockPos blockPos = localToWorld(origin, localX(w, mirror), h, l, side);
+                    if (!cellMatches(world, blockPos, w, h, l, expected, side, mirror)) { return true; }
                 }
             }
         }
@@ -111,7 +141,7 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
                 for (int l = 0; l < template.length; l++) {
                     for (int w = 0; w < template.width; w++) {
                         IBlockState state = templateState(w, h, l);
-                        structureManual[h][l][w] = state == null ? ItemStack.EMPTY : BlockMatcher.stackFromState(state);
+                        structureManual[h][l][w] = state == null ? ItemStack.EMPTY : stackFor(w, h, l, state);
                     }
                 }
             }
@@ -121,19 +151,24 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
 
     @Override public IngredientStack[] getTotalMaterials() {
         if (materials == null && template != null) {
-            LinkedHashMap<IBlockState, Integer> counts = new LinkedHashMap<>();
+            LinkedHashMap<String, ItemStack> stacks = new LinkedHashMap<>();
+            LinkedHashMap<String, Integer> counts = new LinkedHashMap<>();
             for (int h = 0; h < template.height; h++) {
                 for (int l = 0; l < template.length; l++) {
                     for (int w = 0; w < template.width; w++) {
                         IBlockState state = templateState(w, h, l);
-                        if (state != null) { counts.merge(state, 1, Integer::sum); }
+                        if (state == null) { continue; }
+                        ItemStack cell = stackFor(w, h, l, state);
+                        if (cell.isEmpty()) { continue; }
+                        String key = cell.getItem().getRegistryName() + ":" + cell.getItemDamage() + ":" + cell.getTagCompound();
+                        stacks.putIfAbsent(key, cell);
+                        counts.merge(key, 1, Integer::sum);
                     }
                 }
             }
             ArrayList<IngredientStack> ingredients = new ArrayList<>();
-            for (Map.Entry<IBlockState, Integer> entry : counts.entrySet()) {
-                ItemStack stack = BlockMatcher.stackFromState(entry.getKey());
-                if (stack.isEmpty()) { continue; }
+            for (Map.Entry<String, Integer> entry : counts.entrySet()) {
+                ItemStack stack = stacks.get(entry.getKey()).copy();
                 String oreName = BlockMatcher.getGenericOreName(stack);
                 if (oreName != null) { ingredients.add(new IngredientStack(oreName, entry.getValue())); }
                 else {
@@ -147,21 +182,23 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
     }
 
     public ItemStack getOriginalBlock(int position) {
-        IBlockState state = template == null ? null : templateState(position);
-        return state == null ? ItemStack.EMPTY : BlockMatcher.stackFromState(state);
+        if (template == null || position < 0) { return ItemStack.EMPTY; }
+        IBlockState state = templateState(position);
+        if (state == null) { return ItemStack.EMPTY; }
+        int width = template.width, length = template.length;
+        return stackFor(position % width, position / (width * length), position % (width * length) / width, state);
     }
 
     public Set<BlockPos> worldOffsetsFromMaster(EnumFacing facing, boolean mirrored) {
         Set<BlockPos> offsets = new HashSet<>();
         if (template == null) { return offsets; }
         int width = template.width;
-        int masterX = mirrored ? width - 1 - masterPos.getX() : masterPos.getX();
-        BlockPos master = localToWorld(BlockPos.ORIGIN, masterX, masterPos.getY(), masterPos.getZ(), facing);
+        BlockPos master = localToWorld(BlockPos.ORIGIN, localX(masterPos.getX(), mirrored), masterPos.getY(), masterPos.getZ(), facing);
         for (int h = 0; h < template.height; h++) {
             for (int l = 0; l < template.length; l++) {
                 for (int w = 0; w < width; w++) {
                     if (templateState(w, h, l) == null) { continue; }
-                    offsets.add(localToWorld(BlockPos.ORIGIN, mirrored ? width - 1 - w : w, h, l, facing).subtract(master));
+                    offsets.add(localToWorld(BlockPos.ORIGIN, localX(w, mirrored), h, l, facing).subtract(master));
                 }
             }
         }

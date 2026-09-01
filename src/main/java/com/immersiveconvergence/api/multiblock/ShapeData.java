@@ -21,15 +21,19 @@ public final class ShapeData extends GenericShape {
     public final MultiblockJSONSchema data;
     public final TemplateData template;
     public final BlockPos masterPos, triggerPos;
+    public final List<BlockPos> triggerPositions;
+    public final List<LocalFacing> triggerFacings;
     public final float manualScale;
     private final List<List<AxisAlignedBB>> shapes;
 
-    private ShapeData(int width, int height, int length, MultiblockJSONSchema data, TemplateData template, BlockPos masterPos, BlockPos triggerPos, List<List<AxisAlignedBB>> shapes) {
+    private ShapeData(int width, int height, int length, MultiblockJSONSchema data, TemplateData template, BlockPos masterPos, List<BlockPos> triggerPositions, List<LocalFacing> triggerFacings, List<List<AxisAlignedBB>> shapes) {
         super(width, height, length);
         this.data = data;
         this.template = template;
         this.masterPos = masterPos;
-        this.triggerPos = triggerPos;
+        this.triggerPositions = triggerPositions;
+        this.triggerFacings = triggerFacings;
+        this.triggerPos = triggerPositions.get(0);
         this.manualScale = data != null ? data.manualScale : 0;
         this.shapes = shapes;
     }
@@ -39,7 +43,7 @@ public final class ShapeData extends GenericShape {
         MultiblockJSONSchema data = loadJSON(modid, "multiblocks/" + id + ".json");
         if (template == null || data == null) {
             ICLogger.error("Missing multiblock data for " + id);
-            return new ShapeData(0, 0, 0, data, template, BlockPos.ORIGIN, BlockPos.ORIGIN, new ArrayList<>());
+            return new ShapeData(0, 0, 0, data, template, BlockPos.ORIGIN, Collections.singletonList(BlockPos.ORIGIN), Collections.singletonList(null), new ArrayList<>());
         }
 
         int width = template.width, height = template.height, length = template.length;
@@ -71,19 +75,27 @@ public final class ShapeData extends GenericShape {
             }
         }
 
-        BlockPos masterPos = BlockPos.ORIGIN, triggerPos = null;
+        BlockPos masterPos = BlockPos.ORIGIN;
+        List<BlockPos> triggerPositions = new ArrayList<>();
+        List<LocalFacing> triggerFacings = new ArrayList<>();
         if (data.pointsOfInterest != null) {
             for (PoIJSONSchema poi : data.pointsOfInterest) {
                 if (poi.pos == null || poi.pos.length != 3) { continue; }
                 poi.position = new BlockPos(poi.pos[0], poi.pos[1], length - 1 - poi.pos[2]);
                 if ("master".equals(poi.name)) { masterPos = poi.position; }
-                else if ("trigger".equals(poi.name)) { triggerPos = poi.position; }
+                else if ("trigger".equals(poi.name)) {
+                    triggerPositions.add(poi.position);
+                    triggerFacings.add(poi.facing);
+                }
             }
         }
-        if (triggerPos == null) { triggerPos = masterPos; }
+        if (triggerPositions.isEmpty()) {
+            triggerPositions.add(masterPos);
+            triggerFacings.add(null);
+        }
 
         ICLogger.info(String.format("Loaded multiblock %s: %dx%dx%d, master at %s", id, width, height, length, masterPos));
-        return new ShapeData(width, height, length, data, template, masterPos, triggerPos, shapes);
+        return new ShapeData(width, height, length, data, template, masterPos, triggerPositions, triggerFacings, shapes);
     }
 
     private static MultiblockJSONSchema loadJSON(String modid, String path) {

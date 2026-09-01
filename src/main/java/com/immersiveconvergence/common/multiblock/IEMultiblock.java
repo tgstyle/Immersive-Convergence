@@ -1,0 +1,149 @@
+package com.immersiveconvergence.common.multiblock;
+
+import com.immersiveconvergence.api.multiblock.LocalFacing;
+import com.immersiveconvergence.api.multiblock.PoIJSONSchema;
+import com.immersiveconvergence.api.multiblock.ShapeData;
+import com.immersiveconvergence.api.multiblock.TemplateMultiblock;
+
+import blusunrize.immersiveengineering.api.IEProperties;
+import blusunrize.immersiveengineering.api.MultiblockHandler;
+import blusunrize.immersiveengineering.api.tool.ConveyorHandler;
+import blusunrize.immersiveengineering.common.blocks.TileEntityMultiblockPart;
+import blusunrize.immersiveengineering.common.blocks.metal.TileEntityConveyorBelt;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.function.Supplier;
+
+@SuppressWarnings("unused")
+public class IEMultiblock extends TemplateMultiblock {
+    public enum Anchor { SIDE, SIDE_RAW, YAW_OPPOSITE, CONVEYOR_ROW, MANUAL_ONLY }
+
+    public interface PostFormation { void afterForming(World world, BlockPos clicked, EnumFacing facing, EntityPlayer player); }
+
+    private static final String CONVEYOR = "conveyor";
+    private static final String CONVEYOR_FACING = "conveyorFacing";
+    private final Supplier<IBlockState> blockState;
+    private final Anchor anchor;
+    private final boolean mirrorable;
+    private final PostFormation postFormation;
+    private final PoIJSONSchema[] pointsOfInterest;
+    private final Map<String, int[]> namedPositions = new HashMap<>();
+    private EnumFacing formedFacing;
+
+    public IEMultiblock(String uniqueName, ShapeData shape, Supplier<IBlockState> blockState, Anchor anchor, boolean mirrorable, PostFormation postFormation) {
+        super(uniqueName, shape);
+        this.blockState = blockState;
+        this.anchor = anchor;
+        this.mirrorable = mirrorable;
+        this.postFormation = postFormation;
+        this.pointsOfInterest = shape.data != null && shape.data.pointsOfInterest != null ? shape.data.pointsOfInterest : new PoIJSONSchema[0];
+    }
+
+    public int[] positionsNamed(String prefix) {
+        if (namedPositions.containsKey(prefix)) { return namedPositions.get(prefix); }
+        List<Integer> found = new ArrayList<>();
+        for (PoIJSONSchema poi : pointsOfInterest) {
+            if (poi.name == null || poi.position == null || !poi.name.startsWith(prefix)) { continue; }
+            found.add(poi.position.getY() * (template.width * template.length) + poi.position.getZ() * template.width + poi.position.getX());
+        }
+        int[] positions = null;
+        if (!found.isEmpty()) {
+            positions = new int[found.size()];
+            for (int i = 0; i < positions.length; i++) { positions[i] = found.get(i); }
+        }
+        namedPositions.put(prefix, positions);
+        return positions;
+    }
+
+    public boolean formable() { return anchor != Anchor.MANUAL_ONLY; }
+
+    @Override @SideOnly(Side.CLIENT) public boolean overwriteBlockRender(ItemStack stack, int iterator) { return false; }
+
+    @Override @SideOnly(Side.CLIENT) public boolean canRenderFormedStructure() { return false; }
+
+    @Override @SideOnly(Side.CLIENT) public void renderFormedStructure() { }
+
+    @Override protected EnumFacing facingFor(World world, BlockPos pos, EnumFacing side, EntityPlayer player) {
+        EnumFacing yaw = EnumFacing.fromAngle(player.rotationYaw);
+        if (anchor == Anchor.YAW_OPPOSITE) { return yaw.getOpposite(); }
+        boolean vertical = side.getAxis() == EnumFacing.Axis.Y;
+        switch (anchor) {
+            case SIDE_RAW: return vertical ? yaw : side;
+            case CONVEYOR_ROW: {
+                EnumFacing row = (vertical ? yaw : side).rotateY();
+                TileEntity tile = world.getTileEntity(pos.offset(row));
+                return tile instanceof TileEntityConveyorBelt ? ((TileEntityConveyorBelt)tile).getFacing() : row;
+            }
+            default: return vertical ? yaw : side.getOpposite();
+        }
+    }
+
+    @Override protected boolean canMirror() { return mirrorable; }
+
+    @Override protected int localX(int x, boolean mirrored) { return mirrored ? -x : x; }
+
+    @Override protected boolean cellMatches(World world, BlockPos worldPos, int x, int y, int z, IBlockState expected, EnumFacing side, boolean mirror) {
+        NBTTagCompound data = template.getCellData(x, y, z);
+        if (data == null || !data.hasKey(CONVEYOR)) { return super.cellMatches(world, worldPos, x, y, z, expected, side, mirror); }
+        return ConveyorHandler.isConveyor(world, worldPos, data.getString(CONVEYOR), conveyorFacing(data, side, mirror));
+    }
+
+    @Override protected ItemStack stackFor(int x, int y, int z, IBlockState state) {
+        NBTTagCompound data = template.getCellData(x, y, z);
+        if (data == null || !data.hasKey(CONVEYOR)) { return super.stackFor(x, y, z, state); }
+        return ConveyorHandler.getConveyorStack(data.getString(CONVEYOR));
+    }
+
+    @Override protected boolean isInvalid(World world, BlockPos pos, EnumFacing side, BlockPos trigger, boolean mirror) {
+        if (super.isInvalid(world, pos, side, trigger, mirror)) { return true; }
+        if (template.airCells.isEmpty()) { return false; }
+        BlockPos origin = originFor(pos, side, trigger, mirror);
+        for (BlockPos cell : template.airCells) {
+            if (!world.isAirBlock(localToWorld(origin, localX(cell.getX(), mirror), cell.getY(), cell.getZ(), side))) { return true; }
+        }
+        return false;
+    }
+
+    @Override protected boolean allowFormation(EntityPlayer player, BlockPos pos, ItemStack hammer) { return !MultiblockHandler.fireMultiblockFormationEventPost(player, this, pos, hammer).isCanceled(); }
+
+    @Override protected void onFormed(EntityPlayer player, BlockPos pos, ItemStack hammer) {
+        if (postFormation != null) { postFormation.afterForming(player.world, pos, formedFacing, player); }
+    }
+
+    @Override protected void replaceStructureBlock(World world, BlockPos worldPos, BlockPos masterWorldPos, int position, boolean mirrored, EnumFacing side) {
+        formedFacing = side;
+        IBlockState state = blockState.get().withProperty(IEProperties.FACING_HORIZONTAL, side);
+        world.setBlockState(worldPos, state);
+        TileEntity tile = world.getTileEntity(worldPos);
+        if (tile instanceof TileEntityMultiblockPart) {
+            TileEntityMultiblockPart<?> part = (TileEntityMultiblockPart<?>)tile;
+            part.formed = true;
+            part.pos = position;
+            part.offset = new int[]{worldPos.getX() - masterWorldPos.getX(), worldPos.getY() - masterWorldPos.getY(), worldPos.getZ() - masterWorldPos.getZ()};
+            part.mirrored = mirrored;
+            part.markDirty();
+            world.addBlockEvent(worldPos, state.getBlock(), 255, 0);
+        }
+    }
+
+    private EnumFacing conveyorFacing(NBTTagCompound data, EnumFacing side, boolean mirror) {
+        if (!data.hasKey(CONVEYOR_FACING)) { return null; }
+        LocalFacing local = LocalFacing.valueOf(data.getString(CONVEYOR_FACING).toUpperCase(Locale.ENGLISH));
+        if (mirror && local == LocalFacing.LEFT) { local = LocalFacing.RIGHT; }
+        else if (mirror && local == LocalFacing.RIGHT) { local = LocalFacing.LEFT; }
+        return local.LocalToGlobal(side);
+    }
+}
