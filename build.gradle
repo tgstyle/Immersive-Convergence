@@ -49,6 +49,26 @@ ext {
     mod_description = gradleProps['mod_description']
 }
 
+sourceSets {
+    main {
+        java { srcDirs = ["$rootDir/src/main/java"] }
+        resources {
+            srcDirs = [
+                    "$rootDir/src/main/resources",
+                    "$rootDir/src/generated/resources",
+            ]
+        }
+    }
+    datagen {
+        java { srcDirs = ["$rootDir/src/datagen/java"] }
+        resources { srcDirs = ["$rootDir/src/datagen/resources"] }
+        compileClasspath += main.compileClasspath
+        runtimeClasspath += main.runtimeClasspath
+        compileClasspath += main.output
+        runtimeClasspath += main.output
+    }
+}
+
 subsystems {
     parchment {
         minecraftVersion = version_minecraft
@@ -108,6 +128,13 @@ runs {
     server {
         systemProperties = ['neoforge.enabledGameTestNamespaces': project.mod_id as String]
         arguments = ['--nogui']
+    }
+
+    data {
+        modSource project.sourceSets.datagen
+        programArguments.addAll '--mod', project.mod_id as String, '--all',
+                '--output', file('src/generated/resources/').absolutePath,
+                '--existing', file('src/main/resources/').absolutePath
     }
 }
 

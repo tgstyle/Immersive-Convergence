@@ -1,7 +1,14 @@
 package com.immersiveconvergence;
 
+import com.immersiveconvergence.core.ICClientConfig;
 import com.immersiveconvergence.core.ICCommonConfig;
 import com.immersiveconvergence.core.lib.ICLib;
+import com.immersiveconvergence.core.registration.ICBlockEntities;
+import com.immersiveconvergence.core.registration.ICBlocks;
+import com.immersiveconvergence.core.registration.ICCreativeTab;
+import com.immersiveconvergence.core.registration.ICItems;
+import com.immersiveconvergence.core.registration.ICMenuTypes;
+import com.immersiveconvergence.core.registry.ICRegistryAliases;
 import com.immersiveconvergence.core.proxy.CommonProxy;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -41,9 +48,17 @@ public class ImmersiveConvergence {
 
     public ImmersiveConvergence(IEventBus modEventBus, ModContainer container) {
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(ICBlockEntities::registerCapabilities);
         CommonProxy.modConstruction(modEventBus);
+        ICBlocks.init(modEventBus);
+        ICItems.init(modEventBus);
+        ICBlockEntities.init(modEventBus);
+        ICMenuTypes.init(modEventBus);
+        ICCreativeTab.init(modEventBus);
         container.registerConfig(ModConfig.Type.COMMON, ICCommonConfig.SPEC);
+        container.registerConfig(ModConfig.Type.CLIENT, ICClientConfig.SPEC);
         NeoForge.EVENT_BUS.register(ImmersiveConvergence.class);
+        ICRegistryAliases.register();
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {}
