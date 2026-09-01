@@ -9,7 +9,7 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.world.phys.Vec3;
 
 @SuppressWarnings("unused")
-public class ModelUtils {
+public class BakedQuadUtils {
 
     public static BakedQuad createBakedQuad(Vec3[] vertices, Direction facing, TextureAtlasSprite sprite, double[] uvs, float[] colour, boolean invert) {
         ITBakedQuadBuilder builder = new ITBakedQuadBuilder();

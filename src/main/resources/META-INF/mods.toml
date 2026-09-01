@@ -32,3 +32,6 @@ mandatory=true
 versionRange="[${version_ie_min},)"
 ordering="AFTER"
 side="BOTH"
+
+[[mixins]]
+config="mixins.immersiveconvergence.json"

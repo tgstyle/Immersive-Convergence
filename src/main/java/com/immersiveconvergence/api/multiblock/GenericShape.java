@@ -2,15 +2,16 @@ package com.immersiveconvergence.api.multiblock;
 
 import com.immersiveconvergence.core.lib.ICLib;
 
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.Tag;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,49 +22,24 @@ public abstract class GenericShape implements Function<BlockPos, VoxelShape> {
     public static final AABB FULL_BLOCK = new AABB(0D, 0D, 0D, 1D, 1D, 1D);
     private final Map<BlockPos, VoxelShape> shapeCache = new ConcurrentHashMap<>();
 
-    public static int[] loadDimensions(Class<?> owner, String modid, String multiblockName, String category) {
-        String path = "/assets/" + modid + "/models/multiblock/" + category + "/" + multiblockName + "/" + multiblockName + ".obj";
-        double minX = Double.MAX_VALUE, maxX = Double.MIN_VALUE;
-        double minY = Double.MAX_VALUE, maxY = Double.MIN_VALUE;
-        double minZ = Double.MAX_VALUE, maxZ = Double.MIN_VALUE;
-        InputStream is = owner.getResourceAsStream(path);
-        boolean hasVertices = false;
-        if (is == null) { ICLib.IC_LOGGER.error("OBJ file not found at resource path: {} for multiblock: {}", path, multiblockName); }
-        else {
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    line = line.trim();
-                    if (line.startsWith("v ")) {
-                        String[] parts = line.split("\\s+");
-                        if (parts.length >= 4) {
-                            double x = Double.parseDouble(parts[1]);
-                            double y = Double.parseDouble(parts[2]);
-                            double z = Double.parseDouble(parts[3]);
-                            minX = Math.min(minX, x);
-                            maxX = Math.max(maxX, x);
-                            minY = Math.min(minY, y);
-                            maxY = Math.max(maxY, y);
-                            minZ = Math.min(minZ, z);
-                            maxZ = Math.max(maxZ, z);
-                            hasVertices = true;
-                        }
-                    }
-                }
-                if (!hasVertices) { ICLib.IC_LOGGER.warn("OBJ file loaded but no vertices ('v ') found in: {} for multiblock: {}", path, multiblockName); }
-            } catch (Exception e) { ICLib.IC_LOGGER.error("Error reading OBJ file at {} for multiblock: {}", path, multiblockName, e); }
+    public static int[] loadDimensions(Class<?> owner, String modid, String multiblockName) {
+        String path = "/data/" + modid + "/structures/multiblocks/" + multiblockName + ".nbt";
+        try (InputStream is = owner.getResourceAsStream(path)) {
+            if (is == null) {
+                ICLib.IC_LOGGER.error("Structure file not found at resource path: {} for multiblock: {}", path, multiblockName);
+                return new int[]{0, 0, 0};
+            }
+            ListTag size = NbtIo.readCompressed(is).getList("size", Tag.TAG_INT);
+            if (size.size() != 3) {
+                ICLib.IC_LOGGER.error("Structure file {} has no usable size tag for multiblock: {}", path, multiblockName);
+                return new int[]{0, 0, 0};
+            }
+            return new int[]{size.getInt(0), size.getInt(1), size.getInt(2)};
         }
-        double dx = maxX - minX;
-        double dy = maxY - minY;
-        double dz = maxZ - minZ;
-        if (dx <= 0 || dy <= 0 || dz <= 0 || !hasVertices) { return new int[]{0, 0, 0}; }
-        else { return new int[]{computeDim(dx), computeDim(dy), computeDim(dz)}; }
-    }
-
-    private static int computeDim(double d) {
-        double floor = Math.floor(d);
-        if (d == floor) { return (int) floor; }
-        else { return (int) Math.ceil(d); }
+        catch (Exception e) {
+            ICLib.IC_LOGGER.error("Error reading structure file at {} for multiblock: {}", path, multiblockName, e);
+            return new int[]{0, 0, 0};
+        }
     }
 
     public static List<List<AABB>> loadShapes(MultiblockData data, int expectedNum) {

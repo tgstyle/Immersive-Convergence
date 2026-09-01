@@ -25,17 +25,17 @@ import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public abstract class AbstractSplitModel<T extends BakedModel> extends BakedModelWrapper<T> {
+public abstract class SplitModelWrapper<T extends BakedModel> extends BakedModelWrapper<T> {
     @Nonnull private final Supplier<SplitData> splitDataSource;
     private volatile SplitData splitData;
 
-    private static final Set<AbstractSplitModel<?>> WEAK_INSTANCES = Collections.newSetFromMap(new WeakHashMap<>());
+    private static final Set<SplitModelWrapper<?>> WEAK_INSTANCES = Collections.newSetFromMap(new WeakHashMap<>());
 
     static {
-        blusunrize.immersiveengineering.api.IEApi.renderCacheClearers.add(() -> WEAK_INSTANCES.forEach(AbstractSplitModel::clearCache));
+        blusunrize.immersiveengineering.api.IEApi.renderCacheClearers.add(() -> WEAK_INSTANCES.forEach(SplitModelWrapper::clearCache));
     }
 
-    protected AbstractSplitModel(T base, @NotNull Supplier<SplitData> splitData) {
+    protected SplitModelWrapper(T base, @NotNull Supplier<SplitData> splitData) {
         super(base);
         this.splitDataSource = splitData;
         WEAK_INSTANCES.add(this);
@@ -62,24 +62,24 @@ public abstract class AbstractSplitModel<T extends BakedModel> extends BakedMode
         SplitData data = splitData();
         Vec3i size = data == null ? Vec3i.ZERO : data.size();
         BlockPos offset = null;
-        if (te instanceof IModelOffsetProvider offsetProvider) { offset = offsetProvider.getModelOffset(state, size); }
-        else if (state.getBlock() instanceof IModelOffsetProvider offsetProvider) { offset = offsetProvider.getModelOffset(state, size); }
+        if (te instanceof ISubmodelOffsetProvider offsetProvider) { offset = offsetProvider.getModelOffset(state, size); }
+        else if (state.getBlock() instanceof ISubmodelOffsetProvider offsetProvider) { offset = offsetProvider.getModelOffset(state, size); }
         if (offset != null) { return baseData.derive().with(SplitModelProperties.SUBMODEL_OFFSET, offset).build(); }
         else { return baseData; }
     }
 
     protected Map<Vec3i, List<BakedQuad>> split(List<BakedQuad> in, Set<Vec3i> parts, ModelState transform) {
-        List<Polygon<PolygonUtils.ExtraQuadData>> polys = in.stream().map(PolygonUtils::toPolygon).collect(Collectors.toList());
-        SplitObjModel<PolygonUtils.ExtraQuadData> objModel = new SplitObjModel<>(polys);
-        SplitModel<PolygonUtils.ExtraQuadData> splitData = new SplitModel<>(objModel);
+        List<Polygon<QuadPolygonUtils.ExtraQuadData>> polys = in.stream().map(QuadPolygonUtils::toPolygon).collect(Collectors.toList());
+        SplitObjModel<QuadPolygonUtils.ExtraQuadData> objModel = new SplitObjModel<>(polys);
+        SplitModel<QuadPolygonUtils.ExtraQuadData> splitData = new SplitModel<>(objModel);
         Set<ModelSplitterVec3i> partsBMS = parts.stream().map(v -> new ModelSplitterVec3i(v.getX(), v.getY(), v.getZ())).collect(Collectors.toSet());
-        ClumpedModel<PolygonUtils.ExtraQuadData> clumpedModel = new ClumpedModel<>(splitData, partsBMS);
+        ClumpedModel<QuadPolygonUtils.ExtraQuadData> clumpedModel = new ClumpedModel<>(splitData, partsBMS);
 
         Map<Vec3i, List<BakedQuad>> map = new HashMap<>();
         for (var e : clumpedModel.getClumpedParts().entrySet()) {
             List<BakedQuad> subModelFaces = new ArrayList<>(e.getValue().getFaces().size());
-            for (Polygon<PolygonUtils.ExtraQuadData> p : e.getValue().getFaces()) {
-                subModelFaces.add(PolygonUtils.toBakedQuad(p.getPoints(), p.getTexture(), transform.getRotation().blockCenterToCorner(), true));
+            for (Polygon<QuadPolygonUtils.ExtraQuadData> p : e.getValue().getFaces()) {
+                subModelFaces.add(QuadPolygonUtils.toBakedQuad(p.getPoints(), p.getTexture(), transform.getRotation().blockCenterToCorner(), true));
             }
             Vec3i mcKey = new Vec3i(e.getKey().x(), e.getKey().y(), e.getKey().z());
             map.put(mcKey, subModelFaces);

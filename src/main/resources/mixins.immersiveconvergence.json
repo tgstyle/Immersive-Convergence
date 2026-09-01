@@ -1,0 +1,14 @@
+{
+  "required": false,
+  "package": "com.immersiveconvergence.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "minVersion": "0.8",
+  "refmap": "immersiveconvergence.refmap.json",
+  "mixins": [
+    "MultiblockBEHelperCommonMixin",
+    "MultiblockRegistrationBuilderAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
