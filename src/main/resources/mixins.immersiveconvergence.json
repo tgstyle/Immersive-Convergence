@@ -6,15 +6,26 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "MixinIEMultiblock",
+    "MixinIEMultiblockAdvancedBounds",
+    "MixinIEMultiblockBounds",
     "MixinIEMultiblockConnections",
+    "MixinIEPortCapability",
+    "MixinIEPortDrainTank",
+    "MixinIEPortFillTank",
+    "MixinIEPortFluidTanks",
+    "MixinIEPortHasCapability",
+    "MixinIEPortSignalOutput",
     "MixinIETileEntityAlloySmelter",
     "MixinIETileEntityBlastFurnace",
     "MixinIETileEntityBlastFurnaceAdvanced",
     "MixinIETileEntityBucketWheel",
     "MixinIETileEntityCokeOven",
     "MixinIETileEntityLightningrod",
-    "MixinIETileEntityMultiblockMetal",
+    "MixinIETileEntityMultiblockPart",
     "MixinIETileEntitySheetmetalTank",
     "MixinIETileEntitySilo"
+  ],
+  "client": [
+    "MixinIEClientProxySound"
   ]
 }

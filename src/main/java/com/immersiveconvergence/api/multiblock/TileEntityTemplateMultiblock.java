@@ -129,13 +129,7 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
 
     public BlockPos posInMultiblock() {
         MachineTemplateMultiblock<?> instance = (MachineTemplateMultiblock<?>)mutliblockInstance;
-        int width = instance.width;
-        int length = instance.length;
-        int y = pos / (length * width);
-        int rem = pos % (length * width);
-        int z = rem / width;
-        int x = rem % width;
-        return new BlockPos(x, y, z);
+        return MultiblockShapes.localPos(pos, instance.width, instance.length);
     }
 
     public int toFlatIndex(BlockPos posInMultiblock) {
@@ -156,11 +150,9 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
         if (voxelShapeCache != null && voxelShapeCachePos == pos && voxelShapeCacheFacing == facing && voxelShapeCacheMirrored == mirrored) { return voxelShapeCache; }
         BlockPos posInMultiblock = posToMultiblock();
         List<AxisAlignedBB> list = getShapeGetter().getShape(posInMultiblock);
-        List<AxisAlignedBB> rotatedList = new ArrayList<>(list.size());
-        for (AxisAlignedBB aabb : list) { rotatedList.add(Shapes.rotateAABB(preprocessShapeAABB(aabb), facing, useMirroredShape() && mirrored)); }
-        VoxelShape vs = Shapes.empty();
-        for (AxisAlignedBB aabb : rotatedList) { vs = Shapes.joinUnoptimized(vs, Shapes.create(aabb), OR); }
-        vs = vs.optimize();
+        List<AxisAlignedBB> processed = new ArrayList<>(list.size());
+        for (AxisAlignedBB aabb : list) { processed.add(preprocessShapeAABB(aabb)); }
+        VoxelShape vs = MultiblockShapes.rotated(processed, facing, useMirroredShape() && mirrored);
         voxelShapeCache = vs;
         voxelShapeCachePos = pos;
         voxelShapeCacheFacing = facing;
@@ -183,12 +175,7 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
 
     @SuppressWarnings("unused") public boolean isOverrideBox(@Nonnull AxisAlignedBB box, @Nonnull EntityPlayer player, @Nonnull RayTraceResult mop, @Nonnull List<AxisAlignedBB> list) { return true; }
 
-    @Override @Nonnull public float[] getBlockBounds() {
-        VoxelShape vs = getVoxelShape();
-        if (vs.isEmpty()) { return new float[]{0f, 0f, 0f, 1f, 1f, 1f}; }
-        AxisAlignedBB bb = vs.bounds();
-        return new float[]{(float)bb.minX, (float)bb.minY, (float)bb.minZ, (float)bb.maxX, (float)bb.maxY, (float)bb.maxZ};
-    }
+    @Override @Nonnull public float[] getBlockBounds() { return MultiblockShapes.blockBounds(getVoxelShape()); }
 
     @Override @Nonnull public ItemStack getOriginalBlock() { return ((MachineTemplateMultiblock<?>)this.mutliblockInstance).getOriginalBlock(pos); }
 

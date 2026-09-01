@@ -12,9 +12,7 @@ import java.util.HashMap;
 @SuppressWarnings("unused")
 public class ICSoundHandler extends PositionedSound implements ITickableSound {
     private static final HashMap<BlockPos, ICSoundHandler> playingSounds = new HashMap<>();
-    private static float volumeAdjustment = 1;
     private final BlockPos pos;
-    private float unmodifiedVolume;
 
     public static void playOnce(BlockPos posIn, SoundEvent soundIn, SoundCategory categoryIn, float volumeIn, float pitchIn) {
         EntityPlayerSP player = Minecraft.getMinecraft().player;
@@ -33,8 +31,7 @@ public class ICSoundHandler extends PositionedSound implements ITickableSound {
             playingSounds.put(posIn, new ICSoundHandler(posIn, soundIn, categoryIn, true, volumeIn, pitchIn));
         }
         else {
-            sound.unmodifiedVolume = volumeIn;
-            sound.volume = volumeIn * volumeAdjustment;
+            sound.volume = volumeIn;
             sound.pitch = pitchIn;
             sound.repeat = true;
         }
@@ -53,17 +50,10 @@ public class ICSoundHandler extends PositionedSound implements ITickableSound {
         playingSounds.clear();
     }
 
-    public static void setVolumeAdjustment(float value) {
-        if (volumeAdjustment == value) { return; }
-        volumeAdjustment = value;
-        playingSounds.forEach((blockPos, sound) -> sound.volume = sound.unmodifiedVolume * volumeAdjustment);
-    }
-
     public ICSoundHandler(BlockPos posIn, SoundEvent soundIn, SoundCategory categoryIn, boolean repeatIn, float volumeIn, float pitchIn) {
         super(soundIn, categoryIn);
         this.pos = posIn;
-        this.unmodifiedVolume = volumeIn;
-        this.volume = volumeIn * volumeAdjustment;
+        this.volume = volumeIn;
         this.pitch = pitchIn;
         this.xPosF = pos.getX() + 0.5f;
         this.yPosF = pos.getY() + 0.5f;

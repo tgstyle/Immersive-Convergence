@@ -1,6 +1,7 @@
 package com.immersiveconvergence.common.multiblock;
 
 import com.immersiveconvergence.api.multiblock.LocalFacing;
+import com.immersiveconvergence.api.multiblock.MultiblockShapes;
 import com.immersiveconvergence.api.multiblock.PoIJSONSchema;
 import com.immersiveconvergence.api.multiblock.ShapeData;
 import com.immersiveconvergence.api.multiblock.TemplateMultiblock;
@@ -16,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -25,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
@@ -39,8 +42,11 @@ public class IEMultiblock extends TemplateMultiblock {
     private final Anchor anchor;
     private final boolean mirrorable;
     private final PostFormation postFormation;
+    private final ShapeData shape;
     private final PoIJSONSchema[] pointsOfInterest;
     private final Map<String, int[]> namedPositions = new HashMap<>();
+    private final Map<Integer, List<AxisAlignedBB>> boundsCache = new ConcurrentHashMap<>();
+    private volatile Map<Integer, Integer> ports;
     private EnumFacing formedFacing;
 
     public IEMultiblock(String uniqueName, ShapeData shape, Supplier<IBlockState> blockState, Anchor anchor, boolean mirrorable, PostFormation postFormation) {
@@ -49,7 +55,44 @@ public class IEMultiblock extends TemplateMultiblock {
         this.anchor = anchor;
         this.mirrorable = mirrorable;
         this.postFormation = postFormation;
+        this.shape = shape;
         this.pointsOfInterest = shape.data != null && shape.data.pointsOfInterest != null ? shape.data.pointsOfInterest : new PoIJSONSchema[0];
+    }
+
+    public List<AxisAlignedBB> boundsFor(int position, EnumFacing facing, boolean mirrored) {
+        int key = (position * 6 + facing.ordinal()) * 2 + (mirrored ? 1 : 0);
+        List<AxisAlignedBB> cached = boundsCache.get(key);
+        if (cached != null) { return cached; }
+        List<AxisAlignedBB> local = shape.getShape(MultiblockShapes.localPos(position, template.width, template.length));
+        List<AxisAlignedBB> bounds = MultiblockShapes.rotated(local, facing, mirrored).toAabbs();
+        boundsCache.put(key, bounds);
+        return bounds;
+    }
+
+    public float[] blockBoundsFor(int position, EnumFacing facing, boolean mirrored) {
+        List<AxisAlignedBB> bounds = boundsFor(position, facing, mirrored);
+        if (bounds.isEmpty()) { return new float[]{0f, 0f, 0f, 1f, 1f, 1f}; }
+        AxisAlignedBB union = bounds.get(0);
+        for (AxisAlignedBB aabb : bounds) { union = union.union(aabb); }
+        return new float[]{(float)union.minX, (float)union.minY, (float)union.minZ, (float)union.maxX, (float)union.maxY, (float)union.maxZ};
+    }
+
+    public int portPos(int position) {
+        if (ports == null) { immersiveconvergence$buildPorts(); }
+        Integer canonical = ports.get(position);
+        if (canonical != null) { return canonical; }
+        return ports.containsValue(position) ? -1 : position;
+    }
+
+    private synchronized void immersiveconvergence$buildPorts() {
+        if (ports != null) { return; }
+        Map<Integer, Integer> built = new HashMap<>();
+        for (PoIJSONSchema poi : pointsOfInterest) {
+            if (poi.name == null || poi.position == null || !poi.name.startsWith("port")) { continue; }
+            int canonical = Integer.parseInt(poi.name.substring(4));
+            built.put(poi.position.getY() * (template.width * template.length) + poi.position.getZ() * template.width + poi.position.getX(), canonical);
+        }
+        ports = built;
     }
 
     public int[] positionsNamed(String prefix) {

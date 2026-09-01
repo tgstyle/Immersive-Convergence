@@ -12,31 +12,26 @@ import blusunrize.immersiveengineering.common.blocks.metal.TileEntityCrusher;
 import blusunrize.immersiveengineering.common.blocks.metal.TileEntityDieselGenerator;
 import blusunrize.immersiveengineering.common.blocks.metal.TileEntityExcavator;
 import blusunrize.immersiveengineering.common.blocks.metal.TileEntityFermenter;
+import blusunrize.immersiveengineering.common.blocks.metal.TileEntityLightningrod;
 import blusunrize.immersiveengineering.common.blocks.metal.TileEntityMetalPress;
 import blusunrize.immersiveengineering.common.blocks.metal.TileEntityMixer;
 import blusunrize.immersiveengineering.common.blocks.metal.TileEntityRefinery;
+import blusunrize.immersiveengineering.common.blocks.metal.TileEntitySheetmetalTank;
+import blusunrize.immersiveengineering.common.blocks.metal.TileEntitySilo;
 import blusunrize.immersiveengineering.common.blocks.metal.TileEntitySqueezer;
+import blusunrize.immersiveengineering.common.blocks.stone.TileEntityBlastFurnaceAdvanced;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin({TileEntityArcFurnace.class, TileEntityAssembler.class, TileEntityAutoWorkbench.class, TileEntityBottlingMachine.class, TileEntityCrusher.class, TileEntityDieselGenerator.class, TileEntityExcavator.class, TileEntityFermenter.class, TileEntityMetalPress.class, TileEntityMixer.class, TileEntityRefinery.class, TileEntitySqueezer.class})
-public abstract class MixinIEMultiblockConnections {
-    @Inject(method = "getEnergyPos", at = @At("HEAD"), cancellable = true, remap = false)
-    private void injectGetEnergyPos(CallbackInfoReturnable<int[]> cir) {
-        int[] positions = immersiveconvergence$positions("energy");
-        if (positions != null) { cir.setReturnValue(positions); }
-    }
-
-    @Inject(method = "getRedstonePos", at = @At("HEAD"), cancellable = true, remap = false)
-    private void injectGetRedstonePos(CallbackInfoReturnable<int[]> cir) {
-        int[] positions = immersiveconvergence$positions("redstone");
-        if (positions != null) { cir.setReturnValue(positions); }
-    }
-
-    private int[] immersiveconvergence$positions(String prefix) {
-        IEMultiblock template = IEMultiblockRegistry.templateFor((TileEntityMultiblockPart<?>)(Object)this);
-        return template == null ? null : template.positionsNamed(prefix);
+@Mixin({TileEntityArcFurnace.class, TileEntityAssembler.class, TileEntityAutoWorkbench.class, TileEntityBottlingMachine.class, TileEntityCrusher.class, TileEntityDieselGenerator.class, TileEntityExcavator.class, TileEntityFermenter.class, TileEntityLightningrod.class, TileEntityMetalPress.class, TileEntityMixer.class, TileEntityRefinery.class, TileEntitySheetmetalTank.class, TileEntitySilo.class, TileEntitySqueezer.class, TileEntityBlastFurnaceAdvanced.class})
+public abstract class MixinIEMultiblockBounds {
+    @Inject(method = "getBlockBounds", at = @At("HEAD"), cancellable = true, remap = false)
+    private void injectGetBlockBounds(CallbackInfoReturnable<float[]> cir) {
+        TileEntityMultiblockPart<?> part = (TileEntityMultiblockPart<?>)(Object)this;
+        if (part.pos < 0) { return; }
+        IEMultiblock template = IEMultiblockRegistry.templateFor(part);
+        if (template != null) { cir.setReturnValue(template.blockBoundsFor(part.pos, part.facing, part.mirrored)); }
     }
 }

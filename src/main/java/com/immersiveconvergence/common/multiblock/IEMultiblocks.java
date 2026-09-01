@@ -4,6 +4,26 @@ import com.immersiveconvergence.api.multiblock.BlockMatcher;
 
 import blusunrize.immersiveengineering.common.IEContent;
 import blusunrize.immersiveengineering.common.blocks.BlockIEBase;
+import blusunrize.immersiveengineering.common.blocks.metal.TileEntityArcFurnace;
+import blusunrize.immersiveengineering.common.blocks.metal.TileEntityAssembler;
+import blusunrize.immersiveengineering.common.blocks.metal.TileEntityAutoWorkbench;
+import blusunrize.immersiveengineering.common.blocks.metal.TileEntityBottlingMachine;
+import blusunrize.immersiveengineering.common.blocks.metal.TileEntityBucketWheel;
+import blusunrize.immersiveengineering.common.blocks.metal.TileEntityCrusher;
+import blusunrize.immersiveengineering.common.blocks.metal.TileEntityDieselGenerator;
+import blusunrize.immersiveengineering.common.blocks.metal.TileEntityExcavator;
+import blusunrize.immersiveengineering.common.blocks.metal.TileEntityFermenter;
+import blusunrize.immersiveengineering.common.blocks.metal.TileEntityLightningrod;
+import blusunrize.immersiveengineering.common.blocks.metal.TileEntityMetalPress;
+import blusunrize.immersiveengineering.common.blocks.metal.TileEntityMixer;
+import blusunrize.immersiveengineering.common.blocks.metal.TileEntityRefinery;
+import blusunrize.immersiveengineering.common.blocks.metal.TileEntitySheetmetalTank;
+import blusunrize.immersiveengineering.common.blocks.metal.TileEntitySilo;
+import blusunrize.immersiveengineering.common.blocks.metal.TileEntitySqueezer;
+import blusunrize.immersiveengineering.common.blocks.stone.TileEntityAlloySmelter;
+import blusunrize.immersiveengineering.common.blocks.stone.TileEntityBlastFurnace;
+import blusunrize.immersiveengineering.common.blocks.stone.TileEntityBlastFurnaceAdvanced;
+import blusunrize.immersiveengineering.common.blocks.stone.TileEntityCokeOven;
 import blusunrize.immersiveengineering.common.blocks.metal.BlockTypes_MetalMultiblock;
 import blusunrize.immersiveengineering.common.blocks.multiblocks.MultiblockBucketWheel;
 import blusunrize.immersiveengineering.common.blocks.stone.BlockTypes_StoneDevices;
@@ -47,5 +67,26 @@ public final class IEMultiblocks {
         IEMultiblockRegistry.register("IE:BottlingMachine", "bottling_machine", state(IEContent.blockMetalMultiblock, BlockTypes_MetalMultiblock.BOTTLING_MACHINE), IEMultiblock.Anchor.SIDE, true);
         IEMultiblockRegistry.register("IE:MetalPress", "metal_press", state(IEContent.blockMetalMultiblock, BlockTypes_MetalMultiblock.METAL_PRESS), IEMultiblock.Anchor.CONVEYOR_ROW, false);
         IEMultiblockRegistry.register("IE:ExcavatorDemo", "excavator_demo", state(IEContent.blockMetalMultiblock, BlockTypes_MetalMultiblock.EXCAVATOR), IEMultiblock.Anchor.MANUAL_ONLY, false);
+
+        IEMultiblockRegistry.registerTile(TileEntityCokeOven.class, "IE:CokeOven");
+        IEMultiblockRegistry.registerTile(TileEntityBlastFurnace.class, "IE:BlastFurnace");
+        IEMultiblockRegistry.registerTile(TileEntityBlastFurnaceAdvanced.class, "IE:BlastFurnaceAdvanced");
+        IEMultiblockRegistry.registerTile(TileEntityAlloySmelter.class, "IE:AlloySmelter");
+        IEMultiblockRegistry.registerTile(TileEntityCrusher.class, "IE:Crusher");
+        IEMultiblockRegistry.registerTile(TileEntitySqueezer.class, "IE:Squeezer");
+        IEMultiblockRegistry.registerTile(TileEntityFermenter.class, "IE:Fermenter");
+        IEMultiblockRegistry.registerTile(TileEntityMixer.class, "IE:Mixer");
+        IEMultiblockRegistry.registerTile(TileEntityRefinery.class, "IE:Refinery");
+        IEMultiblockRegistry.registerTile(TileEntityDieselGenerator.class, "IE:DieselGenerator");
+        IEMultiblockRegistry.registerTile(TileEntityLightningrod.class, "IE:Lightningrod");
+        IEMultiblockRegistry.registerTile(TileEntitySheetmetalTank.class, "IE:SheetmetalTank");
+        IEMultiblockRegistry.registerTile(TileEntitySilo.class, "IE:Silo");
+        IEMultiblockRegistry.registerTile(TileEntityArcFurnace.class, "IE:ArcFurnace");
+        IEMultiblockRegistry.registerTile(TileEntityAssembler.class, "IE:Assembler");
+        IEMultiblockRegistry.registerTile(TileEntityAutoWorkbench.class, "IE:AutoWorkbench");
+        IEMultiblockRegistry.registerTile(TileEntityBottlingMachine.class, "IE:BottlingMachine");
+        IEMultiblockRegistry.registerTile(TileEntityMetalPress.class, "IE:MetalPress");
+        IEMultiblockRegistry.registerTile(TileEntityBucketWheel.class, "IE:BucketWheel");
+        IEMultiblockRegistry.registerTile(TileEntityExcavator.class, "IE:Excavator");
     }
 }

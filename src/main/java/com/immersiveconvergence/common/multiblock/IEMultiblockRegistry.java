@@ -2,6 +2,7 @@ package com.immersiveconvergence.common.multiblock;
 
 import com.immersiveconvergence.api.multiblock.ShapeData;
 
+import blusunrize.immersiveengineering.common.blocks.TileEntityMultiblockPart;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ public final class IEMultiblockRegistry {
     public static final String MODID = "immersiveengineering";
     private static final Map<String, Definition> definitions = new LinkedHashMap<>();
     private static final Map<String, IEMultiblock> loaded = new HashMap<>();
+    private static final Map<Class<?>, String> tileNames = new HashMap<>();
 
     private IEMultiblockRegistry() {}
 
@@ -34,6 +36,13 @@ public final class IEMultiblockRegistry {
     }
 
     public static void loadAll() { for (String uniqueName : definitions.keySet()) { get(uniqueName); } }
+
+    public static void registerTile(Class<?> tile, String uniqueName) { tileNames.put(tile, uniqueName); }
+
+    public static IEMultiblock templateFor(TileEntityMultiblockPart<?> part) {
+        String name = tileNames.get(part.getClass());
+        return name == null ? null : get(name);
+    }
 
     public static ItemStack getOriginalBlock(String uniqueName, int position) {
         IEMultiblock multiblock = get(uniqueName);
