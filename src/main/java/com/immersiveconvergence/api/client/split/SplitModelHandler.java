@@ -17,10 +17,8 @@ import net.neoforged.neoforge.client.event.ModelEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
@@ -46,26 +44,26 @@ public class SplitModelHandler {
 
     @SubscribeEvent public static void onModifyBakingResult(ModelEvent.ModifyBakingResult event) {
         Map<ModelResourceLocation, BakedModel> models = event.getModels();
-        Map<ModelResourceLocation, Machine> targets = new HashMap<>();
+        Map<ModelResourceLocation, Target> targets = new HashMap<>();
         for (ModelResourceLocation mrl : models.keySet()) {
             Machine machine = MACHINES.get(ResourceLocation.fromNamespaceAndPath(mrl.id().getNamespace(), mrl.id().getPath()));
-            if (machine != null && !ModelResourceLocation.INVENTORY_VARIANT.equals(mrl.variant()) && facingOf(mrl.variant()) != null) { targets.put(mrl, machine); }
+            Direction facing = facingOf(mrl.variant());
+            if (machine != null && facing != null && !ModelResourceLocation.INVENTORY_VARIANT.equals(mrl.variant())) { targets.put(mrl, new Target(machine, facing)); }
         }
         Map<ModelResourceLocation, BakedModel> bases = new HashMap<>();
-        for (Map.Entry<ModelResourceLocation, Machine> e : targets.entrySet()) {
-            ModelResourceLocation baseLoc = withFacing(e.getKey(), e.getValue().unrotated);
+        for (Map.Entry<ModelResourceLocation, Target> e : targets.entrySet()) {
+            ModelResourceLocation baseLoc = withFacing(e.getKey(), e.getValue().machine().unrotated());
             BakedModel base = models.get(baseLoc);
             if (base != null) { bases.put(e.getKey(), base); }
             else { ICLib.IC_LOGGER.error("No unrotated variant \"{}\" for split model {}", baseLoc.variant(), e.getKey()); }
         }
-        for (Map.Entry<ModelResourceLocation, Machine> e : targets.entrySet()) {
+        for (Map.Entry<ModelResourceLocation, Target> e : targets.entrySet()) {
             BakedModel base = bases.get(e.getKey());
             if (base == null) { continue; }
-            Machine machine = e.getValue();
-            Direction facing = facingOf(e.getKey().variant());
-            boolean mirrored = booleanOf(e.getKey().variant(), "mirrored");
-            int angle = Math.floorMod((int)facing.toYRot() - (int)machine.unrotated.toYRot(), 360);
-            models.put(e.getKey(), new BakedSplitModel<>(base, machine.data.apply(mirrored), BlockModelRotation.by(0, angle), false));
+            Machine machine = e.getValue().machine();
+            boolean mirrored = booleanOf(e.getKey().variant());
+            int angle = Math.floorMod((int)e.getValue().facing().toYRot() - (int)machine.unrotated().toYRot(), 360);
+            models.put(e.getKey(), new BakedSplitModel<>(base, machine.data().apply(mirrored), BlockModelRotation.by(0, angle), false));
         }
     }
 
@@ -80,7 +78,7 @@ public class SplitModelHandler {
         return value == null ? null : Direction.byName(value);
     }
 
-    private static boolean booleanOf(String variant, String key) { return "true".equals(valueOf(variant, key)); }
+    private static boolean booleanOf(String variant) { return "true".equals(valueOf(variant, "mirrored")); }
 
     private static String valueOf(String variant, String key) {
         for (String pair : variant.split(",")) {
@@ -89,6 +87,8 @@ public class SplitModelHandler {
         }
         return null;
     }
+
+    private record Target(Machine machine, Direction facing) {}
 
     private record Machine(Direction unrotated, java.util.function.Function<Boolean, Supplier<SplitData>> data) {}
 }

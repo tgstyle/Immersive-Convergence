@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public interface ICacheKeyProvider<K> extends BakedModel {
+public interface IModelCacheKeyProvider<K> extends BakedModel {
     List<BakedQuad> getQuads(K var1);
 
     @Nonnull default List<BakedQuad> getQuads(@Nullable BlockState pState, @Nullable Direction pSide, @Nonnull RandomSource pRand, @Nonnull ModelData extraData, @Nullable RenderType layer) { return this.getQuads(this.getKey(pState, pSide, pRand, extraData, layer)); }

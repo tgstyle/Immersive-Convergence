@@ -1,6 +1,6 @@
 package com.immersiveconvergence.api.client.split;
 
-import com.immersiveconvergence.api.client.ModelUtils;
+import com.immersiveconvergence.api.client.BakedQuadUtils;
 import com.immersiveconvergence.api.client.split.geometry.Polygon;
 import com.immersiveconvergence.api.client.split.geometry.UVCoords;
 import com.immersiveconvergence.api.client.split.geometry.Vec3d;
@@ -20,7 +20,7 @@ import org.joml.Vector4f;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PolygonUtils {
+public class QuadPolygonUtils {
 
     private static final int VERTEX_SIZE_INTS;
     private static final int POS_OFFSET;
@@ -83,7 +83,7 @@ public class PolygonUtils {
     public static BakedQuad toBakedQuad(List<Vertex> points, ExtraQuadData data, Transformation rotation, boolean absoluteUV) {
         Preconditions.checkArgument(points.size() == 4);
 
-        ModelUtils.ITBakedQuadBuilder quadBuilder = new ModelUtils.ITBakedQuadBuilder();
+        BakedQuadUtils.ITBakedQuadBuilder quadBuilder = new BakedQuadUtils.ITBakedQuadBuilder();
         Vector3f normal = new Vector3f();
         float u0 = data.sprite().getU0();
         float u1 = data.sprite().getU1();

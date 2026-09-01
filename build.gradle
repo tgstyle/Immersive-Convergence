@@ -97,23 +97,15 @@ tasks.register('copyModsTomlForIntelliJ', Copy) {
 
 runs {
     configureEach { run ->
-        println "DEBUG configureEach: name=${run.name}, class=${run.getClass().name}, project.mod_id=${project.mod_id}"
-
         run.workingDirectory = project.file("run/${run.name}")
-
-        systemProperties = ['forge.logging.markers': '', 'forge.logging.console.level': 'debug']
     }
 
     client {
-        println "DEBUG client block: project.mod_id=${project.mod_id}"
-
         systemProperties = ['neoforge.enabledGameTestNamespaces': project.mod_id as String]
         arguments = ['--username', 'tgstyle', '--width', '1920', '--height', '1080']
     }
 
     server {
-        println "DEBUG server block: project.mod_id=${project.mod_id}"
-
         systemProperties = ['neoforge.enabledGameTestNamespaces': project.mod_id as String]
         arguments = ['--nogui']
     }

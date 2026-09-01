@@ -29,12 +29,12 @@ public final class ShapeData {
         this.symmetricTriggerOffsets = symmetricTriggerOffsets;
     }
 
-    public static ShapeData load(Class<?> owner, String modid, String id, String category) {
+    public static ShapeData load(Class<?> owner, String modid, String id) {
         MultiblockData data = MultiblockDataLoader.loadMultiblockData(owner, modid, id);
-        int[] dims = GenericShape.loadDimensions(owner, modid, id, category);
-        int width = dims[0] + data.padShape[0];
-        int height = dims[1] + data.padShape[1];
-        int length = dims[2] + data.padShape[2];
+        int[] dims = GenericShape.loadDimensions(owner, modid, id);
+        int width = dims[0];
+        int height = dims[1];
+        int length = dims[2];
         ICLib.IC_LOGGER.info("Loaded dimensions for {}: W={}, H={}, L={}", id, width, height, length);
 
         Function<BlockPos, VoxelShape> getter;

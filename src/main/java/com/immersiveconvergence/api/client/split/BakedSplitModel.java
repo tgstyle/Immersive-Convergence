@@ -1,6 +1,6 @@
 package com.immersiveconvergence.api.client.split;
 
-import com.immersiveconvergence.api.client.ICacheKeyProvider;
+import com.immersiveconvergence.api.client.IModelCacheKeyProvider;
 
 import blusunrize.immersiveengineering.api.ApiUtils;
 import blusunrize.immersiveengineering.api.utils.ResettableLazy;
@@ -29,20 +29,20 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
-public class BakedSplitModel<T extends BakedModel> extends AbstractSplitModel<T> {
+public class BakedSplitModel<T extends BakedModel> extends SplitModelWrapper<T> {
     private final boolean dynamic;
     private final ResettableLazy<Map<Vec3i, List<BakedQuad>>> splitModels;
     private final LoadingCache<Object, Map<Vec3i, List<BakedQuad>>> subModelCache;
-    private final ICacheKeyProvider<Object> keyProvider;
+    private final IModelCacheKeyProvider<Object> keyProvider;
 
     public BakedSplitModel(T base, Supplier<SplitData> splitData, ModelState transform, boolean dynamic) {
         super(base, splitData);
         this.dynamic = dynamic;
         if (dynamic) {
-            if (!(base instanceof ICacheKeyProvider)) {
-                throw new RuntimeException("Dynamic split model requires the inner model to implement ICacheKeyProvider");
+            if (!(base instanceof IModelCacheKeyProvider)) {
+                throw new RuntimeException("Dynamic split model requires the inner model to implement IModelCacheKeyProvider");
             }
-            @SuppressWarnings("unchecked") ICacheKeyProvider<Object> kp = (ICacheKeyProvider<Object>) base;
+            @SuppressWarnings("unchecked") IModelCacheKeyProvider<Object> kp = (IModelCacheKeyProvider<Object>) base;
             this.keyProvider = kp;
             this.subModelCache = CacheBuilder.newBuilder().maximumSize(1024).expireAfterAccess(10, TimeUnit.MINUTES).build(CacheLoader.from(key -> {
                 List<BakedQuad> baseQuads = this.keyProvider.getQuads(key);
