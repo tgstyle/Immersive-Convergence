@@ -13,6 +13,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -91,9 +92,9 @@ public abstract class GenericShape implements Function<BlockPos, VoxelShape> {
             int x = posInMultiblock.getX();
             int y = posInMultiblock.getY();
             int z = posInMultiblock.getZ();
-            if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT || z < 0 || z >= LENGTH) { return new ArrayList<>(); }
+            if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT || z < 0 || z >= LENGTH) { return Collections.emptyList(); }
             int index = y * (WIDTH * LENGTH) + z * WIDTH + x;
-            if (index < 0 || index >= SHAPES.size()) { return new ArrayList<>(); }
+            if (index < 0 || index >= SHAPES.size()) { return Collections.emptyList(); }
             return SHAPES.get(index);
         }
     }

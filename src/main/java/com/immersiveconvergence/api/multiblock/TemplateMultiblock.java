@@ -221,11 +221,11 @@ import static net.minecraft.world.level.block.Mirror.FRONT_BACK;
 
     @SuppressWarnings("deprecation")
     @Override public boolean isBlockTrigger(BlockState state, Direction d, @Nonnull Level world) {
-        getTemplate(world);
+        BlockState defaultTrigger = getTemplate(world).triggerState();
         Rotation baseRot = DirectionUtils.getRotationBetweenFacings(Direction.NORTH, d.getOpposite());
         if (baseRot == null) { return false; }
         for (TriggerPoint trigger : getTriggerPoints()) {
-            BlockState baseTrigger = triggerStateMap.getOrDefault(trigger.cell(), getTemplate(world).triggerState());
+            BlockState baseTrigger = triggerStateMap.getOrDefault(trigger.cell(), defaultTrigger);
             Rotation rot = baseRot.getRotated(trigger.offset());
             for (Mirror triedMirror : getMirrorsToTry()) {
                 BlockState expected = baseTrigger.mirror(triedMirror).rotate(rot);
