@@ -9,6 +9,9 @@ public interface IMechanicalEnergyConsumer {
     boolean isValid();
     boolean isMechanicalEnergyReceiver(EnumFacing facing);
     int getSpeed();
+    int getMaxSpeed();
     float getTorqueMultiplier();
+    double getMass();
+    double getFriction();
     MechanicalEnergyAnimation getAnimation();
 }
