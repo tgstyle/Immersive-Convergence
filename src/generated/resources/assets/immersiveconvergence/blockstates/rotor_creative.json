@@ -1,0 +1,18 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "immersiveconvergence:dynamic/rotor_creative_east_west"
+    },
+    "facing=north": {
+      "model": "immersiveconvergence:dynamic/rotor_creative"
+    },
+    "facing=south": {
+      "model": "immersiveconvergence:dynamic/rotor_creative",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "immersiveconvergence:dynamic/rotor_creative_east_west",
+      "y": 180
+    }
+  }
+}

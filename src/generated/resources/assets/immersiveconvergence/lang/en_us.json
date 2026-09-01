@@ -1,0 +1,8 @@
+{
+  "block.immersiveconvergence.heat_creative": "Creative Heater",
+  "block.immersiveconvergence.rotor_creative": "Creative Rotor",
+  "gui.immersiveconvergence.apply": "Apply",
+  "gui.immersiveconvergence.rotor_creative": "Creative Rotor",
+  "gui.immersiveconvergence.rotor_creative.rpm": "RPM",
+  "itemGroup.immersiveconvergence": "Immersive Convergence"
+}

@@ -50,6 +50,18 @@ sourceSets {
             ]
         }
     }
+    datagen {
+        java {
+            srcDirs = ["$rootDir/src/datagen/java"]
+        }
+        resources {
+            srcDirs = ["$rootDir/src/datagen/resources"]
+        }
+        compileClasspath += main.compileClasspath
+        runtimeClasspath += main.runtimeClasspath
+        compileClasspath += main.output
+        runtimeClasspath += main.output
+    }
     gametest {
         java {
             srcDirs = ["$rootDir/src/gametest/java"]
@@ -145,6 +157,20 @@ minecraft {
                 }
             }
         }
+        data {
+            workingDirectory = project.file('run')
+            property 'forge.logging.markers', ''
+            property 'fml.earlyprogresswindow', 'false'
+            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--validate',
+                    '--existing', sourceSets.main.resources.srcDirs.first()
+            ideaModule project.name + ".datagen"
+            mods {
+                immersiveconvergence {
+                    source(sourceSets.main as SourceSet)
+                    source(sourceSets.datagen as SourceSet)
+                }
+            }
+        }
         gameTestServer {
             workingDirectory = project.file('run')
             property 'forge.logging.markers', ''
@@ -203,6 +229,8 @@ dependencies {
 
     annotationProcessor "org.spongepowered:mixin:${version_mixin}:processor"
     implementation fg.deobf("curse.maven:${version_ie_curse}")
+
+    datagenImplementation sourceSets.main.output
 }
 
 def customGradle = rootProject.file('custom.gradle')

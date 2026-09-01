@@ -1,0 +1,12 @@
+{
+  "automatic_culling": false,
+  "emissive_ambient": true,
+  "flip_v": true,
+  "loader": "forge:obj",
+  "model": "immersiveconvergence:models/multiblock/metal/rotor_creative/rotor_creative.obj",
+  "render_type": "minecraft:cutout",
+  "shade_quads": true,
+  "textures": {
+    "particle": "immersiveconvergence:multiblock/metal/rotor_creative"
+  }
+}

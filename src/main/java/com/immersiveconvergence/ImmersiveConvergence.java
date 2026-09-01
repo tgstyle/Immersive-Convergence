@@ -1,8 +1,16 @@
 package com.immersiveconvergence;
 
 import com.immersiveconvergence.api.capability.*;
+import com.immersiveconvergence.core.ICClientConfig;
 import com.immersiveconvergence.core.ICCommonConfig;
 import com.immersiveconvergence.core.lib.ICLib;
+import com.immersiveconvergence.core.network.PacketHandler;
+import com.immersiveconvergence.core.registry.ICRegistryRemaps;
+import com.immersiveconvergence.core.registration.ICBlockEntities;
+import com.immersiveconvergence.core.registration.ICBlocks;
+import com.immersiveconvergence.core.registration.ICCreativeTab;
+import com.immersiveconvergence.core.registration.ICItems;
+import com.immersiveconvergence.core.registration.ICMenuTypes;
 import com.immersiveconvergence.core.proxy.ClientProxySupplier;
 import com.immersiveconvergence.core.proxy.CommonProxy;
 import net.minecraftforge.common.MinecraftForge;
@@ -29,12 +37,20 @@ public class ImmersiveConvergence {
         modEventBus.addListener(this::registerCapabilities);
         ICLib.IC_LOGGER.info("Starting Proxy Mod Construction");
         CommonProxy.modConstruction(modEventBus);
+        ICBlocks.init(modEventBus);
+        ICItems.init(modEventBus);
+        ICBlockEntities.init(modEventBus);
+        ICMenuTypes.init(modEventBus);
+        ICCreativeTab.init(modEventBus);
         context.registerConfig(ModConfig.Type.COMMON, ICCommonConfig.SPEC);
+        context.registerConfig(ModConfig.Type.CLIENT, ICClientConfig.SPEC);
         MinecraftForge.EVENT_BUS.register(ImmersiveConvergence.class);
+        MinecraftForge.EVENT_BUS.addListener(ICRegistryRemaps::handleRemapping);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
         ICLib.IC_LOGGER.info("HELLO FROM COMMON SETUP");
+        event.enqueueWork(PacketHandler::initialize);
     }
 
     private void registerCapabilities(RegisterCapabilitiesEvent event) {
