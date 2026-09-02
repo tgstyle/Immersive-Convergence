@@ -1,0 +1,23 @@
+{
+  "block.immersiveconvergence.heat_creative": "Kreativní ohřívač",
+  "block.immersiveconvergence.rotor_creative": "Kreativní rotor",
+  "config.jade.plugin_immersiveconvergence.lines": "Údaje strojů",
+  "config.jade.plugin_immersiveconvergence.status": "Stav strojů",
+  "desc.immersiveconvergence.info.holdShiftForInfo": "§8Podržte Shift pro více informací§r",
+  "gui.immersiveconvergence.apply": "Použít",
+  "gui.immersiveconvergence.empty": "Prázdné",
+  "gui.immersiveconvergence.energy_stored": "%s/%s IF",
+  "gui.immersiveconvergence.fluid_amount": "%s mB",
+  "gui.immersiveconvergence.fluid_capacity": "%s/%s mB",
+  "gui.immersiveconvergence.fluid_density": "Hustota: %s",
+  "gui.immersiveconvergence.fluid_nbt": "NBT data: %s",
+  "gui.immersiveconvergence.fluid_registry": "Registr tekutin: %s",
+  "gui.immersiveconvergence.fluid_temperature": "Teplota: %s",
+  "gui.immersiveconvergence.fluid_viscosity": "Viskozita: %s",
+  "gui.immersiveconvergence.fuel_empty": "Palivo: Prázdné",
+  "gui.immersiveconvergence.rotor_creative": "Kreativní rotor",
+  "gui.immersiveconvergence.rotor_creative.rpm": "ot/min",
+  "gui.immersiveconvergence.status": "Stav: %s",
+  "gui.immersiveconvergence.status_active": "Aktivní",
+  "gui.immersiveconvergence.status_inactive": "Neaktivní"
+}

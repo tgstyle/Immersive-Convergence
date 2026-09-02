@@ -6,13 +6,15 @@
   "plugin": "com.immersiveconvergence.mixin.ICMixinPlugin",
   "mixins": [
     "MultiblockBEHelperCommonMixin",
-    "MultiblockRegistrationBuilderAccessor"
+    "MultiblockRegistrationBuilderAccessor",
+    "InitializationTrackerMixin"
   ],
   "client": [
     "AbstractSplitModelMixin",
     "BakedBasicSplitModelMixin",
     "BakedDynamicSplitModelMixin",
-    "PolygonUtilsMixin"
+    "PolygonUtilsMixin",
+    "BlockRenderDispatcherMixin"
   ],
   "injectors": {
     "defaultRequire": 1

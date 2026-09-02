@@ -1,0 +1,23 @@
+{
+  "block.immersiveconvergence.heat_creative": "創造模式加熱器",
+  "block.immersiveconvergence.rotor_creative": "創造模式轉子",
+  "config.jade.plugin_immersiveconvergence.lines": "機器讀數",
+  "config.jade.plugin_immersiveconvergence.status": "機器狀態",
+  "desc.immersiveconvergence.info.holdShiftForInfo": "§8按住 Shift 查看更多資訊§r",
+  "gui.immersiveconvergence.apply": "套用",
+  "gui.immersiveconvergence.empty": "空",
+  "gui.immersiveconvergence.energy_stored": "%s / %s IF",
+  "gui.immersiveconvergence.fluid_amount": "%s mB",
+  "gui.immersiveconvergence.fluid_capacity": "%s / %s mB",
+  "gui.immersiveconvergence.fluid_density": "密度：%s",
+  "gui.immersiveconvergence.fluid_nbt": "NBT 資料：%s",
+  "gui.immersiveconvergence.fluid_registry": "流體註冊名：%s",
+  "gui.immersiveconvergence.fluid_temperature": "溫度：%s",
+  "gui.immersiveconvergence.fluid_viscosity": "黏度：%s",
+  "gui.immersiveconvergence.fuel_empty": "燃料：空",
+  "gui.immersiveconvergence.rotor_creative": "創造模式轉子",
+  "gui.immersiveconvergence.rotor_creative.rpm": "轉/分",
+  "gui.immersiveconvergence.status": "狀態：%s",
+  "gui.immersiveconvergence.status_active": "運作中",
+  "gui.immersiveconvergence.status_inactive": "已停止"
+}

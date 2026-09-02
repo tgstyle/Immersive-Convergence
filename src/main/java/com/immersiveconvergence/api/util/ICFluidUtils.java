@@ -1,6 +1,7 @@
 package com.immersiveconvergence.api.util;
 
 import blusunrize.immersiveengineering.api.IEApiDataComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -11,6 +12,11 @@ import net.neoforged.neoforge.fluids.FluidStack;
         FluidStack fs = stack.copyWithAmount(amount);
         if (stripPressure) { fs.remove(IEApiDataComponents.FLUID_PRESSURIZED); }
         return fs;
+    }
+
+    public static Component formatFluidStack(FluidStack fluid) {
+        if (fluid.isEmpty()) { return Component.translatable("gui.immersiveconvergence.empty"); }
+        return Component.literal(fluid.getHoverName().getString() + ": " + fluid.getAmount() + "mB");
     }
 
     public static boolean isFluidRelatedItemStack(ItemStack stack) {

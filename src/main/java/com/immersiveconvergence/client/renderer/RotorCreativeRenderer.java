@@ -1,8 +1,8 @@
 package com.immersiveconvergence.client.renderer;
 
 import com.immersiveconvergence.client.models.ICRotorModels;
-import com.immersiveconvergence.client.models.ICDynamicModel;
 import com.immersiveconvergence.api.client.RenderUtils;
+import com.immersiveconvergence.api.client.StandaloneModel;
 import com.immersiveconvergence.common.blocks.RotorCreativeBlock;
 import com.immersiveconvergence.common.blocks.logic.RotorCreativeBlockEntity;
 
@@ -37,7 +37,7 @@ public class RotorCreativeRenderer implements BlockEntityRenderer<RotorCreativeB
         Direction dir = state.getValue(RotorCreativeBlock.FACING);
         Vec3 axisVec = Vec3.atLowerCornerOf(dir.getNormal());
         double angle = tile.animation_rotation + tile.animation_step * partialTicks * Math.signum(tile.rpm);
-        ICDynamicModel selectedModel = (dir == Direction.EAST || dir == Direction.WEST) ? ICRotorModels.ROTOR_CREATIVE_EAST_WEST : ICRotorModels.ROTOR_CREATIVE;
+        StandaloneModel selectedModel = (dir == Direction.EAST || dir == Direction.WEST) ? ICRotorModels.ROTOR_CREATIVE_EAST_WEST : ICRotorModels.ROTOR_CREATIVE;
         poseStack.pushPose();
         poseStack.translate(0.5, 0.5, 0.5);
         ROTATION.rotationAxis((float)(angle * Mth.DEG_TO_RAD), (float) axisVec.x, (float) axisVec.y, (float) axisVec.z);
@@ -46,7 +46,7 @@ public class RotorCreativeRenderer implements BlockEntityRenderer<RotorCreativeB
         poseStack.popPose();
     }
 
-    private void renderDynamicModel(ICDynamicModel model, PoseStack matrix, MultiBufferSource buffer, Level level, BlockPos pos, int light) {
+    private void renderDynamicModel(StandaloneModel model, PoseStack matrix, MultiBufferSource buffer, Level level, BlockPos pos, int light) {
         List<BakedQuad> quads = model.get().getQuads(null, null, ApiUtils.RANDOM_SOURCE, ModelData.EMPTY, null);
         RenderUtils.renderModelTESRFancy(quads, buffer.getBuffer(RenderType.solid()), matrix, level, pos, false, 0xffffff, light);
     }

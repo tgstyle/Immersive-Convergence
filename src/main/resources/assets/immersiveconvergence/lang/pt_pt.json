@@ -1,0 +1,23 @@
+{
+  "block.immersiveconvergence.heat_creative": "Aquecedor Criativo",
+  "block.immersiveconvergence.rotor_creative": "Rotor Criativo",
+  "config.jade.plugin_immersiveconvergence.lines": "Leituras das máquinas",
+  "config.jade.plugin_immersiveconvergence.status": "Estado das máquinas",
+  "desc.immersiveconvergence.info.holdShiftForInfo": "§8Mantenha Shift carregado para mais informações§r",
+  "gui.immersiveconvergence.apply": "Aplicar",
+  "gui.immersiveconvergence.empty": "Vazio",
+  "gui.immersiveconvergence.energy_stored": "%s / %s IF",
+  "gui.immersiveconvergence.fluid_amount": "%s mB",
+  "gui.immersiveconvergence.fluid_capacity": "%s / %s mB",
+  "gui.immersiveconvergence.fluid_density": "Densidade: %s",
+  "gui.immersiveconvergence.fluid_nbt": "Dados NBT: %s",
+  "gui.immersiveconvergence.fluid_registry": "Registo de Fluidos: %s",
+  "gui.immersiveconvergence.fluid_temperature": "Temperatura: %s",
+  "gui.immersiveconvergence.fluid_viscosity": "Viscosidade: %s",
+  "gui.immersiveconvergence.fuel_empty": "Combustível: Vazio",
+  "gui.immersiveconvergence.rotor_creative": "Rotor Criativo",
+  "gui.immersiveconvergence.rotor_creative.rpm": "RPM",
+  "gui.immersiveconvergence.status": "Estado: %s",
+  "gui.immersiveconvergence.status_active": "Ativo",
+  "gui.immersiveconvergence.status_inactive": "Inativo"
+}

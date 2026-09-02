@@ -1,0 +1,23 @@
+{
+  "block.immersiveconvergence.heat_creative": "Творческий нагреватель",
+  "block.immersiveconvergence.rotor_creative": "Творческий ротор",
+  "config.jade.plugin_immersiveconvergence.lines": "Показания машин",
+  "config.jade.plugin_immersiveconvergence.status": "Состояние машин",
+  "desc.immersiveconvergence.info.holdShiftForInfo": "§8Удерживайте Shift для подробностей§r",
+  "gui.immersiveconvergence.apply": "Применить",
+  "gui.immersiveconvergence.empty": "Пусто",
+  "gui.immersiveconvergence.energy_stored": "%s / %s IF",
+  "gui.immersiveconvergence.fluid_amount": "%s мБ",
+  "gui.immersiveconvergence.fluid_capacity": "%s / %s мБ",
+  "gui.immersiveconvergence.fluid_density": "Плотность: %s",
+  "gui.immersiveconvergence.fluid_nbt": "NBT-данные: %s",
+  "gui.immersiveconvergence.fluid_registry": "Реестр жидкостей: %s",
+  "gui.immersiveconvergence.fluid_temperature": "Температура: %s",
+  "gui.immersiveconvergence.fluid_viscosity": "Вязкость: %s",
+  "gui.immersiveconvergence.fuel_empty": "Топливо: Пусто",
+  "gui.immersiveconvergence.rotor_creative": "Творческий ротор",
+  "gui.immersiveconvergence.rotor_creative.rpm": "об/мин",
+  "gui.immersiveconvergence.status": "Состояние: %s",
+  "gui.immersiveconvergence.status_active": "Активно",
+  "gui.immersiveconvergence.status_inactive": "Неактивно"
+}

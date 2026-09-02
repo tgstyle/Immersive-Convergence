@@ -1,0 +1,23 @@
+{
+  "block.immersiveconvergence.heat_creative": "クリエイティブヒーター",
+  "block.immersiveconvergence.rotor_creative": "クリエイティブローター",
+  "config.jade.plugin_immersiveconvergence.lines": "機械の表示値",
+  "config.jade.plugin_immersiveconvergence.status": "機械の状態",
+  "desc.immersiveconvergence.info.holdShiftForInfo": "§8Shiftキーを押すともっと詳しく見られます§r",
+  "gui.immersiveconvergence.apply": "適用",
+  "gui.immersiveconvergence.empty": "空",
+  "gui.immersiveconvergence.energy_stored": "%s / %s IF",
+  "gui.immersiveconvergence.fluid_amount": "%s mB",
+  "gui.immersiveconvergence.fluid_capacity": "%s / %s mB",
+  "gui.immersiveconvergence.fluid_density": "密度: %s",
+  "gui.immersiveconvergence.fluid_nbt": "NBTデータ: %s",
+  "gui.immersiveconvergence.fluid_registry": "液体登録名: %s",
+  "gui.immersiveconvergence.fluid_temperature": "温度: %s",
+  "gui.immersiveconvergence.fluid_viscosity": "粘度: %s",
+  "gui.immersiveconvergence.fuel_empty": "燃料: 空",
+  "gui.immersiveconvergence.rotor_creative": "クリエイティブローター",
+  "gui.immersiveconvergence.rotor_creative.rpm": "回転/分",
+  "gui.immersiveconvergence.status": "状態: %s",
+  "gui.immersiveconvergence.status_active": "稼働中",
+  "gui.immersiveconvergence.status_inactive": "停止中"
+}

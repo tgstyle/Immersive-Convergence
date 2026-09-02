@@ -1,5 +1,7 @@
 package com.immersiveconvergence;
 
+import com.immersiveconvergence.api.integration.top.ProbeIntegration;
+import com.immersiveconvergence.api.loot.LootEntryTypes;
 import com.immersiveconvergence.core.ICClientConfig;
 import com.immersiveconvergence.core.ICCommonConfig;
 import com.immersiveconvergence.core.lib.ICLib;
@@ -16,6 +18,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
@@ -48,6 +51,7 @@ public class ImmersiveConvergence {
 
     public ImmersiveConvergence(IEventBus modEventBus, ModContainer container) {
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(this::enqueueIMC);
         modEventBus.addListener(ICBlockEntities::registerCapabilities);
         CommonProxy.modConstruction(modEventBus);
         ICBlocks.init(modEventBus);
@@ -55,6 +59,7 @@ public class ImmersiveConvergence {
         ICBlockEntities.init(modEventBus);
         ICMenuTypes.init(modEventBus);
         ICCreativeTab.init(modEventBus);
+        LootEntryTypes.init(modEventBus);
         container.registerConfig(ModConfig.Type.COMMON, ICCommonConfig.SPEC);
         container.registerConfig(ModConfig.Type.CLIENT, ICClientConfig.SPEC);
         NeoForge.EVENT_BUS.register(ImmersiveConvergence.class);
@@ -62,6 +67,8 @@ public class ImmersiveConvergence {
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {}
+
+    private void enqueueIMC(final InterModEnqueueEvent event) { ProbeIntegration.enqueueIMC(); }
 
     @SubscribeEvent
     public static void onServerStarting(ServerStartingEvent event) {}
