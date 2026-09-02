@@ -3,9 +3,16 @@
   "package": "com.immersiveconvergence.mixin",
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
+  "plugin": "com.immersiveconvergence.mixin.ICMixinPlugin",
   "mixins": [
     "MultiblockBEHelperCommonMixin",
     "MultiblockRegistrationBuilderAccessor"
+  ],
+  "client": [
+    "AbstractSplitModelMixin",
+    "BakedBasicSplitModelMixin",
+    "BakedDynamicSplitModelMixin",
+    "PolygonUtilsMixin"
   ],
   "injectors": {
     "defaultRequire": 1
