@@ -39,7 +39,7 @@ import java.util.List;
     public DisplayLines temperature(double heatLevel, double workingLevel) { return progress((int) heatLevel, (int) workingLevel, " °C", 0xffcc0000, 0xffff6666, false); }
 
     public static Component describe(Line line) {
-        if (line instanceof Text text) { return text.text(); }
+        if (line instanceof Text(Component text1)) { return text1; }
         Progress progress = (Progress) line;
         return Component.literal(progress.value() + "/" + progress.max() + progress.suffix());
     }
@@ -48,14 +48,16 @@ import java.util.List;
         ListTag list = new ListTag();
         for (Line line : lines) {
             CompoundTag tag = new CompoundTag();
-            if (line instanceof Text text) { tag.putString("text", Component.Serializer.toJson(text.text(), net.minecraft.core.RegistryAccess.EMPTY)); }
-            else if (line instanceof Progress progress) {
-                tag.putInt("value", progress.value());
-                tag.putInt("max", progress.max());
-                tag.putString("suffix", progress.suffix());
-                tag.putInt("fill", progress.fillColor());
-                tag.putInt("border", progress.borderColor());
-                tag.putBoolean("compact", progress.compact());
+            if (line instanceof Text(Component text1)) { tag.putString("text", Component.Serializer.toJson(text1, net.minecraft.core.RegistryAccess.EMPTY)); }
+            else if (line instanceof Progress(
+                    int value, int max, String suffix, int fillColor, int borderColor, boolean compact
+            )) {
+                tag.putInt("value", value);
+                tag.putInt("max", max);
+                tag.putString("suffix", suffix);
+                tag.putInt("fill", fillColor);
+                tag.putInt("border", borderColor);
+                tag.putBoolean("compact", compact);
             }
             list.add(tag);
         }

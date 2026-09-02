@@ -52,7 +52,9 @@ public class ProbeIntegration {
             DisplayLines lines = new DisplayLines();
             context.addDisplayLines(level, lines);
             for (DisplayLines.Line line : lines.lines()) {
-                if (line instanceof DisplayLines.Text text) { probeInfo.text(text.text()); }
+                if (line instanceof DisplayLines.Text(
+                        net.minecraft.network.chat.Component text1
+                )) { probeInfo.text(text1); }
                 else if (line instanceof DisplayLines.Progress progress) { addProgress(probeInfo, progress); }
             }
         }
