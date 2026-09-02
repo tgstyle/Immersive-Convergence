@@ -85,6 +85,9 @@ ext {
     version_mixin = versionProps['version_mixin']
     version_ie_curse = versionProps['version_ie_curse']
     version_ie_min = versionProps['version_ie_min']
+    version_jei = versionProps['version_jei']
+    version_jade_curse = versionProps['version_jade_curse']
+    version_top_curse = versionProps['version_top_curse']
     mod_license = gradleProps['mod_license']
     mod_name = gradleProps['mod_name']
     mod_authors = gradleProps['mod_authors']
@@ -231,6 +234,10 @@ dependencies {
 
     annotationProcessor "org.spongepowered:mixin:${version_mixin}:processor"
     implementation fg.deobf("curse.maven:${version_ie_curse}")
+    compileOnly fg.deobf("mezz.jei:jei-${version_minecraft}-forge-api:${version_jei}")
+    compileOnly fg.deobf("mezz.jei:jei-${version_minecraft}-common-api:${version_jei}")
+    compileOnly fg.deobf("curse.maven:${version_jade_curse}")
+    compileOnly fg.deobf("curse.maven:${version_top_curse}")
 
     datagenImplementation sourceSets.main.output
 }

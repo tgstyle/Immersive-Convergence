@@ -6,9 +6,14 @@
   "refmap": "immersiveconvergence.refmap.json",
   "mixins": [
     "MultiblockBEHelperCommonMixin",
-    "MultiblockRegistrationBuilderAccessor"
+    "MultiblockRegistrationBuilderAccessor",
+    "InitializationTrackerMixin",
+    "FluidPipeBlockEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "client": [
+    "BlockRenderDispatcherMixin"
+  ]
 }

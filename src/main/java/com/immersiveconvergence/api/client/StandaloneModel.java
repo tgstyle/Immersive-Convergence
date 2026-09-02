@@ -1,4 +1,4 @@
-package com.immersiveconvergence.client.models;
+package com.immersiveconvergence.api.client;
 
 import com.immersiveconvergence.core.lib.ICLib;
 
@@ -16,14 +16,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Mod.EventBusSubscriber(modid = ICLib.MODID, bus = Bus.MOD, value = Dist.CLIENT)
-public record ICDynamicModel(ResourceLocation name) {
+@SuppressWarnings({"unused", "RedundantSuppression"}) public class StandaloneModel {
     private static final List<ResourceLocation> MODELS = new ArrayList<>();
+    private final ResourceLocation name;
 
     @SubscribeEvent public static void registerModels(ModelEvent.RegisterAdditional ev) { for (ResourceLocation model : MODELS) { ev.register(model); } }
 
-    public ICDynamicModel(String desc) {
-        this(ICLib.rl("dynamic/" + desc));
-        MODELS.add(name);
+    public StandaloneModel(ResourceLocation model) {
+        this.name = model;
+        MODELS.add(model);
     }
 
     public BakedModel get() {

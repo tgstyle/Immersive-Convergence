@@ -1,6 +1,8 @@
 package com.immersiveconvergence.core.network;
 
 import com.immersiveconvergence.api.network.INetworkMessage;
+import com.immersiveconvergence.api.network.MessageMenuSync;
+import com.immersiveconvergence.api.network.MessageMenuUpdate;
 import com.immersiveconvergence.api.network.MessageTileSync;
 import com.immersiveconvergence.core.lib.ICLib;
 
@@ -26,7 +28,11 @@ public class PacketHandler {
 
     private static int id = 0;
 
-    public static void initialize() { registerMessage(MessageTileSync.class, MessageTileSync::new); }
+    public static void initialize() {
+        registerMessage(MessageTileSync.class, MessageTileSync::new);
+        registerMessage(MessageMenuUpdate.class, MessageMenuUpdate::new);
+        registerMessage(MessageMenuSync.class, MessageMenuSync::new);
+    }
 
     public static <T extends INetworkMessage> void registerMessage(Class<T> type, Function<FriendlyByteBuf, T> decoder) {
         INSTANCE.registerMessage(id++, type, INetworkMessage::toBytes, decoder, (t, ctx) -> {

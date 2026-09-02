@@ -2,6 +2,7 @@ package com.immersiveconvergence.api.util;
 
 import blusunrize.immersiveengineering.api.fluid.IFluidPipe;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
@@ -16,6 +17,11 @@ import net.minecraftforge.fluids.FluidUtil;
             if (tag.isEmpty()) { fs.setTag(null); }
         }
         return fs;
+    }
+
+    public static Component formatFluidStack(FluidStack fluid) {
+        if (fluid.isEmpty()) { return Component.translatable("gui.immersiveconvergence.empty"); }
+        return Component.literal(fluid.getDisplayName().getString() + ": " + fluid.getAmount() + "mB");
     }
 
     public static boolean isFluidRelatedItemStack(ItemStack stack) {

@@ -1,6 +1,8 @@
 package com.immersiveconvergence;
 
 import com.immersiveconvergence.api.capability.*;
+import com.immersiveconvergence.api.integration.top.ProbeIntegration;
+import com.immersiveconvergence.api.loot.LootEntryTypes;
 import com.immersiveconvergence.core.ICClientConfig;
 import com.immersiveconvergence.core.ICCommonConfig;
 import com.immersiveconvergence.core.lib.ICLib;
@@ -24,6 +26,7 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @SuppressWarnings("unused")
@@ -34,6 +37,7 @@ public class ImmersiveConvergence {
     public ImmersiveConvergence(FMLJavaModLoadingContext context) {
         IEventBus modEventBus = context.getModEventBus();
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(this::enqueueIMC);
         modEventBus.addListener(this::registerCapabilities);
         ICLib.IC_LOGGER.info("Starting Proxy Mod Construction");
         CommonProxy.modConstruction(modEventBus);
@@ -42,6 +46,7 @@ public class ImmersiveConvergence {
         ICBlockEntities.init(modEventBus);
         ICMenuTypes.init(modEventBus);
         ICCreativeTab.init(modEventBus);
+        LootEntryTypes.init(modEventBus);
         context.registerConfig(ModConfig.Type.COMMON, ICCommonConfig.SPEC);
         context.registerConfig(ModConfig.Type.CLIENT, ICClientConfig.SPEC);
         MinecraftForge.EVENT_BUS.register(ImmersiveConvergence.class);
@@ -52,6 +57,8 @@ public class ImmersiveConvergence {
         ICLib.IC_LOGGER.info("HELLO FROM COMMON SETUP");
         event.enqueueWork(PacketHandler::initialize);
     }
+
+    private void enqueueIMC(final InterModEnqueueEvent event) { ProbeIntegration.enqueueIMC(); }
 
     private void registerCapabilities(RegisterCapabilitiesEvent event) {
         event.register(IHeatProvider.class);

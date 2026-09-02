@@ -1,0 +1,23 @@
+{
+  "block.immersiveconvergence.heat_creative": "크리에이티브 히터",
+  "block.immersiveconvergence.rotor_creative": "크리에이티브 로터",
+  "config.jade.plugin_immersiveconvergence.lines": "기계 정보",
+  "config.jade.plugin_immersiveconvergence.status": "기계 상태",
+  "desc.immersiveconvergence.info.holdShiftForInfo": "§8Shift를 누르면 더 많은 정보를 볼 수 있습니다§r",
+  "gui.immersiveconvergence.apply": "적용",
+  "gui.immersiveconvergence.empty": "비어 있음",
+  "gui.immersiveconvergence.energy_stored": "%s / %s IF",
+  "gui.immersiveconvergence.fluid_amount": "%s mB",
+  "gui.immersiveconvergence.fluid_capacity": "%s / %s mB",
+  "gui.immersiveconvergence.fluid_density": "밀도: %s",
+  "gui.immersiveconvergence.fluid_nbt": "NBT 데이터: %s",
+  "gui.immersiveconvergence.fluid_registry": "유체 등록명: %s",
+  "gui.immersiveconvergence.fluid_temperature": "온도: %s",
+  "gui.immersiveconvergence.fluid_viscosity": "점도: %s",
+  "gui.immersiveconvergence.fuel_empty": "연료: 없음",
+  "gui.immersiveconvergence.rotor_creative": "크리에이티브 로터",
+  "gui.immersiveconvergence.rotor_creative.rpm": "회전/분",
+  "gui.immersiveconvergence.status": "상태: %s",
+  "gui.immersiveconvergence.status_active": "작동 중",
+  "gui.immersiveconvergence.status_inactive": "정지"
+}

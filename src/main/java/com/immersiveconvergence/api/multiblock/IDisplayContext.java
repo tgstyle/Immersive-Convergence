@@ -1,8 +1,11 @@
 package com.immersiveconvergence.api.multiblock;
 
+import com.immersiveconvergence.api.integration.DisplayLines;
+
 import blusunrize.immersiveengineering.api.energy.AveragingEnergyStorage;
 import blusunrize.immersiveengineering.common.blocks.multiblocks.process.ProcessContext;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
@@ -22,4 +25,6 @@ import java.util.List;
     default void writeDisplaySyncNBT(CompoundTag nbt) { }
 
     default void readDisplaySyncNBT(CompoundTag nbt) { }
+
+    default void addDisplayLines(Level level, DisplayLines lines) { }
 }

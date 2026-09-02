@@ -16,7 +16,7 @@ public class ICCreativeTab {
             .icon(() -> new ItemStack(ICBlocks.ROTOR_CREATIVE.get()))
             .title(Component.translatable("itemGroup." + ICLib.MODID))
             .displayItems((params, output) -> {
-                for (ICBlocks.BlockEntry<?> entry : ICBlocks.BlockEntry.ALL_ENTRIES) { output.accept(new ItemStack(entry.get())); }
+                for (ICBlocks.ICBlockEntry<?> entry : ICBlocks.ICBlockEntry.ALL_ENTRIES) { output.accept(new ItemStack(entry.get())); }
             })
             .build()); }
 
