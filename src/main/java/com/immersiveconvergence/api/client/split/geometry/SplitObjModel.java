@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class SplitObjModel<Texture> {
+@SuppressWarnings("unused") public class SplitObjModel<Texture> {
     private final Map<String, Group<Texture>> faces;
     private final List<Polygon<Texture>> allFaces;
     private final double minX, maxX, minY, maxY, minZ, maxZ;

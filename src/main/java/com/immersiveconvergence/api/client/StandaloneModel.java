@@ -16,21 +16,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Mod.EventBusSubscriber(modid = ICLib.MODID, bus = Bus.MOD, value = Dist.CLIENT)
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class StandaloneModel {
+@SuppressWarnings({"unused", "RedundantSuppression"}) public record StandaloneModel(ResourceLocation name) {
     private static final List<ResourceLocation> MODELS = new ArrayList<>();
-    private final ResourceLocation name;
 
-    @SubscribeEvent public static void registerModels(ModelEvent.RegisterAdditional ev) { for (ResourceLocation model : MODELS) { ev.register(model); } }
+    @SubscribeEvent
+    public static void registerModels(ModelEvent.RegisterAdditional ev) {
+        for (ResourceLocation model : MODELS) {
+            ev.register(model);
+        }
+    }
 
-    public StandaloneModel(ResourceLocation model) {
-        this.name = model;
-        MODELS.add(model);
+    public StandaloneModel(ResourceLocation name) {
+        this.name = name;
+        MODELS.add(name);
     }
 
     public BakedModel get() {
         final BlockRenderDispatcher blockRenderer = Minecraft.getInstance().getBlockRenderer();
         return blockRenderer.getBlockModelShaper().getModelManager().getModel(name);
     }
-
-    public ResourceLocation getName() { return name; }
 }

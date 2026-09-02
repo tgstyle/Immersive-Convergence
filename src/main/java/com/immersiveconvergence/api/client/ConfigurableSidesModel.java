@@ -123,8 +123,6 @@ import java.util.function.Function;
 
     @Override @Nonnull public TextureAtlasSprite getParticleIcon(@Nonnull ModelData data) { return this.textures.get(Direction.DOWN).get(Enums.IOSideConfig.NONE); }
 
-    @Override @Nonnull public ItemOverrides getOverrides() { return ItemOverrides.EMPTY; }
-
     @Nonnull public ChunkRenderTypeSet getRenderTypes(@Nonnull BlockState state, @Nonnull RandomSource rand, @Nonnull ModelData data) { return ChunkRenderTypeSet.of(this.renderTypes.block()); }
 
     @Nonnull public List<RenderType> getRenderTypes(@Nonnull ItemStack itemStack, boolean fabulous) { return List.of(fabulous ? this.renderTypes.entityFabulous() : this.renderTypes.entity()); }

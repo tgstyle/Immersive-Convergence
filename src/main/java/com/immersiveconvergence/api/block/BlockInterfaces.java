@@ -1,6 +1,5 @@
 package com.immersiveconvergence.api.block;
 
-import com.google.common.base.Preconditions;
 import com.immersiveconvergence.core.lib.ICLib;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -8,12 +7,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
@@ -44,7 +40,7 @@ import java.util.function.Consumer;
 
         default boolean isDummy() {
             BlockState state = getState();
-            return state.hasProperty(ModProperties.MULTIBLOCKSLAVE) ? state.getValue(ModProperties.MULTIBLOCKSLAVE) : true;
+            return !state.hasProperty(ModProperties.MULTIBLOCKSLAVE) || state.getValue(ModProperties.MULTIBLOCKSLAVE);
         }
     }
 

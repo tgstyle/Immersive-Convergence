@@ -14,5 +14,5 @@ public class ICBlockLoot extends BlockLootSubProvider {
 
     @Override protected void generate() { getKnownBlocks().forEach(this::dropSelf); }
 
-    @Override @Nonnull protected Iterable<Block> getKnownBlocks() { return () -> ICBlocks.BlockEntry.ALL_ENTRIES.stream().map(entry -> (Block)entry.get()).iterator(); }
+    @Override @Nonnull protected Iterable<Block> getKnownBlocks() { return () -> ICBlocks.ICBlockEntry.ALL_ENTRIES.stream().map(entry -> (Block)entry.get()).iterator(); }
 }
