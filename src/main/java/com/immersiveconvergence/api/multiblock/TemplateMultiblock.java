@@ -54,16 +54,10 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
         return state == null ? null : modifyTemplateState(state);
     }
 
-    private static final org.apache.logging.log4j.Logger DEBUG_LOG = org.apache.logging.log4j.LogManager.getLogger("IC-MB-DEBUG");
-    private boolean debug() { return uniqueName != null && uniqueName.startsWith("IE:BottlingMachine"); }
-
     @Override public boolean isBlockTrigger(IBlockState state) {
         if (template == null) { return false; }
         for (BlockPos trigger : triggerPositions) {
-            IBlockState expected = templateState(trigger.getX(), trigger.getY(), trigger.getZ());
-            boolean m = BlockMatcher.matches(expected, state);
-            if (debug()) { DEBUG_LOG.info("[{}] isBlockTrigger clicked={} expected={} -> {}", uniqueName, state, expected, m); }
-            if (m) { return true; }
+            if (BlockMatcher.matches(templateState(trigger.getX(), trigger.getY(), trigger.getZ()), state)) { return true; }
         }
         return false;
     }
@@ -133,10 +127,7 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
                     if (expected == null) { continue; }
                     if (template.isDummy(w, h, l)) { continue; }
                     BlockPos blockPos = localToWorld(origin, localX(w, mirror), h, l, side);
-                    if (!cellMatches(world, blockPos, w, h, l, expected, side, mirror)) {
-                        if (debug()) { DEBUG_LOG.info("[{}] isInvalid mirror={} side={} FAIL cell(w{} h{} l{}) at {} expected={} world={}", uniqueName, mirror, side, w, h, l, blockPos, expected, world.getBlockState(blockPos)); }
-                        return true;
-                    }
+                    if (!cellMatches(world, blockPos, w, h, l, expected, side, mirror)) { return true; }
                 }
             }
         }

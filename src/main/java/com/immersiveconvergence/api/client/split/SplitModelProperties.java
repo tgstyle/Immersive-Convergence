@@ -1,7 +1,19 @@
 package com.immersiveconvergence.api.client.split;
 
+import blusunrize.immersiveengineering.common.blocks.TileEntityMultiblockPart;
+import net.minecraft.block.Block;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.state.BlockStateContainer;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.common.property.ExtendedBlockState;
+import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @SuppressWarnings("unused")
 public final class SplitModelProperties {
@@ -16,4 +28,20 @@ public final class SplitModelProperties {
     };
 
     private SplitModelProperties() {}
+
+    public static BlockStateContainer withOffset(Block block, BlockStateContainer container) {
+        Collection<IProperty<?>> listed = container.getProperties();
+        List<IUnlistedProperty<?>> unlisted = new ArrayList<>();
+        if (container instanceof ExtendedBlockState) { unlisted.addAll(((ExtendedBlockState)container).getUnlistedProperties()); }
+        unlisted.add(SUBMODEL_OFFSET);
+        return new ExtendedBlockState(block, listed.toArray(new IProperty[0]), unlisted.toArray(new IUnlistedProperty[0]));
+    }
+
+    public static IBlockState withOffset(IBlockState state, IBlockAccess world, BlockPos pos) {
+        if (!(state instanceof IExtendedBlockState)) { return state; }
+        TileEntity te = world.getTileEntity(pos);
+        if (!(te instanceof TileEntityMultiblockPart) || !((TileEntityMultiblockPart<?>)te).formed) { return state; }
+        int[] offset = ((TileEntityMultiblockPart<?>)te).offset;
+        return ((IExtendedBlockState)state).withProperty(SUBMODEL_OFFSET, new BlockPos(offset[0], offset[1], offset[2]));
+    }
 }

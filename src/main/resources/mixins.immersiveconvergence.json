@@ -9,6 +9,8 @@
     "MixinIEMultiblockDisassemble",
     "MixinIEMultiblockAdvancedBounds",
     "MixinIEMultiblockBounds",
+    "MixinIEBlockSplitContainer",
+    "MixinIEBlockSplitOffset",
     "MixinIEMultiblockConnections",
     "MixinIEPortCapability",
     "MixinIEPortDrainTank",

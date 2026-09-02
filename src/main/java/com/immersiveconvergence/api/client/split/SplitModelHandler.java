@@ -23,31 +23,38 @@ import java.util.function.Supplier;
 @SuppressWarnings("unused")
 @Mod.EventBusSubscriber(modid = ImmersiveConvergence.MODID, value = Side.CLIENT)
 public class SplitModelHandler {
-    private static final Map<String, Map<String, Machine>> machinesByNamespace = new HashMap<>();
+    private static final Map<String, List<Machine>> machinesByNamespace = new HashMap<>();
 
-    public static void register(String namespace, String masterFile, Supplier<TemplateMultiblock> instance) {
-        Map<String, Machine> byFile = machinesByNamespace.computeIfAbsent(namespace, key -> new HashMap<>());
-        Machine machine = new Machine(masterFile, instance);
-        byFile.put(masterFile, machine);
-        byFile.put(masterFile + "_slave", machine);
+    public static void register(String namespace, String masterFile, Supplier<TemplateMultiblock> instance) { register(namespace, masterFile, null, masterFile + "_slave", null, false, instance); }
+
+    public static void register(String namespace, String masterFile, String masterType, String slaveFile, String slaveType, boolean splitDynamicRender, Supplier<TemplateMultiblock> instance) {
+        machinesByNamespace.computeIfAbsent(namespace, key -> new ArrayList<>()).add(new Machine(masterFile, masterType, slaveFile, slaveType, splitDynamicRender, instance));
     }
 
     @SubscribeEvent public static void onModelBake(ModelBakeEvent event) {
         IRegistry<ModelResourceLocation, IBakedModel> registry = event.getModelRegistry();
-        List<ModelResourceLocation> keys = new ArrayList<>();
+        Map<ModelResourceLocation, Machine> matches = new HashMap<>();
         for (ModelResourceLocation mrl : registry.getKeys()) {
-            Map<String, Machine> byFile = machinesByNamespace.get(mrl.getNamespace());
-            if (byFile != null && byFile.containsKey(mrl.getPath()) && isSplitVariant(mrl.getVariant())) { keys.add(mrl); }
+            List<Machine> machines = machinesByNamespace.get(mrl.getNamespace());
+            if (machines == null) { continue; }
+            for (Machine machine : machines) {
+                if (machine.covers(mrl)) {
+                    matches.put(mrl, machine);
+                    break;
+                }
+            }
         }
         Map<String, IBakedModel> bases = new HashMap<>();
-        for (ModelResourceLocation mrl : keys) {
-            Machine machine = machinesByNamespace.get(mrl.getNamespace()).get(mrl.getPath());
-            if (mrl.getPath().equals(machine.masterFile) && mrl.getVariant().contains("_0multiblockslave=false")) { bases.put(variantKey(machine, mrl.getVariant()), registry.getObject(mrl)); }
+        for (Map.Entry<ModelResourceLocation, Machine> entry : matches.entrySet()) {
+            ModelResourceLocation mrl = entry.getKey();
+            Machine machine = entry.getValue();
+            if (machine.isMaster(mrl) && "false".equals(value(mrl.getVariant(), "_0multiblockslave"))) { bases.put(machine.key(mrl.getVariant()), registry.getObject(mrl)); }
         }
         Map<String, BakedSplitModel> wrappers = new HashMap<>();
-        for (ModelResourceLocation mrl : keys) {
-            Machine machine = machinesByNamespace.get(mrl.getNamespace()).get(mrl.getPath());
-            String key = variantKey(machine, mrl.getVariant());
+        for (Map.Entry<ModelResourceLocation, Machine> entry : matches.entrySet()) {
+            ModelResourceLocation mrl = entry.getKey();
+            Machine machine = entry.getValue();
+            String key = machine.key(mrl.getVariant());
             IBakedModel base = bases.get(key);
             if (base == null) { continue; }
             BakedSplitModel wrapper = wrappers.get(key);
@@ -64,27 +71,47 @@ public class SplitModelHandler {
         }
     }
 
-    private static boolean isSplitVariant(String variant) { return !variant.contains("inventory") && !variant.contains("_1dynamicrender=true") && variant.contains("facing="); }
-
-    private static String variantKey(Machine machine, String variant) { return machine.masterFile + "|" + facingOf(variant) + "|" + mirroredOf(variant) + "|" + variant.contains("boolean1=true"); }
+    private static String value(String variant, String property) {
+        for (String pair : variant.split(",")) {
+            int eq = pair.indexOf('=');
+            if (eq > 0 && pair.substring(0, eq).equals(property)) { return pair.substring(eq + 1); }
+        }
+        return null;
+    }
 
     private static EnumFacing facingOf(String variant) {
-        int start = variant.indexOf("facing=") + 7;
-        int end = variant.indexOf(',', start);
-        String name = end < 0 ? variant.substring(start) : variant.substring(start, end);
-        EnumFacing facing = EnumFacing.byName(name);
+        String name = value(variant, "facing");
+        EnumFacing facing = name == null ? null : EnumFacing.byName(name);
         return facing == null ? EnumFacing.NORTH : facing;
     }
 
-    private static boolean mirroredOf(String variant) { return variant.contains("boolean0=true"); }
+    private static boolean mirroredOf(String variant) { return "true".equals(value(variant, "boolean0")); }
 
     private static final class Machine {
-        final String masterFile;
+        final String masterFile, masterType, slaveFile, slaveType;
+        final boolean splitDynamicRender;
         final Supplier<TemplateMultiblock> instance;
 
-        Machine(String masterFile, Supplier<TemplateMultiblock> instance) {
+        Machine(String masterFile, String masterType, String slaveFile, String slaveType, boolean splitDynamicRender, Supplier<TemplateMultiblock> instance) {
             this.masterFile = masterFile;
+            this.masterType = masterType;
+            this.slaveFile = slaveFile;
+            this.slaveType = slaveType;
+            this.splitDynamicRender = splitDynamicRender;
             this.instance = instance;
         }
+
+        boolean isMaster(ModelResourceLocation mrl) { return mrl.getPath().equals(masterFile) && (masterType == null || masterType.equals(value(mrl.getVariant(), "type"))); }
+
+        boolean isSlave(ModelResourceLocation mrl) { return mrl.getPath().equals(slaveFile) && (slaveType == null || slaveType.equals(value(mrl.getVariant(), "type"))); }
+
+        boolean covers(ModelResourceLocation mrl) {
+            String variant = mrl.getVariant();
+            if (variant.contains("inventory") || value(variant, "facing") == null) { return false; }
+            if (!splitDynamicRender && "true".equals(value(variant, "_1dynamicrender"))) { return false; }
+            return isMaster(mrl) || isSlave(mrl);
+        }
+
+        String key(String variant) { return masterFile + "|" + masterType + "|" + facingOf(variant) + "|" + mirroredOf(variant) + "|" + value(variant, "boolean1") + "|" + (splitDynamicRender ? value(variant, "_1dynamicrender") : ""); }
     }
 }

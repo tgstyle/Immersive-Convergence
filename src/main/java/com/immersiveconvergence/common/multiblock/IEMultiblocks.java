@@ -92,4 +92,6 @@ public final class IEMultiblocks {
 
         if (Loader.isModLoaded("immersivepetroleum")) { IPMultiblocks.init(); }
     }
+
+    public static void alignRenderLayers() { if (Loader.isModLoaded("immersivepetroleum")) { IPMultiblocks.alignRenderLayers(); } }
 }

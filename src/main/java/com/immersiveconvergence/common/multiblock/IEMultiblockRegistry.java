@@ -28,11 +28,10 @@ public final class IEMultiblockRegistry {
     public static IEMultiblock get(String uniqueName) {
         if (loaded.containsKey(uniqueName)) { return loaded.get(uniqueName); }
         Definition definition = definitions.get(uniqueName);
+        if (definition == null) { return null; }
         IEMultiblock multiblock = null;
-        if (definition != null) {
-            ShapeData shape = ShapeData.load(definition.namespace, definition.id);
-            if (shape.template != null) { multiblock = new IEMultiblock(uniqueName, shape, definition.blockState, definition.masterState, definition.anchor, definition.mirrorable, definition.postFormation); }
-        }
+        ShapeData shape = ShapeData.load(definition.namespace, definition.id);
+        if (shape.template != null) { multiblock = new IEMultiblock(uniqueName, shape, definition.blockState, definition.masterState, definition.anchor, definition.mirrorable, definition.postFormation); }
         loaded.put(uniqueName, multiblock);
         return multiblock;
     }
@@ -44,6 +43,11 @@ public final class IEMultiblockRegistry {
     public static IEMultiblock templateFor(TileEntityMultiblockPart<?> part) {
         String name = tileNames.get(part.getClass());
         return name == null ? null : get(name);
+    }
+
+    public static int portPos(TileEntityMultiblockPart<?> part) {
+        IEMultiblock template = templateFor(part);
+        return template == null ? part.pos : template.portPos(part.pos);
     }
 
     public static ItemStack getOriginalBlock(String uniqueName, int position) {

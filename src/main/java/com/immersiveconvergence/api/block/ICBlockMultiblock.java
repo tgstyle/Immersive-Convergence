@@ -24,7 +24,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -51,15 +50,7 @@ public abstract class ICBlockMultiblock<E extends Enum<E> & ICBlockBase.IBlockEn
     }
 
     @Override @Nonnull public IBlockState getExtendedState(@Nonnull IBlockState state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos) {
-        state = super.getExtendedState(state, world, pos);
-        if (state instanceof IExtendedBlockState) {
-            TileEntity te = world.getTileEntity(pos);
-            if (te instanceof TileEntityMultiblockPart && ((TileEntityMultiblockPart<?>)te).formed) {
-                int[] offset = ((TileEntityMultiblockPart<?>)te).offset;
-                state = ((IExtendedBlockState)state).withProperty(SplitModelProperties.SUBMODEL_OFFSET, new BlockPos(offset[0], offset[1], offset[2]));
-            }
-        }
-        return state;
+        return SplitModelProperties.withOffset(super.getExtendedState(state, world, pos), world, pos);
     }
 
     @Override public boolean removedByPlayer(@Nonnull IBlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull EntityPlayer player, boolean willHarvest) {

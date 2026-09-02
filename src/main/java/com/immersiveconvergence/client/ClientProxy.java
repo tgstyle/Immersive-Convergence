@@ -1,14 +1,17 @@
 package com.immersiveconvergence.client;
 
 import com.immersiveconvergence.ImmersiveConvergence;
+import com.immersiveconvergence.api.client.split.SplitModelHandler;
 import com.immersiveconvergence.api.network.BinaryTileSyncMessage;
 import com.immersiveconvergence.api.network.MessageStopSound;
 import com.immersiveconvergence.api.network.TileSyncMessage;
 import com.immersiveconvergence.common.CommonProxy;
 import com.immersiveconvergence.common.ICContent;
+import com.immersiveconvergence.common.multiblock.IEMultiblockRegistry;
 import com.immersiveconvergence.common.blocks.tileentities.TileEntityRotorCreative;
 import com.immersiveconvergence.client.event.ICClientEventHandler;
 import com.immersiveconvergence.client.render.TileRenderRotorCreative;
+import com.immersiveconvergence.client.render.ip.IPPumpjackSupport;
 
 import blusunrize.immersiveengineering.client.IECustomStateMapper;
 import blusunrize.immersiveengineering.client.models.obj.IEOBJLoader;
@@ -21,7 +24,9 @@ import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.Locale;
@@ -38,6 +43,24 @@ public class ClientProxy extends CommonProxy {
         IEOBJLoader.instance.addDomain(ImmersiveConvergence.MODID);
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRotorCreative.class, new TileRenderRotorCreative());
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new ICClientEventHandler());
+        registerSplitModels();
+        if (Loader.isModLoaded("immersivepetroleum")) { IPPumpjackSupport.init(); }
+    }
+
+    @Override public void loadComplete() { if (Loader.isModLoaded("immersivepetroleum")) { IPPumpjackSupport.bindRenderer(); } }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST) public static void registerPetroleumModels(ModelRegistryEvent event) { if (Loader.isModLoaded("immersivepetroleum")) { IPPumpjackSupport.registerStateMapper(); } }
+
+    private static void registerSplitModels() {
+        String ie = IEMultiblockRegistry.MODID;
+        String[][] ownFiles = {{"arc_furnace", "IE:ArcFurnace"}, {"auto_workbench", "IE:AutoWorkbench"}, {"bottling_machine", "IE:BottlingMachine"}, {"crusher", "IE:Crusher"}, {"diesel_generator", "IE:DieselGenerator"}, {"excavator", "IE:Excavator"}, {"fermenter", "IE:Fermenter"}, {"metal_press", "IE:MetalPress"}, {"mixer", "IE:Mixer"}, {"refinery", "IE:Refinery"}, {"squeezer", "IE:Squeezer"}};
+        for (String[] machine : ownFiles) {
+            String file = "metal_multiblock_" + machine[0];
+            SplitModelHandler.register(ie, file, null, file, null, false, () -> IEMultiblockRegistry.get(machine[1]));
+        }
+        String[][] sharedFile = {{"tank", "IE:SheetmetalTank"}, {"silo", "IE:Silo"}, {"assembler", "IE:Assembler"}, {"lightningrod", "IE:Lightningrod"}};
+        for (String[] machine : sharedFile) { SplitModelHandler.register(ie, "metal_multiblock", machine[0], "metal_multiblock", machine[0], false, () -> IEMultiblockRegistry.get(machine[1])); }
+        if (Loader.isModLoaded("immersivepetroleum")) { SplitModelHandler.register("immersivepetroleum", "metal_multiblock_distillationtowerparent", null, "metal_multiblock", "distillation_tower", true, () -> IEMultiblockRegistry.get("IP:DistillationTower")); }
     }
 
     @SubscribeEvent public static void registerModels(ModelRegistryEvent event) {

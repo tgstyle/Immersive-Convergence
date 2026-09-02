@@ -27,6 +27,13 @@ Two terms are used throughout. The **mod id** is the short name a mod goes by,
 overrides go under. The **machine id** is the short name of one machine, such as
 `alternator` or `boiler_tank`, and it is written as `<id>` below.
 
+Immersive Engineering's own machines and Immersive Petroleum's distillation
+tower and pumpjack are covered the same way. Their files ship inside Immersive
+Convergence's jar rather than their own, under the mod id of the mod that owns
+the machine, so overrides for them go under `overrides/immersiveengineering/`
+and `overrides/immersivepetroleum/`, and the original to copy comes out of
+Immersive Convergence's jar.
+
 ## Where overrides go
 Overrides live in a folder called `overrides`, sitting in your instance
 alongside `config` and `mods`. Inside, the layout copies the mod's own files:
@@ -264,6 +271,19 @@ instead of writing one from scratch, and this stays out of your way.
 Model paths in a blockstate are resolved under `models/block/`, so
 `immersivetech:multiblock/metal/alternator/alternator.obj` is the file at
 `assets/immersivetech/models/block/multiblock/metal/alternator/alternator.obj`.
+
+Immersive Petroleum's pumpjack is drawn from files Immersive Convergence ships
+under Petroleum's namespace, because Petroleum has no model for it that a pack
+can touch. The body is `assets/immersivepetroleum/blockstates/metal_multiblock_pumpjackparent.json`
+pointing at `models/block/multiblock/pumpjack.obj` and its `_mirrored` twin,
+textured from Petroleum's `textures/models/pumpjack.png`. The moving parts are
+separate files beside it, each modeled around the point it pivots on:
+`pumpjack_arm.obj` (the walking beam, pivot at the top of the samson post),
+`pumpjack_swing.obj` (the crank and counterweights), `pumpjack_connector.obj`
+(the pitman rod between them) and `pumpjack_well_long.obj` /
+`pumpjack_well_short.obj` (the rod into the well, whichever length reaches).
+Replace any of them with a model of the same name and the animation carries
+on using it.
 
 ## Making your own machine model
 A machine is one model of the entire thing, not a separate model per block. You

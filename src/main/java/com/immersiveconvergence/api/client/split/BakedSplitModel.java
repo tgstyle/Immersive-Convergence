@@ -7,8 +7,10 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -21,11 +23,12 @@ import java.util.Set;
 public class BakedSplitModel implements IBakedModel {
     private final IBakedModel base;
     private final Set<BlockPos> parts;
-    private volatile Map<BlockPos, List<BakedQuad>> splitModels;
+    private final Map<BlockPos, List<BakedQuad>>[] splitByLayer;
 
-    public BakedSplitModel(IBakedModel base, Set<BlockPos> parts) {
+    @SuppressWarnings("unchecked") public BakedSplitModel(IBakedModel base, Set<BlockPos> parts) {
         this.base = base;
         this.parts = parts;
+        this.splitByLayer = new Map[BlockRenderLayer.values().length + 1];
     }
 
     @Override @Nonnull public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
@@ -33,20 +36,25 @@ public class BakedSplitModel implements IBakedModel {
         if (side != null) { return ImmutableList.of(); }
         BlockPos offset = state instanceof IExtendedBlockState ? ((IExtendedBlockState)state).getValue(SplitModelProperties.SUBMODEL_OFFSET) : null;
         if (offset == null) { return ImmutableList.of(); }
-        Map<BlockPos, List<BakedQuad>> models = splitModels;
+        List<BakedQuad> quads = splitFor(MinecraftForgeClient.getRenderLayer()).get(offset);
+        return quads == null ? ImmutableList.of() : quads;
+    }
+
+    private Map<BlockPos, List<BakedQuad>> splitFor(BlockRenderLayer layer) {
+        int slot = layer == null ? 0 : layer.ordinal() + 1;
+        Map<BlockPos, List<BakedQuad>> models = splitByLayer[slot];
         if (models == null) {
             synchronized (this) {
-                models = splitModels;
+                models = splitByLayer[slot];
                 if (models == null) {
                     List<BakedQuad> baseQuads = new ArrayList<>(base.getQuads(null, null, 0));
                     for (EnumFacing facing : EnumFacing.VALUES) { baseQuads.addAll(base.getQuads(null, facing, 0)); }
                     models = QuadPolygonUtils.split(baseQuads, parts);
-                    splitModels = models;
+                    splitByLayer[slot] = models;
                 }
             }
         }
-        List<BakedQuad> quads = models.get(offset);
-        return quads == null ? ImmutableList.of() : quads;
+        return models;
     }
 
     @Override public boolean isAmbientOcclusion() { return false; }

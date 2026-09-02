@@ -5,8 +5,8 @@ import com.immersiveconvergence.api.multiblock.MultiblockShapes;
 import com.immersiveconvergence.api.multiblock.PoIJSONSchema;
 import com.immersiveconvergence.api.multiblock.ShapeData;
 import com.immersiveconvergence.api.multiblock.TemplateMultiblock;
+import com.immersiveconvergence.api.shapes.Shapes;
 
-import blusunrize.immersiveengineering.api.IEProperties;
 import blusunrize.immersiveengineering.api.MultiblockHandler;
 import blusunrize.immersiveengineering.api.tool.ConveyorHandler;
 import blusunrize.immersiveengineering.common.blocks.TileEntityMultiblockPart;
@@ -65,10 +65,24 @@ public class IEMultiblock extends TemplateMultiblock {
         int key = (position * 6 + facing.ordinal()) * 2 + (mirrored ? 1 : 0);
         List<AxisAlignedBB> cached = boundsCache.get(key);
         if (cached != null) { return cached; }
-        List<AxisAlignedBB> local = shape.getShape(MultiblockShapes.localPos(position, template.width, template.length));
-        List<AxisAlignedBB> bounds = MultiblockShapes.rotated(local, facing, mirrored).toAabbs();
+        List<AxisAlignedBB> solid = new ArrayList<>();
+        List<AxisAlignedBB> planes = new ArrayList<>();
+        for (AxisAlignedBB aabb : shape.getShape(MultiblockShapes.localPos(position, template.width, template.length))) {
+            if (isPlane(aabb)) { planes.add(aabb); }
+            else { solid.add(aabb); }
+        }
+        List<AxisAlignedBB> bounds = new ArrayList<>(MultiblockShapes.rotated(solid, facing, mirrored).toAabbs());
+        for (AxisAlignedBB plane : planes) { bounds.add(Shapes.rotateAABB(plane, facing, mirrored)); }
         boundsCache.put(key, bounds);
         return bounds;
+    }
+
+    private static boolean isPlane(AxisAlignedBB aabb) {
+        int flat = 0;
+        if (aabb.maxX - aabb.minX < 1.0E-7D) { flat++; }
+        if (aabb.maxY - aabb.minY < 1.0E-7D) { flat++; }
+        if (aabb.maxZ - aabb.minZ < 1.0E-7D) { flat++; }
+        return flat == 1;
     }
 
     public List<AxisAlignedBB> boundsFor(int position, EnumFacing facing, boolean mirrored, BlockPos origin) {
@@ -80,7 +94,7 @@ public class IEMultiblock extends TemplateMultiblock {
 
     public float[] blockBoundsFor(int position, EnumFacing facing, boolean mirrored) {
         List<AxisAlignedBB> bounds = boundsFor(position, facing, mirrored);
-        if (bounds.isEmpty()) { return new float[]{0f, 0f, 0f, 1f, 1f, 1f}; }
+        if (bounds.isEmpty()) { return new float[6]; }
         AxisAlignedBB union = bounds.get(0);
         for (AxisAlignedBB aabb : bounds) { union = union.union(aabb); }
         return new float[]{(float)union.minX, (float)union.minY, (float)union.minZ, (float)union.maxX, (float)union.maxY, (float)union.maxZ};
@@ -121,6 +135,8 @@ public class IEMultiblock extends TemplateMultiblock {
     }
 
     public boolean formable() { return anchor != Anchor.MANUAL_ONLY; }
+
+    public boolean hasShape() { return shape.hasShape; }
 
     @Override @SideOnly(Side.CLIENT) public boolean overwriteBlockRender(ItemStack stack, int iterator) { return false; }
 
@@ -178,11 +194,12 @@ public class IEMultiblock extends TemplateMultiblock {
     @Override protected void replaceStructureBlock(World world, BlockPos worldPos, BlockPos masterWorldPos, int position, boolean mirrored, EnumFacing side) {
         formedFacing = side;
         Supplier<IBlockState> chosen = (masterState != null && worldPos.equals(masterWorldPos)) ? masterState : blockState;
-        IBlockState state = chosen.get().withProperty(IEProperties.FACING_HORIZONTAL, side);
+        IBlockState state = chosen.get();
         world.setBlockState(worldPos, state);
         TileEntity tile = world.getTileEntity(worldPos);
         if (tile instanceof TileEntityMultiblockPart) {
             TileEntityMultiblockPart<?> part = (TileEntityMultiblockPart<?>)tile;
+            part.facing = side;
             part.formed = true;
             part.pos = position;
             part.offset = new int[]{worldPos.getX() - masterWorldPos.getX(), worldPos.getY() - masterWorldPos.getY(), worldPos.getZ() - masterWorldPos.getZ()};

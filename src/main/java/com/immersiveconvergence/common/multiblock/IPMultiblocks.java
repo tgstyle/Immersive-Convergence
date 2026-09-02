@@ -6,6 +6,7 @@ import flaxbeard.immersivepetroleum.common.blocks.metal.BlockTypes_IPMetalMultib
 import flaxbeard.immersivepetroleum.common.blocks.metal.TileEntityDistillationTower;
 import flaxbeard.immersivepetroleum.common.blocks.metal.TileEntityPumpjack;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.BlockRenderLayer;
 import java.util.function.Supplier;
 
 public final class IPMultiblocks {
@@ -27,6 +28,10 @@ public final class IPMultiblocks {
                 IEMultiblock.Anchor.SIDE, true);
 
         IEMultiblockRegistry.registerTile(TileEntityDistillationTower.class, "IP:DistillationTower");
+        IEMultiblockRegistry.registerTile(TileEntityDistillationTower.TileEntityDistillationTowerParent.class, "IP:DistillationTower");
         IEMultiblockRegistry.registerTile(TileEntityPumpjack.class, "IP:Pumpjack");
+        IEMultiblockRegistry.registerTile(TileEntityPumpjack.TileEntityPumpjackParent.class, "IP:Pumpjack");
     }
+
+    public static void alignRenderLayers() { ((BlockIPMetalMultiblocks)IPContent.blockMetalMultiblock).setMetaBlockLayer(BlockTypes_IPMetalMultiblock.DISTILLATION_TOWER.getMeta(), BlockRenderLayer.CUTOUT); }
 }

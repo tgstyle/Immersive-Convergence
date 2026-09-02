@@ -1,6 +1,5 @@
 package com.immersiveconvergence.api.multiblock;
 
-import blusunrize.immersiveengineering.api.IEProperties;
 import blusunrize.immersiveengineering.common.blocks.TileEntityMultiblockPart;
 
 import net.minecraft.block.state.IBlockState;
@@ -32,7 +31,7 @@ public abstract class MachineTemplateMultiblock<T extends TileEntityMultiblockPa
 
     @Override protected void replaceStructureBlock(World world, BlockPos worldPos, BlockPos masterWorldPos, int position, boolean mirrored, EnumFacing side) {
         boolean isMaster = worldPos.equals(masterWorldPos);
-        IBlockState placed = (isMaster ? masterBlockState : slaveBlockState).withProperty(IEProperties.FACING_HORIZONTAL, side).withProperty(IEProperties.MULTIBLOCKSLAVE, !isMaster);
+        IBlockState placed = isMaster ? masterBlockState : slaveBlockState;
         world.setBlockState(worldPos, placed, 2);
         @SuppressWarnings("unchecked")
         T tile = (T) world.getTileEntity(worldPos);

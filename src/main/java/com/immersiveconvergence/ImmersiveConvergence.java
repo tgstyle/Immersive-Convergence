@@ -19,6 +19,7 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -49,11 +50,12 @@ public class ImmersiveConvergence {
         QueueProcessor.queueEnabled = () -> ICCommonConfig.multiblocks.disassemblyMode == ICCommonConfig.DisassemblyMode.PROCESS_QUEUE;
         MinecraftForge.EVENT_BUS.register(ICRegistryRemaps.class);
         ICContent.preInit();
+        IEMultiblocks.init();
         proxy.preInit();
     }
 
     @EventHandler public void init(FMLInitializationEvent event) {
-        IEMultiblocks.init();
+        IEMultiblocks.alignRenderLayers();
         proxy.init();
     }
 
@@ -61,4 +63,6 @@ public class ImmersiveConvergence {
         IEMultiblockRegistry.loadAll();
         proxy.postInit();
     }
+
+    @EventHandler public void loadComplete(FMLLoadCompleteEvent event) { proxy.loadComplete(); }
 }

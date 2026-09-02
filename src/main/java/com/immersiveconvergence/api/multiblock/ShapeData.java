@@ -24,6 +24,7 @@ public final class ShapeData extends GenericShape {
     public final List<BlockPos> triggerPositions;
     public final List<LocalFacing> triggerFacings;
     public final float manualScale;
+    public final boolean hasShape;
     private final List<List<AxisAlignedBB>> shapes;
 
     private ShapeData(int width, int height, int length, MultiblockJSONSchema data, TemplateData template, BlockPos masterPos, List<BlockPos> triggerPositions, List<LocalFacing> triggerFacings, List<List<AxisAlignedBB>> shapes) {
@@ -35,6 +36,7 @@ public final class ShapeData extends GenericShape {
         this.triggerFacings = triggerFacings;
         this.triggerPos = triggerPositions.get(0);
         this.manualScale = data != null ? data.manualScale : 0;
+        this.hasShape = data != null && data.shapeAABB != null && data.shapeAABB.size() > 0;
         this.shapes = shapes;
     }
 
