@@ -123,11 +123,13 @@ runs {
     client {
         systemProperties = ['neoforge.enabledGameTestNamespaces': project.mod_id as String]
         arguments = ['--username', 'tgstyle', '--width', '1920', '--height', '1080']
+        jvmArguments.addAll '-XX:StartFlightRecording=maxsize=512M,dumponexit=true,filename=logs/profile.jfr,settings=profile'
     }
 
     server {
         systemProperties = ['neoforge.enabledGameTestNamespaces': project.mod_id as String]
         arguments = ['--nogui']
+        jvmArguments.addAll '-XX:StartFlightRecording=maxsize=512M,dumponexit=true,filename=logs/profile.jfr,settings=profile'
     }
 
     data {
