@@ -71,7 +71,7 @@ public class SplitModelHandler {
         }
     }
 
-    private static String value(String variant, String property) {
+    public static String value(String variant, String property) {
         for (String pair : variant.split(",")) {
             int eq = pair.indexOf('=');
             if (eq > 0 && pair.substring(0, eq).equals(property)) { return pair.substring(eq + 1); }
