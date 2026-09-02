@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.GL11;
 public class TileRenderRotorCreative extends TileEntitySpecialRenderer<TileEntityRotorCreative> {
+    @SuppressWarnings("deprecation")
     @Override public void render(TileEntityRotorCreative te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
         if (!te.getWorld().isBlockLoaded(te.getPos(), false)) { return; }
         final BlockRendererDispatcher blockRenderer = Minecraft.getMinecraft().getBlockRendererDispatcher();
@@ -37,8 +38,8 @@ public class TileRenderRotorCreative extends TileEntitySpecialRenderer<TileEntit
         GlStateManager.rotate(rotation, te.facing.getXOffset(), 0, te.facing.getZOffset());
         ClientUtils.bindAtlas();
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-        buffer.setTranslation(-0.5 - blockPos.getX(), -0.5 - blockPos.getY(), -0.5 - blockPos.getZ());
-        blockRenderer.getBlockModelRenderer().renderModel(te.getWorld(), model, dynamicState, blockPos, buffer, false);
+        buffer.setTranslation(-0.5, -0.5, -0.5);
+        ClientUtils.renderModelTESRFancy(model.getQuads(dynamicState, null, 0L), buffer, te.getWorld(), blockPos, false);
         buffer.setTranslation(0, 0, 0);
         tessellator.draw();
         GlStateManager.enableCull();

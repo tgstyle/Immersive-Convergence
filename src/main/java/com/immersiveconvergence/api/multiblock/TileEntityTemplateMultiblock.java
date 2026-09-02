@@ -1,6 +1,5 @@
 package com.immersiveconvergence.api.multiblock;
 
-import com.immersiveconvergence.api.shapes.Shapes;
 import com.immersiveconvergence.api.shapes.VoxelShape;
 
 import blusunrize.immersiveengineering.api.crafting.IMultiblockRecipe;
@@ -16,7 +15,6 @@ import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -29,13 +27,10 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-
-import static com.immersiveconvergence.api.shapes.BooleanOp.OR;
 
 @SuppressWarnings("unused")
 public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateMultiblock<T, R, M>, R extends IMultiblockRecipe, M extends T> extends TileEntityMultiblockMetal<T, R> implements IPlayerInteraction {
@@ -247,17 +242,13 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
                 }
                 inv.clear();
             }
-            EntityPlayer breakingPlayer = world.getClosestPlayer(masterPos.getX() + 0.5, masterPos.getY() + 0.5, masterPos.getZ() + 0.5, -1, false);
-            boolean queueMode = QueueProcessor.queueEnabled.getAsBoolean() && (breakingPlayer == null || !breakingPlayer.isSneaking());
-            List<BlockPos> toBreak = new ArrayList<>();
-            List<ItemStack> allDrops = new ArrayList<>();
+            if (QueueProcessor.handleDisassembly(this, structureDimensions, shouldDropOriginal) != QueueProcessor.Result.FALLBACK) { return; }
             BlockPos startPos = getBlockPosForPos(0);
             long time = world.getTotalWorldTime();
             for (int h = 0; h < structureDimensions[0]; h++) for (int l = 0; l < structureDimensions[1]; l++) for (int w = 0; w < structureDimensions[2]; w++) {
                 int ww = mirrored ? -w : w;
                 BlockPos pos2 = startPos.offset(facing, l).offset(facing.rotateY(), ww).add(0, h, 0);
                 ItemStack s = ItemStack.EMPTY;
-                boolean breakable = false;
                 TileEntity te = world.getTileEntity(pos2);
                 if (te instanceof TileEntityMultiblockPart) {
                     TileEntityMultiblockPart<?> part = (TileEntityMultiblockPart<?>)te;
@@ -266,25 +257,14 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
                     if (time != part.onlyLocalDissassembly) {
                         s = part.getOriginalBlock();
                         part.formed = false;
-                        breakable = true;
                     }
                 }
                 if (pos2.equals(getPos())) s = this.getOriginalBlock();
-                if (queueMode) {
-                    if (!s.isEmpty()) { allDrops.add(s.copy()); }
-                    if (breakable && !pos2.equals(getPos())) { toBreak.add(pos2); }
-                    continue;
-                }
                 IBlockState state = Utils.getStateFromItemStack(s);
                 if (state != null) {
                     if (pos2.equals(getPos())) { if (shouldDropOriginal) world.spawnEntity(new EntityItem(world, pos2.getX() + 0.5, pos2.getY() + 0.5, pos2.getZ() + 0.5, s)); }
                     else replaceStructureBlock(pos2, state, s, h, l, w);
                 }
-            }
-            if (queueMode) {
-                QueueProcessor.activeDisassemblies.add(masterPos);
-                boolean dropItems = world.getGameRules().getBoolean("doTileDrops") && shouldDropOriginal;
-                QueueProcessor.pendingQueues.add(new QueueProcessor((WorldServer)world, toBreak, breakingPlayer instanceof EntityPlayerMP ? (EntityPlayerMP)breakingPlayer : null, dropItems, getPos(), allDrops, masterPos));
             }
         }
     }

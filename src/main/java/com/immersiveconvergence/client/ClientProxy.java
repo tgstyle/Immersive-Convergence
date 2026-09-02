@@ -7,6 +7,7 @@ import com.immersiveconvergence.api.network.TileSyncMessage;
 import com.immersiveconvergence.common.CommonProxy;
 import com.immersiveconvergence.common.ICContent;
 import com.immersiveconvergence.common.blocks.tileentities.TileEntityRotorCreative;
+import com.immersiveconvergence.client.event.ICClientEventHandler;
 import com.immersiveconvergence.client.render.TileRenderRotorCreative;
 
 import blusunrize.immersiveengineering.client.IECustomStateMapper;
@@ -36,6 +37,7 @@ public class ClientProxy extends CommonProxy {
         OBJLoader.INSTANCE.addDomain(ImmersiveConvergence.MODID);
         IEOBJLoader.instance.addDomain(ImmersiveConvergence.MODID);
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRotorCreative.class, new TileRenderRotorCreative());
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new ICClientEventHandler());
     }
 
     @SubscribeEvent public static void registerModels(ModelRegistryEvent event) {

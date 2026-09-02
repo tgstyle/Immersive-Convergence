@@ -1,0 +1,11 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "com.immersiveconvergence.mixin",
+  "refmap": "mixins.immersiveconvergence.refmap.json",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "MixinIPMultiblock",
+    "MixinIPMultiblockConnections"
+  ]
+}

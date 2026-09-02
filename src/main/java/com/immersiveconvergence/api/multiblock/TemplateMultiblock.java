@@ -54,10 +54,16 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
         return state == null ? null : modifyTemplateState(state);
     }
 
+    private static final org.apache.logging.log4j.Logger DEBUG_LOG = org.apache.logging.log4j.LogManager.getLogger("IC-MB-DEBUG");
+    private boolean debug() { return uniqueName != null && uniqueName.startsWith("IE:BottlingMachine"); }
+
     @Override public boolean isBlockTrigger(IBlockState state) {
         if (template == null) { return false; }
         for (BlockPos trigger : triggerPositions) {
-            if (BlockMatcher.matches(templateState(trigger.getX(), trigger.getY(), trigger.getZ()), state)) { return true; }
+            IBlockState expected = templateState(trigger.getX(), trigger.getY(), trigger.getZ());
+            boolean m = BlockMatcher.matches(expected, state);
+            if (debug()) { DEBUG_LOG.info("[{}] isBlockTrigger clicked={} expected={} -> {}", uniqueName, state, expected, m); }
+            if (m) { return true; }
         }
         return false;
     }
@@ -125,8 +131,12 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
                 for (int w = 0; w < width; w++) {
                     IBlockState expected = templateState(w, h, l);
                     if (expected == null) { continue; }
+                    if (template.isDummy(w, h, l)) { continue; }
                     BlockPos blockPos = localToWorld(origin, localX(w, mirror), h, l, side);
-                    if (!cellMatches(world, blockPos, w, h, l, expected, side, mirror)) { return true; }
+                    if (!cellMatches(world, blockPos, w, h, l, expected, side, mirror)) {
+                        if (debug()) { DEBUG_LOG.info("[{}] isInvalid mirror={} side={} FAIL cell(w{} h{} l{}) at {} expected={} world={}", uniqueName, mirror, side, w, h, l, blockPos, expected, world.getBlockState(blockPos)); }
+                        return true;
+                    }
                 }
             }
         }
@@ -180,6 +190,7 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
                     for (int w = 0; w < template.width; w++) {
                         IBlockState state = templateState(w, h, l);
                         if (state == null) { continue; }
+                        if (template.isDummy(w, h, l)) { continue; }
                         ItemStack cell = stackFor(w, h, l, state);
                         if (cell.isEmpty()) { continue; }
                         String key = cell.getItem().getRegistryName() + ":" + cell.getItemDamage() + ":" + cell.getTagCompound();
@@ -208,7 +219,9 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
         IBlockState state = templateState(position);
         if (state == null) { return ItemStack.EMPTY; }
         int width = template.width, length = template.length;
-        return stackFor(position % width, position / (width * length), position % (width * length) / width, state);
+        int w = position % width, h = position / (width * length), l = position % (width * length) / width;
+        if (template.isDummy(w, h, l)) { return ItemStack.EMPTY; }
+        return stackFor(w, h, l, state);
     }
 
     public Set<BlockPos> worldOffsetsFromMaster(EnumFacing facing, boolean mirrored) {

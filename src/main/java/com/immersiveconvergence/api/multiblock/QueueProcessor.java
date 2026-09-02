@@ -2,15 +2,24 @@ package com.immersiveconvergence.api.multiblock;
 
 import com.immersiveconvergence.ImmersiveConvergence;
 
+import blusunrize.immersiveengineering.common.blocks.IEBlockInterfaces.ITileDrop;
+import blusunrize.immersiveengineering.common.blocks.TileEntityMultiblockPart;
+import blusunrize.immersiveengineering.common.util.Utils;
 import com.mojang.authlib.GameProfile;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.EnumPacketDirection;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.NetworkManager;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.GameType;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -79,6 +88,85 @@ public class QueueProcessor {
     }
 
     public boolean isEmpty() { return queue.isEmpty() && allDrops.isEmpty(); }
+
+    public enum Result { QUEUED, CLEARED, FALLBACK }
+
+    public static Result handleDisassembly(TileEntityMultiblockPart<?> broken, int[] structureDimensions, boolean dropOriginal) {
+        World world = broken.getWorld();
+        if (world.isRemote || !broken.formed) { return Result.FALLBACK; }
+        BlockPos brokenPos = broken.getPos();
+        BlockPos masterPos = brokenPos.add(-broken.offset[0], -broken.offset[1], -broken.offset[2]);
+        if (activeDisassemblies.contains(masterPos)) { return Result.QUEUED; }
+        EntityPlayer breakingPlayer = world.getClosestPlayer(masterPos.getX() + 0.5, masterPos.getY() + 0.5, masterPos.getZ() + 0.5, -1, false);
+        boolean creative = breakingPlayer != null && breakingPlayer.isCreative();
+        boolean templateMode = !queueEnabled.getAsBoolean() || (breakingPlayer != null && breakingPlayer.isSneaking());
+        EnumFacing facing = broken.facing;
+        boolean mirrored = broken.mirrored;
+        BlockPos startPos = broken.getOrigin();
+        long time = world.getTotalWorldTime();
+        // Template mode (config or sneak): survival reverts the structure to its build blocks
+        // in place (the caller's own disassemble does that). Creative does the same in-place
+        // revert but skips the broken cell's item drop, so nothing loose is returned.
+        if (templateMode) {
+            if (!creative) { return Result.FALLBACK; }
+            for (int h = 0; h < structureDimensions[0]; h++) {
+                for (int l = 0; l < structureDimensions[1]; l++) {
+                    for (int w = 0; w < structureDimensions[2]; w++) {
+                        int ww = mirrored ? -w : w;
+                        BlockPos pos2 = startPos.offset(facing, l).offset(facing.rotateY(), ww).add(0, h, 0);
+                        TileEntity te = world.getTileEntity(pos2);
+                        if (te instanceof TileEntityMultiblockPart) {
+                            TileEntityMultiblockPart<?> part = (TileEntityMultiblockPart<?>)te;
+                            Vec3i diff = pos2.subtract(masterPos);
+                            if (part.offset[0] != diff.getX() || part.offset[1] != diff.getY() || part.offset[2] != diff.getZ()) { continue; }
+                            if (time == part.onlyLocalDissassembly) { continue; }
+                            ItemStack s = part.getOriginalBlock();
+                            part.formed = false;
+                            // The broken cell is removed by super.breakBlock and, in creative, dropped by nobody.
+                            if (pos2.equals(brokenPos)) { continue; }
+                            IBlockState state = Utils.getStateFromItemStack(s);
+                            if (state != null) {
+                                world.setBlockState(pos2, state);
+                                TileEntity placed = world.getTileEntity(pos2);
+                                if (placed instanceof ITileDrop) { ((ITileDrop)placed).readOnPlacement(null, s); }
+                            }
+                        }
+                    }
+                }
+            }
+            return Result.CLEARED;
+        }
+        List<BlockPos> toBreak = new ArrayList<>();
+        List<ItemStack> allDrops = new ArrayList<>();
+        for (int h = 0; h < structureDimensions[0]; h++) {
+            for (int l = 0; l < structureDimensions[1]; l++) {
+                for (int w = 0; w < structureDimensions[2]; w++) {
+                    int ww = mirrored ? -w : w;
+                    BlockPos pos2 = startPos.offset(facing, l).offset(facing.rotateY(), ww).add(0, h, 0);
+                    ItemStack s = ItemStack.EMPTY;
+                    boolean breakable = false;
+                    TileEntity te = world.getTileEntity(pos2);
+                    if (te instanceof TileEntityMultiblockPart) {
+                        TileEntityMultiblockPart<?> part = (TileEntityMultiblockPart<?>)te;
+                        Vec3i diff = pos2.subtract(masterPos);
+                        if (part.offset[0] != diff.getX() || part.offset[1] != diff.getY() || part.offset[2] != diff.getZ()) { continue; }
+                        if (time != part.onlyLocalDissassembly) {
+                            s = part.getOriginalBlock();
+                            part.formed = false;
+                            breakable = true;
+                        }
+                    }
+                    if (pos2.equals(brokenPos)) { s = broken.getOriginalBlock(); }
+                    if (!s.isEmpty()) { allDrops.add(s.copy()); }
+                    if (breakable && !pos2.equals(brokenPos)) { toBreak.add(pos2); }
+                }
+            }
+        }
+        activeDisassemblies.add(masterPos);
+        boolean dropItems = !creative && dropOriginal && world.getGameRules().getBoolean("doTileDrops");
+        pendingQueues.add(new QueueProcessor((WorldServer)world, toBreak, breakingPlayer instanceof EntityPlayerMP ? (EntityPlayerMP)breakingPlayer : null, dropItems, brokenPos, allDrops, masterPos));
+        return Result.QUEUED;
+    }
 
     @SubscribeEvent public static void onServerTick(TickEvent.ServerTickEvent event) {
         if (event.phase != TickEvent.Phase.END || pendingQueues.isEmpty()) { return; }

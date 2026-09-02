@@ -6,6 +6,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "MixinIEMultiblock",
+    "MixinIEMultiblockDisassemble",
     "MixinIEMultiblockAdvancedBounds",
     "MixinIEMultiblockBounds",
     "MixinIEMultiblockConnections",
@@ -26,6 +27,7 @@
     "MixinIETileEntitySilo"
   ],
   "client": [
+    "MixinForgeOBJModel",
     "MixinIEClientProxySound",
     "MixinIEManualConveyor",
     "MixinIEManualTrigger"

@@ -1,1 +1,1 @@
-{"manualScale":16,"pointsOfInterest":[{"name":"master","pos":[1,1,1],"facing":null},{"name":"trigger","pos":[1,1,2],"facing":null}],"shapeAABB":[]}
+{"manualScale":16,"pointsOfInterest":[{"name":"master","pos":[1,1,1],"facing":null},{"name":"trigger","pos":[1,1,0],"facing":null}],"shapeAABB":[]}

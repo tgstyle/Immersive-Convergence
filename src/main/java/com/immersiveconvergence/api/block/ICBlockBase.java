@@ -55,6 +55,7 @@ public class ICBlockBase<E extends Enum<E> & ICBlockBase.IBlockEnum> extends Blo
     protected Map<Integer, Float> metaResistances = new HashMap<>();
     protected boolean[] canHammerHarvest;
     protected boolean[] metaNotNormalBlock;
+    private volatile IdentityHashMap<IBlockState, Integer> metaCache;
 
     public ICBlockBase(BlockContext context, String name, Material material, PropertyEnum<E> mainProperty, Class<? extends ItemBlock> itemBlock, Object... additionalProperties) {
         super(setTempProperties(material, mainProperty, additionalProperties));
@@ -227,6 +228,14 @@ public class ICBlockBase<E extends Enum<E> & ICBlockBase.IBlockEnum> extends Blo
     }
 
     @Override public int getMetaFromState(@Nonnull IBlockState state) {
+        IdentityHashMap<IBlockState, Integer> cache = metaCache;
+        if (cache == null) {
+            cache = new IdentityHashMap<>();
+            for (IBlockState s : getBlockState().getValidStates()) { cache.put(s, s.getValue(this.property).getMeta()); }
+            metaCache = cache;
+        }
+        Integer meta = cache.get(state);
+        if (meta != null) return meta;
         if (!this.equals(state.getBlock())) return 0;
         return state.getValue(this.property).getMeta();
     }

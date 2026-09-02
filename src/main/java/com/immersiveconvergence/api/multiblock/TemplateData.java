@@ -66,6 +66,11 @@ public final class TemplateData {
 
     public NBTTagCompound getCellData(int x, int y, int z) { return cellData.get(new BlockPos(x, y, z)); }
 
+    public boolean isDummy(int x, int y, int z) {
+        NBTTagCompound data = cellData.get(new BlockPos(x, y, z));
+        return data != null && "true".equals(data.getString("dummy"));
+    }
+
     public IBlockState getState(int x, int y, int z) { return structure[y][z][x]; }
 
     public IBlockState getState(int position) {

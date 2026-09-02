@@ -1,11 +1,13 @@
 package com.immersiveconvergence;
 
+import com.immersiveconvergence.api.multiblock.QueueProcessor;
 import com.immersiveconvergence.common.multiblock.IEMultiblockRegistry;
 import com.immersiveconvergence.common.multiblock.IEMultiblocks;
 import com.immersiveconvergence.common.CommonProxy;
 import com.immersiveconvergence.common.ICContent;
 import com.immersiveconvergence.common.registry.ICRegistryRemaps;
 import com.immersiveconvergence.common.util.ICLogger;
+import com.immersiveconvergence.core.ICCommonConfig;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -44,6 +46,7 @@ public class ImmersiveConvergence {
     @EventHandler public void preInit(FMLPreInitializationEvent event) {
         ICLogger.logger = event.getModLog();
         ConfigManager.sync(MODID, Type.INSTANCE);
+        QueueProcessor.queueEnabled = () -> ICCommonConfig.multiblocks.disassemblyMode == ICCommonConfig.DisassemblyMode.PROCESS_QUEUE;
         MinecraftForge.EVENT_BUS.register(ICRegistryRemaps.class);
         ICContent.preInit();
         proxy.preInit();

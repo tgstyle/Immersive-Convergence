@@ -39,6 +39,7 @@ public class IEMultiblock extends TemplateMultiblock {
     private static final String CONVEYOR = "conveyor";
     private static final String CONVEYOR_FACING = "conveyorFacing";
     private final Supplier<IBlockState> blockState;
+    private final Supplier<IBlockState> masterState;
     private final Anchor anchor;
     private final boolean mirrorable;
     private final PostFormation postFormation;
@@ -49,9 +50,10 @@ public class IEMultiblock extends TemplateMultiblock {
     private volatile Map<Integer, Integer> ports;
     private EnumFacing formedFacing;
 
-    public IEMultiblock(String uniqueName, ShapeData shape, Supplier<IBlockState> blockState, Anchor anchor, boolean mirrorable, PostFormation postFormation) {
+    public IEMultiblock(String uniqueName, ShapeData shape, Supplier<IBlockState> blockState, Supplier<IBlockState> masterState, Anchor anchor, boolean mirrorable, PostFormation postFormation) {
         super(uniqueName, shape);
         this.blockState = blockState;
+        this.masterState = masterState;
         this.anchor = anchor;
         this.mirrorable = mirrorable;
         this.postFormation = postFormation;
@@ -175,7 +177,8 @@ public class IEMultiblock extends TemplateMultiblock {
 
     @Override protected void replaceStructureBlock(World world, BlockPos worldPos, BlockPos masterWorldPos, int position, boolean mirrored, EnumFacing side) {
         formedFacing = side;
-        IBlockState state = blockState.get().withProperty(IEProperties.FACING_HORIZONTAL, side);
+        Supplier<IBlockState> chosen = (masterState != null && worldPos.equals(masterWorldPos)) ? masterState : blockState;
+        IBlockState state = chosen.get().withProperty(IEProperties.FACING_HORIZONTAL, side);
         world.setBlockState(worldPos, state);
         TileEntity tile = world.getTileEntity(worldPos);
         if (tile instanceof TileEntityMultiblockPart) {

@@ -21,15 +21,17 @@ public final class IEMultiblockRegistry {
 
     public static void register(String uniqueName, String id, Supplier<IBlockState> blockState, IEMultiblock.Anchor anchor, boolean mirrorable) { register(uniqueName, id, blockState, anchor, mirrorable, null); }
 
-    public static void register(String uniqueName, String id, Supplier<IBlockState> blockState, IEMultiblock.Anchor anchor, boolean mirrorable, IEMultiblock.PostFormation postFormation) { definitions.put(uniqueName, new Definition(id, blockState, anchor, mirrorable, postFormation)); }
+    public static void register(String uniqueName, String id, Supplier<IBlockState> blockState, IEMultiblock.Anchor anchor, boolean mirrorable, IEMultiblock.PostFormation postFormation) { definitions.put(uniqueName, new Definition(MODID, id, blockState, null, anchor, mirrorable, postFormation)); }
+
+    public static void register(String namespace, String uniqueName, String id, Supplier<IBlockState> blockState, Supplier<IBlockState> masterState, IEMultiblock.Anchor anchor, boolean mirrorable) { definitions.put(uniqueName, new Definition(namespace, id, blockState, masterState, anchor, mirrorable, null)); }
 
     public static IEMultiblock get(String uniqueName) {
         if (loaded.containsKey(uniqueName)) { return loaded.get(uniqueName); }
         Definition definition = definitions.get(uniqueName);
         IEMultiblock multiblock = null;
         if (definition != null) {
-            ShapeData shape = ShapeData.load(MODID, definition.id);
-            if (shape.template != null) { multiblock = new IEMultiblock(uniqueName, shape, definition.blockState, definition.anchor, definition.mirrorable, definition.postFormation); }
+            ShapeData shape = ShapeData.load(definition.namespace, definition.id);
+            if (shape.template != null) { multiblock = new IEMultiblock(uniqueName, shape, definition.blockState, definition.masterState, definition.anchor, definition.mirrorable, definition.postFormation); }
         }
         loaded.put(uniqueName, multiblock);
         return multiblock;
@@ -50,15 +52,19 @@ public final class IEMultiblockRegistry {
     }
 
     private static final class Definition {
+        private final String namespace;
         private final String id;
         private final Supplier<IBlockState> blockState;
+        private final Supplier<IBlockState> masterState;
         private final IEMultiblock.Anchor anchor;
         private final boolean mirrorable;
         private final IEMultiblock.PostFormation postFormation;
 
-        private Definition(String id, Supplier<IBlockState> blockState, IEMultiblock.Anchor anchor, boolean mirrorable, IEMultiblock.PostFormation postFormation) {
+        private Definition(String namespace, String id, Supplier<IBlockState> blockState, Supplier<IBlockState> masterState, IEMultiblock.Anchor anchor, boolean mirrorable, IEMultiblock.PostFormation postFormation) {
+            this.namespace = namespace;
             this.id = id;
             this.blockState = blockState;
+            this.masterState = masterState;
             this.anchor = anchor;
             this.mirrorable = mirrorable;
             this.postFormation = postFormation;

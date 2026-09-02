@@ -1,1 +1,1 @@
-{"manualScale":20,"pointsOfInterest":[{"name":"master","pos":[1,0,0],"facing":null},{"name":"trigger","pos":[1,1,1],"facing":null},{"name":"trigger","pos":[1,0,1],"facing":null},{"name":"trigger","pos":[0,0,1],"facing":null},{"name":"trigger","pos":[0,1,1],"facing":null}],"shapeAABB":[]}
+{"manualScale":20,"pointsOfInterest":[{"name":"master","pos":[1,0,0],"facing":null},{"name":"trigger","pos":[1,0,0],"facing":null},{"name":"trigger","pos":[0,0,0],"facing":null},{"name":"trigger","pos":[1,1,0],"facing":null},{"name":"trigger","pos":[0,1,0],"facing":null}],"shapeAABB":[]}

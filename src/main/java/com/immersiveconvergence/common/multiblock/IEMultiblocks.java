@@ -30,6 +30,7 @@ import blusunrize.immersiveengineering.common.blocks.stone.BlockTypes_StoneDevic
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.common.Loader;
 import java.util.function.Supplier;
 
 public final class IEMultiblocks {
@@ -88,5 +89,7 @@ public final class IEMultiblocks {
         IEMultiblockRegistry.registerTile(TileEntityMetalPress.class, "IE:MetalPress");
         IEMultiblockRegistry.registerTile(TileEntityBucketWheel.class, "IE:BucketWheel");
         IEMultiblockRegistry.registerTile(TileEntityExcavator.class, "IE:Excavator");
+
+        if (Loader.isModLoaded("immersivepetroleum")) { IPMultiblocks.init(); }
     }
 }
