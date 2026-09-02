@@ -12,6 +12,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormatElement;
 import com.mojang.blaze3d.vertex.VertexFormatElement.Type;
 import com.mojang.blaze3d.vertex.VertexFormatElement.Usage;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -29,8 +30,11 @@ public class RenderUtils {
     private static final Vector4f[] quadCoords = new Vector4f[4];
     private static final Vector3f quadNormal = new Vector3f();
     private static final Vector3f quadSide2 = new Vector3f();
-    private static final int[][] neighbourBrightness = new int[2][6];
-    private static final float[][] normalizationFactors = new float[2][8];
+    private static final Long2ObjectOpenHashMap<CachedLight> lightCache = new Long2ObjectOpenHashMap<>();
+    private static final BlockPos.MutableBlockPos neighbourPos = new BlockPos.MutableBlockPos();
+    private static final int LIGHT_REFRESH_TICKS = 4;
+    private static final int LIGHT_CACHE_LIMIT = 256;
+    private static CachedLight activeLight;
     private static final VertexFormat FORMAT = DefaultVertexFormat.BLOCK;
     private static final int VERTEX_SIZE = FORMAT.getIntegerSize();
     private static final int UV_OFFSET = findTextureOffset();
@@ -43,14 +47,9 @@ public class RenderUtils {
     public static void renderModelTESRFancy(List<BakedQuad> quads, VertexConsumer renderer, PoseStack transform, Level world, BlockPos pos, boolean useCached, int color, int light) {
         if (ICClientConfig.disableFancyTESR) { renderModelTESRFast(quads, renderer, transform, -1, LevelRenderer.getLightColor(world, pos), OverlayTexture.NO_OVERLAY); }
         else {
-            if (!useCached) {
-                for (Direction f : DirectionUtils.VALUES) {
-                    int val = LevelRenderer.getLightColor(world, pos.relative(f));
-                    neighbourBrightness[0][f.get3DDataValue()] = val >> 16 & 255;
-                    neighbourBrightness[1][f.get3DDataValue()] = val & 255;
-                }
-                for (int type = 0; type < 2; ++type) for (int i = 0; i < 8; ++i) { normalizationFactors[type][i] = (float) Math.sqrt(computeSSquared(type, i)); }
-            }
+            CachedLight cached = useCached ? activeLight : null;
+            if (cached == null) { cached = refreshLight(world, pos); }
+            activeLight = cached;
             int[] rgba = {255, 255, 255, 255};
             if (color >= 0) {
                 rgba[0] = color >> 16 & 255;
@@ -68,8 +67,8 @@ public class RenderUtils {
                 quadSide2.add(-quadCoords[0].x(), -quadCoords[0].y(), -quadCoords[0].z());
                 quadNormal.cross(quadSide2);
                 quadNormal.normalize();
-                int l1 = getLightValue(neighbourBrightness[1], normalizationFactors[1], light & 255);
-                int l2 = getLightValue(neighbourBrightness[0], normalizationFactors[0], light >> 16 & 255);
+                int l1 = getLightValue(cached.brightness[1], cached.normalization[1], light & 255);
+                int l2 = getLightValue(cached.brightness[0], cached.normalization[0], light >> 16 & 255);
                 quadNormal.mul(normalTransform);
                 for (int i = 0; i < 4; ++i) {
                     Vector4f vertexPos = quadCoords[i];
@@ -103,15 +102,40 @@ public class RenderUtils {
 
     private static float scaledSquared(int val) { return val / 255.0F * (val / 255.0F); }
 
-    private static float computeSSquared(int type, int i) {
+    private static CachedLight refreshLight(Level world, BlockPos pos) {
+        long time = world.getGameTime();
+        CachedLight cached = lightCache.get(pos.asLong());
+        if (cached == null) {
+            if (lightCache.size() >= LIGHT_CACHE_LIMIT) { lightCache.clear(); }
+            cached = new CachedLight();
+            lightCache.put(pos.asLong(), cached);
+        }
+        else if (time - cached.lastUpdate < LIGHT_REFRESH_TICKS) { return cached; }
+        cached.lastUpdate = time;
+        for (Direction f : DirectionUtils.VALUES) {
+            int val = LevelRenderer.getLightColor(world, neighbourPos.setWithOffset(pos, f));
+            cached.brightness[0][f.get3DDataValue()] = val >> 16 & 255;
+            cached.brightness[1][f.get3DDataValue()] = val & 255;
+        }
+        for (int type = 0; type < 2; ++type) for (int i = 0; i < 8; ++i) { cached.normalization[type][i] = (float) Math.sqrt(computeSSquared(cached.brightness[type], i)); }
+        return cached;
+    }
+
+    private static float computeSSquared(int[] brightness, int i) {
         float sSquared = 0.0F;
-        if ((i & 1) != 0) { sSquared += scaledSquared(neighbourBrightness[type][5]); }
-        else { sSquared += scaledSquared(neighbourBrightness[type][4]); }
-        if ((i & 2) != 0) { sSquared += scaledSquared(neighbourBrightness[type][1]); }
-        else { sSquared += scaledSquared(neighbourBrightness[type][0]); }
-        if ((i & 4) != 0) { sSquared += scaledSquared(neighbourBrightness[type][3]); }
-        else { sSquared += scaledSquared(neighbourBrightness[type][2]); }
+        if ((i & 1) != 0) { sSquared += scaledSquared(brightness[5]); }
+        else { sSquared += scaledSquared(brightness[4]); }
+        if ((i & 2) != 0) { sSquared += scaledSquared(brightness[1]); }
+        else { sSquared += scaledSquared(brightness[0]); }
+        if ((i & 4) != 0) { sSquared += scaledSquared(brightness[3]); }
+        else { sSquared += scaledSquared(brightness[2]); }
         return sSquared;
+    }
+
+    private static final class CachedLight {
+        final int[][] brightness = new int[2][6];
+        final float[][] normalization = new float[2][8];
+        long lastUpdate = Long.MIN_VALUE;
     }
 
     public static void renderModelTESRFast(List<BakedQuad> quads, VertexConsumer renderer, PoseStack transform, int color, int light, int overlay) {
