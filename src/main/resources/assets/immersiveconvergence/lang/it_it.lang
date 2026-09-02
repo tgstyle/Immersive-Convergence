@@ -5,3 +5,11 @@ gui.immersiveconvergence.rotor_creative.rpm=giri/min
 gui.immersiveconvergence.apply=Applica
 gui.immersiveconvergence.input_tank_cleared=Serbatoio di ingresso svuotato
 gui.immersiveconvergence.input_tanks_cleared=Serbatoi di ingresso svuotati
+
+#MANUAL
+ie.manual.entry.multiblockDisassembly.name=Smontaggio dei multiblocchi
+ie.manual.entry.multiblockDisassembly.subtext=Smonta e recupera i pezzi
+ie.manual.entry.multiblockDisassembly0=Rompere un blocco qualsiasi di una macchina formata smonta l’intera struttura. Questa si disfa blocco dopo blocco in pochi istanti, e tutti i materiali da costruzione cadono presso il blocco rotto. Accovacciati mentre rompi per usare invece il comportamento classico: la struttura torna all’istante ai blocchi piazzati. Impostando disassemblyMode su TEMPLATE_BLOCKS nella configurazione il comportamento classico diventa quello predefinito.
+ie.manual.entry.multiblocks.name=Costruzioni multiblocco
+ie.manual.entry.multiblocks.subtext=Dov'è la mia chiave a brugola?
+ie.manual.entry.multiblocks0=Far stare macchinari complessi in un singolo cubo 1x1x1 sembra un'impresa impossibile senza magia o, forse, senza un raggio rimpicciolente. Per costruire macchine più complesse servono quindi blocchi componenti. I più comuni sono elencati nelle pagine seguenti.

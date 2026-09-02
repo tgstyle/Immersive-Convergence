@@ -5,3 +5,11 @@ gui.immersiveconvergence.rotor_creative.rpm=Ot/min
 gui.immersiveconvergence.apply=Použít
 gui.immersiveconvergence.input_tank_cleared=Vstupní nádrž vyčištěna
 gui.immersiveconvergence.input_tanks_cleared=Vstupní nádrže vyčištěny
+
+#MANUAL
+ie.manual.entry.multiblockDisassembly.name=Rozebírání multibloků
+ie.manual.entry.multiblockDisassembly.subtext=Rozložit a posbírat
+ie.manual.entry.multiblockDisassembly0=Rozbitím kteréhokoli bloku sestaveného stroje se rozebere celá struktura. Stroj se během několika okamžiků rozloží blok po bloku a veškerý stavební materiál vypadne u rozbitého bloku. Přikrčte se při rozbíjení, chcete-li místo toho klasické chování: struktura se okamžitě promění zpět v položené bloky. Nastavením disassemblyMode na TEMPLATE_BLOCKS v konfiguraci se klasické chování stane výchozím.
+ie.manual.entry.multiblocks.name=Multiblokové stavby
+ie.manual.entry.multiblocks.subtext=Kde je můj klíč?
+ie.manual.entry.multiblocks0=Stavění složitých strojů do 1x1x1 kostky vypadá jako nemožná úloha bez kouzel nebo zmenšovacího paprsku. Takže pro vytvoření složitých strojů, budeš potřebovat součásti. Nejběžnější z nich byly napsány na následujících stránkách.

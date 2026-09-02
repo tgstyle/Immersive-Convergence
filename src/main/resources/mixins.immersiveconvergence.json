@@ -12,12 +12,19 @@
     "MixinIEBlockSplitContainer",
     "MixinIEBlockSplitOffset",
     "MixinIEMultiblockConnections",
-    "MixinIEPortCapability",
-    "MixinIEPortDrainTank",
-    "MixinIEPortFillTank",
-    "MixinIEPortFluidTanks",
-    "MixinIEPortHasCapability",
-    "MixinIEPortSignalOutput",
+    "MixinIEPortsArcFurnace",
+    "MixinIEPortsAssembler",
+    "MixinIEPortsAutoWorkbench",
+    "MixinIEPortsBlastFurnaceAdvanced",
+    "MixinIEPortsBottlingMachine",
+    "MixinIEPortsDieselGenerator",
+    "MixinIEPortsFermenter",
+    "MixinIEPortsMetalPress",
+    "MixinIEPortsMixer",
+    "MixinIEPortsRefinery",
+    "MixinIEPortsSheetmetalTank",
+    "MixinIEPortsSilo",
+    "MixinIEPortsSqueezer",
     "MixinIETileEntityAlloySmelter",
     "MixinIETileEntityBlastFurnace",
     "MixinIETileEntityBlastFurnaceAdvanced",
@@ -33,5 +40,8 @@
     "MixinIEClientProxySound",
     "MixinIEManualConveyor",
     "MixinIEManualTrigger"
-  ]
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
 }

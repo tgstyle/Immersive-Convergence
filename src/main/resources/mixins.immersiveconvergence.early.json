@@ -9,5 +9,8 @@
     "MixinMCTileEntity",
     "MixinMCWorldCMEFix",
     "MixinMCWorldCMELog"
-  ]
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
 }

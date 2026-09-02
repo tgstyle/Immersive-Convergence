@@ -17,6 +17,7 @@ import blusunrize.immersiveengineering.common.blocks.metal.TileEntityMixer;
 import blusunrize.immersiveengineering.common.blocks.metal.TileEntityRefinery;
 import blusunrize.immersiveengineering.common.blocks.metal.TileEntitySqueezer;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -35,7 +36,7 @@ public abstract class MixinIEMultiblockConnections {
         if (positions != null) { cir.setReturnValue(positions); }
     }
 
-    private int[] immersiveconvergence$positions(String prefix) {
+    @Unique private int[] immersiveconvergence$positions(String prefix) {
         IEMultiblock template = IEMultiblockRegistry.templateFor((TileEntityMultiblockPart<?>)(Object)this);
         return template == null ? null : template.positionsNamed(prefix);
     }

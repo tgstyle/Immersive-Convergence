@@ -11,5 +11,8 @@
     "MixinIPMultiblockBounds",
     "MixinIPMultiblockConnections",
     "MixinIPProjector"
-  ]
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
 }

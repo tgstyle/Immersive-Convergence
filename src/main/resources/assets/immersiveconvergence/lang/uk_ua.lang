@@ -5,3 +5,11 @@ gui.immersiveconvergence.rotor_creative.rpm=об/хв
 gui.immersiveconvergence.apply=Застосувати
 gui.immersiveconvergence.input_tank_cleared=Вхідний резервуар очищено
 gui.immersiveconvergence.input_tanks_cleared=Вхідні резервуари очищено
+
+#MANUAL
+ie.manual.entry.multiblockDisassembly.name=Розбирання мультиблоків
+ie.manual.entry.multiblockDisassembly.subtext=Розібрати та все зберегти
+ie.manual.entry.multiblockDisassembly0=Руйнування будь-якого блока зібраної машини розбирає всю конструкцію. Машина розбирається блок за блоком за кілька митей, і всі будівельні матеріали випадають біля зруйнованого блока. Присядьте під час руйнування, щоб повернути класичну поведінку: конструкція миттєво перетворюється назад на встановлені блоки. Якщо встановити disassemblyMode у значення TEMPLATE_BLOCKS в конфігурації, класична поведінка стане типовою.
+ie.manual.entry.multiblocks.name=Мультиблочні конструкції
+ie.manual.entry.multiblocks.subtext=Гайковий магік
+ie.manual.entry.multiblocks0=Вмістити складну техніку в куб 1x1x1 здається неможливим, або навіть магічним. Тож для складних машин вам знадобляться блоки-компоненти. Найпоширеніші з них перераховані на наступних сторінках.

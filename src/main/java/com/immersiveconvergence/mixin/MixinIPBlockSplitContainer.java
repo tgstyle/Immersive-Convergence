@@ -13,13 +13,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(BlockIPBase.class)
 public abstract class MixinIPBlockSplitContainer {
-    @Inject(method = "createBlockState", at = @At("RETURN"), cancellable = true, require = 0, remap = false)
-    private void injectCreateBlockStateDev(CallbackInfoReturnable<BlockStateContainer> cir) { immersiveconvergence$append(cir); }
-
-    @Inject(method = "func_180661_e", at = @At("RETURN"), cancellable = true, require = 0, remap = false)
-    private void injectCreateBlockStateProduction(CallbackInfoReturnable<BlockStateContainer> cir) { immersiveconvergence$append(cir); }
-
-    private void immersiveconvergence$append(CallbackInfoReturnable<BlockStateContainer> cir) {
+    @Inject(method = "createBlockState", at = @At("RETURN"), cancellable = true)
+    private void injectCreateBlockState(CallbackInfoReturnable<BlockStateContainer> cir) {
         if ((Object)this instanceof BlockIPMetalMultiblocks) { cir.setReturnValue(SplitModelProperties.withOffset((Block)(Object)this, cir.getReturnValue())); }
     }
 }

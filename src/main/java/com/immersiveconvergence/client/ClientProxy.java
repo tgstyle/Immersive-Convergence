@@ -13,7 +13,9 @@ import com.immersiveconvergence.client.event.ICClientEventHandler;
 import com.immersiveconvergence.client.render.TileRenderRotorCreative;
 import com.immersiveconvergence.client.render.ip.IPPumpjackSupport;
 
+import blusunrize.immersiveengineering.api.ManualHelper;
 import blusunrize.immersiveengineering.client.IECustomStateMapper;
+import blusunrize.lib.manual.ManualPages;
 import blusunrize.immersiveengineering.client.models.obj.IEOBJLoader;
 import blusunrize.immersiveengineering.common.blocks.IEBlockInterfaces.IIEMetaBlock;
 import net.minecraft.block.Block;
@@ -47,7 +49,10 @@ public class ClientProxy extends CommonProxy {
         if (Loader.isModLoaded("immersivepetroleum")) { IPPumpjackSupport.init(); }
     }
 
-    @Override public void loadComplete() { if (Loader.isModLoaded("immersivepetroleum")) { IPPumpjackSupport.bindRenderer(); } }
+    @Override public void loadComplete() {
+        if (Loader.isModLoaded("immersivepetroleum")) { IPPumpjackSupport.bindRenderer(); }
+        ManualHelper.addEntry("multiblockDisassembly", ManualHelper.CAT_CONSTRUCTION, new ManualPages.Text(ManualHelper.getManual(), "multiblockDisassembly0"));
+    }
 
     @SubscribeEvent(priority = EventPriority.LOWEST) public static void registerPetroleumModels(ModelRegistryEvent event) { if (Loader.isModLoaded("immersivepetroleum")) { IPPumpjackSupport.registerStateMapper(); } }
 
@@ -76,7 +81,7 @@ public class ClientProxy extends CommonProxy {
             ModelLoader.setCustomMeshDefinition(blockItem, stack -> new ModelResourceLocation(loc, "inventory"));
             for (int meta = 0; meta < metaBlock.getMetaEnums().length; meta++) {
                 String location = loc.toString();
-                String properties = metaBlock.appendPropertiesToState() ? ("inventory," + metaBlock.getMetaProperty().getName() + "=" + metaBlock.getMetaEnums()[meta].toString().toLowerCase(Locale.US)) : null;
+                String properties = metaBlock.appendPropertiesToState() ? ("inventory," + metaBlock.getMetaProperty().getName() + "=" + metaBlock.getMetaEnums()[meta].toString().toLowerCase(Locale.US)) : "normal";
                 if (metaBlock.useCustomStateMapper()) { location += "_" + metaBlock.getCustomStateMapping(meta, true); }
                 ModelLoader.setCustomModelResourceLocation(blockItem, meta, new ModelResourceLocation(location, properties));
             }

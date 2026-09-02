@@ -5,3 +5,8 @@ gui.immersiveconvergence.rotor_creative.rpm=RPM
 gui.immersiveconvergence.apply=Aplicar
 gui.immersiveconvergence.input_tank_cleared=Tanque de entrada limpo
 gui.immersiveconvergence.input_tanks_cleared=Tanques de entrada limpos
+
+#MANUAL
+ie.manual.entry.multiblockDisassembly.name=Desmontagem de multiblocos
+ie.manual.entry.multiblockDisassembly.subtext=Desmonte e fique com as peças
+ie.manual.entry.multiblockDisassembly0=Quebrar qualquer bloco de uma máquina formada desmonta a estrutura inteira. Ela se desfaz bloco a bloco em alguns instantes, e todos os materiais de construção caem no bloco que foi quebrado. Agache ao quebrar para usar o comportamento clássico: a estrutura volta na hora a ser os blocos colocados. Definir disassemblyMode como TEMPLATE_BLOCKS na configuração torna o comportamento clássico o padrão.

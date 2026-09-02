@@ -45,12 +45,10 @@ public class ICClientEventHandler {
         if (icBounds != null) {
             bounds = icBounds.getAdvancedSelectionBounds();
         } else if (ieBounds != null) {
-            // IE/IP advanced bounds are world-space (BlockIETileProvider needs that);
-            // the draw below adds pos, so shift them back to block-local first.
-            List<AxisAlignedBB> world = ieBounds.getAdvancedSelectionBounds();
-            if (world == null || world.isEmpty()) { return; }
-            bounds = new ArrayList<>(world.size());
-            for (AxisAlignedBB box : world) { bounds.add(box.offset(-pos.getX(), -pos.getY(), -pos.getZ())); }
+            List<AxisAlignedBB> worldBoxes = ieBounds.getAdvancedSelectionBounds();
+            if (worldBoxes.isEmpty()) { return; }
+            bounds = new ArrayList<>(worldBoxes.size());
+            for (AxisAlignedBB box : worldBoxes) { bounds.add(box.offset(-pos.getX(), -pos.getY(), -pos.getZ())); }
         } else {
             return;
         }

@@ -5,3 +5,8 @@ gui.immersiveconvergence.rotor_creative.rpm=U/min
 gui.immersiveconvergence.apply=Übernehmen
 gui.immersiveconvergence.input_tank_cleared=Eingabetank geleert
 gui.immersiveconvergence.input_tanks_cleared=Eingabetanks geleert
+
+#MANUAL
+ie.manual.entry.multiblockDisassembly.name=Zerlegen von Multiblöcken
+ie.manual.entry.multiblockDisassembly.subtext=In Einzelteile zerlegt
+ie.manual.entry.multiblockDisassembly0=Wird ein Block einer geformten Maschine abgebaut, wird die gesamte Struktur zerlegt. Sie wird über einige Augenblicke Block für Block abgetragen, und alle Baumaterialien fallen an dem Block, der abgebaut wurde. Schleiche beim Abbauen, um stattdessen das klassische Verhalten zu nutzen: Die Struktur verwandelt sich sofort zurück in ihre gesetzten Blöcke. Wird disassemblyMode in der Konfiguration auf TEMPLATE_BLOCKS gesetzt, ist das klassische Verhalten der Standard.

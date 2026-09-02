@@ -175,14 +175,14 @@ public class IEMultiblock extends TemplateMultiblock {
         return ConveyorHandler.getConveyorStack(data.getString(CONVEYOR));
     }
 
-    @Override protected boolean isInvalid(World world, BlockPos pos, EnumFacing side, BlockPos trigger, boolean mirror) {
-        if (super.isInvalid(world, pos, side, trigger, mirror)) { return true; }
-        if (template.airCells.isEmpty()) { return false; }
+    @Override protected boolean isValid(World world, BlockPos pos, EnumFacing side, BlockPos trigger, boolean mirror) {
+        if (!super.isValid(world, pos, side, trigger, mirror)) { return false; }
         BlockPos origin = originFor(pos, side, trigger, mirror);
         for (BlockPos cell : template.airCells) {
-            if (!world.isAirBlock(localToWorld(origin, localX(cell.getX(), mirror), cell.getY(), cell.getZ(), side))) { return true; }
+            if (world.isAirBlock(localToWorld(origin, localX(cell.getX(), mirror), cell.getY(), cell.getZ(), side))) { continue; }
+            return false;
         }
-        return false;
+        return true;
     }
 
     @Override protected boolean allowFormation(EntityPlayer player, BlockPos pos, ItemStack hammer) { return !MultiblockHandler.fireMultiblockFormationEventPost(player, this, pos, hammer).isCanceled(); }

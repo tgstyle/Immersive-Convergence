@@ -8,7 +8,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.Random;
 
 @SideOnly(Side.CLIENT)
-public class ParticleCampfireSmoke extends Particle {
+@SuppressWarnings("unused") public class ParticleCampfireSmoke extends Particle {
 
     private final Random random;
 

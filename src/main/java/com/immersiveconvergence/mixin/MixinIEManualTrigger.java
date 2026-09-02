@@ -2,7 +2,6 @@ package com.immersiveconvergence.mixin;
 
 import com.immersiveconvergence.api.multiblock.TemplateMultiblock;
 import com.immersiveconvergence.client.ICManualHighlight;
-import com.immersiveconvergence.common.multiblock.IEMultiblock;
 import com.immersiveconvergence.common.multiblock.IEMultiblockRegistry;
 
 import blusunrize.immersiveengineering.api.ManualPageMultiblock;
@@ -18,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.IBlockAccess;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -30,15 +30,15 @@ import java.util.List;
 public abstract class MixinIEManualTrigger {
     @Shadow IMultiblock multiblock;
 
-    private final List<BlockPos> immersiveconvergence$pendingVolumes = new ArrayList<>();
+    @Unique private final List<BlockPos> immersiveconvergence$pendingVolumes = new ArrayList<>();
 
     @Redirect(method = "renderPage", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/BlockRendererDispatcher;renderBlock(Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/BufferBuilder;)Z", remap = true), remap = false)
-    private boolean highlightTriggerBlock(BlockRendererDispatcher dispatcher, IBlockState state, BlockPos pos, IBlockAccess access, BufferBuilder buffer) {
-        int before = buffer.getVertexCount();
-        boolean rendered = dispatcher.renderBlock(state, pos, access, buffer);
+    private boolean highlightTriggerBlock(BlockRendererDispatcher dispatcher, IBlockState state, BlockPos pos, IBlockAccess blockAccess, BufferBuilder bufferBuilderIn) {
+        int before = bufferBuilderIn.getVertexCount();
+        boolean rendered = dispatcher.renderBlock(state, pos, blockAccess, bufferBuilderIn);
         if (rendered && immersiveconvergence$isTrigger(pos)) {
-            int added = buffer.getVertexCount() - before;
-            for (int i = 1; i <= added; i++) { buffer.putColorMultiplier(ICManualHighlight.RED, ICManualHighlight.GREEN, ICManualHighlight.BLUE, i); }
+            int added = bufferBuilderIn.getVertexCount() - before;
+            for (int i = 1; i <= added; i++) { bufferBuilderIn.putColorMultiplier(ICManualHighlight.RED, ICManualHighlight.GREEN, ICManualHighlight.BLUE, i); }
             if (!state.isFullCube()) { immersiveconvergence$pendingVolumes.add(pos); }
         }
         return rendered;
@@ -71,7 +71,7 @@ public abstract class MixinIEManualTrigger {
         immersiveconvergence$pendingVolumes.clear();
     }
 
-    private void immersiveconvergence$renderVolume() {
+    @Unique private void immersiveconvergence$renderVolume() {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
         GlStateManager.disableTexture2D();
@@ -113,21 +113,20 @@ public abstract class MixinIEManualTrigger {
         GlStateManager.enableTexture2D();
     }
 
-    private boolean immersiveconvergence$isTriggerIndex(int iterator) {
+    @Unique private boolean immersiveconvergence$isTriggerIndex(int iterator) {
         TemplateMultiblock template = immersiveconvergence$template();
         return template != null && template.primaryTriggerRenderIndex() == iterator;
     }
 
-    private boolean immersiveconvergence$isTrigger(BlockPos pos) {
+    @Unique private boolean immersiveconvergence$isTrigger(BlockPos pos) {
         TemplateMultiblock template = immersiveconvergence$template();
         BlockPos trigger = template == null ? null : template.primaryTrigger();
         return trigger != null && pos.getX() == trigger.getZ() && pos.getY() == trigger.getY() && pos.getZ() == trigger.getX();
     }
 
-    private TemplateMultiblock immersiveconvergence$template() {
+    @Unique private TemplateMultiblock immersiveconvergence$template() {
         if (multiblock == null) { return null; }
         if (multiblock instanceof TemplateMultiblock) { return (TemplateMultiblock)multiblock; }
-        IEMultiblock template = IEMultiblockRegistry.get(multiblock.getUniqueName());
-        return template;
+        return IEMultiblockRegistry.get(multiblock.getUniqueName());
     }
 }

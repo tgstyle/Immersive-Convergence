@@ -5,3 +5,8 @@ gui.immersiveconvergence.rotor_creative.rpm=об/мин
 gui.immersiveconvergence.apply=Применить
 gui.immersiveconvergence.input_tank_cleared=Входной резервуар очищен
 gui.immersiveconvergence.input_tanks_cleared=Входные резервуары очищены
+
+#MANUAL
+ie.manual.entry.multiblockDisassembly.name=Разборка мультиблоков
+ie.manual.entry.multiblockDisassembly.subtext=Разобрать и всё сохранить
+ie.manual.entry.multiblockDisassembly0=Разрушение любого блока собранной машины разбирает всю конструкцию. Машина разбирается блок за блоком за несколько мгновений, и все строительные материалы выпадают у разрушенного блока. Присядьте при разрушении, чтобы вернуть классическое поведение: конструкция мгновенно превращается обратно в установленные блоки. Если задать disassemblyMode значение TEMPLATE_BLOCKS в конфигурации, классическое поведение станет поведением по умолчанию.

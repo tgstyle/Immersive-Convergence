@@ -70,8 +70,8 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
         for (int i = 0; i < triggerPositions.size(); i++) {
             BlockPos candidate = triggerPositions.get(i);
             EnumFacing candidateSide = triggerFacings.get(i) == LocalFacing.BACK ? side.getOpposite() : side;
-            if (!isInvalid(world, pos, candidateSide, candidate, false)) { trigger = candidate; side = candidateSide; break; }
-            if (canMirror() && !isInvalid(world, pos, candidateSide, candidate, true)) {
+            if (isValid(world, pos, candidateSide, candidate, false)) { trigger = candidate; side = candidateSide; break; }
+            if (canMirror() && isValid(world, pos, candidateSide, candidate, true)) {
                 trigger = candidate;
                 side = candidateSide;
                 mirror = true;
@@ -117,21 +117,21 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
         return pos.offset(side, -trigger.getZ()).offset(side.rotateY(), -localX(trigger.getX(), mirror)).offset(EnumFacing.DOWN, trigger.getY());
     }
 
-    protected boolean isInvalid(World world, BlockPos pos, EnumFacing side, BlockPos trigger, boolean mirror) {
+    protected boolean isValid(World world, BlockPos pos, EnumFacing side, BlockPos trigger, boolean mirror) {
         int width = template.width, height = template.height, length = template.length;
         BlockPos origin = originFor(pos, side, trigger, mirror);
         for (int h = 0; h < height; h++) {
             for (int l = 0; l < length; l++) {
                 for (int w = 0; w < width; w++) {
                     IBlockState expected = templateState(w, h, l);
-                    if (expected == null) { continue; }
-                    if (template.isDummy(w, h, l)) { continue; }
+                    if (expected == null || template.isDummy(w, h, l)) { continue; }
                     BlockPos blockPos = localToWorld(origin, localX(w, mirror), h, l, side);
-                    if (!cellMatches(world, blockPos, w, h, l, expected, side, mirror)) { return true; }
+                    if (cellMatches(world, blockPos, w, h, l, expected, side, mirror)) { continue; }
+                    return false;
                 }
             }
         }
-        return false;
+        return true;
     }
 
     protected abstract void replaceStructureBlock(World world, BlockPos worldPos, BlockPos masterWorldPos, int position, boolean mirrored, EnumFacing side);

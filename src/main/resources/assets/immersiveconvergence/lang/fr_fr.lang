@@ -5,3 +5,11 @@ gui.immersiveconvergence.rotor_creative.rpm=tr/min
 gui.immersiveconvergence.apply=Appliquer
 gui.immersiveconvergence.input_tank_cleared=Réservoir d’entrée vidé
 gui.immersiveconvergence.input_tanks_cleared=Réservoirs d’entrée vidés
+
+#MANUAL
+ie.manual.entry.multiblockDisassembly.name=Démontage des multiblocs
+ie.manual.entry.multiblockDisassembly.subtext=Démonter sans rien perdre
+ie.manual.entry.multiblockDisassembly0=Casser n’importe quel bloc d’une machine formée démonte toute la structure. Elle se défait bloc par bloc en quelques instants, et tous ses matériaux de construction tombent à l’endroit du bloc cassé. Accroupissez-vous en cassant pour retrouver le comportement classique : la structure redevient instantanément ses blocs posés. Régler disassemblyMode sur TEMPLATE_BLOCKS dans la configuration rétablit le comportement classique par défaut.
+ie.manual.entry.multiblocks.name=Constructions multiblocs
+ie.manual.entry.multiblocks.subtext=Où est ma clé Allen ?
+ie.manual.entry.multiblocks0=Faire tenir des machines complexes dans un seul cube de 1x1x1 semble impossible sans magie, ou peut-être sans rayon rétrécissant. Pour construire des machines plus complexes, il vous faudra donc des blocs de composants. Les plus courants sont présentés dans les pages suivantes.
