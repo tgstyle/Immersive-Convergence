@@ -1,4 +1,7 @@
+itemGroup.immersiveconvergence=Imersivní konvergence
 tile.immersiveconvergence.device.rotor_creative.name=Kreativní rotor
 tile.immersiveconvergence.device.heat_creative.name=Kreativní ohřívač
 gui.immersiveconvergence.rotor_creative.rpm=Ot/min
 gui.immersiveconvergence.apply=Použít
+gui.immersiveconvergence.input_tank_cleared=Vstupní nádrž vyčištěna
+gui.immersiveconvergence.input_tanks_cleared=Vstupní nádrže vyčištěny

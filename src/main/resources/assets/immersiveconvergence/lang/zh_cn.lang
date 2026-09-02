@@ -1,4 +1,7 @@
+itemGroup.immersiveconvergence=沉浸融合
 tile.immersiveconvergence.device.rotor_creative.name=创造模式转子
 tile.immersiveconvergence.device.heat_creative.name=创造模式加热器
 gui.immersiveconvergence.rotor_creative.rpm=转速
 gui.immersiveconvergence.apply=应用
+gui.immersiveconvergence.input_tank_cleared=输入槽已清空
+gui.immersiveconvergence.input_tanks_cleared=输入槽已全部清空
