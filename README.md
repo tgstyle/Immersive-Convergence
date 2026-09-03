@@ -16,7 +16,8 @@ Common API for IE Addons.<br/>
 Any mod built on Immersive Convergence lets you change its multiblock machines
 without editing the mod itself. You can retune a machine's recipes, move where
 its pipes and wires connect, change which blocks it is built from, and replace
-its model and textures.
+its model and textures. The only limitation is Item/Energy/Fluid I/O cannot be
+added or removed, but it can be relocated.
 
 You do this by placing your own copy of a file where the game looks for it
 first. Nothing is decompiled and no mod file is edited, so an override survives
@@ -28,8 +29,8 @@ overrides go under. The **machine id** is the short name of one machine, such as
 `alternator` or `boiler_tank`, and it is written as `<id>` below.
 
 Immersive Engineering's own machines and Immersive Petroleum's distillation
-tower and pumpjack are covered the same way. Their files ship inside Immersive
-Convergence's jar rather than their own, under the mod id of the mod that owns
+tower and pumpjack are covered the same way. Their override files built for Immersive
+Convergence are already in the jar, under the mod id of the mod that owns
 the machine, so overrides for them go under `overrides/immersiveengineering/`
 and `overrides/immersivepetroleum/`, and the original to copy comes out of
 Immersive Convergence's jar.
@@ -75,6 +76,9 @@ Engineering's and Immersive Petroleum's own files are covered the same way, unde
 Immersive Convergence ships them or their own jar does.
 
 ## Machine recipes
+
+*Currently only supports Immersive Technology*
+
 Recipes are one JSON file each, sorted into a folder per machine. Put your file
 at the same folder and file name the mod uses and it replaces that recipe; give
 it any other name and it is added as a new recipe alongside the existing ones.
