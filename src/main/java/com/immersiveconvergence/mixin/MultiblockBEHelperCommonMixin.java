@@ -41,7 +41,7 @@ public abstract class MultiblockBEHelperCommonMixin implements IDisassemblingAwa
     @Inject(method = "disassemble", at = @At("HEAD"), cancellable = true, remap = false)
     private void ic$queueDisassembly(CallbackInfo ci) {
         if (beingDisassembled) { return; }
-        IMultiblockBEHelper<?> self = (IMultiblockBEHelper<?>) (Object) this;
+        IMultiblockBEHelper<?> self = (IMultiblockBEHelper<?>) this;
         MultiblockRegistration<?> registration = self.getMultiblock();
         if (QueueProcessor.MANAGED.contains(registration.id())) { return; }
         IMultiblockBEHelperMaster<?> master = getMasterHelperWithChunkloads();
@@ -65,7 +65,7 @@ public abstract class MultiblockBEHelperCommonMixin implements IDisassemblingAwa
     private void ic$clearTank(Player player, InteractionHand hand, BlockHitResult hit, CallbackInfoReturnable<InteractionResult> cir) {
         MultiblockBEHelperMaster<?> master = getMasterHelper();
         if (master == null) { return; }
-        IMultiblockBEHelper<?> self = (IMultiblockBEHelper<?>) (Object) this;
+        IMultiblockBEHelper<?> self = (IMultiblockBEHelper<?>) this;
         InteractionResult result = ClearTankRegistry.handle(self.getMultiblock().id(), self.getPositionInMB(), master.getContext(), player, hand);
         if (result != null) { cir.setReturnValue(result); }
     }
