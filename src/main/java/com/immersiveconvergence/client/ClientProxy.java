@@ -10,6 +10,7 @@ import com.immersiveconvergence.common.ICContent;
 import com.immersiveconvergence.common.multiblock.IEMultiblockRegistry;
 import com.immersiveconvergence.common.blocks.tileentities.TileEntityRotorCreative;
 import com.immersiveconvergence.client.event.ICClientEventHandler;
+import com.immersiveconvergence.client.render.IEParticleTextures;
 import com.immersiveconvergence.client.render.TileRenderRotorCreative;
 import com.immersiveconvergence.client.render.ip.IPPumpjackSupport;
 
@@ -46,12 +47,14 @@ public class ClientProxy extends CommonProxy {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRotorCreative.class, new TileRenderRotorCreative());
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new ICClientEventHandler());
         registerSplitModels();
+        IEParticleTextures.register();
         if (Loader.isModLoaded("immersivepetroleum")) { IPPumpjackSupport.init(); }
     }
 
     @Override public void loadComplete() {
         if (Loader.isModLoaded("immersivepetroleum")) { IPPumpjackSupport.bindRenderer(); }
         ManualHelper.addEntry("multiblockDisassembly", ManualHelper.CAT_CONSTRUCTION, new ManualPages.Text(ManualHelper.getManual(), "multiblockDisassembly0"));
+        ManualHelper.addEntry("clearingTanks", ManualHelper.CAT_CONSTRUCTION, new ManualPages.Text(ManualHelper.getManual(), "clearingTanks0"));
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST) public static void registerPetroleumModels(ModelRegistryEvent event) { if (Loader.isModLoaded("immersivepetroleum")) { IPPumpjackSupport.registerStateMapper(); } }

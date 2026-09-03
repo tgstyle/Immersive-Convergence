@@ -58,6 +58,8 @@ minecraft {
     username = 'tgstyle'
     extraRunJvmArguments.addAll(
             '-Dfml.coreMods.load=com.immersiveconvergence.core.ICMixin',
+            '-Dmixin.debug.strict=true',
+            '-Dmixin.checks.interfaces=true',
             '-Dforge.logging.console.level=debug',
             '-XX:+FlightRecorder',
             '-XX:StartFlightRecording=maxsize=512M,dumponexit=true,filename=logs/profile.jfr,settings=profile'

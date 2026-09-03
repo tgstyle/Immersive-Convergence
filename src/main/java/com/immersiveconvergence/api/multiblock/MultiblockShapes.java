@@ -6,13 +6,12 @@ import com.immersiveconvergence.api.shapes.VoxelShape;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.immersiveconvergence.api.shapes.BooleanOp.OR;
 
 public final class MultiblockShapes {
-    private static final float[] FULL_BLOCK = {0f, 0f, 0f, 1f, 1f, 1f};
-
     private MultiblockShapes() {}
 
     public static BlockPos localPos(int position, int width, int length) {
@@ -26,9 +25,30 @@ public final class MultiblockShapes {
         return shape.optimize();
     }
 
-    public static float[] blockBounds(VoxelShape shape) {
-        if (shape.isEmpty()) { return FULL_BLOCK.clone(); }
-        AxisAlignedBB bounds = shape.bounds();
-        return new float[]{(float)bounds.minX, (float)bounds.minY, (float)bounds.minZ, (float)bounds.maxX, (float)bounds.maxY, (float)bounds.maxZ};
+    public static List<AxisAlignedBB> bounds(List<AxisAlignedBB> local, EnumFacing facing, boolean mirrored) {
+        List<AxisAlignedBB> solid = new ArrayList<>();
+        List<AxisAlignedBB> planes = new ArrayList<>();
+        for (AxisAlignedBB aabb : local) {
+            if (isPlane(aabb)) { planes.add(aabb); }
+            else { solid.add(aabb); }
+        }
+        List<AxisAlignedBB> bounds = new ArrayList<>(rotated(solid, facing, mirrored).toAabbs());
+        for (AxisAlignedBB plane : planes) { bounds.add(Shapes.rotateAABB(plane, facing, mirrored)); }
+        return bounds;
+    }
+
+    public static boolean isPlane(AxisAlignedBB aabb) {
+        int flat = 0;
+        if (aabb.maxX - aabb.minX < 1.0E-7D) { flat++; }
+        if (aabb.maxY - aabb.minY < 1.0E-7D) { flat++; }
+        if (aabb.maxZ - aabb.minZ < 1.0E-7D) { flat++; }
+        return flat == 1;
+    }
+
+    public static float[] blockBounds(List<AxisAlignedBB> bounds) {
+        if (bounds.isEmpty()) { return new float[6]; }
+        AxisAlignedBB union = bounds.get(0);
+        for (AxisAlignedBB aabb : bounds) { union = union.union(aabb); }
+        return new float[]{(float)union.minX, (float)union.minY, (float)union.minZ, (float)union.maxX, (float)union.maxY, (float)union.maxZ};
     }
 }

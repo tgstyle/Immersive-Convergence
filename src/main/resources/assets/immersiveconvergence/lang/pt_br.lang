@@ -10,3 +10,6 @@ gui.immersiveconvergence.input_tanks_cleared=Tanques de entrada limpos
 ie.manual.entry.multiblockDisassembly.name=Desmontagem de multiblocos
 ie.manual.entry.multiblockDisassembly.subtext=Desmonte e fique com as peças
 ie.manual.entry.multiblockDisassembly0=Quebrar qualquer bloco de uma máquina formada desmonta a estrutura inteira. Ela se desfaz bloco a bloco em alguns instantes, e todos os materiais de construção caem no bloco que foi quebrado. Agache ao quebrar para usar o comportamento clássico: a estrutura volta na hora a ser os blocos colocados. Definir disassemblyMode como TEMPLATE_BLOCKS na configuração torna o comportamento clássico o padrão.
+ie.manual.entry.clearingTanks.name=Esvaziar tanques
+ie.manual.entry.clearingTanks.subtext=Fora com o fluido errado
+ie.manual.entry.clearingTanks0=As entradas de fluido aceitam qualquer fluido bombeado para elas, e uma máquina com o fluido errado fica parada até que aquele tanque seja esvaziado. Agache e use o Martelo do Engenheiro em uma entrada de fluido para esvaziá-la.<br>O fluido é descartado, não devolvido, então o tanque fica livre imediatamente para o fluido correto. Isso funciona nas máquinas do Immersive Engineering, Immersive Petroleum e Immersive Technology com entrada de fluido; tanques de saída e de armazenamento nunca são tocados.

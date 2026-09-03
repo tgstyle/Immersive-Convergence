@@ -30,6 +30,7 @@ import blusunrize.immersiveengineering.common.blocks.stone.BlockTypes_StoneDevic
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fml.common.Loader;
 import java.util.function.Supplier;
 
@@ -89,6 +90,28 @@ public final class IEMultiblocks {
         IEMultiblockRegistry.registerTile(TileEntityMetalPress.class, "IE:MetalPress");
         IEMultiblockRegistry.registerTile(TileEntityBucketWheel.class, "IE:BucketWheel");
         IEMultiblockRegistry.registerTile(TileEntityExcavator.class, "IE:Excavator");
+
+        IEClearTanks.register("IE:Assembler", new int[]{1}, tile -> {
+            for (FluidTank tank : ((TileEntityAssembler)tile).tanks) { tank.setFluid(null); }
+            return 3;
+        });
+        IEClearTanks.register("IE:Mixer", new int[]{1, 3}, tile -> {
+            ((TileEntityMixer)tile).tank.fluids.clear();
+            return 1;
+        });
+        IEClearTanks.register("IE:Refinery", new int[]{5, 9}, tile -> {
+            ((TileEntityRefinery)tile).tanks[0].setFluid(null);
+            ((TileEntityRefinery)tile).tanks[1].setFluid(null);
+            return 2;
+        });
+        IEClearTanks.register("IE:BottlingMachine", new int[]{3}, tile -> {
+            ((TileEntityBottlingMachine)tile).tanks[0].setFluid(null);
+            return 1;
+        });
+        IEClearTanks.register("IE:DieselGenerator", new int[]{0, 2}, tile -> {
+            ((TileEntityDieselGenerator)tile).tanks[0].setFluid(null);
+            return 1;
+        });
 
         if (Loader.isModLoaded("immersivepetroleum")) { IPMultiblocks.init(); }
     }

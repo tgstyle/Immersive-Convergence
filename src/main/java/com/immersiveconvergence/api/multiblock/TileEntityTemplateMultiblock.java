@@ -1,6 +1,6 @@
 package com.immersiveconvergence.api.multiblock;
 
-import com.immersiveconvergence.api.shapes.VoxelShape;
+import com.immersiveconvergence.api.client.split.ISubmodelOffsetProvider;
 
 import blusunrize.immersiveengineering.api.crafting.IMultiblockRecipe;
 import blusunrize.immersiveengineering.common.blocks.IEBlockInterfaces.IPlayerInteraction;
@@ -33,16 +33,14 @@ import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
 @SuppressWarnings("unused")
-public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateMultiblock<T, R, M>, R extends IMultiblockRecipe, M extends T> extends TileEntityMultiblockMetal<T, R> implements IPlayerInteraction {
+public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateMultiblock<T, R, M>, R extends IMultiblockRecipe, M extends T> extends TileEntityMultiblockMetal<T, R> implements IPlayerInteraction, ISubmodelOffsetProvider {
     private static final String KEY_INPUT_TANK_CLEARED = "gui.immersiveconvergence.input_tank_cleared";
     private static final String KEY_INPUT_TANKS_CLEARED = "gui.immersiveconvergence.input_tanks_cleared";
     private int blockUpdateCooldown = 0;
-    private VoxelShape voxelShapeCache;
-    private int voxelShapeCachePos = Integer.MIN_VALUE;
-    private EnumFacing voxelShapeCacheFacing;
-    private boolean voxelShapeCacheMirrored;
-    private VoxelShape aabbCacheShape;
-    private List<AxisAlignedBB> aabbCache;
+    private List<AxisAlignedBB> boundsCache;
+    private int boundsCachePos = Integer.MIN_VALUE;
+    private EnumFacing boundsCacheFacing;
+    private boolean boundsCacheMirrored;
     public boolean shouldDropOriginal = true;
     public boolean shouldDropInventory = true;
 
@@ -141,27 +139,16 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
 
     protected BlockPos adjustPosInMultiblock(BlockPos posInMultiblock, int width) { return posInMultiblock; }
 
-    private VoxelShape getVoxelShape() {
-        if (voxelShapeCache != null && voxelShapeCachePos == pos && voxelShapeCacheFacing == facing && voxelShapeCacheMirrored == mirrored) { return voxelShapeCache; }
-        BlockPos posInMultiblock = posToMultiblock();
-        List<AxisAlignedBB> list = getShapeGetter().getShape(posInMultiblock);
+    private List<AxisAlignedBB> getAabbs() {
+        if (boundsCache != null && boundsCachePos == pos && boundsCacheFacing == facing && boundsCacheMirrored == mirrored) { return boundsCache; }
+        List<AxisAlignedBB> list = getShapeGetter().getShape(posToMultiblock());
         List<AxisAlignedBB> processed = new ArrayList<>(list.size());
         for (AxisAlignedBB aabb : list) { processed.add(preprocessShapeAABB(aabb)); }
-        VoxelShape vs = MultiblockShapes.rotated(processed, facing, useMirroredShape() && mirrored);
-        voxelShapeCache = vs;
-        voxelShapeCachePos = pos;
-        voxelShapeCacheFacing = facing;
-        voxelShapeCacheMirrored = mirrored;
-        return vs;
-    }
-
-    private List<AxisAlignedBB> getAabbs() {
-        VoxelShape vs = getVoxelShape();
-        if (vs != aabbCacheShape) {
-            aabbCache = vs.toAabbs();
-            aabbCacheShape = vs;
-        }
-        return aabbCache;
+        boundsCache = MultiblockShapes.bounds(processed, facing, useMirroredShape() && mirrored);
+        boundsCachePos = pos;
+        boundsCacheFacing = facing;
+        boundsCacheMirrored = mirrored;
+        return boundsCache;
     }
 
     @Nonnull public List<AxisAlignedBB> getAdvancedCollisionBounds() { return getAabbs(); }
@@ -170,7 +157,9 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
 
     @SuppressWarnings("unused") public boolean isOverrideBox(@Nonnull AxisAlignedBB box, @Nonnull EntityPlayer player, @Nonnull RayTraceResult mop, @Nonnull List<AxisAlignedBB> list) { return true; }
 
-    @Override @Nonnull public float[] getBlockBounds() { return MultiblockShapes.blockBounds(getVoxelShape()); }
+    @Override @Nonnull public float[] getBlockBounds() { return MultiblockShapes.blockBounds(getAabbs()); }
+
+    @Override @Nullable public BlockPos getModelOffset() { return formed ? new BlockPos(offset[0], offset[1], offset[2]) : null; }
 
     @Override @Nonnull public ItemStack getOriginalBlock() { return ((MachineTemplateMultiblock<?>)this.mutliblockInstance).getOriginalBlock(pos); }
 

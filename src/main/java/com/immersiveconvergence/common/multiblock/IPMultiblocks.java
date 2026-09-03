@@ -31,6 +31,11 @@ public final class IPMultiblocks {
         IEMultiblockRegistry.registerTile(TileEntityDistillationTower.TileEntityDistillationTowerParent.class, "IP:DistillationTower");
         IEMultiblockRegistry.registerTile(TileEntityPumpjack.class, "IP:Pumpjack");
         IEMultiblockRegistry.registerTile(TileEntityPumpjack.TileEntityPumpjackParent.class, "IP:Pumpjack");
+
+        IEClearTanks.register("IP:DistillationTower", new int[]{0}, tile -> {
+            ((TileEntityDistillationTower)tile).tanks[0].fluids.clear();
+            return 1;
+        });
     }
 
     public static void alignRenderLayers() { ((BlockIPMetalMultiblocks)IPContent.blockMetalMultiblock).setMetaBlockLayer(BlockTypes_IPMetalMultiblock.DISTILLATION_TOWER.getMeta(), BlockRenderLayer.CUTOUT); }

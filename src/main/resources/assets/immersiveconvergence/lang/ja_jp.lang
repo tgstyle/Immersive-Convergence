@@ -10,3 +10,6 @@ gui.immersiveconvergence.input_tanks_cleared=入力タンクをすべてクリ�
 ie.manual.entry.multiblockDisassembly.name=マルチブロックの解体
 ie.manual.entry.multiblockDisassembly.subtext=ばらしても部品はそのまま
 ie.manual.entry.multiblockDisassembly0=組み上がったマシンのブロックをどれか壊すと、構造物全体が解体されます。マシンは数瞬かけてブロックごとに崩され、建材はすべて壊したブロックの位置にドロップします。スニークしながら壊すと従来の挙動に戻り、構造物は即座に設置したブロックへと戻ります。コンフィグでdisassemblyModeをTEMPLATE_BLOCKSに設定すると、従来の挙動が既定になります。
+ie.manual.entry.clearingTanks.name=タンクを空にする
+ie.manual.entry.clearingTanks.subtext=誤った液体は捨てる
+ie.manual.entry.clearingTanks0=液体の入力口は流し込まれた液体を何でも受け入れるため、誤った液体が入ったマシンはそのタンクを空にするまで停止したままになります。スニークしながらエンジニア・ハンマーを液体の入力口に使うと、タンクを空にできます。<br>液体は回収されずに破棄されるので、タンクはすぐに正しい液体を受け入れられます。これは液体入力を持つImmersive Engineering、Immersive Petroleum、Immersive Technologyのマシンで機能し、出力タンクや貯蔵タンクには影響しません。

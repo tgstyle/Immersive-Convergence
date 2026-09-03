@@ -10,3 +10,6 @@ gui.immersiveconvergence.input_tanks_cleared=輸入槽已全部清空
 ie.manual.entry.multiblockDisassembly.name=多方塊結構拆解
 ie.manual.entry.multiblockDisassembly.subtext=拆而不散
 ie.manual.entry.multiblockDisassembly0=破壞成型機器的任意方塊會拆解整個結構。機器會在片刻間逐塊拆除，所有建築材料都會掉落在被破壞的方塊處。潛行時破壞則改用經典行為：結構立即變回原先放置的方塊。在配置中將disassemblyMode設為TEMPLATE_BLOCKS可讓經典行為成為預設。
+ie.manual.entry.clearingTanks.name=清空儲罐
+ie.manual.entry.clearingTanks.subtext=錯誤的流體請出去
+ie.manual.entry.clearingTanks0=流體輸入口會接受任何輸入的流體，若機器中進了錯誤的流體，它會一直停機，直到該儲罐被清空。潛行並對流體輸入口使用工程師槌即可清空儲罐。<br>流體會被丟棄而不是返還，因此儲罐可以立刻接收正確的流體。這適用於帶流體輸入的Immersive Engineering、Immersive Petroleum和Immersive Technology機器；輸出儲罐和儲存罐不會受到影響。

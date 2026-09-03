@@ -11,6 +11,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -39,9 +40,14 @@ public final class SplitModelProperties {
 
     public static IBlockState withOffset(IBlockState state, IBlockAccess world, BlockPos pos) {
         if (!(state instanceof IExtendedBlockState)) { return state; }
-        TileEntity te = world.getTileEntity(pos);
-        if (!(te instanceof TileEntityMultiblockPart) || !((TileEntityMultiblockPart<?>)te).formed) { return state; }
+        BlockPos offset = modelOffset(world.getTileEntity(pos));
+        return offset == null ? state : ((IExtendedBlockState)state).withProperty(SUBMODEL_OFFSET, offset);
+    }
+
+    @Nullable public static BlockPos modelOffset(@Nullable TileEntity te) {
+        if (te instanceof ISubmodelOffsetProvider) { return ((ISubmodelOffsetProvider)te).getModelOffset(); }
+        if (!(te instanceof TileEntityMultiblockPart) || !((TileEntityMultiblockPart<?>)te).formed) { return null; }
         int[] offset = ((TileEntityMultiblockPart<?>)te).offset;
-        return ((IExtendedBlockState)state).withProperty(SUBMODEL_OFFSET, new BlockPos(offset[0], offset[1], offset[2]));
+        return new BlockPos(offset[0], offset[1], offset[2]);
     }
 }

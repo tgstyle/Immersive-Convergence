@@ -5,7 +5,6 @@ import com.immersiveconvergence.api.multiblock.MultiblockShapes;
 import com.immersiveconvergence.api.multiblock.PoIJSONSchema;
 import com.immersiveconvergence.api.multiblock.ShapeData;
 import com.immersiveconvergence.api.multiblock.TemplateMultiblock;
-import com.immersiveconvergence.api.shapes.Shapes;
 
 import blusunrize.immersiveengineering.api.MultiblockHandler;
 import blusunrize.immersiveengineering.api.tool.ConveyorHandler;
@@ -65,24 +64,9 @@ public class IEMultiblock extends TemplateMultiblock {
         int key = (position * 6 + facing.ordinal()) * 2 + (mirrored ? 1 : 0);
         List<AxisAlignedBB> cached = boundsCache.get(key);
         if (cached != null) { return cached; }
-        List<AxisAlignedBB> solid = new ArrayList<>();
-        List<AxisAlignedBB> planes = new ArrayList<>();
-        for (AxisAlignedBB aabb : shape.getShape(MultiblockShapes.localPos(position, template.width, template.length))) {
-            if (isPlane(aabb)) { planes.add(aabb); }
-            else { solid.add(aabb); }
-        }
-        List<AxisAlignedBB> bounds = new ArrayList<>(MultiblockShapes.rotated(solid, facing, mirrored).toAabbs());
-        for (AxisAlignedBB plane : planes) { bounds.add(Shapes.rotateAABB(plane, facing, mirrored)); }
+        List<AxisAlignedBB> bounds = MultiblockShapes.bounds(shape.getShape(MultiblockShapes.localPos(position, template.width, template.length)), facing, mirrored);
         boundsCache.put(key, bounds);
         return bounds;
-    }
-
-    private static boolean isPlane(AxisAlignedBB aabb) {
-        int flat = 0;
-        if (aabb.maxX - aabb.minX < 1.0E-7D) { flat++; }
-        if (aabb.maxY - aabb.minY < 1.0E-7D) { flat++; }
-        if (aabb.maxZ - aabb.minZ < 1.0E-7D) { flat++; }
-        return flat == 1;
     }
 
     public List<AxisAlignedBB> boundsFor(int position, EnumFacing facing, boolean mirrored, BlockPos origin) {
@@ -92,13 +76,7 @@ public class IEMultiblock extends TemplateMultiblock {
         return offset;
     }
 
-    public float[] blockBoundsFor(int position, EnumFacing facing, boolean mirrored) {
-        List<AxisAlignedBB> bounds = boundsFor(position, facing, mirrored);
-        if (bounds.isEmpty()) { return new float[6]; }
-        AxisAlignedBB union = bounds.get(0);
-        for (AxisAlignedBB aabb : bounds) { union = union.union(aabb); }
-        return new float[]{(float)union.minX, (float)union.minY, (float)union.minZ, (float)union.maxX, (float)union.maxY, (float)union.maxZ};
-    }
+    public float[] blockBoundsFor(int position, EnumFacing facing, boolean mirrored) { return MultiblockShapes.blockBounds(boundsFor(position, facing, mirrored)); }
 
     public int portPos(int position) {
         if (ports == null) { immersiveconvergence$buildPorts(); }

@@ -13,6 +13,7 @@ import java.util.Map;
 
 @IFMLLoadingPlugin.Name("ICMixin")
 @IFMLLoadingPlugin.SortingIndex(1001)
+@IFMLLoadingPlugin.MCVersion("1.12.2")
 public class ICMixin implements IFMLLoadingPlugin, IEarlyMixinLoader {
     public static final Logger LOGGER = LogManager.getLogger("Immersive Convergence Mixin");
 
