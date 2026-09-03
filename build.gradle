@@ -235,7 +235,7 @@ dependencies {
 
     annotationProcessor "org.spongepowered:mixin:${version_mixin}:processor"
     implementation fg.deobf("curse.maven:${version_ie_curse}")
-    implementation fg.deobf("curse.maven:${version_ip_curse}")
+    compileOnly fg.deobf("curse.maven:${version_ip_curse}")
     compileOnly fg.deobf("mezz.jei:jei-${version_minecraft}-forge-api:${version_jei}")
     compileOnly fg.deobf("mezz.jei:jei-${version_minecraft}-common-api:${version_jei}")
     compileOnly fg.deobf("curse.maven:${version_jade_curse}")

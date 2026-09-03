@@ -15,9 +15,10 @@ Common API for IE Addons.<br/>
 # Overriding content
 Any mod built on Immersive Convergence lets you change its multiblock machines
 without editing the mod itself. You can replace a machine's model and textures,
-and change which blocks it is built from, using nothing but a resource pack and
-a data pack. Nothing is decompiled and no mod file is edited, so an override
-survives updating the mod as long as the file it replaces still exists.
+retune its recipes, and change which blocks it is built from, with an ordinary
+resource pack and data pack. Nothing is decompiled and no mod file is edited,
+so an override survives updating the mod as long as the file it replaces still
+exists.
 
 Two terms are used throughout. The **mod id** is the short name a mod goes by,
 `immersivetechnology` for Immersive Technology, and it is the namespace your
@@ -25,20 +26,28 @@ files go under. The **machine id** is the short name of one machine, such as
 `alternator` or `boiler_tank`, and it is written as `<id>` below.
 
 ## Where overrides go
-There is no special folder. Models, blockstates and textures are client files
-and belong in a resource pack; the structure a machine is built from is server
-data and belongs in a data pack. Either way you put your file at the same path
-the mod uses, under the mod's own namespace, and yours is read instead of the
-mod's.
+There is no special folder. A pack overrides a file by carrying its own copy at
+the same path the mod uses, under the mod's own namespace, and the pack's copy
+is read instead of the mod's. Get the path right, and the file, and it works;
+nothing else is needed. Models, blockstates and textures are client files and
+go in a resource pack under `assets`; the structure a machine is built from and
+its recipes are server data and go in a data pack under `data`. `<material>`
+below is `metal` or `stone`, the folder the mod keeps the machine under.
 
-| What you are changing | The mod's file | Goes in |
+| What you are changing | The mod's file | Your copy |
 | --- | --- | --- |
-| Which model a machine uses | `assets/<modid>/blockstates/<id>.json` | Resource pack |
-| The model a blockstate points at | `assets/<modid>/models/multiblock/<material>/<id>.json` | Resource pack |
-| Geometry | `assets/<modid>/models/multiblock/<material>/<id>/<id>.obj` and its `.mtl` | Resource pack |
-| Textures | `assets/<modid>/textures/multiblock/<material>/<id>.png` | Resource pack |
-| Machine recipes | `data/<modid>/recipes/<machine>/` | Data pack |
-| Blocks it is built from | `data/<modid>/structures/multiblocks/<id>.nbt` | Data pack |
+| Which model a machine uses | `assets/<modid>/blockstates/<id>.json` | Resource pack, same path |
+| The model a blockstate points at | `assets/<modid>/models/multiblock/<material>/<id>.json` | Resource pack, same path |
+| Geometry | `assets/<modid>/models/multiblock/<material>/<id>/<id>.obj` and its `.mtl` | Resource pack, same path |
+| Textures | `assets/<modid>/textures/multiblock/<material>/<id>.png` | Resource pack, same path |
+| Machine recipes | `data/<modid>/recipes/<machine>/` | Data pack, same path |
+| Blocks it is built from | `data/<modid>/structures/multiblocks/<id>.nbt` | Data pack, same path |
+
+A resource pack has to be enabled in the resource pack screen and takes effect
+on the next reload, F3+T included. A data pack has to be in the world's
+`datapacks` folder and enabled there, and takes effect on the next start or
+`/reload`; on a dedicated server that is the server world's folder. A pack that
+sits above another wins where both carry the same file.
 
 To get the original file to edit, open the mod's `.jar` with any zip program and
 copy the file out of it. An override replaces the whole file rather than merging
@@ -55,6 +64,26 @@ connect, and the shape you walk into, come from
 `assets/<modid>/multiblocks/<id>.json`, which the mod reads straight out of its
 own jar rather than through the resource system. A pack copy of that file is
 ignored.
+
+## Immersive Engineering and Immersive Petroleum
+Immersive Engineering's own machines, and Immersive Petroleum's, are not
+Immersive Convergence's files, but they are overridden the same way: put your
+copy at the path their own jar uses, under their own namespace, in a pack.
+The originals come out of their jars.
+
+| What you are changing | Immersive Engineering | Immersive Petroleum |
+| --- | --- | --- |
+| Which model a machine uses | `assets/immersiveengineering/blockstates/<id>.json` | `assets/immersivepetroleum/blockstates/<id>.json` |
+| Models | `assets/immersiveengineering/models/block/metal_multiblock/` and `models/block/stone_multiblocks/` | `assets/immersivepetroleum/models/multiblock/` |
+| Textures | `assets/immersiveengineering/textures/block/multiblocks/` | `assets/immersivepetroleum/textures/multiblock/` |
+| Machine recipes | `data/immersiveengineering/recipes/<machine>/` | `data/immersivepetroleum/recipes/<machine>/` |
+| Blocks it is built from | `data/immersiveengineering/structures/multiblocks/<id>.nbt` | `data/immersivepetroleum/structures/multiblocks/<id>.nbt` |
+
+Their models are drawn by Immersive Engineering's own model code rather than
+sliced by Immersive Convergence, so the notes further down about building one
+model of the whole machine do not apply to them. A blockstate there points at a
+`<id>_split.json` wrapper around the `.obj`, with a `<id>_mirrored_split.json`
+beside it, and those wrappers are what to copy and edit.
 
 ## Machine recipes
 Machine recipes are ordinary data pack files, one per recipe, sorted into a
@@ -221,19 +250,34 @@ newmtl m_distiller
 map_Kd immersivetechnology:multiblock/metal/distiller
 ```
 
-Machines that can be built either way round need a second, mirrored model, which
-is the `_mirrored` file the blockstate uses for `mirrored=true`. It is the first
-model reflected left to right about the vertical plane through the middle of the
-machine's width, so a machine 3 wide with its master in the middle sends a point
-at `x` to `1 - x`, while one 3 wide with its master at the corner sends it to
-`3 - x`. If your modeling program flips the faces inside out when mirroring, turn
-them back the right way round, or the machine will look hollow from outside. A
-machine that is the same on both sides does not need two files and can point at
-the same one twice.
+Machines that can be built either way round do not need a second model. The
+`mirrored=true` variants point at a `<id>_mirrored.json` that wraps the base
+model in Immersive Convergence's mirror loader, registered under the mod's own
+namespace (`immersivetechnology:mirror` for Immersive Technology), which reflects
+the model left to right about the master block while it loads, so one OBJ
+serves both. The wrapper carries a full copy of the base model definition
+rather than a reference to it:
 
-The mirrored model keeps the original's materials by naming them explicitly, so
-if you export it as its own file give it an `mtl_override` in the model JSON
-pointing at the base machine's `.mtl` rather than duplicating the material file.
+```json
+{
+  "parent": "minecraft:block/block",
+  "loader": "immersivetechnology:mirror",
+  "ambientocclusion": false,
+  "inner_model": {
+    "parent": "minecraft:block/block",
+    "loader": "forge:obj",
+    "model": "immersivetechnology:models/multiblock/metal/distiller/distiller.obj",
+    "flip_v": true,
+    "textures": { "particle": "immersivetechnology:multiblock/metal/distiller" }
+  },
+  "textures": { "particle": "immersivetechnology:multiblock/metal/distiller" }
+}
+```
+
+Replacing the OBJ at its own path is therefore mirrored along with it and needs
+nothing else. Pointing the base model at a different OBJ means changing the
+`model` inside `inner_model` too, or the machine keeps mirroring the old
+geometry.
 
 # Reporting issues
 When you are reporting bugs, please attach the crash report, mod and forge version.<br/>
