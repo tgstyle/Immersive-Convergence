@@ -37,9 +37,7 @@ import java.util.Random;
         this.motionX += this.random.nextFloat() / 5000.0F * (this.random.nextBoolean() ? 1 : -1);
         this.motionZ += this.random.nextFloat() / 5000.0F * (this.random.nextBoolean() ? 1 : -1);
         this.motionY -= this.particleGravity;
-        this.posX += this.motionX;
-        this.posY += this.motionY;
-        this.posZ += this.motionZ;
+        this.move(this.motionX, this.motionY, this.motionZ);
         if (this.particleAge >= this.particleMaxAge - 60 && this.particleAlpha > 0.01F) { this.particleAlpha -= 0.015F; }
     }
 
