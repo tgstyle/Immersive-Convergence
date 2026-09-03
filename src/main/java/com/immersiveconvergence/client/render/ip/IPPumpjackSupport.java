@@ -28,7 +28,7 @@ public final class IPPumpjackSupport {
 
     public static void init() {
         MinecraftForge.EVENT_BUS.register(new IPPumpjackSupport());
-        SplitModelHandler.register(NAMESPACE, "metal_multiblock_pumpjackparent", null, "metal_multiblock", "pumpjack", false, () -> IEMultiblockRegistry.get("IP:Pumpjack"));
+        SplitModelHandler.register(NAMESPACE, "metal_multiblock_pumpjackparent", null, "metal_multiblock", "pumpjack", false, false, () -> IEMultiblockRegistry.get("IP:Pumpjack"));
     }
 
     public static void registerStateMapper() { ModelLoader.setCustomStateMapper(IPContent.blockMetalMultiblock, new IPPumpjackStateMapper()); }

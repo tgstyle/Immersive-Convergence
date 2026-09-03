@@ -64,11 +64,11 @@ public class ClientProxy extends CommonProxy {
         String[][] ownFiles = {{"arc_furnace", "IE:ArcFurnace"}, {"auto_workbench", "IE:AutoWorkbench"}, {"bottling_machine", "IE:BottlingMachine"}, {"crusher", "IE:Crusher"}, {"diesel_generator", "IE:DieselGenerator"}, {"excavator", "IE:Excavator"}, {"fermenter", "IE:Fermenter"}, {"metal_press", "IE:MetalPress"}, {"mixer", "IE:Mixer"}, {"refinery", "IE:Refinery"}, {"squeezer", "IE:Squeezer"}};
         for (String[] machine : ownFiles) {
             String file = "metal_multiblock_" + machine[0];
-            SplitModelHandler.register(ie, file, null, file, null, false, () -> IEMultiblockRegistry.get(machine[1]));
+            SplitModelHandler.register(ie, file, null, file, null, false, false, () -> IEMultiblockRegistry.get(machine[1]));
         }
         String[][] sharedFile = {{"tank", "IE:SheetmetalTank"}, {"silo", "IE:Silo"}, {"assembler", "IE:Assembler"}, {"lightningrod", "IE:Lightningrod"}};
-        for (String[] machine : sharedFile) { SplitModelHandler.register(ie, "metal_multiblock", machine[0], "metal_multiblock", machine[0], false, () -> IEMultiblockRegistry.get(machine[1])); }
-        if (Loader.isModLoaded("immersivepetroleum")) { SplitModelHandler.register("immersivepetroleum", "metal_multiblock_distillationtowerparent", null, "metal_multiblock", "distillation_tower", true, () -> IEMultiblockRegistry.get("IP:DistillationTower")); }
+        for (String[] machine : sharedFile) { SplitModelHandler.register(ie, "metal_multiblock", machine[0], "metal_multiblock", machine[0], false, false, () -> IEMultiblockRegistry.get(machine[1])); }
+        if (Loader.isModLoaded("immersivepetroleum")) { SplitModelHandler.register("immersivepetroleum", "metal_multiblock_distillationtowerparent", null, "metal_multiblock", "distillation_tower", true, false, () -> IEMultiblockRegistry.get("IP:DistillationTower")); }
     }
 
     @SubscribeEvent public static void registerModels(ModelRegistryEvent event) {

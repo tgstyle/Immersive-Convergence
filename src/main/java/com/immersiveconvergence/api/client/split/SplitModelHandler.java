@@ -1,6 +1,7 @@
 package com.immersiveconvergence.api.client.split;
 
 import com.immersiveconvergence.ImmersiveConvergence;
+import com.immersiveconvergence.api.client.mirror.BakedMirroredModel;
 import com.immersiveconvergence.api.multiblock.TemplateMultiblock;
 import com.immersiveconvergence.common.util.ICLogger;
 
@@ -25,10 +26,12 @@ import java.util.function.Supplier;
 public class SplitModelHandler {
     private static final Map<String, List<Machine>> machinesByNamespace = new HashMap<>();
 
-    public static void register(String namespace, String masterFile, Supplier<TemplateMultiblock> instance) { register(namespace, masterFile, null, masterFile + "_slave", null, false, instance); }
+    public static void register(String namespace, String masterFile, Supplier<TemplateMultiblock> instance) { register(namespace, masterFile, false, instance); }
 
-    public static void register(String namespace, String masterFile, String masterType, String slaveFile, String slaveType, boolean splitDynamicRender, Supplier<TemplateMultiblock> instance) {
-        machinesByNamespace.computeIfAbsent(namespace, key -> new ArrayList<>()).add(new Machine(masterFile, masterType, slaveFile, slaveType, splitDynamicRender, instance));
+    public static void register(String namespace, String masterFile, boolean mirrorFromBase, Supplier<TemplateMultiblock> instance) { register(namespace, masterFile, null, masterFile + "_slave", null, false, mirrorFromBase, instance); }
+
+    public static void register(String namespace, String masterFile, String masterType, String slaveFile, String slaveType, boolean splitDynamicRender, boolean mirrorFromBase, Supplier<TemplateMultiblock> instance) {
+        machinesByNamespace.computeIfAbsent(namespace, key -> new ArrayList<>()).add(new Machine(masterFile, masterType, slaveFile, slaveType, splitDynamicRender, mirrorFromBase, instance));
     }
 
     @SubscribeEvent public static void onModelBake(ModelBakeEvent event) {
@@ -48,7 +51,20 @@ public class SplitModelHandler {
         for (Map.Entry<ModelResourceLocation, Machine> entry : matches.entrySet()) {
             ModelResourceLocation mrl = entry.getKey();
             Machine machine = entry.getValue();
-            if (machine.isMaster(mrl) && "false".equals(variantValue(mrl.getVariant(), "_0multiblockslave"))) { bases.put(machine.key(mrl.getVariant()), registry.getObject(mrl)); }
+            if (machine.isMaster(mrl) && "false".equals(variantValue(mrl.getVariant(), "_0multiblockslave")) && !machine.derivesMirror(mrl.getVariant())) { bases.put(machine.key(mrl.getVariant()), registry.getObject(mrl)); }
+        }
+        for (Map.Entry<ModelResourceLocation, Machine> entry : matches.entrySet()) {
+            ModelResourceLocation mrl = entry.getKey();
+            Machine machine = entry.getValue();
+            String variant = mrl.getVariant();
+            if (machine.isMaster(mrl) && "false".equals(variantValue(variant, "_0multiblockslave")) && machine.derivesMirror(variant)) {
+                IBakedModel unmirrored = bases.get(machine.key(variant, false));
+                if (unmirrored == null) {
+                    ICLogger.error("No unmirrored model to derive the mirror of " + mrl + " from - leaving it as baked");
+                    bases.put(machine.key(variant), registry.getObject(mrl));
+                }
+                else { bases.put(machine.key(variant), new BakedMirroredModel(unmirrored, BakedMirroredModel.axisFor(facingOf(variant)))); }
+            }
         }
         Map<String, BakedSplitModel> wrappers = new HashMap<>();
         for (Map.Entry<ModelResourceLocation, Machine> entry : matches.entrySet()) {
@@ -89,17 +105,20 @@ public class SplitModelHandler {
 
     private static final class Machine {
         final String masterFile, masterType, slaveFile, slaveType;
-        final boolean splitDynamicRender;
+        final boolean splitDynamicRender, mirrorFromBase;
         final Supplier<TemplateMultiblock> instance;
 
-        Machine(String masterFile, String masterType, String slaveFile, String slaveType, boolean splitDynamicRender, Supplier<TemplateMultiblock> instance) {
+        Machine(String masterFile, String masterType, String slaveFile, String slaveType, boolean splitDynamicRender, boolean mirrorFromBase, Supplier<TemplateMultiblock> instance) {
             this.masterFile = masterFile;
             this.masterType = masterType;
             this.slaveFile = slaveFile;
             this.slaveType = slaveType;
             this.splitDynamicRender = splitDynamicRender;
+            this.mirrorFromBase = mirrorFromBase;
             this.instance = instance;
         }
+
+        boolean derivesMirror(String variant) { return mirrorFromBase && mirroredOf(variant); }
 
         boolean isMaster(ModelResourceLocation mrl) { return mrl.getPath().equals(masterFile) && (masterType == null || masterType.equals(variantValue(mrl.getVariant(), "type"))); }
 
@@ -112,6 +131,8 @@ public class SplitModelHandler {
             return isMaster(mrl) || isSlave(mrl);
         }
 
-        String key(String variant) { return masterFile + "|" + masterType + "|" + facingOf(variant) + "|" + mirroredOf(variant) + "|" + variantValue(variant, "boolean1") + "|" + (splitDynamicRender ? variantValue(variant, "_1dynamicrender") : ""); }
+        String key(String variant) { return key(variant, mirroredOf(variant)); }
+
+        String key(String variant, boolean mirrored) { return masterFile + "|" + masterType + "|" + facingOf(variant) + "|" + mirrored + "|" + variantValue(variant, "boolean1") + "|" + (splitDynamicRender ? variantValue(variant, "_1dynamicrender") : ""); }
     }
 }
