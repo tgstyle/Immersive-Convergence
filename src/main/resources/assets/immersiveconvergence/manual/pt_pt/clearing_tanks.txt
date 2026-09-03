@@ -1,0 +1,4 @@
+Esvaziar tanques
+Fora com o fluido errado
+As entradas de fluido aceitam qualquer fluido que lhes seja enviado, e uma máquina com o fluido errado fica parada até esse tanque ser esvaziado. Agacha-te e usa o Engineer's Hammer numa entrada de fluido para a esvaziar.
+O fluido é descartado e não devolvido, pelo que o tanque fica logo livre para o fluido correto. Funciona nas máquinas do Immersive Engineering, Immersive Petroleum e Immersive Technology com entrada de fluido; os tanques de saída e de armazenamento nunca são tocados.

@@ -1,0 +1,3 @@
+Démontage des multiblocs
+Démonter sans rien perdre
+Casser n’importe quel bloc d’une machine formée démonte toute la structure. Elle se défait bloc par bloc en quelques instants, et tous ses matériaux de construction tombent à l’endroit du bloc cassé. Accroupissez-vous en cassant pour retrouver le comportement classique : la structure redevient instantanément ses blocs posés. Régler disassemblyMode sur TEMPLATE_BLOCKS dans la configuration rétablit le comportement classique par défaut.

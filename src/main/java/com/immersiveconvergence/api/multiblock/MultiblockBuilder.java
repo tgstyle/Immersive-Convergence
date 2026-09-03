@@ -60,5 +60,10 @@ import com.immersiveconvergence.mixin.MultiblockRegistrationBuilderAccessor;
 
     @Override protected MultiblockBuilder<S> self() { return this; }
 
-    @Override public MultiblockRegistration<S> build() { MultiblockRegistration<S> reg = super.build(); regSupplier = () -> reg; return reg; }
+    @Override public MultiblockRegistration<S> build() {
+        MultiblockRegistration<S> reg = super.build();
+        QueueProcessor.MANAGED.add(reg.id());
+        regSupplier = () -> reg;
+        return reg;
+    }
 }

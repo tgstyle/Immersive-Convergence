@@ -1,0 +1,3 @@
+Desmontagem de multiblocos
+Desmonta e guarda as peças
+Partir qualquer bloco de uma máquina formada desmonta toda a estrutura. Esta desfaz-se bloco a bloco em poucos instantes, e todos os materiais de construção caem no bloco que foi partido. Agacha-te ao partir para usares o comportamento clássico: a estrutura volta de imediato a ser os blocos colocados. Definir disassemblyMode como TEMPLATE_BLOCKS na configuração torna o comportamento clássico o predefinido.

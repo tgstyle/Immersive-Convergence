@@ -1,0 +1,4 @@
+Svuotare i serbatoi
+Via il fluido sbagliato
+Gli ingressi dei fluidi accettano qualsiasi fluido vi venga convogliato, e una macchina con il fluido sbagliato resta ferma finché quel serbatoio non viene svuotato. Accovacciati e usa l’Engineer's Hammer su un ingresso dei fluidi per svuotarlo.
+Il fluido viene scartato e non restituito, quindi il serbatoio è subito libero per il fluido corretto. Funziona sulle macchine di Immersive Engineering, Immersive Petroleum e Immersive Technology dotate di ingresso fluidi; i serbatoi di uscita e di stoccaggio non vengono mai toccati.

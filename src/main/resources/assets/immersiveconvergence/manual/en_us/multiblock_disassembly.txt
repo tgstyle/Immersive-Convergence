@@ -1,0 +1,3 @@
+Multiblock Disassembly
+Take it apart, keep the parts
+Breaking any block of a formed machine dismantles the whole structure. It comes apart block by block over a few moments, and all of its construction materials drop at the block that was broken. Sneak while breaking to revert to the classic behavior instead, where the structure instantly turns back into its placed blocks. Setting disassemblyMode to TEMPLATE_BLOCKS in the config makes the classic behavior the default.

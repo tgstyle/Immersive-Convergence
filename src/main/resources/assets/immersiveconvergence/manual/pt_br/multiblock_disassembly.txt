@@ -1,0 +1,3 @@
+Desmontagem de multiblocos
+Desmonte e fique com as peças
+Quebrar qualquer bloco de uma máquina formada desmonta a estrutura inteira. Ela se desfaz bloco a bloco em alguns instantes, e todos os materiais de construção caem no bloco que foi quebrado. Agache ao quebrar para usar o comportamento clássico: a estrutura volta na hora a ser os blocos colocados. Definir disassemblyMode como TEMPLATE_BLOCKS na configuração torna o comportamento clássico o padrão.

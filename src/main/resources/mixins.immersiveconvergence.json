@@ -8,7 +8,8 @@
     "MultiblockBEHelperCommonMixin",
     "MultiblockRegistrationBuilderAccessor",
     "InitializationTrackerMixin",
-    "FluidPipeBlockEntityMixin"
+    "FluidPipeBlockEntityMixin",
+    "MultiblockPartBlockMixin"
   ],
   "injectors": {
     "defaultRequire": 1

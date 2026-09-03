@@ -3,6 +3,8 @@ package com.immersiveconvergence;
 import com.immersiveconvergence.api.capability.*;
 import com.immersiveconvergence.api.integration.top.ProbeIntegration;
 import com.immersiveconvergence.api.loot.LootEntryTypes;
+import com.immersiveconvergence.core.compat.IEClearTanks;
+import com.immersiveconvergence.core.compat.IPClearTanks;
 import com.immersiveconvergence.core.ICClientConfig;
 import com.immersiveconvergence.core.ICCommonConfig;
 import com.immersiveconvergence.core.lib.ICLib;
@@ -23,6 +25,7 @@ import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -56,6 +59,8 @@ public class ImmersiveConvergence {
     private void commonSetup(final FMLCommonSetupEvent event) {
         ICLib.IC_LOGGER.info("HELLO FROM COMMON SETUP");
         event.enqueueWork(PacketHandler::initialize);
+        IEClearTanks.register();
+        if (ModList.get().isLoaded(IPClearTanks.MODID)) { IPClearTanks.register(); }
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event) { ProbeIntegration.enqueueIMC(); }

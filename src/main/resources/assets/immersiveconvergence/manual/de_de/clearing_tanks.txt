@@ -1,0 +1,4 @@
+Tanks leeren
+Weg mit der falschen Flüssigkeit
+Flüssigkeitseingänge nehmen jede Flüssigkeit an, die hineingeleitet wird, und eine Maschine mit der falschen Flüssigkeit steht still, bis der Tank geleert ist. Schleiche und benutze den Ingenieurshammer an einem Flüssigkeitseingang, um ihn zu leeren.
+Die Flüssigkeit wird verworfen und nicht zurückgegeben, sodass der Tank sofort für die richtige Flüssigkeit frei ist. Das funktioniert bei Maschinen von Immersive Engineering, Immersive Petroleum und Immersive Technology mit Flüssigkeitseingang; Ausgangs- und Lagertanks bleiben unberührt.

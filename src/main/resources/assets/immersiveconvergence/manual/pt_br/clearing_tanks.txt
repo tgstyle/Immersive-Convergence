@@ -1,0 +1,4 @@
+Esvaziar tanques
+Fora com o fluido errado
+As entradas de fluido aceitam qualquer fluido bombeado para elas, e uma máquina com o fluido errado fica parada até que aquele tanque seja esvaziado. Agache e use o Martelo do Engenheiro em uma entrada de fluido para esvaziá-la.
+O fluido é descartado, não devolvido, então o tanque fica livre imediatamente para o fluido correto. Isso funciona nas máquinas do Immersive Engineering, Immersive Petroleum e Immersive Technology com entrada de fluido; tanques de saída e de armazenamento nunca são tocados.

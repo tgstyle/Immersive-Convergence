@@ -1,0 +1,3 @@
+Rozebírání multibloků
+Rozložit a posbírat
+Rozbitím kteréhokoli bloku sestaveného stroje se rozebere celá struktura. Stroj se během několika okamžiků rozloží blok po bloku a veškerý stavební materiál vypadne u rozbitého bloku. Přikrčte se při rozbíjení, chcete-li místo toho klasické chování: struktura se okamžitě promění zpět v položené bloky. Nastavením disassemblyMode na TEMPLATE_BLOCKS v konfiguraci se klasické chování stane výchozím.

@@ -15,6 +15,8 @@
   "gui.immersiveconvergence.fluid_temperature": "溫度：%s",
   "gui.immersiveconvergence.fluid_viscosity": "黏度：%s",
   "gui.immersiveconvergence.fuel_empty": "燃料：空",
+  "gui.immersiveconvergence.input_tank_cleared": "輸入槽已清空",
+  "gui.immersiveconvergence.input_tanks_cleared": "輸入槽已全部清空",
   "gui.immersiveconvergence.rotor_creative": "創造模式轉子",
   "gui.immersiveconvergence.rotor_creative.rpm": "轉/分",
   "gui.immersiveconvergence.status": "狀態：%s",

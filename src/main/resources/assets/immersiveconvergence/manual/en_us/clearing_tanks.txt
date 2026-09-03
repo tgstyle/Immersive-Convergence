@@ -1,0 +1,4 @@
+Clearing Tanks
+Out with the wrong fluid
+Fluid input ports accept any fluid piped into them, and a machine holding the wrong fluid will sit idle until that tank is emptied. Sneak and use the Engineer's Hammer on a fluid input port to empty it.
+The fluid is discarded rather than returned, so the tank is free for the correct fluid immediately. This works on Immersive Engineering, Immersive Petroleum and Immersive Technology machines with a fluid input; output and storage tanks are never touched.

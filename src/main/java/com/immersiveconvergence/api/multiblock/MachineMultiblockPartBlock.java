@@ -61,12 +61,12 @@ import java.util.List;
                 });
             }
             if (helper.getContext() != null && ((IDisassemblingAware) helper).ic$isAssembled() && !(player instanceof FakePlayer)) {
-                TemplateMultiblock.currentlyBreakingPos = pos.immutable();
-                TemplateMultiblock.sneakBreaking = player.isShiftKeyDown();
+                QueueProcessor.currentlyBreakingPos = pos.immutable();
+                QueueProcessor.sneakBreaking = player.isShiftKeyDown();
                 try { helper.disassemble(); }
                 finally {
-                    TemplateMultiblock.currentlyBreakingPos = null;
-                    TemplateMultiblock.sneakBreaking = false;
+                    QueueProcessor.currentlyBreakingPos = null;
+                    QueueProcessor.sneakBreaking = false;
                 }
             }
         }
@@ -83,9 +83,9 @@ import java.util.List;
                     return;
                 }
                 if (helper.getContext() != null && ((IDisassemblingAware) helper).ic$isAssembled()) {
-                    TemplateMultiblock.currentlyBreakingPos = pos.immutable();
+                    QueueProcessor.currentlyBreakingPos = pos.immutable();
                     try { helper.disassemble(); }
-                    finally { TemplateMultiblock.currentlyBreakingPos = null; }
+                    finally { QueueProcessor.currentlyBreakingPos = null; }
                 }
             }
         }

@@ -10,12 +10,18 @@ import com.immersiveconvergence.core.lib.ICLib;
 import com.immersiveconvergence.core.registration.ICBlockEntities;
 import com.immersiveconvergence.core.registration.ICMenuTypes;
 
+import blusunrize.immersiveengineering.api.IEApi;
+import blusunrize.immersiveengineering.api.ManualHelper;
+import blusunrize.lib.manual.ManualEntry;
+import blusunrize.lib.manual.ManualInstance;
+import blusunrize.lib.manual.Tree.InnerNode;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -30,6 +36,8 @@ import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+
+import java.util.List;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = ICLib.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClientProxy extends CommonProxy {
@@ -47,8 +55,19 @@ public class ClientProxy extends CommonProxy {
         }
     };
 
+    private static final List<String> MANUAL_ENTRIES = List.of("multiblock_disassembly", "clearing_tanks");
+
     @SubscribeEvent public static void onClientSetup(FMLClientSetupEvent event) {
-        event.enqueueWork(() -> MenuScreens.register(ICMenuTypes.ROTOR_CREATIVE.getType(), (RotorCreativeMenu menu, Inventory inv, Component title) -> new RotorCreativeScreen(menu, inv)));
+        event.enqueueWork(() -> {
+            MenuScreens.register(ICMenuTypes.ROTOR_CREATIVE.getType(), (RotorCreativeMenu menu, Inventory inv, Component title) -> new RotorCreativeScreen(menu, inv));
+            ManualInstance manual = ManualHelper.getManual();
+            InnerNode<ResourceLocation, ManualEntry> construction = manual.getRoot().getOrCreateSubnode(IEApi.ieLoc(ManualHelper.CAT_CONSTRUCTION), 0);
+            for (String name : MANUAL_ENTRIES) {
+                ManualEntry.ManualEntryBuilder builder = new ManualEntry.ManualEntryBuilder(manual);
+                builder.readFromFile(ICLib.rl(name));
+                manual.addEntry(construction, builder.create());
+            }
+        });
     }
 
     @SubscribeEvent public static void registerModelLoaders(ModelEvent.RegisterGeometryLoaders event) {
