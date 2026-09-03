@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 @SuppressWarnings("unused")
 public abstract class TemplateMultiblock implements MultiblockHandler.IMultiblock {
     public final String uniqueName;
@@ -65,22 +67,21 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
     @Override public boolean createStructure(World world, BlockPos pos, EnumFacing side, EntityPlayer player) {
         if (template == null) { return false; }
         side = facingFor(world, pos, side, player);
-        BlockPos trigger = null;
-        boolean mirror = false;
-        for (int i = 0; i < triggerPositions.size(); i++) {
-            BlockPos candidate = triggerPositions.get(i);
+        FormationCandidate chosen = null;
+        for (int i = 0; i < triggerPositions.size() && chosen == null; i++) {
+            BlockPos trigger = triggerPositions.get(i);
             EnumFacing candidateSide = triggerFacings.get(i) == LocalFacing.BACK ? side.getOpposite() : side;
-            if (isValid(world, pos, candidateSide, candidate, false)) { trigger = candidate; side = candidateSide; break; }
-            if (canMirror() && isValid(world, pos, candidateSide, candidate, true)) {
-                trigger = candidate;
-                side = candidateSide;
-                mirror = true;
-                break;
-            }
+            List<FormationCandidate> candidates = new ArrayList<>();
+            if (isValid(world, pos, candidateSide, trigger, false)) { candidates.add(new FormationCandidate(this, originFor(pos, candidateSide, trigger, false), candidateSide, false)); }
+            if (canMirror() && isValid(world, pos, candidateSide, trigger, true)) { candidates.add(new FormationCandidate(this, originFor(pos, candidateSide, trigger, true), candidateSide, true)); }
+            if (candidates.isEmpty()) { continue; }
+            chosen = candidates.size() == 1 ? candidates.get(0) : chooseCandidate(world, candidates, player);
         }
-        if (trigger == null) { return false; }
+        if (chosen == null) { return false; }
+        side = chosen.side;
+        boolean mirror = chosen.mirrored;
+        BlockPos origin = chosen.origin;
         int width = template.width, height = template.height, length = template.length;
-        BlockPos origin = originFor(pos, side, trigger, mirror);
         BlockPos masterWorldPos = localToWorld(origin, localX(masterPos.getX(), mirror), masterPos.getY(), masterPos.getZ(), side);
         ItemStack mainhand = player.getHeldItemMainhand();
         ItemStack hammer = mainhand.getItem().getToolClasses(mainhand).contains(Lib.TOOL_HAMMER) ? mainhand : player.getHeldItemOffhand();
@@ -98,6 +99,16 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
         onFormed(player, pos, hammer);
         return true;
     }
+
+    private FormationCandidate chooseCandidate(World world, List<FormationCandidate> candidates, @Nullable EntityPlayer player) {
+        if (player != null && player.isSneaking()) {
+            for (FormationCandidate candidate : candidates) { if (candidate.mirrored) { return candidate; } }
+        }
+        FormationCandidate preferred = preferredCandidate(world, candidates, player);
+        return preferred != null ? preferred : candidates.get(0);
+    }
+
+    @Nullable protected FormationCandidate preferredCandidate(World world, List<FormationCandidate> candidates, @Nullable EntityPlayer player) { return null; }
 
     protected EnumFacing facingFor(World world, BlockPos pos, EnumFacing side, EntityPlayer player) { return (side == EnumFacing.UP || side == EnumFacing.DOWN) ? EnumFacing.fromAngle(player.rotationYaw) : side.getOpposite(); }
 
