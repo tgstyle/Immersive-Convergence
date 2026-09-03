@@ -204,20 +204,10 @@ public class QueueProcessor {
         if (be instanceof IMultiblockBE<?> multiblockBE) { markDisassembling(multiblockBE.getHelper()); }
     }
 
-    public static boolean markDisassembling(Object target) {
-        if (target instanceof IMultiblockBEHelper<?> helper) {
-            helper.markDisassembling();
-            return true;
-        }
-        if (target instanceof MachineBlockEntityMaster<?> master) {
-            master.markDisassembling();
-            return true;
-        }
-        if (target instanceof MachineBlockEntityDummy<?> dummy) {
-            dummy.markDisassembling();
-            return true;
-        }
-        return false;
+    public static void markDisassembling(Object target) {
+        if (target instanceof IMultiblockBEHelper<?> helper) { helper.markDisassembling(); }
+        else if (target instanceof MachineBlockEntityMaster<?> master) { master.markDisassembling(); }
+        else if (target instanceof MachineBlockEntityDummy<?> dummy) { dummy.markDisassembling(); }
     }
 
     @SubscribeEvent public static void onServerTick(ServerTickEvent.Post event) {
