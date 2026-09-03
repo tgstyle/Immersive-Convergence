@@ -161,7 +161,7 @@ repositories {
 dependencies {
     implementation "net.neoforged:neoforge:${version_neoforge}"
     implementation "curse.maven:${version_ie_curse}"
-    implementation "curse.maven:${version_ip_curse}"
+    compileOnly "curse.maven:${version_ip_curse}"
     compileOnly "mezz.jei:jei-${version_minecraft}-neoforge-api:${version_jei}"
     compileOnly "curse.maven:${version_jade_curse}"
     compileOnly "curse.maven:${version_top_curse}"
