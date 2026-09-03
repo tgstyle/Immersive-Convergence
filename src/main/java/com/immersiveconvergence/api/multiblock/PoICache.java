@@ -9,7 +9,7 @@ public class PoICache {
     public BlockPos position;
 
     public PoICache(EnumFacing facing, PoIJSONSchema poi, boolean isMirrored) {
-        this(poi.facing == null ? null : poi.facing.LocalToGlobal(facing), poi.position, poi.facing, isMirrored);
+        this(poi.localFacing == null ? null : poi.localFacing.LocalToGlobal(facing), poi.position, poi.localFacing, isMirrored);
     }
 
     public PoICache(EnumFacing facing, BlockPos position, LocalFacing localFacing, boolean isMirrored) {

@@ -29,7 +29,7 @@ public class ParticleColoredSmoke extends Particle {
         this.baseScale = this.particleScale;
         this.particleScale = 0.0F;
         this.particleMaxAge = (int)(80.0 / (this.random.nextFloat() * 0.5 + 0.5));
-        this.canCollide = false;
+        this.canCollide = ParticleSettings.particleCollide.getAsBoolean();
         this.motionX = xSpeed + jitter(SPAWN_JITTER);
         this.motionY = ySpeed + jitter(SPAWN_JITTER);
         this.motionZ = zSpeed + jitter(SPAWN_JITTER);

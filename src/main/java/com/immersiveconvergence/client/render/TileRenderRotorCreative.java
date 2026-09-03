@@ -1,4 +1,5 @@
 package com.immersiveconvergence.client.render;
+import com.immersiveconvergence.api.client.RenderUtils;
 import com.immersiveconvergence.common.ICContent;
 import com.immersiveconvergence.common.blocks.tileentities.TileEntityRotorCreative;
 import blusunrize.immersiveengineering.api.IEProperties;
@@ -39,7 +40,7 @@ public class TileRenderRotorCreative extends TileEntitySpecialRenderer<TileEntit
         ClientUtils.bindAtlas();
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
         buffer.setTranslation(-0.5, -0.5, -0.5);
-        ClientUtils.renderModelTESRFancy(model.getQuads(dynamicState, null, 0L), buffer, te.getWorld(), blockPos, false);
+        RenderUtils.renderModelTESRFancy(model.getQuads(dynamicState, null, 0L), buffer, te.getWorld(), blockPos, false);
         buffer.setTranslation(0, 0, 0);
         tessellator.draw();
         GlStateManager.enableCull();

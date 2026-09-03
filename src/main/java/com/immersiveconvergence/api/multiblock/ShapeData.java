@@ -81,13 +81,14 @@ public final class ShapeData extends GenericShape {
         List<BlockPos> triggerPositions = new ArrayList<>();
         List<LocalFacing> triggerFacings = new ArrayList<>();
         if (data.pointsOfInterest != null) {
+            data.pointsOfInterest = expandFacings(data.pointsOfInterest);
             for (PoIJSONSchema poi : data.pointsOfInterest) {
                 if (poi.pos == null || poi.pos.length != 3) { continue; }
                 poi.position = new BlockPos(poi.pos[0], poi.pos[1], length - 1 - poi.pos[2]);
                 if ("master".equals(poi.name)) { masterPos = poi.position; }
                 else if ("trigger".equals(poi.name)) {
                     triggerPositions.add(poi.position);
-                    triggerFacings.add(poi.facing);
+                    triggerFacings.add(poi.localFacing);
                 }
             }
         }
@@ -98,6 +99,26 @@ public final class ShapeData extends GenericShape {
 
         ICLogger.info(String.format("Loaded multiblock %s: %dx%dx%d, master at %s", id, width, height, length, masterPos));
         return new ShapeData(width, height, length, data, template, masterPos, triggerPositions, triggerFacings, shapes);
+    }
+
+    private static PoIJSONSchema[] expandFacings(PoIJSONSchema[] pointsOfInterest) {
+        List<PoIJSONSchema> expanded = new ArrayList<>();
+        for (PoIJSONSchema poi : pointsOfInterest) {
+            if (poi.facing != null && poi.facing.isJsonArray()) {
+                for (JsonElement element : poi.facing.getAsJsonArray()) { expanded.add(withFacing(poi, element)); }
+            }
+            else { expanded.add(withFacing(poi, poi.facing)); }
+        }
+        return expanded.toArray(new PoIJSONSchema[0]);
+    }
+
+    private static PoIJSONSchema withFacing(PoIJSONSchema source, JsonElement facing) {
+        PoIJSONSchema copy = new PoIJSONSchema();
+        copy.name = source.name;
+        copy.pos = source.pos;
+        copy.facing = facing;
+        copy.localFacing = facing == null || facing.isJsonNull() ? null : GSON.fromJson(facing, LocalFacing.class);
+        return copy;
     }
 
     private static MultiblockJSONSchema loadJSON(String modid, String path) {

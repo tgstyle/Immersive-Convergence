@@ -3,6 +3,7 @@ import com.immersiveconvergence.ImmersiveConvergence;
 import com.immersiveconvergence.api.capability.IMechanicalEnergyProvider;
 import com.immersiveconvergence.api.client.MechanicalEnergyAnimation;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IBlockBounds;
+import com.immersiveconvergence.api.network.ITileSyncReceiver;
 import com.immersiveconvergence.api.network.TileSyncMessage;
 import com.immersiveconvergence.client.gui.GuiRotorCreative;
 import com.immersiveconvergence.core.ICCommonConfig;
@@ -23,7 +24,7 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-public class TileEntityRotorCreative extends TileEntityIEBase implements ITickable, IMechanicalEnergyProvider, IDirectionalTile, IPlayerInteraction, IBlockBounds {
+public class TileEntityRotorCreative extends TileEntityIEBase implements ITickable, IMechanicalEnergyProvider, IDirectionalTile, IPlayerInteraction, IBlockBounds, ITileSyncReceiver {
     private static int maxSpeed() { return ICCommonConfig.mechanical.maxRpm; }
     public EnumFacing facing = EnumFacing.NORTH;
     public int rpm = maxSpeed();

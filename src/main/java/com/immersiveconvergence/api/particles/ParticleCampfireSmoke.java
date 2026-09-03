@@ -18,7 +18,7 @@ import java.util.Random;
         this.particleScale *= 3.0F;
         this.particleMaxAge = this.random.nextInt(50) + 80;
         this.particleGravity = 3.0E-6F;
-        this.canCollide = false;
+        this.canCollide = ParticleSettings.particleCollide.getAsBoolean();
         this.motionX = xSpeed;
         this.motionY = ySpeed + this.random.nextFloat() / 500.0F;
         this.motionZ = zSpeed;

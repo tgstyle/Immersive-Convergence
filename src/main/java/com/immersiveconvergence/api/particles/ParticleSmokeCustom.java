@@ -6,7 +6,7 @@ import net.minecraft.world.World;
 @SuppressWarnings("unused") public class ParticleSmokeCustom extends ParticleSmokeNormal {
     public ParticleSmokeCustom(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn, float size) {
         super(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, size);
-        this.canCollide = false;
+        this.canCollide = ParticleSettings.particleCollide.getAsBoolean();
     }
 
     public ParticleSmokeCustom(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn, float size, float maxAgeMultiplier) {

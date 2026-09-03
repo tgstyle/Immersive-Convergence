@@ -1,5 +1,7 @@
 package com.immersiveconvergence.client.render.ip;
 
+import com.immersiveconvergence.api.client.RenderUtils;
+
 import blusunrize.immersiveengineering.client.ClientUtils;
 import flaxbeard.immersivepetroleum.common.blocks.metal.TileEntityPumpjack;
 import net.minecraft.client.Minecraft;
@@ -73,7 +75,7 @@ public class TileRenderIPPumpjack extends TileEntitySpecialRenderer<TileEntityPu
         }
         else {
             buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-            ClientUtils.renderModelTESRFancy(model.getQuads(null, null, 0L), buffer, world, pos, false);
+            RenderUtils.renderModelTESRFancy(model.getQuads(null, null, 0L), buffer, world, pos, false);
         }
         tessellator.draw();
         GlStateManager.popMatrix();

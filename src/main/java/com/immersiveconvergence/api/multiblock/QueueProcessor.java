@@ -22,6 +22,7 @@ import net.minecraft.world.GameType;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -43,6 +44,8 @@ public class QueueProcessor {
     public static BooleanSupplier queueEnabled = () -> true;
     public static final List<QueueProcessor> pendingQueues = new ArrayList<>();
     public static final Set<BlockPos> activeDisassemblies = new HashSet<>();
+    public static BlockPos currentlyBreakingPos = null;
+    public static boolean sneakBreaking = false;
     private static final Comparator<BlockPos> Y_DESC_COMPARATOR = Comparator.comparingInt(pos -> -pos.getY());
     private static final GameProfile FALLBACK_PROFILE = new GameProfile(UUID.fromString("256cb34d-064f-3b7b-be9f-aa63f5ff7d65"), "[IC-Disassembler]");
 
@@ -54,6 +57,7 @@ public class QueueProcessor {
     private final List<ItemStack> allDrops;
     @Nullable private final BlockPos masterPos;
     private FakePlayer fakePlayer;
+    private boolean finished = false;
 
     public QueueProcessor(WorldServer world, List<BlockPos> toBreak, @Nullable EntityPlayerMP owner, boolean dropItems, BlockPos dropAt, List<ItemStack> allDrops, @Nullable BlockPos masterPos) {
         this.world = world;
@@ -73,6 +77,7 @@ public class QueueProcessor {
             if (dropItems && !allDrops.isEmpty()) { for (ItemStack stack : allDrops) { world.spawnEntity(new EntityItem(world, dropAt.getX() + 0.5, dropAt.getY() + 0.5, dropAt.getZ() + 0.5, stack)); } }
             allDrops.clear();
             if (masterPos != null) { activeDisassemblies.remove(masterPos); }
+            finished = true;
             return;
         }
         if (fakePlayer == null) {
@@ -87,9 +92,16 @@ public class QueueProcessor {
         }
     }
 
-    public boolean isEmpty() { return queue.isEmpty() && allDrops.isEmpty(); }
+    public boolean isEmpty() { return finished; }
 
     public enum Result { QUEUED, CLEARED, FALLBACK }
+
+    @SubscribeEvent public static void onBlockBreak(BlockEvent.BreakEvent event) {
+        if (event.getWorld().isRemote || event.getPlayer() instanceof FakePlayer) { return; }
+        boolean multiblock = event.getWorld().getTileEntity(event.getPos()) instanceof TileEntityMultiblockPart;
+        currentlyBreakingPos = multiblock ? event.getPos().toImmutable() : null;
+        sneakBreaking = multiblock && event.getPlayer().isSneaking();
+    }
 
     public static Result handleDisassembly(TileEntityMultiblockPart<?> broken, int[] structureDimensions, boolean dropOriginal) {
         World world = broken.getWorld();
@@ -99,7 +111,7 @@ public class QueueProcessor {
         if (activeDisassemblies.contains(masterPos)) { return Result.QUEUED; }
         EntityPlayer breakingPlayer = world.getClosestPlayer(masterPos.getX() + 0.5, masterPos.getY() + 0.5, masterPos.getZ() + 0.5, -1, false);
         boolean creative = breakingPlayer != null && breakingPlayer.isCreative();
-        boolean templateMode = !queueEnabled.getAsBoolean() || (breakingPlayer != null && breakingPlayer.isSneaking());
+        boolean templateMode = !queueEnabled.getAsBoolean() || (sneakBreaking && brokenPos.equals(currentlyBreakingPos));
         EnumFacing facing = broken.facing;
         boolean mirrored = broken.mirrored;
         BlockPos startPos = broken.getOrigin();

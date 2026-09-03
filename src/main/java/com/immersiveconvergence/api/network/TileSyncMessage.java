@@ -1,6 +1,5 @@
 package com.immersiveconvergence.api.network;
 
-import blusunrize.immersiveengineering.common.blocks.TileEntityIEBase;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
@@ -20,7 +19,7 @@ public class TileSyncMessage implements IMessage {
     BlockPos pos;
     NBTTagCompound nbt;
 
-    public TileSyncMessage(TileEntityIEBase tile, NBTTagCompound nbt) {
+    public TileSyncMessage(TileEntity tile, NBTTagCompound nbt) {
         this.pos = tile.getPos();
         this.nbt = nbt;
     }
@@ -43,7 +42,7 @@ public class TileSyncMessage implements IMessage {
             world.addScheduledTask(() -> {
                 if (world.isBlockLoaded(message.pos)) {
                     TileEntity tile = world.getTileEntity(message.pos);
-                    if (tile instanceof TileEntityIEBase) { ((TileEntityIEBase)tile).receiveMessageFromClient(message.nbt); }
+                    if (tile instanceof ITileSyncReceiver) { ((ITileSyncReceiver)tile).receiveMessageFromClient(message.nbt); }
                 }
             });
             return null;
@@ -57,7 +56,7 @@ public class TileSyncMessage implements IMessage {
                 World world = Minecraft.getMinecraft().world;
                 if (world != null) {
                     TileEntity tile = world.getTileEntity(message.pos);
-                    if (tile instanceof TileEntityIEBase) { ((TileEntityIEBase)tile).receiveMessageFromServer(message.nbt); }
+                    if (tile instanceof ITileSyncReceiver) { ((ITileSyncReceiver)tile).receiveMessageFromServer(message.nbt); }
                 }
             });
             return null;
