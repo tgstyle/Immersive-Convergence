@@ -79,10 +79,26 @@ repositories {
     mavenCentral()
 }
 
+def rdplJar = null
+def rdplDir = file('../MCT-Resource-Data-Pack-Loader-Legacy/build/libs')
+def rdplJars = rdplDir.exists() ? fileTree(rdplDir) {
+    include '*-dev.jar'
+    exclude '**/*-sources.jar'
+}.files : []
+
+if (!rdplJars.isEmpty()) {
+    rdplJar = rdplJars.sort { a, b -> a.lastModified() <=> b.lastModified() }.last()
+    logger.lifecycle("Found Resource Data Pack Loader dev JAR: ${rdplJar.name}")
+} else {
+    logger.warn('No Resource Data Pack Loader dev JAR found in ../MCT-Resource-Data-Pack-Loader-Legacy/build/libs, the RDPL bridge will not compile')
+}
+
 dependencies {
     implementation rfg.deobf("curse.maven:${common.imme_version}")
-    implementation rfg.deobf("curse.maven:${common.imps_version}")
     implementation rfg.deobf("${common.mjei_version}")
+    if (rdplJar != null && System.getProperty('ic.classes') == null) { compileOnly files(rdplJar) }
+
+    compileOnly rfg.deobf("curse.maven:${common.imps_version}")
 
     annotationProcessor 'org.ow2.asm:asm-debug-all:5.2'
     annotationProcessor 'com.google.guava:guava:32.1.2-jre'

@@ -11,4 +11,6 @@ public class ICLogger {
     public static void error(Object object) { log(Level.ERROR, object); }
 
     public static void info(Object object) { log(Level.INFO, object); }
+
+    public static void warn(Object object) { log(Level.WARN, object); }
 }

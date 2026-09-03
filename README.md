@@ -45,18 +45,34 @@ path under `overrides/<modid>/`.
 | Machine recipes | `assets/<modid>/recipes_multiblocks/` | `overrides/<modid>/recipes_multiblocks/` |
 | Ports and collision | `assets/<modid>/multiblocks/<id>.json` | `overrides/<modid>/multiblocks/<id>.json` |
 | Blocks it is built from | `assets/<modid>/structures/multiblocks/<id>.nbt` | `overrides/<modid>/structures/multiblocks/<id>.nbt` |
+| Which model a machine uses | `assets/<modid>/blockstates/<file>.json` | `overrides/<modid>/blockstates/<file>.json` |
+| Geometry | `assets/<modid>/models/block/multiblock/<material>/<id>/<id>.obj` and its `.mtl` | `overrides/<modid>/models/block/multiblock/<material>/<id>/<id>.obj` |
+| Textures | `assets/<modid>/textures/multiblock/<material>/<id>.png` | `overrides/<modid>/textures/multiblock/<material>/<id>.png` |
 
 To get the original file to edit, open the mod's `.jar` with any zip program and
 copy the file out of it. An override replaces the whole file rather than merging
 with it, so always start from the original instead of writing a short file with
 only the parts you want changed.
 
-These files are read once while the game starts, so a change needs a restart to
-take effect. The `overrides/<modid>/recipes_multiblocks` folder is created for
-you the first time the game runs; the other two you make yourself.
+The first three are read once while the game starts, so a change needs a
+restart to take effect. The `overrides/<modid>/recipes_multiblocks` folder is
+created for you the first time the game runs; the others you make yourself.
 
-Models and textures work differently. They are ordinary client files and go in a
-resource pack, which is covered further down.
+If Resource Data Pack Loader is installed, there is no `overrides` folder at
+all: Immersive Convergence defers to it entirely, and your copies go into its
+folder instead, at `rdploader/assets/<modid>/` followed by the same path, with
+its usual rules about packs, zips and priority applying. An `overrides` folder
+left over from before is moved into `rdploader/assets/` the first time the game
+starts with both installed, file by file, each move written to the log; a file
+that already exists at the destination is left where it is and noted.
+
+The last three are client files. The folder is also loaded as a resource pack,
+always on and above every pack you have selected, so they are read from it in
+place of the mod's, and they reload with F3+T. A normal resource pack works for
+them too, at the same paths. A dedicated server does not need them. Immersive
+Engineering's and Immersive Petroleum's own files are covered the same way, under
+`overrides/immersiveengineering/` and `overrides/immersivepetroleum/`, whether
+Immersive Convergence ships them or their own jar does.
 
 ## Machine recipes
 Recipes are one JSON file each, sorted into a folder per machine. Put your file
@@ -212,10 +228,10 @@ substituting an equivalent material often works even when the file names a
 specific one.
 
 ## Models and textures
-Machine models are client files, so a normal resource pack replaces them, with
-no `overrides` folder involved. You supply a blockstate file pointing at your own
-model and textures under the mod's namespace, and the game slices whatever you
-give it across the machine's blocks. A model that does not match the machine's
+Machine models are client files, read from the `overrides` folder or from a
+resource pack. You supply a blockstate file pointing at your own model and
+textures under the mod's namespace, and the game slices whatever you give it
+across the machine's blocks. A model that does not match the machine's
 shape exactly still draws in full, because anything sticking out past the
 machine is drawn by the closest block rather than being cut off.
 
@@ -335,15 +351,12 @@ newmtl m_alternator
 map_Kd immersivetech:multiblock/metal/alternator
 ```
 
-Most machines can be built facing either way round, so they need a second,
-mirrored model, which is the `_mirrored` file the blockstate uses for
-`boolean0=true`. It is the first model flipped across the middle of the master
-block: a point at `x` moves to `1 - x`, so a model running from `-2` to `2`
-across becomes one running from `-1` to `3`. If your modeling program flips the
-faces inside out when mirroring, turn them back the right way round, or the
-machine will look hollow from outside. A machine that is the same on both sides
-does not need two files and can point at the same one twice, which is what the
-alternator does.
+Most machines can be built facing either way round, and no second model is
+needed for it. The blockstate points `boolean0=true` at the same OBJ as
+`boolean0=false`, and Immersive Convergence reflects the loaded model about the
+middle of the master block, so a replacement OBJ is mirrored along with it.
+Immersive Engineering's and Immersive Petroleum's own machines keep their own
+`_mirrored` files.
 
 # Reporting issues
 When you are reporting bugs, please attach the crash report, mod and forge version.<br/>

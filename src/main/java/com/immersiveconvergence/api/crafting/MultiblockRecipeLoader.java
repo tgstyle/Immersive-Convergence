@@ -2,6 +2,7 @@ package com.immersiveconvergence.api.crafting;
 
 import com.immersiveconvergence.common.util.ICLogger;
 import com.immersiveconvergence.common.util.ICResources;
+import com.immersiveconvergence.common.util.RdplBridge;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -49,11 +50,13 @@ public class MultiblockRecipeLoader {
             return true;
         }, true, true);
         Path overrides = ICResources.overrideRoot(modid).resolve(folder);
-        try {
-            Files.createDirectories(overrides);
+        try { Files.createDirectories(overrides); }
+        catch (IOException e) { ICLogger.error("Failed to create the recipe override folder - " + e.getMessage()); }
+        if (ICResources.deferToRdpl()) { RdplBridge.forEach(modid, folder, "json", (name, contents) -> readContents(files, name, contents)); }
+        else {
             try (Stream<Path> stream = Files.walk(overrides)) { stream.filter(Files::isRegularFile).forEach(file -> readFile(files, overrides, file)); }
+            catch (IOException e) { ICLogger.error("Failed to read recipe overrides - " + e.getMessage()); }
         }
-        catch (IOException e) { ICLogger.error("Failed to read recipe overrides - " + e.getMessage()); }
         int loaded = 0;
         for (Map.Entry<String, JsonObject> entry : files.entrySet()) {
             if (parse(modid, entry.getKey(), entry.getValue(), context)) { loaded++; }
@@ -75,6 +78,12 @@ public class MultiblockRecipeLoader {
         String name = FilenameUtils.removeExtension(relative).replaceAll("\\\\", "/");
         try (BufferedReader reader = Files.newBufferedReader(file)) { files.put(name, PARSER.parse(reader).getAsJsonObject()); }
         catch (JsonParseException | IllegalStateException | IOException e) { ICLogger.error("Failed to read recipe " + name + " - " + e.getMessage()); }
+    }
+
+    private static void readContents(Map<String, JsonObject> files, String name, String contents) {
+        if (name.startsWith("_") || name.contains("/_")) { return; }
+        try { files.put(name, PARSER.parse(contents).getAsJsonObject()); }
+        catch (JsonParseException | IllegalStateException e) { ICLogger.error("Failed to read recipe " + name + " - " + e.getMessage()); }
     }
 
     private static boolean parse(String modid, String name, JsonObject json, JsonContext context) {

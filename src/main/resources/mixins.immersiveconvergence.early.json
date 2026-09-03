@@ -10,6 +10,9 @@
     "MixinMCWorldCMEFix",
     "MixinMCWorldCMELog"
   ],
+  "client": [
+    "MixinMCSimpleReloadableResourceManager"
+  ],
   "injectors": {
     "defaultRequire": 1
   }
