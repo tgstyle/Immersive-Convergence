@@ -1,13 +1,7 @@
 # Links
-- [Official Discord for Immersive Technology](https://discord.gg/ujY2mV9)<br/>
-
-- [Official Discord for Immersive Geology](https://discord.gg/team-immersive-geologys-eco-friendly-tm-server-610912351142674434)<br/>
-
+- [Official Discord for Immersive Technology](https://discord.gg/ujY2mV9)
 - [Immersive Technology on CurseForge](https://www.curseforge.com/minecraft/mc-mods/immersive-technology)
 - [Immersive Technology on Modrinth](https://modrinth.com/mod/mct-immersive-technology)
-
-- [Immersive Geology on CurseForge](https://www.curseforge.com/minecraft/mc-mods/immersive-geology)
-- [Immersive Geology on Modrinth](https://modrinth.com/mod/immersive-geology)
 
 # Immersive Convergence
 Common API for IE Addons.<br/>
