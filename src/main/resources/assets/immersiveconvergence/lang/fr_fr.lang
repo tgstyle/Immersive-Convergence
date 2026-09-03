@@ -5,6 +5,7 @@ gui.immersiveconvergence.rotor_creative.rpm=tr/min
 gui.immersiveconvergence.apply=Appliquer
 gui.immersiveconvergence.input_tank_cleared=Réservoir d’entrée vidé
 gui.immersiveconvergence.input_tanks_cleared=Réservoirs d’entrée vidés
+gui.immersiveconvergence.multiblock_jei_tooltip=Consultez le manuel de l’ingénieur pour construire
 
 #MANUAL
 ie.manual.entry.multiblockDisassembly.name=Démontage des multiblocs

@@ -5,6 +5,7 @@ gui.immersiveconvergence.rotor_creative.rpm=giri/min
 gui.immersiveconvergence.apply=Applica
 gui.immersiveconvergence.input_tank_cleared=Serbatoio di ingresso svuotato
 gui.immersiveconvergence.input_tanks_cleared=Serbatoi di ingresso svuotati
+gui.immersiveconvergence.multiblock_jei_tooltip=Consulta il manuale dell’ingegnere per la costruzione
 
 #MANUAL
 ie.manual.entry.multiblockDisassembly.name=Smontaggio dei multiblocchi

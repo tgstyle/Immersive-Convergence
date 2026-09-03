@@ -5,6 +5,7 @@ gui.immersiveconvergence.rotor_creative.rpm=RPM
 gui.immersiveconvergence.apply=Aplicar
 gui.immersiveconvergence.input_tank_cleared=Tanque de entrada limpiado
 gui.immersiveconvergence.input_tanks_cleared=Tanques de entrada limpiados
+gui.immersiveconvergence.multiblock_jei_tooltip=Consulta el Manual del Ingeniero para construir
 
 #MANUAL
 ie.manual.entry.multiblockDisassembly.name=Desmontaje de multibloques

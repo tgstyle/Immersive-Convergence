@@ -5,6 +5,7 @@ gui.immersiveconvergence.rotor_creative.rpm=轉速
 gui.immersiveconvergence.apply=套用
 gui.immersiveconvergence.input_tank_cleared=輸入槽已清空
 gui.immersiveconvergence.input_tanks_cleared=輸入槽已全部清空
+gui.immersiveconvergence.multiblock_jei_tooltip=查看工程師手冊以構建
 
 #MANUAL
 ie.manual.entry.multiblockDisassembly.name=多方塊結構拆解

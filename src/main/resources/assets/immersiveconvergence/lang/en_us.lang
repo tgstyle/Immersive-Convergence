@@ -5,6 +5,7 @@ gui.immersiveconvergence.rotor_creative.rpm=RPM
 gui.immersiveconvergence.apply=Apply
 gui.immersiveconvergence.input_tank_cleared=Input tank cleared
 gui.immersiveconvergence.input_tanks_cleared=Input tanks cleared
+gui.immersiveconvergence.multiblock_jei_tooltip=Check Engineer's Manual to Build
 
 #MANUAL
 ie.manual.entry.multiblockDisassembly.name=Multiblock Disassembly

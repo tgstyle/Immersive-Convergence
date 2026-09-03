@@ -5,6 +5,7 @@ gui.immersiveconvergence.rotor_creative.rpm=U/min
 gui.immersiveconvergence.apply=Übernehmen
 gui.immersiveconvergence.input_tank_cleared=Eingabetank geleert
 gui.immersiveconvergence.input_tanks_cleared=Eingabetanks geleert
+gui.immersiveconvergence.multiblock_jei_tooltip=Siehe Ingenieurshandbuch zum Bauen
 
 #MANUAL
 ie.manual.entry.multiblockDisassembly.name=Zerlegen von Multiblöcken

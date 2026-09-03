@@ -5,6 +5,7 @@ gui.immersiveconvergence.rotor_creative.rpm=об/хв
 gui.immersiveconvergence.apply=Застосувати
 gui.immersiveconvergence.input_tank_cleared=Вхідний резервуар очищено
 gui.immersiveconvergence.input_tanks_cleared=Вхідні резервуари очищено
+gui.immersiveconvergence.multiblock_jei_tooltip=Дивіться посібник інженера, щоб дізнатися, як побудувати
 
 #MANUAL
 ie.manual.entry.multiblockDisassembly.name=Розбирання мультиблоків
