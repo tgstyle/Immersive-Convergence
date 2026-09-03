@@ -1,0 +1,4 @@
+Vaciar tanques
+Fuera el fluido equivocado
+Las entradas de fluido aceptan cualquier fluido que se les bombee, y una máquina con el fluido equivocado queda inactiva hasta que se vacía ese tanque. Agáchate y usa el Martillo del ingeniero sobre una entrada de fluido para vaciarla.
+El fluido se descarta en lugar de devolverse, así que el tanque queda libre de inmediato para el fluido correcto. Esto funciona en las máquinas de Immersive Engineering, Immersive Petroleum e Immersive Technology con entrada de fluidos; los tanques de salida y de almacenamiento nunca se tocan.

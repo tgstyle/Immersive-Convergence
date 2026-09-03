@@ -1,0 +1,4 @@
+Vyprázdnění nádrží
+Pryč s nesprávnou kapalinou
+Vstupní otvory pro kapaliny přijmou jakoukoli kapalinu, která do nich přiteče, a stroj s nesprávnou kapalinou stojí, dokud se nádrž nevyprázdní. Přikrčte se a použijte Engineer's Hammer na vstupní otvor pro kapaliny, čímž nádrž vyprázdníte.
+Kapalina se zahodí, nevrací se, takže je nádrž ihned volná pro správnou kapalinu. Funguje to na strojích Immersive Engineering, Immersive Petroleum a Immersive Technology se vstupem kapalin; výstupních a skladovacích nádrží se to nikdy nedotkne.

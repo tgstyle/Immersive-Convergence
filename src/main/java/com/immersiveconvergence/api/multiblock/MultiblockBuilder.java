@@ -63,6 +63,7 @@ import com.immersiveconvergence.mixin.MultiblockRegistrationBuilderAccessor;
 
     @Override public MultiblockRegistration<S> build(Consumer<Consumer<net.neoforged.bus.api.IEventBus>> finisher) {
         MultiblockRegistration<S> reg = super.build(finisher);
+        QueueProcessor.MANAGED.add(reg.id());
         regSupplier = () -> reg;
         return reg;
     }

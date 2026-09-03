@@ -1,0 +1,3 @@
+Desmontaje de multibloques
+Desármalo y quédate las piezas
+Romper cualquier bloque de una máquina formada desmonta toda la estructura. Se deshace bloque a bloque en unos instantes, y todos sus materiales de construcción caen en el bloque que se rompió. Agáchate al romper para usar en su lugar el comportamiento clásico: la estructura vuelve al instante a ser los bloques colocados. Establecer disassemblyMode en TEMPLATE_BLOCKS en la configuración hace que el comportamiento clásico sea el predeterminado.

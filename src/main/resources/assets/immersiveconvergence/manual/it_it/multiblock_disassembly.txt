@@ -1,0 +1,3 @@
+Smontaggio dei multiblocchi
+Smonta e recupera i pezzi
+Rompere un blocco qualsiasi di una macchina formata smonta l’intera struttura. Questa si disfa blocco dopo blocco in pochi istanti, e tutti i materiali da costruzione cadono presso il blocco rotto. Accovacciati mentre rompi per usare invece il comportamento classico: la struttura torna all’istante ai blocchi piazzati. Impostando disassemblyMode su TEMPLATE_BLOCKS nella configurazione il comportamento classico diventa quello predefinito.

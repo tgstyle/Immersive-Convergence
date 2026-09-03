@@ -9,11 +9,17 @@ import com.immersiveconvergence.core.lib.ICLib;
 import com.immersiveconvergence.core.registration.ICBlockEntities;
 import com.immersiveconvergence.core.registration.ICMenuTypes;
 
+import blusunrize.immersiveengineering.api.IEApi;
+import blusunrize.immersiveengineering.api.ManualHelper;
+import blusunrize.lib.manual.ManualEntry;
+import blusunrize.lib.manual.ManualInstance;
+import blusunrize.lib.manual.Tree.InnerNode;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
@@ -28,10 +34,24 @@ import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
+import java.util.List;
+
 @EventBusSubscriber(modid = ICLib.MODID, value = Dist.CLIENT)
 public class ClientProxy extends CommonProxy {
 
-    @SubscribeEvent public static void onClientSetup(FMLClientSetupEvent event) {}
+    private static final List<String> MANUAL_ENTRIES = List.of("multiblock_disassembly", "clearing_tanks");
+
+    @SubscribeEvent public static void onClientSetup(FMLClientSetupEvent event) {
+        event.enqueueWork(() -> {
+            ManualInstance manual = ManualHelper.getManual();
+            InnerNode<ResourceLocation, ManualEntry> construction = manual.getRoot().getOrCreateSubnode(IEApi.ieLoc(ManualHelper.CAT_CONSTRUCTION), 0);
+            for (String name : MANUAL_ENTRIES) {
+                ManualEntry.ManualEntryBuilder builder = new ManualEntry.ManualEntryBuilder(manual);
+                builder.readFromFile(ICLib.rl(name));
+                manual.addEntry(construction, builder.create());
+            }
+        });
+    }
 
     @SubscribeEvent public static void registerModelLoaders(ModelEvent.RegisterGeometryLoaders event) {
         ICRotorModels.ROTOR_CREATIVE = new StandaloneModel(ICLib.rl("dynamic/rotor_creative"));

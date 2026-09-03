@@ -30,6 +30,8 @@ public class ICLanguage extends LanguageProvider {
         add("gui.immersiveconvergence.status", "Status: %s");
         add("gui.immersiveconvergence.status_active", "Active");
         add("gui.immersiveconvergence.status_inactive", "Inactive");
+        add("gui.immersiveconvergence.input_tank_cleared", "Input tank cleared");
+        add("gui.immersiveconvergence.input_tanks_cleared", "Input tanks cleared");
         add("config.jade.plugin_immersiveconvergence.status", "Machine Status");
         add("config.jade.plugin_immersiveconvergence.lines", "Machine Readouts");
     }

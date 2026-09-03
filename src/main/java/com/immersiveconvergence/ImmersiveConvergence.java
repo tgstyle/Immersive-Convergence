@@ -2,6 +2,8 @@ package com.immersiveconvergence;
 
 import com.immersiveconvergence.api.integration.top.ProbeIntegration;
 import com.immersiveconvergence.api.loot.LootEntryTypes;
+import com.immersiveconvergence.core.compat.IEClearTanks;
+import com.immersiveconvergence.core.compat.IPClearTanks;
 import com.immersiveconvergence.core.ICClientConfig;
 import com.immersiveconvergence.core.ICCommonConfig;
 import com.immersiveconvergence.core.lib.ICLib;
@@ -15,6 +17,7 @@ import com.immersiveconvergence.core.proxy.CommonProxy;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -66,7 +69,10 @@ public class ImmersiveConvergence {
         ICRegistryAliases.register();
     }
 
-    private void commonSetup(final FMLCommonSetupEvent event) {}
+    private void commonSetup(final FMLCommonSetupEvent event) {
+        IEClearTanks.register();
+        if (ModList.get().isLoaded(IPClearTanks.MODID)) { IPClearTanks.register(); }
+    }
 
     private void enqueueIMC(final InterModEnqueueEvent event) { ProbeIntegration.enqueueIMC(); }
 

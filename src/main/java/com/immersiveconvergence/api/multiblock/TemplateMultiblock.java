@@ -1,32 +1,20 @@
 package com.immersiveconvergence.api.multiblock;
 
-
 import com.immersiveconvergence.core.lib.ICLib;
 
 import blusunrize.immersiveengineering.api.IEProperties;
 import blusunrize.immersiveengineering.api.multiblocks.BlockMatcher;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockBEHelper;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.logic.IMultiblockBE;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.registry.MultiblockBlockEntityDummy;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.registry.MultiblockBlockEntityMaster;
 import blusunrize.immersiveengineering.api.utils.DirectionUtils;
 import com.google.common.base.Preconditions;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.Containers;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -34,11 +22,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
 
@@ -48,9 +31,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @SuppressWarnings({"unused", "RedundantSuppression", "rawtypes", "unchecked", "MismatchedQueryAndUpdateOfCollection"}) public abstract class TemplateMultiblock extends blusunrize.immersiveengineering.api.multiblocks.TemplateMultiblock {
-    public static BlockPos currentlyBreakingPos = null;
-    public static boolean sneakBreaking = false;
-    public static java.util.function.BooleanSupplier templateModeGate = () -> false;
 
     public record TriggerPoint(BlockPos cell, Rotation offset) {}
 
@@ -168,128 +148,12 @@ import javax.annotation.Nullable;
     }
 
     @Override public void disassemble(Level world, BlockPos origin, boolean mirrored, Direction clickDirectionAtCreation) {
-        if (world.isClientSide) { return; }
+        if (!(world instanceof ServerLevel serverLevel)) { return; }
         Mirror mirror = mirrored ? FRONT_BACK : Mirror.NONE;
         Rotation rot = DirectionUtils.getRotationBetweenFacings(Direction.NORTH, clickDirectionAtCreation);
         Preconditions.checkNotNull(rot);
-        if (world instanceof ServerLevel serverLevel) {
-            BlockPos initiatedAt = currentlyBreakingPos;
-            boolean templateMode = sneakBreaking || templateModeGate.getAsBoolean();
-            boolean doTileDrops = serverLevel.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS);
-            BlockPos masterPos = withSettingsAndOffset(origin, masterFromOrigin, mirror, rot);
-            ServerPlayer breakingPlayer = (ServerPlayer) serverLevel.getNearestPlayer(masterPos.getX() + 0.5, masterPos.getY() + 0.5, masterPos.getZ() + 0.5, -1.0, e -> true);
-            boolean dropItems = doTileDrops;
-            if (breakingPlayer != null && breakingPlayer.gameMode.getGameModeForPlayer() == GameType.CREATIVE) { dropItems = false; }
-            ItemStack tool = breakingPlayer != null ? breakingPlayer.getMainHandItem() : ItemStack.EMPTY;
-            ItemStack effectiveTool = tool.isEmpty() ? new ItemStack(Items.DIAMOND_PICKAXE) : tool;
-            if (!QueueProcessor.activeDisassemblies.add(masterPos.immutable())) { return; }
-            BlockEntity masterBE = world.getBlockEntity(masterPos);
-            if (masterBE instanceof IMultiblockBE<?> mbBE) { markDisassembling(mbBE.getHelper()); }
-            getTemplate(world);
-            List<StructureBlockInfo> structure = sortedStructureBlocks;
-            for (StructureBlockInfo info : structure) {
-                BlockPos actualPos = withSettingsAndOffset(origin, info.pos(), mirror, rot);
-                prepareBlockForDisassembly(serverLevel, actualPos);
-            }
-            BlockPos brokenPos = initiatedAt != null ? initiatedAt : masterPos;
-            if (initiatedAt == null && breakingPlayer != null) {
-                Vec3 eyePos = breakingPlayer.getEyePosition();
-                Vec3 look = breakingPlayer.getViewVector(1.0F);
-                double reach = breakingPlayer.getAttributeValue(Attributes.BLOCK_INTERACTION_RANGE);
-                Vec3 end = eyePos.add(look.scale(reach + 2));
-                ClipContext ctx = new ClipContext(eyePos, end, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, breakingPlayer);
-                BlockHitResult hit = serverLevel.clip(ctx);
-                if (hit.getType() == HitResult.Type.BLOCK) {
-                    BlockPos hitPos = hit.getBlockPos();
-                    for (StructureBlockInfo info : structure) {
-                        BlockPos actual = withSettingsAndOffset(origin, info.pos(), mirror, rot);
-                        if (actual.equals(hitPos)) {
-                            brokenPos = actual;
-                            break;
-                        }
-                    }
-                }
-                if (brokenPos.equals(masterPos)) {
-                    double minDist = Double.MAX_VALUE;
-                    BlockPos closest = null;
-                    for (StructureBlockInfo info : structure) {
-                        BlockPos actual = withSettingsAndOffset(origin, info.pos(), mirror, rot);
-                        double dist = Vec3.atCenterOf(actual).distanceToSqr(eyePos);
-                        if (dist < minDist) {
-                            minDist = dist;
-                            closest = actual;
-                        }
-                    }
-                    if (closest != null) { brokenPos = closest; }
-                }
-            }
-            List<ItemStack> allDrops = new ArrayList<>();
-            List<BlockPos> toBreak = new ArrayList<>();
-            LootParams.Builder baseLootBuilder = dropItems ? new LootParams.Builder(serverLevel).withParameter(LootContextParams.TOOL, effectiveTool).withOptionalParameter(LootContextParams.THIS_ENTITY, breakingPlayer) : null;
-            if (templateMode) {
-                BlockState brokenTemplate = null;
-                for (StructureBlockInfo info : structure) {
-                    BlockPos actualPos = withSettingsAndOffset(origin, info.pos(), mirror, rot);
-                    BlockState stateAfterMirror = info.state().mirror(mirror);
-                    BlockState template = rotate(stateAfterMirror, rot);
-                    if (actualPos.equals(brokenPos)) { brokenTemplate = template; }
-                    serverLevel.setBlockAndUpdate(actualPos, template);
-                }
-                if (initiatedAt != null && brokenTemplate != null && !brokenTemplate.isAir()) {
-                    if (dropItems) {
-                        BlockEntity brokenBE = serverLevel.getBlockEntity(brokenPos);
-                        LootParams.Builder params = baseLootBuilder.withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(brokenPos)).withOptionalParameter(LootContextParams.BLOCK_ENTITY, brokenBE);
-                        try { for (ItemStack s : brokenTemplate.getDrops(params)) { Containers.dropItemStack(serverLevel, brokenPos.getX(), brokenPos.getY(), brokenPos.getZ(), s); } }
-                        catch (Exception e) { Containers.dropItemStack(serverLevel, brokenPos.getX(), brokenPos.getY(), brokenPos.getZ(), new ItemStack(brokenTemplate.getBlock())); }
-                    }
-                    serverLevel.removeBlock(brokenPos, false);
-                }
-            }
-            else {
-                for (StructureBlockInfo info : structure) {
-                    BlockPos actualPos = withSettingsAndOffset(origin, info.pos(), mirror, rot);
-                    BlockState stateAfterMirror = info.state().mirror(mirror);
-                    BlockState template = rotate(stateAfterMirror, rot);
-                    toBreak.add(actualPos);
-                    if (dropItems && !template.isAir()) {
-                        BlockEntity templateBE = null;
-                        if (template.hasBlockEntity() && template.getBlock() instanceof EntityBlock entityBlock) {
-                            try { templateBE = entityBlock.newBlockEntity(actualPos, template); }
-                            catch (Exception ignored) { }
-                        }
-                        LootParams.Builder params = baseLootBuilder.withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(actualPos)).withOptionalParameter(LootContextParams.BLOCK_ENTITY, templateBE);
-                        try { allDrops.addAll(template.getDrops(params)); }
-                        catch (Exception e) { allDrops.add(new ItemStack(template.getBlock())); }
-                    }
-                }
-            }
-            if (templateMode || toBreak.isEmpty()) { QueueProcessor.activeDisassemblies.remove(masterPos); }
-            else { QueueProcessor.pendingQueues.add(new QueueProcessor(serverLevel, toBreak, breakingPlayer, dropItems, brokenPos, allDrops, masterPos)); }
-        }
-    }
-
-    @Override protected void prepareBlockForDisassembly(Level world, BlockPos pos) {
-        BlockEntity be = world.getBlockEntity(pos);
-        if (be == null) { return; }
-        boolean marked = markDisassembling(be);
-        if (be instanceof IMultiblockBE<?> multiblockBE) { marked |= markDisassembling(multiblockBE.getHelper()); }
-        if (!marked) { ICLib.IC_LOGGER.error("Expected multiblock BE at {}, got {}", pos, be); }
-    }
-
-    protected boolean markDisassembling(Object target) {
-        if (target instanceof IMultiblockBEHelper<?> helper) {
-            helper.markDisassembling();
-            return true;
-        }
-        if (target instanceof MachineBlockEntityMaster<?> master) {
-            master.markDisassembling();
-            return true;
-        }
-        if (target instanceof MachineBlockEntityDummy<?> dummy) {
-            dummy.markDisassembling();
-            return true;
-        }
-        return false;
+        getTemplate(world);
+        QueueProcessor.disassemble(serverLevel, sortedStructureBlocks, origin, mirror, rot, withSettingsAndOffset(origin, masterFromOrigin, mirror, rot), true);
     }
 
     public Vec3i getSize(@Nullable Level world) { return this.size; }

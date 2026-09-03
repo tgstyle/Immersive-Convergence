@@ -81,10 +81,10 @@ import javax.annotation.Nullable;
                         });
                     }
                     if (!(player instanceof FakePlayer)) {
-                        TemplateMultiblock.currentlyBreakingPos = pos.immutable();
-                        TemplateMultiblock.sneakBreaking = player.isShiftKeyDown();
+                        QueueProcessor.currentlyBreakingPos = pos.immutable();
+                        QueueProcessor.sneakBreaking = player.isShiftKeyDown();
                         try { return super.playerWillDestroy(level, pos, state, player); }
-                        finally { TemplateMultiblock.currentlyBreakingPos = null; }
+                        finally { QueueProcessor.currentlyBreakingPos = null; }
                     }
                 }
             }
@@ -97,15 +97,15 @@ import javax.annotation.Nullable;
             if (!level.isClientSide && state.getBlock() != newState.getBlock()) {
                 BlockEntity te = level.getBlockEntity(pos);
                 if (te instanceof IMultiblockBE<?> be && ((IDisassemblingAware) be.getHelper()).ic$isAssembled()) {
-                    TemplateMultiblock.currentlyBreakingPos = pos.immutable();
+                    QueueProcessor.currentlyBreakingPos = pos.immutable();
                     try { super.onRemove(state, level, pos, newState, isMoving); }
-                    finally { TemplateMultiblock.currentlyBreakingPos = null; }
+                    finally { QueueProcessor.currentlyBreakingPos = null; }
                     return;
                 }
             }
             super.onRemove(state, level, pos, newState, isMoving);
         }
-        finally { TemplateMultiblock.sneakBreaking = false; }
+        finally { QueueProcessor.sneakBreaking = false; }
     }
 
     @Override @Nonnull

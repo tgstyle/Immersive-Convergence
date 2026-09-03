@@ -15,6 +15,8 @@
   "gui.immersiveconvergence.fluid_temperature": "Temperatura: %s",
   "gui.immersiveconvergence.fluid_viscosity": "Viscosidade: %s",
   "gui.immersiveconvergence.fuel_empty": "Combustível: Vazio",
+  "gui.immersiveconvergence.input_tank_cleared": "Tanque de entrada limpo",
+  "gui.immersiveconvergence.input_tanks_cleared": "Tanques de entrada limpos",
   "gui.immersiveconvergence.rotor_creative": "Rotor Criativo",
   "gui.immersiveconvergence.rotor_creative.rpm": "RPM",
   "gui.immersiveconvergence.status": "Estado: %s",

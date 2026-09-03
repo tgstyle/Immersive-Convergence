@@ -1,0 +1,3 @@
+Zerlegen von Multiblöcken
+In Einzelteile zerlegt
+Wird ein Block einer geformten Maschine abgebaut, wird die gesamte Struktur zerlegt. Sie wird über einige Augenblicke Block für Block abgetragen, und alle Baumaterialien fallen an dem Block, der abgebaut wurde. Schleiche beim Abbauen, um stattdessen das klassische Verhalten zu nutzen: Die Struktur verwandelt sich sofort zurück in ihre gesetzten Blöcke. Wird disassemblyMode in der Konfiguration auf TEMPLATE_BLOCKS gesetzt, ist das klassische Verhalten der Standard.

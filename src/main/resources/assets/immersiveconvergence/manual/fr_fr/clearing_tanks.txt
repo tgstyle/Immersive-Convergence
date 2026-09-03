@@ -1,0 +1,4 @@
+Vider les réservoirs
+Dehors, le mauvais fluide
+Les entrées de fluide acceptent n’importe quel fluide qu’on y achemine, et une machine contenant le mauvais fluide reste inactive tant que le réservoir n’est pas vidé. Accroupissez-vous et utilisez l’Engineer's Hammer sur une entrée de fluide pour la vider.
+Le fluide est éliminé et non restitué, le réservoir est donc immédiatement libre pour le bon fluide. Cela fonctionne sur les machines d’Immersive Engineering, d’Immersive Petroleum et d’Immersive Technology dotées d’une entrée de fluide ; les réservoirs de sortie et de stockage ne sont jamais touchés.
