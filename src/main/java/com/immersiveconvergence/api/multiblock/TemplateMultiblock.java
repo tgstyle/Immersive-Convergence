@@ -13,6 +13,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
@@ -87,6 +88,8 @@ import javax.annotation.Nullable;
     }
 
     @SuppressWarnings("deprecation")
+    private static BlockState rotate(BlockState state, Rotation rotation) { return state.rotate(rotation); }
+
     @Override public boolean isBlockTrigger(BlockState state, Direction d, @Nonnull Level world) {
         BlockState defaultTrigger = getTemplate(world).triggerState();
         Rotation baseRot = DirectionUtils.getRotationBetweenFacings(Direction.NORTH, d.getOpposite());
@@ -95,44 +98,53 @@ import javax.annotation.Nullable;
             BlockState baseTrigger = triggerStateMap.getOrDefault(trigger.cell(), defaultTrigger);
             Rotation rot = baseRot.getRotated(trigger.offset());
             for (Mirror triedMirror : getMirrorsToTry()) {
-                BlockState expected = baseTrigger.mirror(triedMirror).rotate(rot);
+                BlockState expected = rotate(baseTrigger.mirror(triedMirror), rot);
                 if (BlockMatcher.matches(expected, state, null, null, additionalPredicates).isAllow()) { return true; }
             }
         }
         return false;
     }
 
-    @SuppressWarnings("deprecation")
-    @Override public boolean createStructure(Level world, BlockPos pos, Direction side, net.minecraft.world.entity.player.Player player) {
+    @Override public boolean createStructure(Level world, BlockPos pos, Direction side, Player player) {
         Rotation baseRot = DirectionUtils.getRotationBetweenFacings(Direction.NORTH, side.getOpposite());
         if (baseRot == null) { return false; }
         getTemplate(world);
-        List<StructureTemplate.StructureBlockInfo> structure = getStructure(world);
+        List<StructureBlockInfo> structure = getStructure(world);
         for (TriggerPoint trigger : getTriggerPoints()) {
             Rotation rot = baseRot.getRotated(trigger.offset());
+            List<FormationCandidate> candidates = new ArrayList<>();
             for (Mirror triedMirror : getMirrorsToTry()) {
-                StructurePlaceSettings placeSettings = new StructurePlaceSettings().setMirror(triedMirror).setRotation(rot);
-                BlockPos origin = pos.subtract(StructureTemplate.calculateRelativePosition(placeSettings, trigger.cell()));
-                boolean allMatch = true;
-                for (StructureBlockInfo info : structure) {
-                    if (info.pos().equals(trigger.cell())) { continue; }
-                    BlockPos here = origin.offset(StructureTemplate.calculateRelativePosition(placeSettings, info.pos()));
-                    BlockState expected = info.state().mirror(triedMirror).rotate(rot);
-                    BlockState inWorld = world.getBlockState(here);
-                    if (!BlockMatcher.matches(expected, inWorld, world, here, additionalPredicates).isAllow()) {
-                        allMatch = false;
-                        break;
-                    }
-                }
-                if (allMatch) {
-                    Direction formSide = rot.rotate(Direction.NORTH).getOpposite();
-                    if (!world.isClientSide) { form(world, origin, rot, triedMirror, formSide); }
-                    return true;
-                }
+                FormationCandidate candidate = FormationCandidate.atTrigger(pos, trigger.cell(), rot, triedMirror);
+                if (matches(world, structure, trigger.cell(), candidate)) { candidates.add(candidate); }
             }
+            if (candidates.isEmpty()) { continue; }
+            FormationCandidate chosen = candidates.size() == 1 ? candidates.get(0) : chooseCandidate(world, candidates, player);
+            if (!world.isClientSide) { form(world, chosen.origin(), rot, chosen.mirror(), chosen.front().getOpposite()); }
+            return true;
         }
         return false;
     }
+
+    private boolean matches(Level world, List<StructureBlockInfo> structure, BlockPos triggerCell, FormationCandidate candidate) {
+        StructurePlaceSettings settings = candidate.settings();
+        for (StructureBlockInfo info : structure) {
+            if (info.pos().equals(triggerCell)) { continue; }
+            BlockPos here = candidate.origin().offset(StructureTemplate.calculateRelativePosition(settings, info.pos()));
+            BlockState expected = rotate(info.state().mirror(candidate.mirror()), candidate.rotation());
+            if (!BlockMatcher.matches(expected, world.getBlockState(here), world, here, additionalPredicates).isAllow()) { return false; }
+        }
+        return true;
+    }
+
+    private FormationCandidate chooseCandidate(Level world, List<FormationCandidate> candidates, @Nullable Player player) {
+        if (player != null && player.isShiftKeyDown()) {
+            for (FormationCandidate candidate : candidates) { if (candidate.mirrored()) { return candidate; } }
+        }
+        FormationCandidate preferred = preferredCandidate(world, candidates, player);
+        return preferred != null ? preferred : candidates.get(0);
+    }
+
+    @Nullable protected FormationCandidate preferredCandidate(Level world, List<FormationCandidate> candidates, @Nullable Player player) { return null; }
 
     protected void form(Level world, BlockPos origin, Rotation rot, Mirror mirrorForSettings, Direction side) {
         StructureTemplate template = getTemplate(world).template();
