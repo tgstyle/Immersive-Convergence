@@ -1,6 +1,7 @@
 package com.immersiveconvergence.common.util.compat.jei;
 
 import com.immersiveconvergence.api.jei.MultiblockIngredient;
+import com.immersiveconvergence.core.ICClientConfig;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
@@ -10,6 +11,8 @@ import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import net.minecraftforge.fml.common.Loader;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
+import java.util.Collections;
 
 @JEIPlugin
 public class ICJEIPlugin implements IModPlugin {
@@ -17,7 +20,8 @@ public class ICJEIPlugin implements IModPlugin {
     @SuppressWarnings("deprecation")
     @Override public void registerIngredients(@Nonnull IModIngredientRegistration registry) {
         EngineeringMultiblockIngredients.register();
-        registry.register(MultiblockIngredient.class, MultiblockIngredient.list, new MultiblockIngredientHelper(), MultiblockIngredientRenderer.INSTANCE);
+        Collection<MultiblockIngredient> listed = ICClientConfig.jei.showMultiblockItems ? MultiblockIngredient.list : Collections.emptyList();
+        registry.register(MultiblockIngredient.class, listed, new MultiblockIngredientHelper(), MultiblockIngredientRenderer.INSTANCE);
     }
 
     @Override public void registerCategories(@Nonnull IRecipeCategoryRegistration registry) { if (Loader.isModLoaded("immersivepetroleum")) { PetroleumJEI.registerCategories(registry); } }
