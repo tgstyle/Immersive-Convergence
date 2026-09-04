@@ -2,6 +2,7 @@ package com.immersiveconvergence.core.registration;
 
 import com.immersiveconvergence.common.blocks.logic.HeatCreativeBlockEntity;
 import com.immersiveconvergence.common.blocks.logic.RotorCreativeBlockEntity;
+import com.immersiveconvergence.api.capability.HeatCapabilities;
 import com.immersiveconvergence.api.capability.MechanicalCapabilities;
 import com.immersiveconvergence.core.lib.ICLib;
 
@@ -31,5 +32,6 @@ public class ICBlockEntities {
 
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
         event.registerBlockEntity(MechanicalCapabilities.MECHANICAL_PROVIDER, ROTOR_CREATIVE.get(), RotorCreativeBlockEntity::getMechanicalProvider);
+        event.registerBlockEntity(HeatCapabilities.HEAT_PROVIDER, HEAT_CREATIVE.get(), HeatCreativeBlockEntity::getHeatProvider);
     }
 }
