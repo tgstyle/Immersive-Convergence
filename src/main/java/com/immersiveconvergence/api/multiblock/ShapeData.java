@@ -31,9 +31,10 @@ public final class ShapeData {
     public static ShapeData load(Class<?> owner, String modid, String id) {
         MultiblockData data = MultiblockDataLoader.loadMultiblockData(owner, modid, id);
         int[] dims = GenericShape.loadDimensions(owner, modid, id);
-        int width = dims[0];
-        int height = dims[1];
-        int length = dims[2];
+        return fromData(data, id, dims[0], dims[1], dims[2]);
+    }
+
+    public static ShapeData fromData(MultiblockData data, String id, int width, int height, int length) {
         ICLib.IC_LOGGER.info("Loaded dimensions for {}: W={}, H={}, L={}", id, width, height, length);
 
         Function<BlockPos, VoxelShape> getter;

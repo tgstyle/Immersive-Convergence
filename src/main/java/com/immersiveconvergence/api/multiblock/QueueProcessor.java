@@ -10,13 +10,8 @@ import blusunrize.immersiveengineering.api.multiblocks.blocks.registry.Multibloc
 import com.mojang.authlib.GameProfile;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.protocol.game.ClientboundForgetLevelChunkPacket;
-import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
-import net.minecraft.server.level.ChunkHolder;
-import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.level.ThreadedLevelLightEngine;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Containers;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -35,7 +30,6 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.Vec3;
@@ -77,8 +71,6 @@ public class QueueProcessor {
     private final BlockPos masterPos;
     private FakePlayer fakePlayer;
 
-    private final Set<ChunkPos> affectedChunks = new HashSet<>();
-    private boolean chunksMarked = false;
     private boolean finished = false;
 
     public QueueProcessor(ServerLevel level, List<BlockPos> toBreak, @Nullable ServerPlayer owner, boolean dropItems, BlockPos dropAt, List<ItemStack> allDrops, @Nullable BlockPos masterPos) {
@@ -92,13 +84,6 @@ public class QueueProcessor {
         this.dropItems = dropItems;
         this.dropAt = dropAt;
         this.allDrops = allDrops;
-
-        for (BlockPos pos : toBreak) {
-            ChunkPos cp = new ChunkPos(pos);
-            for (int dx = -4; dx <= 4; dx++) {
-                for (int dz = -4; dz <= 4; dz++) { affectedChunks.add(new ChunkPos(cp.x + dx, cp.z + dz)); }
-            }
-        }
     }
 
     @SubscribeEvent public static void onBlockBreak(BlockEvent.BreakEvent event) {
@@ -173,6 +158,7 @@ public class QueueProcessor {
                     catch (Exception e) { Containers.dropItemStack(serverLevel, brokenPos.getX(), brokenPos.getY(), brokenPos.getZ(), new ItemStack(brokenTemplate.getBlock())); }
                 }
                 serverLevel.removeBlock(brokenPos, false);
+                refreshLight(serverLevel, brokenPos);
             }
         }
         else {
@@ -218,16 +204,10 @@ public class QueueProcessor {
     }
 
     public void tick() {
-        if (!chunksMarked) {
-            markChunksForLightUpdate();
-            chunksMarked = true;
-        }
-
         if (queue.isEmpty()) {
             if (dropItems && !allDrops.isEmpty()) { for (ItemStack s : allDrops) { Containers.dropItemStack(level, dropAt.getX(), dropAt.getY(), dropAt.getZ(), s); } }
             allDrops.clear();
-
-            doFinalLightingRefresh();
+            fakePlayer = null;
             if (masterPos != null) { activeDisassemblies.remove(masterPos); }
             finished = true;
             return;
@@ -244,7 +224,14 @@ public class QueueProcessor {
         for (int i = 0; i < DISASSEMBLE_QUEUE_SIZE && !queue.isEmpty(); ++i) {
             BlockPos pos = queue.poll();
             fakePlayer.gameMode.destroyBlock(pos);
+            refreshLight(level, pos);
         }
+    }
+
+    public static void refreshLight(ServerLevel level, BlockPos pos) {
+        LevelChunk chunk = level.getChunkAt(pos);
+        chunk.getSkyLightSources().update(chunk, pos.getX() & 15, pos.getY(), pos.getZ() & 15);
+        level.getChunkSource().getLightEngine().checkBlock(pos);
     }
 
     private static FakePlayer getFakePlayer(ServerLevel level, @Nullable ServerPlayer owner) {
@@ -252,37 +239,6 @@ public class QueueProcessor {
         FakePlayer fake = new FakePlayer(level, profile);
         fake.gameMode.changeGameModeForPlayer(GameType.CREATIVE);
         return fake;
-    }
-
-    private void markChunksForLightUpdate() {
-        for (ChunkPos chunk : affectedChunks) {
-            LevelChunk levelChunk = level.getChunk(chunk.x, chunk.z);
-            levelChunk.setLightCorrect(false);
-            levelChunk.setUnsaved(true);
-        }
-    }
-
-    private void doFinalLightingRefresh() {
-        ChunkMap chunkMap = level.getChunkSource().chunkMap;
-        ThreadedLevelLightEngine lightEngine = level.getChunkSource().getLightEngine();
-
-        for (ChunkPos chunk : affectedChunks) {
-            LevelChunk levelChunk = level.getChunk(chunk.x, chunk.z);
-            levelChunk.setLightCorrect(false);
-            levelChunk.setUnsaved(true);
-
-            List<ServerPlayer> players = chunkMap.getPlayers(chunk, false);
-            players.forEach(p -> p.connection.send(new ClientboundForgetLevelChunkPacket(chunk)));
-
-            ClientboundLevelChunkWithLightPacket packet = new ClientboundLevelChunkWithLightPacket(levelChunk, lightEngine, null, null);
-            players.forEach(p -> p.connection.send(packet));
-
-            ChunkHolder holder = chunkMap.getVisibleChunkIfPresent(chunk.toLong());
-            if (holder != null) { holder.broadcastChanges(levelChunk); }
-        }
-
-        affectedChunks.clear();
-        fakePlayer = null;
     }
 
     public boolean isEmpty() { return finished; }

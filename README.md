@@ -63,7 +63,11 @@ One thing cannot be overridden. Where a machine's pipes, wires and hoppers
 connect, and the shape you walk into, come from
 `assets/<modid>/multiblocks/<id>.json`, which the mod reads straight out of its
 own jar rather than through the resource system. A pack copy of that file is
-ignored.
+ignored. Immersive Convergence reads the same kind of file for Immersive
+Engineering's and Immersive Petroleum's machines out of its own jar, at
+`assets/immersiveengineering/multiblocks/<id>.json` and
+`assets/immersivepetroleum/multiblocks/<id>.json`, and applies the shapes and
+ports it finds there over the machine's own.
 
 ## Immersive Engineering and Immersive Petroleum
 Immersive Engineering's own machines, and Immersive Petroleum's, are not
