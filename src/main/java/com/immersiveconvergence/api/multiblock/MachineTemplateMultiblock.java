@@ -13,26 +13,23 @@ import java.util.function.Consumer;
 
 @SuppressWarnings({"unused", "RedundantSuppression"}) public abstract class MachineTemplateMultiblock extends TemplateMultiblock {
     private final MultiblockRegistration<?> logic;
-    private final BlockPos clientOffset;
     private final float manualScale;
 
-    public MachineTemplateMultiblock(ResourceLocation loc, BlockPos masterFromOrigin, BlockPos triggerFromOrigin, BlockPos size, BlockPos clientOffset, float manualScale, MultiblockRegistration<?> logic) {
+    public MachineTemplateMultiblock(ResourceLocation loc, BlockPos masterFromOrigin, BlockPos triggerFromOrigin, BlockPos size, float manualScale, MultiblockRegistration<?> logic) {
         super(loc, masterFromOrigin, triggerFromOrigin, size);
-        this.clientOffset = clientOffset;
         this.manualScale = manualScale;
         this.logic = logic;
     }
 
-    public MachineTemplateMultiblock(ResourceLocation loc, BlockPos masterFromOrigin, BlockPos triggerFromOrigin, BlockPos size, BlockPos clientOffset, float manualScale, List<BlockMatcher.MatcherPredicate> additionalPredicates, MultiblockRegistration<?> logic) {
+    public MachineTemplateMultiblock(ResourceLocation loc, BlockPos masterFromOrigin, BlockPos triggerFromOrigin, BlockPos size, float manualScale, List<BlockMatcher.MatcherPredicate> additionalPredicates, MultiblockRegistration<?> logic) {
         super(loc, masterFromOrigin, triggerFromOrigin, size, additionalPredicates);
-        this.clientOffset = clientOffset;
         this.manualScale = manualScale;
         this.logic = logic;
     }
 
     @Override public float getManualScale() { return manualScale; }
 
-    @Override public void initializeClient(Consumer<ClientMultiblocks.MultiblockManualData> consumer) { consumer.accept(new ClientMultiblockProperties(this, clientOffset.getX(), clientOffset.getY(), clientOffset.getZ())); }
+    @Override public void initializeClient(Consumer<ClientMultiblocks.MultiblockManualData> consumer) { consumer.accept(new ClientMultiblockProperties(this)); }
 
     @Override public boolean canBeMirrored() { return this.logic.mirrorable(); }
 

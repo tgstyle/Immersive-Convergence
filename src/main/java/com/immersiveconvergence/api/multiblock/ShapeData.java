@@ -13,18 +13,17 @@ import java.util.function.Function;
 public final class ShapeData {
     public final Function<BlockPos, VoxelShape> getter;
     public final int width, height, length;
-    public final BlockPos masterPos, triggerPos, clientOffset;
+    public final BlockPos masterPos, triggerPos;
     public final float manualScale;
     public final List<BlockPos> symmetricTriggerOffsets;
 
-    private ShapeData(Function<BlockPos, VoxelShape> getter, int width, int height, int length, BlockPos masterPos, BlockPos triggerPos, BlockPos clientOffset, float manualScale, List<BlockPos> symmetricTriggerOffsets) {
+    private ShapeData(Function<BlockPos, VoxelShape> getter, int width, int height, int length, BlockPos masterPos, BlockPos triggerPos, float manualScale, List<BlockPos> symmetricTriggerOffsets) {
         this.getter = getter;
         this.width = width;
         this.height = height;
         this.length = length;
         this.masterPos = masterPos;
         this.triggerPos = triggerPos;
-        this.clientOffset = clientOffset;
         this.manualScale = manualScale;
         this.symmetricTriggerOffsets = symmetricTriggerOffsets;
     }
@@ -66,19 +65,18 @@ public final class ShapeData {
             }
         }
 
-        BlockPos masterPos = null, triggerPos = null, clientOffset = null;
+        BlockPos masterPos = null, triggerPos = null;
         List<BlockPos> symmetricTriggers = new ArrayList<>();
         if (data.pointsOfInterest != null) {
             for (PoIJSONSchema poi : data.pointsOfInterest) {
                 switch (poi.name) {
                     case "master" -> masterPos = new BlockPos(poi.pos[0], poi.pos[1], poi.pos[2]);
                     case "trigger" -> triggerPos = new BlockPos(poi.pos[0], poi.pos[1], poi.pos[2]);
-                    case "client_offset" -> clientOffset = new BlockPos(poi.pos[0], poi.pos[1], poi.pos[2]);
                     case "symmetric_trigger" -> symmetricTriggers.add(new BlockPos(poi.pos[0], poi.pos[1], poi.pos[2]));
                 }
             }
         }
 
-        return new ShapeData(getter, width, height, length, masterPos, triggerPos, clientOffset, data.manualScale, List.copyOf(symmetricTriggers));
+        return new ShapeData(getter, width, height, length, masterPos, triggerPos, data.manualScale, List.copyOf(symmetricTriggers));
     }
 }
