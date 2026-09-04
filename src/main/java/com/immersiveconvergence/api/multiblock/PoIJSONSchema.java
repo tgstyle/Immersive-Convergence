@@ -13,5 +13,8 @@ public class PoIJSONSchema {
     @SerializedName("facing")
     public JsonElement facing;
     public List<RelativeBlockFace> relativeFaces = new ArrayList<>();
+    public int[] origin;
+    @SerializedName("origin_facing")
+    public String originFacing;
     public int x;
 }
