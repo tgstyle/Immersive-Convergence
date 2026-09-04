@@ -9,34 +9,29 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import blusunrize.immersiveengineering.api.multiblocks.ClientMultiblocks;
+import net.neoforged.neoforge.client.model.data.ModelData;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import blusunrize.immersiveengineering.client.utils.IERenderTypes;
+import blusunrize.immersiveengineering.api.ApiUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.NonNullList;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.Vec3;
 import java.util.List;
-import java.util.Objects;
 
 import javax.annotation.Nullable;
 
 @SuppressWarnings({"unused", "RedundantSuppression"}) public class ClientMultiblockProperties implements ClientMultiblocks.MultiblockManualData {
     private final MachineTemplateMultiblock multiblock;
     @Nullable private NonNullList<ItemStack> materials;
-    private final ItemStack renderStack;
-    @Nullable private final Vec3 renderOffset;
-
-    public ClientMultiblockProperties(MachineTemplateMultiblock multiblock, double offX, double offY, double offZ) { this(multiblock, new Vec3(offX, offY, offZ)); }
-
-    private ClientMultiblockProperties(MachineTemplateMultiblock multiblock, @Nullable Vec3 renderOffset) {
-        this.multiblock = multiblock;
-        this.renderStack = new ItemStack(multiblock.getBlock());
-        this.renderOffset = renderOffset;
-    }
+    public ClientMultiblockProperties(MachineTemplateMultiblock multiblock) { this.multiblock = multiblock; }
 
     protected boolean usingCustomRendering() { return false; }
 
@@ -61,22 +56,23 @@ import javax.annotation.Nullable;
         return this.materials;
     }
 
-    @Override public boolean canRenderFormedStructure() { return this.renderOffset != null; }
+    @Override public boolean canRenderFormedStructure() { return true; }
 
     public void renderExtras(PoseStack matrix, MultiBufferSource buffer) {}
 
     public void renderCustomFormedStructure(PoseStack matrix, MultiBufferSource buffer) {}
 
     @Override public final void renderFormedStructure(PoseStack matrix, MultiBufferSource buffer) {
-        Objects.requireNonNull(this.renderOffset);
-
         if (usingCustomRendering()) {
             renderCustomFormedStructure(matrix, buffer);
             return;
         }
 
-        matrix.translate(this.renderOffset.x, this.renderOffset.y, this.renderOffset.z);
-        Minecraft.getInstance().getItemRenderer().renderStatic(renderStack, ItemDisplayContext.NONE, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, matrix, buffer, null, 0);
+        BlockPos master = this.multiblock.getMasterFromOriginOffset();
+        matrix.translate(master.getX(), master.getY(), master.getZ());
+        BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(this.multiblock.getBlock().defaultBlockState());
+        VertexConsumer consumer = buffer.getBuffer(IERenderTypes.TRANSLUCENT_FULLBRIGHT);
+        for (BakedQuad quad : model.getQuads(null, null, ApiUtils.RANDOM_SOURCE, ModelData.EMPTY, null)) { consumer.putBulkData(matrix.last(), quad, 1, 1, 1, 1, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY); }
         matrix.pushPose();
         {
             renderExtras(matrix, buffer);
@@ -97,4 +93,5 @@ import javax.annotation.Nullable;
         }
         return new ItemStack(state.getBlock());
     }
+
 }
