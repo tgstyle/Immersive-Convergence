@@ -1,6 +1,7 @@
 package com.immersiveconvergence.client;
 
 import com.immersiveconvergence.ImmersiveConvergence;
+import com.immersiveconvergence.api.client.split.MultiblockTextureHandler;
 import com.immersiveconvergence.api.client.split.SplitModelHandler;
 import com.immersiveconvergence.api.network.BinaryTileSyncMessage;
 import com.immersiveconvergence.api.network.MessageStopSound;
@@ -44,6 +45,7 @@ public class ClientProxy extends CommonProxy {
         super.preInit();
         OBJLoader.INSTANCE.addDomain(ImmersiveConvergence.MODID);
         IEOBJLoader.instance.addDomain(ImmersiveConvergence.MODID);
+        MultiblockTextureHandler.register(ImmersiveConvergence.MODID);
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRotorCreative.class, new TileRenderRotorCreative());
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new ICClientEventHandler());
         registerSplitModels();
