@@ -26,16 +26,16 @@ import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fml.InterModComms;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
 import javax.annotation.Nullable;
 import java.util.function.Function;
 
 public class ProbeIntegration {
+    public static final String MODID = "theoneprobe";
+
     public static void enqueueIMC() {
-        if (!ModList.get().isLoaded("theoneprobe")) { return; }
-        InterModComms.sendTo("theoneprobe", "getTheOneProbe", () -> (Function<ITheOneProbe, Void>) top -> {
+        InterModComms.sendTo(MODID, "getTheOneProbe", () -> (Function<ITheOneProbe, Void>) top -> {
             top.registerProvider(new Provider());
             return null;
         });
