@@ -23,7 +23,6 @@ import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.fml.InterModComms;
-import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -33,9 +32,10 @@ import javax.annotation.Nullable;
 import java.util.function.Function;
 
 public class ProbeIntegration {
+    public static final String MODID = "theoneprobe";
+
     public static void enqueueIMC() {
-        if (!ModList.get().isLoaded("theoneprobe")) { return; }
-        InterModComms.sendTo("theoneprobe", "getTheOneProbe", () -> (Function<ITheOneProbe, Void>) top -> {
+        InterModComms.sendTo(MODID, "getTheOneProbe", () -> (Function<ITheOneProbe, Void>) top -> {
             top.registerProvider(new Provider());
             return null;
         });

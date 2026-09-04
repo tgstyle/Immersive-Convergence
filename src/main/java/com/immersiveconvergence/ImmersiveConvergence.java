@@ -74,7 +74,9 @@ public class ImmersiveConvergence {
         if (ModList.get().isLoaded(IPClearTanks.MODID)) { IPClearTanks.register(); }
     }
 
-    private void enqueueIMC(final InterModEnqueueEvent event) { ProbeIntegration.enqueueIMC(); }
+    private void enqueueIMC(final InterModEnqueueEvent event) {
+        if (ModList.get().isLoaded(ProbeIntegration.MODID)) { ProbeIntegration.enqueueIMC(); }
+    }
 
     @SubscribeEvent
     public static void onServerStarting(ServerStartingEvent event) {}
