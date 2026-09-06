@@ -164,7 +164,7 @@ import javax.annotation.Nullable;
         Rotation rot = DirectionUtils.getRotationBetweenFacings(Direction.NORTH, clickDirectionAtCreation);
         Preconditions.checkNotNull(rot);
         getTemplate(world);
-        QueueProcessor.disassemble(serverLevel, sortedStructureBlocks, origin, mirror, rot, withSettingsAndOffset(origin, masterFromOrigin, mirror, rot), true);
+        QueueProcessor.disassemble(serverLevel, sortedStructureBlocks, origin, mirror, rot, withSettingsAndOffset(origin, masterFromOrigin, mirror, rot), size, getBlock(), true);
     }
 
     public Vec3i getSize(@Nullable Level world) { return this.size; }

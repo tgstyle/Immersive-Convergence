@@ -5,11 +5,13 @@ import com.immersiveconvergence.core.lib.ICLib;
 
 import blusunrize.immersiveengineering.api.multiblocks.TemplateMultiblock;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockBEHelper;
+import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockBEHelperMaster;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.logic.IMultiblockBE;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.registry.MultiblockPartBlock;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.resources.ResourceLocation;
@@ -20,6 +22,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
@@ -93,7 +96,7 @@ public class QueueProcessor {
         sneakBreaking = event.getPlayer().isShiftKeyDown();
     }
 
-    @SuppressWarnings("deprecation") public static boolean disassemble(ServerLevel serverLevel, List<StructureBlockInfo> structure, BlockPos origin, Mirror mirror, Rotation rot, BlockPos masterPos, boolean handleTemplateMode) {
+    @SuppressWarnings("deprecation") public static boolean disassemble(ServerLevel serverLevel, List<StructureBlockInfo> structure, BlockPos origin, Mirror mirror, Rotation rot, BlockPos masterPos, Vec3i size, Block partBlock, boolean handleTemplateMode) {
         BlockPos initiatedAt = currentlyBreakingPos;
         boolean templateMode = sneakBreaking || ICCommonConfig.disassemblyMode == DisassemblyMode.TEMPLATE_BLOCKS;
         if (templateMode && !handleTemplateMode) { return false; }
@@ -107,6 +110,8 @@ public class QueueProcessor {
         BlockEntity masterBE = serverLevel.getBlockEntity(masterPos);
         if (masterBE instanceof IMultiblockBE<?> mbBE) { markDisassembling(mbBE.getHelper()); }
         for (StructureBlockInfo info : structure) { prepareBlockForDisassembly(serverLevel, TemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot)); }
+        List<BlockPos> strays = findStrayParts(serverLevel, structure, origin, mirror, rot, size, partBlock);
+        for (BlockPos stray : strays) { prepareBlockForDisassembly(serverLevel, stray); }
         BlockPos brokenPos = initiatedAt != null ? initiatedAt : masterPos;
         if (initiatedAt == null && breakingPlayer != null) {
             Vec3 eyePos = breakingPlayer.getEyePosition();
@@ -150,6 +155,10 @@ public class QueueProcessor {
                 if (actualPos.equals(brokenPos)) { brokenTemplate = template; }
                 serverLevel.setBlockAndUpdate(actualPos, template);
             }
+            for (BlockPos stray : strays) {
+                serverLevel.removeBlock(stray, false);
+                refreshLight(serverLevel, stray);
+            }
             if (initiatedAt != null && brokenTemplate != null && !brokenTemplate.isAir()) {
                 if (dropItems) {
                     BlockEntity brokenBE = serverLevel.getBlockEntity(brokenPos);
@@ -177,10 +186,29 @@ public class QueueProcessor {
                     catch (Exception e) { allDrops.add(new ItemStack(template.getBlock())); }
                 }
             }
+            toBreak.addAll(strays);
         }
         if (templateMode || toBreak.isEmpty()) { activeDisassemblies.remove(masterPos); }
         else { pendingQueues.add(new QueueProcessor(serverLevel, toBreak, breakingPlayer, dropItems, brokenPos, allDrops, masterPos)); }
         return true;
+    }
+
+    private static List<BlockPos> findStrayParts(ServerLevel level, List<StructureBlockInfo> structure, BlockPos origin, Mirror mirror, Rotation rot, Vec3i size, Block partBlock) {
+        Set<BlockPos> templateCells = new HashSet<>();
+        for (StructureBlockInfo info : structure) { templateCells.add(info.pos()); }
+        List<BlockPos> strays = new ArrayList<>();
+        for (int y = 0; y < size.getY(); y++) {
+            for (int z = 0; z < size.getZ(); z++) {
+                for (int x = 0; x < size.getX(); x++) {
+                    BlockPos cell = new BlockPos(x, y, z);
+                    if (templateCells.contains(cell)) { continue; }
+                    BlockPos actual = TemplateMultiblock.withSettingsAndOffset(origin, cell, mirror, rot);
+                    if (level.getBlockState(actual).getBlock() != partBlock) { continue; }
+                    if (level.getBlockEntity(actual) instanceof IMultiblockBE<?> be && !(be.getHelper() instanceof IMultiblockBEHelperMaster) && cell.equals(be.getHelper().getPositionInMB())) { strays.add(actual); }
+                }
+            }
+        }
+        return strays;
     }
 
     public static void prepareBlockForDisassembly(Level world, BlockPos pos) {

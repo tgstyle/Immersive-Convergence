@@ -70,7 +70,7 @@ public abstract class MultiblockBEHelperCommonMixin implements IDisassemblingAwa
         Mirror mirror = orientation.mirrored() ? Mirror.FRONT_BACK : Mirror.NONE;
         BlockPos origin = mbLevel.getAbsoluteOrigin();
         BlockPos masterPos = mbLevel.toAbsolute(registration.getMasterPosInMB().get());
-        if (QueueProcessor.disassemble(serverLevel, registration.getStructure().apply(serverLevel), origin, mirror, rot, masterPos, false)) {
+        if (QueueProcessor.disassemble(serverLevel, registration.getStructure().apply(serverLevel), origin, mirror, rot, masterPos, registration.size(serverLevel), registration.block().get(), false)) {
             beingDisassembled = true;
             BlockPos brokenPos = mbLevel.toAbsolute(self.getPositionInMB());
             serverLevel.removeBlock(brokenPos, false);
