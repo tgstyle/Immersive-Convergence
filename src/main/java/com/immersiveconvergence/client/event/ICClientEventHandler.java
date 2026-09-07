@@ -1,7 +1,7 @@
 package com.immersiveconvergence.client.event;
 
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.ISelectionBounds;
-import com.immersiveconvergence.api.shapes.BooleanOp;
+import com.immersiveconvergence.api.shapes.IBooleanOp;
 import com.immersiveconvergence.api.shapes.Shapes;
 import com.immersiveconvergence.api.shapes.VoxelShape;
 
@@ -95,7 +95,7 @@ public class ICClientEventHandler {
         VoxelShape union = Shapes.empty();
         for (int i = 0; i < bounds.size(); i++) {
             boolean included = i < 64 ? (mask & (1L << i)) != 0 : (asb == null || asb.isOverrideBox(bounds.get(i), player, target, bounds));
-            if (included) { union = Shapes.joinUnoptimized(union, Shapes.create(bounds.get(i)), BooleanOp.OR); }
+            if (included) { union = Shapes.joinUnoptimized(union, Shapes.create(bounds.get(i)), IBooleanOp.OR); }
         }
         union = union.optimize();
 

@@ -1,5 +1,6 @@
 package com.immersiveconvergence.common.multiblock;
 
+import flaxbeard.immersivepetroleum.api.crafting.LubricatedHandler;
 import flaxbeard.immersivepetroleum.common.IPContent;
 import flaxbeard.immersivepetroleum.common.blocks.BlockIPMetalMultiblocks;
 import flaxbeard.immersivepetroleum.common.blocks.metal.BlockTypes_IPMetalMultiblock;
@@ -7,6 +8,7 @@ import flaxbeard.immersivepetroleum.common.blocks.metal.TileEntityDistillationTo
 import flaxbeard.immersivepetroleum.common.blocks.metal.TileEntityPumpjack;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.BlockRenderLayer;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
 
 public final class IPMultiblocks {
@@ -36,6 +38,8 @@ public final class IPMultiblocks {
             ((TileEntityDistillationTower)tile).tanks[0].fluids.clear();
             return 1;
         });
+
+        LubricatedHandler.lubricatedTiles = new CopyOnWriteArrayList<>(LubricatedHandler.lubricatedTiles);
     }
 
     public static void alignRenderLayers() { ((BlockIPMetalMultiblocks)IPContent.blockMetalMultiblock).setMetaBlockLayer(BlockTypes_IPMetalMultiblock.DISTILLATION_TOWER.getMeta(), BlockRenderLayer.CUTOUT); }

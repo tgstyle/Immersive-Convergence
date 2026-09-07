@@ -22,7 +22,7 @@ public abstract class VoxelShape {
 
     public VoxelShape optimize() {
         VoxelShape[] avoxelshape = new VoxelShape[]{Shapes.empty()};
-        this.forAllBoxes((p1, p2, p3, p4, p5, p6) -> avoxelshape[0] = Shapes.joinUnoptimized(avoxelshape[0], Shapes.box(p1, p2, p3, p4, p5, p6), BooleanOp.OR));
+        this.forAllBoxes((p1, p2, p3, p4, p5, p6) -> avoxelshape[0] = Shapes.joinUnoptimized(avoxelshape[0], Shapes.box(p1, p2, p3, p4, p5, p6), IBooleanOp.OR));
         return avoxelshape[0];
     }
 

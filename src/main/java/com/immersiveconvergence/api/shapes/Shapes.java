@@ -62,7 +62,7 @@ public final class Shapes {
         return -1;
     }
 
-    public static VoxelShape or(VoxelShape shape1, VoxelShape shape2) { return join(shape1, shape2, BooleanOp.OR); }
+    public static VoxelShape or(VoxelShape shape1, VoxelShape shape2) { return join(shape1, shape2, IBooleanOp.OR); }
 
     public static VoxelShape or(VoxelShape shape1, VoxelShape... others) {
         VoxelShape result = shape1;
@@ -70,32 +70,32 @@ public final class Shapes {
         return result;
     }
 
-    public static VoxelShape join(VoxelShape shape1, VoxelShape shape2, BooleanOp function) { return joinUnoptimized(shape1, shape2, function).optimize(); }
+    public static VoxelShape join(VoxelShape shape1, VoxelShape shape2, IBooleanOp function) { return joinUnoptimized(shape1, shape2, function).optimize(); }
 
-    public static VoxelShape joinUnoptimized(VoxelShape shape1, VoxelShape shape2, BooleanOp function) {
+    public static VoxelShape joinUnoptimized(VoxelShape shape1, VoxelShape shape2, IBooleanOp function) {
         if (function.apply(false, false)) { throw new IllegalArgumentException(); }
         if (shape1 == shape2) { return function.apply(true, true) ? shape1 : empty(); }
         boolean flag = function.apply(true, false);
         boolean flag1 = function.apply(false, true);
         if (shape1.isEmpty()) { return flag1 ? shape2 : empty(); }
         if (shape2.isEmpty()) { return flag ? shape1 : empty(); }
-        IndexMerger indexmerger = createIndexMerger(1, shape1.getCoords(EnumFacing.Axis.X), shape2.getCoords(EnumFacing.Axis.X), flag, flag1);
-        IndexMerger indexmerger1 = createIndexMerger(indexmerger.size() - 1, shape1.getCoords(EnumFacing.Axis.Y), shape2.getCoords(EnumFacing.Axis.Y), flag, flag1);
-        IndexMerger indexmerger2 = createIndexMerger((indexmerger.size() - 1) * (indexmerger1.size() - 1), shape1.getCoords(EnumFacing.Axis.Z), shape2.getCoords(EnumFacing.Axis.Z), flag, flag1);
+        IIndexMerger indexmerger = createIndexMerger(1, shape1.getCoords(EnumFacing.Axis.X), shape2.getCoords(EnumFacing.Axis.X), flag, flag1);
+        IIndexMerger indexmerger1 = createIndexMerger(indexmerger.size() - 1, shape1.getCoords(EnumFacing.Axis.Y), shape2.getCoords(EnumFacing.Axis.Y), flag, flag1);
+        IIndexMerger indexmerger2 = createIndexMerger((indexmerger.size() - 1) * (indexmerger1.size() - 1), shape1.getCoords(EnumFacing.Axis.Z), shape2.getCoords(EnumFacing.Axis.Z), flag, flag1);
         BitSetDiscreteVoxelShape bitsetdiscretevoxelshape = BitSetDiscreteVoxelShape.join(shape1.shape, shape2.shape, indexmerger, indexmerger1, indexmerger2, function);
-        return (indexmerger instanceof DiscreteCubeMerger && indexmerger1 instanceof DiscreteCubeMerger && indexmerger2 instanceof DiscreteCubeMerger) ? new CubeVoxelShape(bitsetdiscretevoxelshape) : new ArrayVoxelShape(bitsetdiscretevoxelshape, indexmerger.getList(), indexmerger1.getList(), indexmerger2.getList());
+        return (indexmerger instanceof DiscreteCubeMergerI && indexmerger1 instanceof DiscreteCubeMergerI && indexmerger2 instanceof DiscreteCubeMergerI) ? new CubeVoxelShape(bitsetdiscretevoxelshape) : new ArrayVoxelShape(bitsetdiscretevoxelshape, indexmerger.getList(), indexmerger1.getList(), indexmerger2.getList());
     }
 
-    private static IndexMerger createIndexMerger(int size, DoubleList list1, DoubleList list2, boolean excludeUpper, boolean excludeLower) {
+    private static IIndexMerger createIndexMerger(int size, DoubleList list1, DoubleList list2, boolean excludeUpper, boolean excludeLower) {
         int i = list1.size() - 1;
         int j = list2.size() - 1;
         if (list1 instanceof CubePointRange && list2 instanceof CubePointRange) {
             long k = ICMth.lcm(i, j);
-            if ((long)size * k <= 256L) { return new DiscreteCubeMerger(i, j); }
+            if ((long)size * k <= 256L) { return new DiscreteCubeMergerI(i, j); }
         }
-        if (list1.getDouble(i) < list2.getDouble(0) - 1.0E-7D) { return new NonOverlappingMerger(list1, list2, false); }
-        if (list2.getDouble(j) < list1.getDouble(0) - 1.0E-7D) { return new NonOverlappingMerger(list2, list1, true); }
-        return (i == j && java.util.Objects.equals(list1, list2)) ? new IdenticalMerger(list1) : new IndirectMerger(list1, list2, excludeUpper, excludeLower);
+        if (list1.getDouble(i) < list2.getDouble(0) - 1.0E-7D) { return new NonOverlappingMergerI(list1, list2, false); }
+        if (list2.getDouble(j) < list1.getDouble(0) - 1.0E-7D) { return new NonOverlappingMergerI(list2, list1, true); }
+        return (i == j && java.util.Objects.equals(list1, list2)) ? new IdenticalMergerI(list1) : new IndirectMergerI(list1, list2, excludeUpper, excludeLower);
     }
 
     public interface DoubleLineConsumer {

@@ -69,7 +69,7 @@ public final class BitSetDiscreteVoxelShape extends DiscreteVoxelShape {
 
     public int lastFull(EnumFacing.Axis axis) { return ICMth.choose(axis, this.xMax, this.yMax, this.zMax); }
 
-    static BitSetDiscreteVoxelShape join(DiscreteVoxelShape mainShape, DiscreteVoxelShape secondaryShape, IndexMerger mergerX, IndexMerger mergerY, IndexMerger mergerZ, BooleanOp operator) {
+    static BitSetDiscreteVoxelShape join(DiscreteVoxelShape mainShape, DiscreteVoxelShape secondaryShape, IIndexMerger mergerX, IIndexMerger mergerY, IIndexMerger mergerZ, IBooleanOp operator) {
         BitSetDiscreteVoxelShape shape = new BitSetDiscreteVoxelShape(mergerX.size() - 1, mergerY.size() - 1, mergerZ.size() - 1);
         int[] bounds = new int[]{Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE};
         mergerX.forMergedIndexes((x1, x2, x3) -> {

@@ -1,12 +1,11 @@
 package com.immersiveconvergence.api.block;
 
 import com.immersiveconvergence.api.client.split.SplitModelProperties;
+import com.immersiveconvergence.api.multiblock.MultiblockDrops;
 import com.immersiveconvergence.api.multiblock.TileEntityTemplateMultiblock;
 
 import blusunrize.immersiveengineering.common.blocks.IEBlockInterfaces.IBlockBounds;
-import blusunrize.immersiveengineering.common.blocks.IEBlockInterfaces.ITileDrop;
 import blusunrize.immersiveengineering.common.blocks.TileEntityMultiblockPart;
-import blusunrize.immersiveengineering.common.util.inventory.IIEInventory;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
@@ -67,12 +66,7 @@ public abstract class ICBlockMultiblock<E extends Enum<E> & ICBlockBase.IBlockEn
         TileEntity tileEntity = world.getTileEntity(pos);
         if (tileEntity instanceof TileEntityTemplateMultiblock) {
             TileEntityTemplateMultiblock<?, ?, ?> tile = (TileEntityTemplateMultiblock<?, ?, ?>) tileEntity;
-            if (tile.formed && tile.shouldDropInventory) {
-                IIEInventory master = tile.master();
-                if (master != null && (!(master instanceof ITileDrop) || !((ITileDrop) master).preventInventoryDrop()) && master.getDroppedItems() != null) {
-                    for (ItemStack s : master.getDroppedItems()) if (!s.isEmpty()) world.spawnEntity(new EntityItem(world, pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5, s.copy()));
-                }
-            }
+            if (tile.shouldDropInventory) { MultiblockDrops.dropMasterInventory(world, pos, tile); }
             if (world.getGameRules().getBoolean("doTileDrops") && tile.shouldDropOriginal) if (!tile.formed && tile.pos == -1 && !tile.getOriginalBlock().isEmpty()) world.spawnEntity(new EntityItem(world, pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5, tile.getOriginalBlock().copy()));
         }
         if (tileEntity instanceof TileEntityMultiblockPart) ((TileEntityMultiblockPart<?>) tileEntity).disassemble();

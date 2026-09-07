@@ -9,7 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.immersiveconvergence.api.shapes.BooleanOp.OR;
+import static com.immersiveconvergence.api.shapes.IBooleanOp.OR;
 
 public final class MultiblockShapes {
     private MultiblockShapes() {}
