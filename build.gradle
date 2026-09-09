@@ -94,7 +94,7 @@ if (!rdplJars.isEmpty()) {
 }
 
 dependencies {
-    implementation rfg.deobf("curse.maven:${common.imme_version}")
+    compileOnly rfg.deobf("curse.maven:${common.imme_version}")
     implementation rfg.deobf("${common.mjei_version}")
     if (rdplJar != null && System.getProperty('ic.classes') == null) { compileOnly files(rdplJar) }
 

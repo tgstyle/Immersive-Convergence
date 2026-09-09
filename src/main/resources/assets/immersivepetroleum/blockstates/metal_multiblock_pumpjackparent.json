@@ -46,7 +46,7 @@
     "_0multiblockslave": {
       "false": {},
       "true": {
-        "model": "immersiveengineering:ie_empty"
+        "model": "immersiveconvergence:ic_empty"
       }
     },
     "_1dynamicrender": {

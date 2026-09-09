@@ -10,6 +10,8 @@ import com.immersiveconvergence.common.CommonProxy;
 import com.immersiveconvergence.common.ICContent;
 import com.immersiveconvergence.common.event.ICTickingRegistry;
 import com.immersiveconvergence.common.registry.ICRegistryRemaps;
+import com.immersiveconvergence.common.blocks.conveyors.ICConveyorRegistry;
+import com.immersiveconvergence.common.blocks.pipes.ICPipeRegistry;
 import com.immersiveconvergence.common.util.ICLogger;
 import com.immersiveconvergence.common.util.compat.ICCompatModule;
 import com.immersiveconvergence.common.util.RdplBridge;
@@ -35,7 +37,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import javax.annotation.Nonnull;
 
 @SuppressWarnings("unused")
-@Mod(modid = ImmersiveConvergence.MODID, name = ImmersiveConvergence.NAME, acceptedMinecraftVersions = "[1.12.2,1.13)", dependencies = "required-after:immersiveengineering@[0.12-92,);" + "required-after:mixinbooter@[10.7,);" + "required-after:forge@[14.23.3.2655,);")
+@Mod(modid = ImmersiveConvergence.MODID, name = ImmersiveConvergence.NAME, acceptedMinecraftVersions = "[1.12.2,1.13)", dependencies = "after:immersiveengineering@[0.12-92,);" + "required-after:mixinbooter@[10.7,);" + "required-after:forge@[14.23.3.2655,);")
 public class ImmersiveConvergence {
 
     public static final String MODID = "immersiveconvergence";
@@ -62,6 +64,8 @@ public class ImmersiveConvergence {
         ICContent.preInit();
         ICCompatModule.preInitAll();
         if (ICMods.immersiveEngineering()) { IEMultiblocks.init(); }
+        ICConveyorRegistry.register();
+        ICPipeRegistry.register();
         proxy.preInit();
     }
 

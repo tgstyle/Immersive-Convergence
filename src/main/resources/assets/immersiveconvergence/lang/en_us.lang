@@ -30,3 +30,5 @@ desc.immersiveconvergence.info.reservoir.replenish=Replenishes: %1$s mB/t
 desc.immersiveconvergence.info.reservoir.pumpSpeed=Pump speed: %1$s mB/t
 desc.immersiveconvergence.info.reservoir.none=No reservoir in this chunk
 desc.immersiveconvergence.info.reservoir.remaining=Remaining: %1$s of %2$s mB
+chat.immersiveconvergence.info.fluidPump.fillFirst=Pump mode: fill the first destination
+chat.immersiveconvergence.info.fluidPump.pushOnly=Pump mode: push only

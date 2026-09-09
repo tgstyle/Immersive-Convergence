@@ -1,0 +1,74 @@
+package com.immersiveconvergence.mixin.ie.common;
+
+import com.immersiveconvergence.common.util.ICLogger;
+import com.immersiveconvergence.core.ICMixinConfig;
+import com.immersiveconvergence.common.blocks.conveyors.*;
+import blusunrize.immersiveengineering.api.tool.ConveyorHandler;
+import blusunrize.immersiveengineering.api.tool.ConveyorHandler.IConveyorBelt;
+import com.google.common.collect.Maps;
+import com.immersiveconvergence.common.blocks.conveyors.TileEntityConveyorBeltAlternative;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.Map;
+
+@Mixin(value = ConveyorHandler.class, remap = false)
+public abstract class MixinIEConveyorHandler {
+
+    @Unique private static final Map<String, Class<? extends IConveyorBelt>> REPLACEMENT_CLASSES = Maps.newHashMap();
+    @Unique private static final Map<Class<? extends IConveyorBelt>, IConveyorBelt> SHARED_INSTANCES = Maps.newConcurrentMap();
+
+    static {
+        REPLACEMENT_CLASSES.put("conveyor",         ConveyorBasicAlternative.class);
+        REPLACEMENT_CLASSES.put("uncontrolled",     ConveyorUncontrolledAlternative.class);
+        REPLACEMENT_CLASSES.put("splitter",         ConveyorSplitAlternative.class);
+        REPLACEMENT_CLASSES.put("covered",          ConveyorCoveredAlternative.class);
+        REPLACEMENT_CLASSES.put("dropper",          ConveyorDropAlternative.class);
+        REPLACEMENT_CLASSES.put("droppercovered",   ConveyorDropCoveredAlternative.class);
+        REPLACEMENT_CLASSES.put("extract",          ConveyorExtractAlternative.class);
+        REPLACEMENT_CLASSES.put("extractcovered",   ConveyorExtractCoveredAlternative.class);
+        REPLACEMENT_CLASSES.put("vertical",         ConveyorVerticalAlternative.class);
+        REPLACEMENT_CLASSES.put("verticalcovered",  ConveyorVerticalCoveredAlternative.class);
+    }
+
+    @Inject(
+            method = "getConveyor(Lnet/minecraft/util/ResourceLocation;Lnet/minecraft/tileentity/TileEntity;)Lblusunrize/immersiveengineering/api/tool/ConveyorHandler$IConveyorBelt;",
+            at = @At("HEAD"),
+            cancellable = true,
+            remap = false
+    )
+    private static void injectGetConveyor(ResourceLocation key, TileEntity tile, CallbackInfoReturnable<IConveyorBelt> cir) {
+        if (!ICMixinConfig.mixinSettings.replaceIEConveyors) return;
+        if (key == null || !"immersiveengineering".equals(key.getNamespace())) return;
+
+        String path = key.getPath();
+        Class<? extends IConveyorBelt> clazz = REPLACEMENT_CLASSES.get(path);
+
+        if (clazz != null) {
+            if (tile instanceof TileEntityConveyorBeltAlternative) {
+                IConveyorBelt existing = ((TileEntityConveyorBeltAlternative) tile).getConveyorSubtype();
+                if (existing != null && existing.getClass() == clazz) {
+                    cir.setReturnValue(existing);
+                    return;
+                }
+            }
+
+            try {
+                IConveyorBelt instance = tile == null ? SHARED_INSTANCES.get(clazz) : null;
+                if (instance == null) {
+                    instance = clazz.newInstance();
+                    ICLogger.info("Created a conveyor instance for " + key);
+                    if (tile == null) { SHARED_INSTANCES.put(clazz, instance); }
+                }
+                cir.setReturnValue(instance);
+            } catch (Exception e) {
+                ICLogger.error("Failed to instantiate the conveyor replacement for " + key + ": " + e);
+            }
+        }
+    }
+}

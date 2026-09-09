@@ -5,7 +5,13 @@
   "refmap": "mixins.immersiveconvergence.refmap.json",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "ie.common.MixinIEBlockConveyor",
+    "ie.common.MixinIEBlockMetalDevice0",
+    "ie.common.MixinIEBlockMetalDevice1",
     "ie.common.MixinIEClearTanks",
+    "ie.common.MixinIEContentConveyors",
+    "ie.common.MixinIEConveyorHandler",
+    "ie.common.MixinIEIEContent",
     "ie.common.MixinIEMultiblock",
     "ie.common.MixinIEMultiblockAdvancedBounds",
     "ie.common.MixinIEMultiblockBounds",
@@ -30,6 +36,7 @@
     "ie.common.MixinIETileEntityBucketWheel",
     "ie.common.MixinIETileEntityCokeOven",
     "ie.common.MixinIETileEntityLightningrod",
+    "ie.common.MixinIETileEntityFluidPipe",
     "ie.common.MixinIETileEntityMultiblockPart",
     "ie.common.MixinIETileEntitySheetmetalTank",
     "ie.common.MixinIETileEntitySilo"
