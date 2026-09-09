@@ -103,6 +103,7 @@ dependencies {
     compileOnly rfg.deobf("curse.maven:${common.mtop_version}")
     compileOnly rfg.deobf("${common.crft_version}")
     compileOnly rfg.deobf("${common.zens_version}")
+    compileOnly("${common.gscr_version}") { transitive = false }
 
     annotationProcessor 'org.ow2.asm:asm-debug-all:5.2'
     annotationProcessor 'com.google.guava:guava:32.1.2-jre'
