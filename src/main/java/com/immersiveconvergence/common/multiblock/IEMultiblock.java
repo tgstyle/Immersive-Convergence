@@ -163,7 +163,7 @@ public class IEMultiblock extends TemplateMultiblock {
         return true;
     }
 
-    @Override protected boolean allowFormation(EntityPlayer player, BlockPos pos, ItemStack hammer) { return !MultiblockHandler.fireMultiblockFormationEventPost(player, this, pos, hammer).isCanceled(); }
+    @Override protected boolean allowFormation(EntityPlayer player, BlockPos pos, ItemStack hammer) { return !MultiblockHandler.fireMultiblockFormationEventPost(player, IEMultiblockBridge.adapt(this), pos, hammer).isCanceled(); }
 
     @Override protected void onFormed(EntityPlayer player, BlockPos pos, ItemStack hammer) {
         if (postFormation != null) { postFormation.afterForming(player.world, pos, formedFacing, player); }

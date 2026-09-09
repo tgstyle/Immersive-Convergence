@@ -13,11 +13,6 @@ public class ICCokeOvenRecipe {
     public final ItemStack output;
     public final int time;
     public final int creosoteOutput;
-    /**
-     * How many items one run consumes. IE's own matcher ignores the count on an ItemStack
-     * input, so a caller that wants a multi-item recipe to cost more than one item has to
-     * check and subtract this itself.
-     */
     public final int inputSize;
 
     private ICCokeOvenRecipe(CokeOvenRecipe recipe) {

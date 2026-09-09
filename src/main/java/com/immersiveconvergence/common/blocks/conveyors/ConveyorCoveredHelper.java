@@ -114,7 +114,6 @@ public class ConveyorCoveredHelper {
         defaultCover = new ItemStack(IEContent.blockMetalDecoration1, 1, BlockTypes_MetalDecoration1.STEEL_SCAFFOLDING_0.getMeta());
     }
 
-    @SuppressWarnings("deprecation")
     public static void addCoverToQuads(List<BakedQuad> baseModel, EnumFacing facing, Supplier<ItemStack> coverGet, ConveyorDirection conDir, boolean[] walls) {
         ItemStack coverStack = coverGet.get();
         ItemStack cover = coverStack.isEmpty() ? defaultCover : coverStack;

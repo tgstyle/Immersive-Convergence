@@ -33,6 +33,7 @@ import java.util.function.Function;
 
 import com.immersiveconvergence.api.util.ICUtils;
 
+@SuppressWarnings("unused")
 public class ConveyorVerticalCoveredAlternative extends ConveyorVerticalAlternative {
     private ItemStack cover = ItemStack.EMPTY;
 
@@ -90,7 +91,6 @@ public class ConveyorVerticalCoveredAlternative extends ConveyorVerticalAlternat
         return list;
     }
 
-    @SuppressWarnings("deprecation")
     @SideOnly(Side.CLIENT)
     @Override public List<BakedQuad> modifyQuads(List<BakedQuad> baseModel, @Nullable TileEntity tile, EnumFacing facing) {
         boolean renderBottom = tile != null && renderBottomBelt(tile, facing);

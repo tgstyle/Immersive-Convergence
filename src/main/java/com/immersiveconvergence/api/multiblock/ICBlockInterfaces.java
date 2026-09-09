@@ -1,57 +1,257 @@
 package com.immersiveconvergence.api.multiblock;
 
+import com.immersiveconvergence.api.block.ICProperties;
+import com.immersiveconvergence.api.block.ICProperties.PropertyBoolInverted;
 import com.immersiveconvergence.api.block.ICSideConfig;
 
-import blusunrize.immersiveengineering.api.IEEnums.SideConfig;
-import blusunrize.immersiveengineering.api.IEProperties;
-import blusunrize.immersiveengineering.api.IEProperties.PropertyBoolInverted;
-import blusunrize.immersiveengineering.common.blocks.IEBlockInterfaces;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyInteger;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.block.statemap.StateMapperBase;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.World;
+import net.minecraftforge.client.model.obj.OBJModel;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 @SuppressWarnings("unused")
 public class ICBlockInterfaces {
-    public interface IComparatorOverride extends IEBlockInterfaces.IComparatorOverride {}
+    public interface IComparatorOverride {
+        int getComparatorInputOverride();
+    }
 
-    public interface IGuiTile extends IEBlockInterfaces.IGuiTile {}
+    public interface IGuiTile {
+        default boolean canOpenGui(EntityPlayer player) { return canOpenGui(); }
 
-    public interface IPlayerInteraction extends IEBlockInterfaces.IPlayerInteraction {}
+        boolean canOpenGui();
 
-    public interface ITileDrop extends IEBlockInterfaces.ITileDrop {}
+        int getGuiID();
 
-    public interface IBlockOverlayText extends IEBlockInterfaces.IBlockOverlayText {}
+        @Nullable TileEntity getGuiMaster();
 
-    public interface IAttachedIntegerProperies extends IEBlockInterfaces.IAttachedIntegerProperies {}
+        default void onGuiOpened(EntityPlayer player, boolean clientside) {}
+    }
 
-    public interface IDirectionalTile extends IEBlockInterfaces.IDirectionalTile {}
+    public interface IPlayerInteraction {
+        boolean interact(EnumFacing side, EntityPlayer player, EnumHand hand, ItemStack heldItem, float hitX, float hitY, float hitZ);
+    }
 
-    public interface IHammerInteraction extends IEBlockInterfaces.IHammerInteraction {}
+    public interface ITileDrop {
+        default ItemStack getTileDrop(@Nullable EntityPlayer player, IBlockState state) {
+            NonNullList<ItemStack> drops = getTileDrops(player, state);
+            return !drops.isEmpty() ? drops.get(0) : ItemStack.EMPTY;
+        }
 
-    public interface IHasDummyBlocks extends IEBlockInterfaces.IHasDummyBlocks {}
+        default NonNullList<ItemStack> getTileDrops(@Nullable EntityPlayer player, IBlockState state) { return NonNullList.from(ItemStack.EMPTY, getTileDrop(player, state)); }
 
-    public interface IMetaBlock extends IEBlockInterfaces.IIEMetaBlock {}
+        default ItemStack getPickBlock(@Nullable EntityPlayer player, IBlockState state, RayTraceResult rayRes) { return getTileDrop(player, state); }
 
-    public interface IUsesBooleanProperty extends IEBlockInterfaces.IUsesBooleanProperty {
+        void readOnPlacement(@Nullable EntityLivingBase placer, ItemStack stack);
+
+        default boolean preventInventoryDrop() { return false; }
+    }
+
+    public interface IBlockOverlayText {
+        String[] getOverlayText(EntityPlayer player, RayTraceResult mop, boolean hammer);
+
+        boolean useNixieFont(EntityPlayer player, RayTraceResult mop);
+    }
+
+    public interface IAttachedIntegerProperties {
+        String[] getIntPropertyNames();
+
+        PropertyInteger getIntProperty(String name);
+
+        int getIntPropertyValue(String name);
+
+        default void setValue(String name, int value) {}
+    }
+
+    public interface IDirectionalTile {
+        EnumFacing getFacing();
+
+        void setFacing(EnumFacing facing);
+
+        int getFacingLimitation();
+
+        default EnumFacing getFacingForPlacement(EntityLivingBase placer, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ) {
+            EnumFacing f = EnumFacing.DOWN;
+            int limit = getFacingLimitation();
+            if (limit == 0) { f = side; }
+            else if (limit == 1) { f = EnumFacing.getDirectionFromEntityLiving(pos, placer); }
+            else if (limit == 2) { f = EnumFacing.fromAngle(placer.rotationYaw); }
+            else if (limit == 3) { f = (side != EnumFacing.DOWN && (side == EnumFacing.UP || hitY <= .5)) ? EnumFacing.UP : EnumFacing.DOWN; }
+            else if (limit == 4) {
+                f = EnumFacing.fromAngle(placer.rotationYaw);
+                if (f == EnumFacing.SOUTH || f == EnumFacing.WEST) { f = f.getOpposite(); }
+            }
+            else if (limit == 5) {
+                if (side.getAxis() != EnumFacing.Axis.Y) { f = side.getOpposite(); }
+                else {
+                    float xFromMid = hitX - .5f;
+                    float zFromMid = hitZ - .5f;
+                    float max = Math.max(Math.abs(xFromMid), Math.abs(zFromMid));
+                    if (max == Math.abs(xFromMid)) { f = xFromMid < 0 ? EnumFacing.WEST : EnumFacing.EAST; }
+                    else { f = zFromMid < 0 ? EnumFacing.NORTH : EnumFacing.SOUTH; }
+                }
+            }
+            else if (limit == 6) { f = side.getAxis() != EnumFacing.Axis.Y ? side.getOpposite() : placer.getHorizontalFacing(); }
+
+            return mirrorFacingOnPlacement(placer) ? f.getOpposite() : f;
+        }
+
+        boolean mirrorFacingOnPlacement(EntityLivingBase placer);
+
+        boolean canHammerRotate(EnumFacing side, float hitX, float hitY, float hitZ, EntityLivingBase entity);
+
+        boolean cannotRotate(EnumFacing axis);
+
+        default void afterRotation(EnumFacing oldDir, EnumFacing newDir) {}
+    }
+
+    public interface IHammerInteraction {
+        boolean hammerUseSide(EnumFacing side, EntityPlayer player, float hitX, float hitY, float hitZ);
+    }
+
+    public interface IGeneralMultiblock {
+        boolean isLogicDummy();
+    }
+
+    public interface IHasDummyBlocks extends IGeneralMultiblock {
+        void placeDummies(BlockPos pos, IBlockState state, EnumFacing side, float hitX, float hitY, float hitZ);
+
+        void breakDummies(BlockPos pos, IBlockState state);
+
+        boolean isDummy();
+
+        @Override default boolean isLogicDummy() { return isDummy(); }
+    }
+
+    public interface IMetaBlock {
+        String getBlockName();
+
+        IProperty<?> getMetaProperty();
+
+        Enum<?>[] getMetaEnums();
+
+        IBlockState getInventoryState(int meta);
+
+        boolean useCustomStateMapper();
+
+        String getCustomStateMapping(int meta, boolean itemBlock);
+
+        @SideOnly(Side.CLIENT) StateMapperBase getCustomMapper();
+
+        boolean appendPropertiesToState();
+    }
+
+    public interface IUsesBooleanProperty {
         default int booleanPropertyIndex(boolean activeState) { return 0; }
 
-        @Override @Nonnull default PropertyBoolInverted getBoolProperty(@Nonnull Class<? extends IEBlockInterfaces.IUsesBooleanProperty> inf) { return IEProperties.BOOLEANS[booleanPropertyIndex(inf == IEBlockInterfaces.IActiveState.class)]; }
+        @Nonnull default PropertyBoolInverted getBoolProperty(@Nonnull Class<? extends IUsesBooleanProperty> inf) { return ICProperties.BOOLEANS[booleanPropertyIndex(inf == IActiveState.class)]; }
     }
 
-    public interface IActiveState extends IEBlockInterfaces.IActiveState, IUsesBooleanProperty {}
+    public interface IActiveState extends IUsesBooleanProperty {
+        boolean getIsActive();
+    }
 
-    public interface IMirrorAble extends IEBlockInterfaces.IMirrorAble, IUsesBooleanProperty {}
+    public interface IMirrorAble extends IUsesBooleanProperty {
+        boolean getIsMirrored();
+    }
 
-    public interface IConfigurableSides extends IEBlockInterfaces.IConfigurableSides {
+    public interface IConfigurableSides {
         ICSideConfig sideConfig(int side);
 
-        @Override @Nonnull default SideConfig getSideConfig(int side) { return sideConfig(side).toIE(); }
+        boolean toggleSide(int side, EntityPlayer player);
     }
 
-    public interface IBlockBounds extends IEBlockInterfaces.IBlockBounds {}
+    public interface ILightValue {
+        int getLightValue();
+    }
+
+    public interface IAdvancedDirectionalTile extends IDirectionalTile {
+        void onDirectionalPlacement(EnumFacing side, float hitX, float hitY, float hitZ, EntityLivingBase placer);
+    }
+
+    public interface IAdditionalDrops {
+        Collection<ItemStack> getExtraDrops(EntityPlayer player, IBlockState state);
+    }
+
+    public interface IEntityProof {
+        boolean canEntityDestroy(Entity entity);
+    }
+
+    public interface IPlacementInteraction {
+        void onTilePlaced(World world, BlockPos pos, IBlockState state, EnumFacing side, float hitX, float hitY, float hitZ, EntityLivingBase placer, ItemStack stack);
+    }
+
+    public interface IDualState extends IUsesBooleanProperty {
+        boolean getIsSecondState();
+    }
+
+    public interface IAdvancedSelectionBounds extends IBlockBounds {
+        List<AxisAlignedBB> getAdvancedSelectionBounds();
+
+        boolean isOverrideBox(AxisAlignedBB box, EntityPlayer player, RayTraceResult mop, ArrayList<AxisAlignedBB> list);
+    }
+
+    public interface IAdvancedCollisionBounds extends IBlockBounds {
+        List<AxisAlignedBB> getAdvancedCollisionBounds();
+    }
+
+    public interface IHasObjProperty {
+        ArrayList<String> compileDisplayList();
+    }
+
+    @SuppressWarnings("deprecation")
+    public interface IAdvancedHasObjProperty {
+        OBJModel.OBJState getOBJState();
+    }
+
+    public interface IProcessTile {
+        int[] getCurrentProcessesStep();
+
+        int[] getCurrentProcessesMax();
+    }
+
+    public interface INeighbourChangeTile {
+        void onNeighborBlockChange(BlockPos otherPos);
+    }
+
+    public interface IRedstoneOutput {
+        default int getWeakRSOutput(IBlockState state, EnumFacing side) { return getStrongRSOutput(state, side); }
+
+        int getStrongRSOutput(IBlockState state, EnumFacing side);
+
+        boolean canConnectRedstone(IBlockState state, EnumFacing side);
+    }
+
+    public interface IDynamicTexture {
+        @SideOnly(Side.CLIENT) HashMap<String, String> getTextureReplacements();
+    }
+
+    public interface IPropertyPassthrough {}
+
+    public interface IBlockBounds {
+        float[] getBlockBounds();
+    }
 
     public interface ICollisionBounds extends IBlockBounds {
         List<AxisAlignedBB> getAdvancedCollisionBounds();

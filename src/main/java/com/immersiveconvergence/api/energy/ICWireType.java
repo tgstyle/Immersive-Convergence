@@ -1,37 +1,54 @@
 package com.immersiveconvergence.api.energy;
 
-import blusunrize.immersiveengineering.api.ApiUtils;
-import blusunrize.immersiveengineering.api.energy.wires.WireType;
 import net.minecraft.nbt.NBTTagCompound;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("unused")
 public class ICWireType {
-    public static final String LV_CATEGORY = WireType.LV_CATEGORY;
-    public static final String MV_CATEGORY = WireType.MV_CATEGORY;
-    public static final String HV_CATEGORY = WireType.HV_CATEGORY;
-    private static final Map<WireType, ICWireType> CACHE = new ConcurrentHashMap<>();
-    private final WireType wire;
+    public static final String LV_CATEGORY = "LV";
+    public static final String MV_CATEGORY = "MV";
+    public static final String HV_CATEGORY = "HV";
 
-    private ICWireType(WireType wire) { this.wire = wire; }
+    private static final Map<String, ICWireType> REGISTRY = new ConcurrentHashMap<>();
 
-    @Nullable public static ICWireType of(@Nullable WireType wire) { return wire == null ? null : CACHE.computeIfAbsent(wire, ICWireType::new); }
+    private final String uniqueName;
+    private final String category;
+    private final double renderDiameter;
+    private final int transferRate;
 
-    @Nonnull public static ICWireType required(@Nonnull WireType wire) { return CACHE.computeIfAbsent(wire, ICWireType::new); }
+    public ICWireType(String uniqueName, String category, double renderDiameter, int transferRate) {
+        this.uniqueName = uniqueName;
+        this.category = category;
+        this.renderDiameter = renderDiameter;
+        this.transferRate = transferRate;
+    }
 
-    @Nullable public static ICWireType readFromNBT(NBTTagCompound nbt, String key) { return nbt.hasKey(key) ? of(ApiUtils.getWireTypeFromNBT(nbt, key)) : null; }
+    @Nonnull public static ICWireType register(@Nonnull ICWireType type) {
+        REGISTRY.putIfAbsent(type.uniqueName, type);
+        return REGISTRY.get(type.uniqueName);
+    }
 
-    public WireType toIE() { return wire; }
+    @Nullable public static ICWireType byName(@Nullable String name) { return name == null ? null : REGISTRY.get(name); }
 
-    public String getUniqueName() { return wire.getUniqueName(); }
+    @Nonnull public static Collection<ICWireType> values() { return Collections.unmodifiableCollection(REGISTRY.values()); }
 
-    public String getCategory() { return wire.getCategory(); }
+    @Nullable public static ICWireType readFromNBT(NBTTagCompound nbt, String key) { return nbt.hasKey(key) ? byName(nbt.getString(key)) : null; }
 
-    public double getRenderDiameter() { return wire.getRenderDiameter(); }
+    public void writeToNBT(NBTTagCompound nbt, String key) { nbt.setString(key, uniqueName); }
 
-    public int getTransferRate() { return wire.getTransferRate(); }
+    public String getUniqueName() { return uniqueName; }
+
+    public String getCategory() { return category; }
+
+    public double getRenderDiameter() { return renderDiameter; }
+
+    public int getTransferRate() { return transferRate; }
+
+    @Override public String toString() { return uniqueName; }
 }

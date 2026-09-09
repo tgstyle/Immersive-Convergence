@@ -1,5 +1,7 @@
 package com.immersiveconvergence.api.energy;
 
+import com.immersiveconvergence.common.energy.IEWireBridge;
+
 import blusunrize.immersiveengineering.api.TargetingInfo;
 import blusunrize.immersiveengineering.api.energy.wires.IImmersiveConnectable;
 import blusunrize.immersiveengineering.api.energy.wires.ImmersiveNetHandler.Connection;
@@ -14,9 +16,9 @@ import javax.annotation.Nullable;
 
 @SuppressWarnings("unused")
 public abstract class ICTileEntityConnectable extends TileEntityImmersiveConnectable {
-    @Override @Nonnull public Vec3d getConnectionOffset(@Nonnull Connection con) { return connectionOffset(ICWireType.required(con.cableType), otherEnd(con)); }
+    @Override @Nonnull public Vec3d getConnectionOffset(@Nonnull Connection con) { return connectionOffset(IEWireBridge.required(con.cableType), otherEnd(con)); }
 
-    @Override @Nonnull public Vec3d getConnectionOffset(@Nonnull Connection con, TargetingInfo target, Vec3i offsetLink) { return connectionOffset(ICWireType.required(con.cableType), ICTargetingInfo.of(target)); }
+    @Override @Nonnull public Vec3d getConnectionOffset(@Nonnull Connection con, TargetingInfo target, Vec3i offsetLink) { return connectionOffset(IEWireBridge.required(con.cableType), IEWireBridge.targeting(target)); }
 
     @Nonnull public abstract Vec3d connectionOffset(@Nonnull ICWireType cable, @Nullable BlockPos otherEnd);
 
@@ -27,24 +29,24 @@ public abstract class ICTileEntityConnectable extends TileEntityImmersiveConnect
     public boolean allowEnergyToPass() { return true; }
 
     @Override public boolean canConnectCable(WireType cableType, TargetingInfo target, @Nonnull Vec3i offset) {
-        Boolean accepted = canConnectCable(ICWireType.required(cableType), ICTargetingInfo.of(target), offset);
+        Boolean accepted = canConnectCable(IEWireBridge.required(cableType), IEWireBridge.targeting(target), offset);
         return accepted != null ? accepted : super.canConnectCable(cableType, target, offset);
     }
 
     @Nullable public Boolean canConnectCable(@Nonnull ICWireType cable, @Nonnull ICTargetingInfo target, @Nonnull Vec3i offset) { return null; }
 
     @Override public void connectCable(WireType cableType, TargetingInfo target, IImmersiveConnectable other) {
-        if (!connectCable(ICWireType.required(cableType), ICTargetingInfo.of(target), other.getConnectionMaster(cableType, target))) { super.connectCable(cableType, target, other); }
+        if (!connectCable(IEWireBridge.required(cableType), IEWireBridge.targeting(target), other.getConnectionMaster(cableType, target))) { super.connectCable(cableType, target, other); }
     }
 
     public boolean connectCable(@Nonnull ICWireType cable, @Nonnull ICTargetingInfo target, BlockPos otherMaster) { return false; }
 
     @Override public WireType getCableLimiter(@Nonnull TargetingInfo target) {
-        ICWireType cable = cableLimiter(ICTargetingInfo.of(target));
-        return cable == null ? null : cable.toIE();
+        ICWireType cable = cableLimiter(IEWireBridge.targeting(target));
+        return IEWireBridge.toIE(cable);
     }
 
-    @Nullable public ICWireType cableLimiter(@Nonnull ICTargetingInfo target) { return ICWireType.of(limitType); }
+    @Nullable public ICWireType cableLimiter(@Nonnull ICTargetingInfo target) { return IEWireBridge.of(limitType); }
 
     @Override public void removeCable(Connection connection) {
         if (!removeCable(connection == null ? null : otherEnd(connection), connection == null)) { super.removeCable(connection); }

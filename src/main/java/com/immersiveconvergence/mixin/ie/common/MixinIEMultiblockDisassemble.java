@@ -1,5 +1,6 @@
 package com.immersiveconvergence.mixin.ie.common;
 
+import com.immersiveconvergence.api.multiblock.ICMultiblockPart;
 import com.immersiveconvergence.api.multiblock.QueueProcessor;
 
 import blusunrize.immersiveengineering.common.blocks.TileEntityMultiblockPart;
@@ -16,6 +17,7 @@ public abstract class MixinIEMultiblockDisassemble {
 
     @Inject(method = "disassemble", at = @At("HEAD"), cancellable = true, remap = false)
     private void immersiveconvergence$queueDisassembly(CallbackInfo ci) {
-        if (QueueProcessor.handleDisassembly((TileEntityMultiblockPart<?>)(Object)this, structureDimensions, true) != QueueProcessor.Result.FALLBACK) { ci.cancel(); }
+        ICMultiblockPart part = ICMultiblockPart.of((TileEntityMultiblockPart<?>)(Object)this);
+        if (part != null && QueueProcessor.handleDisassembly(part, structureDimensions, true) != QueueProcessor.Result.FALLBACK) { ci.cancel(); }
     }
 }

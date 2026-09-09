@@ -18,7 +18,6 @@
     "ip.common.MixinIPMultiblockDrops",
     "ip.common.MixinIPOilCan",
     "ip.common.MixinIPProjectorAnchor",
-    "ip.common.MixinIPPumpjackPipes",
     "ip.common.MixinIPSaveData",
     "ip.common.MixinIPSchematicResult",
     "ip.common.MixinIPSpeedboat",

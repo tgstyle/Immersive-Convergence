@@ -4,8 +4,8 @@ import com.immersiveconvergence.api.client.split.SplitModelProperties;
 import com.immersiveconvergence.api.multiblock.MultiblockDrops;
 import com.immersiveconvergence.api.multiblock.TileEntityTemplateMultiblock;
 
-import blusunrize.immersiveengineering.common.blocks.IEBlockInterfaces.IBlockBounds;
-import blusunrize.immersiveengineering.common.blocks.TileEntityMultiblockPart;
+import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IBlockBounds;
+import com.immersiveconvergence.api.multiblock.ICTileEntityMultiblockPart;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
@@ -69,7 +69,7 @@ public abstract class ICBlockMultiblock<E extends Enum<E> & ICBlockBase.IBlockEn
             if (tile.shouldDropInventory) { MultiblockDrops.dropMasterInventory(world, pos, tile); }
             if (world.getGameRules().getBoolean("doTileDrops") && tile.shouldDropOriginal) if (!tile.formed && tile.pos == -1 && !tile.getOriginalBlock().isEmpty()) world.spawnEntity(new EntityItem(world, pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5, tile.getOriginalBlock().copy()));
         }
-        if (tileEntity instanceof TileEntityMultiblockPart) ((TileEntityMultiblockPart<?>) tileEntity).disassemble();
+        if (tileEntity instanceof ICTileEntityMultiblockPart) ((ICTileEntityMultiblockPart<?>) tileEntity).disassemble();
         super.breakBlock(world, pos, state);
     }
 
@@ -86,7 +86,7 @@ public abstract class ICBlockMultiblock<E extends Enum<E> & ICBlockBase.IBlockEn
 
     public ItemStack getOriginalBlock(World world, BlockPos pos) {
         TileEntity te = world.getTileEntity(pos);
-        if (te instanceof TileEntityMultiblockPart) return ((TileEntityMultiblockPart<?>) te).getOriginalBlock();
+        if (te instanceof ICTileEntityMultiblockPart) return ((ICTileEntityMultiblockPart<?>) te).getOriginalBlock();
         return ItemStack.EMPTY;
     }
 

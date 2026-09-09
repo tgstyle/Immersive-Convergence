@@ -2,15 +2,15 @@ package com.immersiveconvergence.common.blocks.tileentities;
 import com.immersiveconvergence.ImmersiveConvergence;
 import com.immersiveconvergence.api.capability.IMechanicalEnergyProvider;
 import com.immersiveconvergence.api.client.MechanicalEnergyAnimation;
+import com.immersiveconvergence.api.block.ICTileEntityBase;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IBlockBounds;
+import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IDirectionalTile;
+import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IPlayerInteraction;
+import com.immersiveconvergence.api.util.ICUtils;
 import com.immersiveconvergence.api.network.ITileSyncReceiver;
 import com.immersiveconvergence.api.network.TileSyncMessage;
 import com.immersiveconvergence.client.gui.GuiRotorCreative;
 import com.immersiveconvergence.core.ICCommonConfig;
-import blusunrize.immersiveengineering.common.blocks.IEBlockInterfaces.IDirectionalTile;
-import blusunrize.immersiveengineering.common.blocks.IEBlockInterfaces.IPlayerInteraction;
-import blusunrize.immersiveengineering.common.blocks.TileEntityIEBase;
-import blusunrize.immersiveengineering.common.util.Utils;
 import javax.annotation.Nonnull;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
@@ -24,7 +24,7 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-public class TileEntityRotorCreative extends TileEntityIEBase implements ITickable, IMechanicalEnergyProvider, IDirectionalTile, IPlayerInteraction, IBlockBounds, ITileSyncReceiver {
+public class TileEntityRotorCreative extends ICTileEntityBase implements ITickable, IMechanicalEnergyProvider, IDirectionalTile, IPlayerInteraction, IBlockBounds, ITileSyncReceiver {
     private static int maxSpeed() { return ICCommonConfig.mechanical.maxRpm; }
     public EnumFacing facing = EnumFacing.NORTH;
     public int rpm = maxSpeed();
@@ -53,7 +53,7 @@ public class TileEntityRotorCreative extends TileEntityIEBase implements ITickab
     @Override public double getFriction() { return 0; }
     @Override public MechanicalEnergyAnimation getAnimation() { return animation; }
     @Override public boolean interact(@Nonnull EnumFacing side, @Nonnull EntityPlayer player, @Nonnull EnumHand hand, @Nonnull ItemStack heldItem, float hitX, float hitY, float hitZ) {
-        if (!world.isRemote && !Utils.isHammer(heldItem)) {
+        if (!world.isRemote && !ICUtils.isHammer(heldItem)) {
             NBTTagCompound tag = new NBTTagCompound();
             tag.setInteger("rpm", rpm);
             ImmersiveConvergence.packetHandler.sendTo(new TileSyncMessage(this, tag), (EntityPlayerMP)player);
@@ -83,6 +83,6 @@ public class TileEntityRotorCreative extends TileEntityIEBase implements ITickab
     @Override public int getFacingLimitation() { return 2; }
     @Override public boolean mirrorFacingOnPlacement(@Nonnull EntityLivingBase placer) { return false; }
     @Override public boolean canHammerRotate(@Nonnull EnumFacing side, float hitX, float hitY, float hitZ, @Nonnull EntityLivingBase entity) { return true; }
-    @Override public boolean canRotate(@Nonnull EnumFacing axis) { return true; }
+    @Override public boolean cannotRotate(@Nonnull EnumFacing axis) { return false; }
     @Override @Nonnull public EnumFacing getFacingForPlacement(@Nonnull EntityLivingBase placer, @Nonnull BlockPos pos, @Nonnull EnumFacing side, float hitX, float hitY, float hitZ) { return placer.getHorizontalFacing(); }
 }

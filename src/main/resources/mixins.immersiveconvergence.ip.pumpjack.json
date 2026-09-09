@@ -1,0 +1,15 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "com.immersiveconvergence.mixin",
+  "refmap": "mixins.immersiveconvergence.refmap.json",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "ip.common.MixinIPPumpjackDrain",
+    "ip.common.MixinIPPumpjackTweaks",
+    "ip.common.MixinIPReservoirType"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

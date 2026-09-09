@@ -1,6 +1,6 @@
 package com.immersiveconvergence.api.energy;
 
-import blusunrize.immersiveengineering.api.TargetingInfo;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 
 @SuppressWarnings("unused")
@@ -10,12 +10,21 @@ public class ICTargetingInfo {
     public final float hitY;
     public final float hitZ;
 
-    private ICTargetingInfo(TargetingInfo target) {
-        this.side = target.side;
-        this.hitX = target.hitX;
-        this.hitY = target.hitY;
-        this.hitZ = target.hitZ;
+    public ICTargetingInfo(EnumFacing side, float hitX, float hitY, float hitZ) {
+        this.side = side;
+        this.hitX = hitX;
+        this.hitY = hitY;
+        this.hitZ = hitZ;
     }
 
-    public static ICTargetingInfo of(TargetingInfo target) { return new ICTargetingInfo(target); }
+    public void writeToNBT(NBTTagCompound tag) {
+        tag.setInteger("side", side.ordinal());
+        tag.setFloat("hitX", hitX);
+        tag.setFloat("hitY", hitY);
+        tag.setFloat("hitZ", hitZ);
+    }
+
+    public static ICTargetingInfo readFromNBT(NBTTagCompound tag) {
+        return new ICTargetingInfo(EnumFacing.values()[tag.getInteger("side")], tag.getFloat("hitX"), tag.getFloat("hitY"), tag.getFloat("hitZ"));
+    }
 }

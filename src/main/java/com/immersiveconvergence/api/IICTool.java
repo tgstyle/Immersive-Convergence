@@ -1,6 +1,8 @@
 package com.immersiveconvergence.api;
 
-import blusunrize.immersiveengineering.api.tool.ITool;
+import net.minecraft.item.ItemStack;
 
 @SuppressWarnings("unused")
-public interface IICTool extends ITool {}
+public interface IICTool {
+    boolean isTool(ItemStack stack);
+}

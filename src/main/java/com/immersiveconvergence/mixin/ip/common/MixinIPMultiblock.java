@@ -1,6 +1,7 @@
 package com.immersiveconvergence.mixin.ip.common;
 
 import com.immersiveconvergence.common.multiblock.IEMultiblock;
+import com.immersiveconvergence.common.multiblock.IEMultiblockBridge;
 import com.immersiveconvergence.common.multiblock.IEMultiblockRegistry;
 
 import blusunrize.immersiveengineering.api.MultiblockHandler.IMultiblock;
@@ -41,7 +42,7 @@ public abstract class MixinIPMultiblock implements IMultiblock {
     @Inject(method = "getTotalMaterials", at = @At("HEAD"), cancellable = true, remap = false)
     private void injectGetTotalMaterials(CallbackInfoReturnable<IngredientStack[]> cir) {
         IEMultiblock template = IEMultiblockRegistry.get(getUniqueName());
-        if (template != null) { cir.setReturnValue(template.getTotalMaterials()); }
+        if (template != null) { cir.setReturnValue(IEMultiblockBridge.toIngredients(template.getTotalMaterialList())); }
     }
 
     @Inject(method = "getManualScale", at = @At("HEAD"), cancellable = true, remap = false)

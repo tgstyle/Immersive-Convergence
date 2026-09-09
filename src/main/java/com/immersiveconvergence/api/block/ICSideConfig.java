@@ -1,6 +1,5 @@
 package com.immersiveconvergence.api.block;
 
-import blusunrize.immersiveengineering.api.IEEnums.SideConfig;
 import net.minecraft.util.IStringSerializable;
 
 import javax.annotation.Nonnull;
@@ -21,8 +20,4 @@ public enum ICSideConfig implements IStringSerializable {
     public String getTextureName() { return texture; }
 
     public static ICSideConfig next(ICSideConfig current) { return current == INPUT ? OUTPUT : current == OUTPUT ? NONE : INPUT; }
-
-    public SideConfig toIE() { return SideConfig.values()[ordinal()]; }
-
-    public static ICSideConfig fromIE(SideConfig config) { return values()[config.ordinal()]; }
 }

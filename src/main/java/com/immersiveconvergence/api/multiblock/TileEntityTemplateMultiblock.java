@@ -1,17 +1,11 @@
 package com.immersiveconvergence.api.multiblock;
 
 import com.immersiveconvergence.api.client.split.ISubmodelOffsetProvider;
-import com.immersiveconvergence.api.energy.IICInternalFluxHandler;
+import com.immersiveconvergence.api.crafting.ICRecipe;
+import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IPlayerInteraction;
+import com.immersiveconvergence.api.util.ICUtils;
 import com.immersiveconvergence.api.util.IICInventory;
 
-import blusunrize.immersiveengineering.api.IEEnums.SideConfig;
-import blusunrize.immersiveengineering.api.crafting.IMultiblockRecipe;
-import blusunrize.immersiveengineering.api.energy.immersiveflux.FluxStorage;
-import blusunrize.immersiveengineering.common.blocks.IEBlockInterfaces.IPlayerInteraction;
-import blusunrize.immersiveengineering.common.blocks.TileEntityMultiblockPart;
-import blusunrize.immersiveengineering.common.blocks.metal.TileEntityMultiblockMetal;
-import blusunrize.immersiveengineering.common.util.Utils;
-import blusunrize.immersiveengineering.common.util.inventory.IIEInventory;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -39,7 +33,7 @@ import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
 @SuppressWarnings("unused")
-public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateMultiblock<T, R, M>, R extends IMultiblockRecipe, M extends T> extends TileEntityMultiblockMetal<T, R> implements IPlayerInteraction, ISubmodelOffsetProvider, IICInventory {
+public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateMultiblock<T, R, M>, R extends ICRecipe, M extends T> extends ICTileEntityMultiblockMetal<T, R> implements IPlayerInteraction, ISubmodelOffsetProvider, IICInventory {
     private static final String KEY_INPUT_TANK_CLEARED = "gui.immersiveconvergence.input_tank_cleared";
     private static final String KEY_INPUT_TANKS_CLEARED = "gui.immersiveconvergence.input_tanks_cleared";
     private int blockUpdateCooldown = 0;
@@ -54,12 +48,12 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
 
     public abstract M master();
 
-    public static class ProcessInMachine<R extends IMultiblockRecipe> extends MultiblockProcessInMachine<R> {
+    public static class ProcessInMachine<R extends ICRecipe> extends MultiblockProcessInMachine<R> {
         public ProcessInMachine(R recipe, int... inputSlots) { super(recipe, inputSlots); }
 
-        @Override public boolean canProcess(@Nonnull TileEntityMultiblockMetal multiblock) { return canProcess((TileEntityTemplateMultiblock<?, ?, ?>)multiblock); }
+        @Override public boolean canProcess(@Nonnull ICTileEntityMultiblockMetal<?, ?> multiblock) { return canProcess((TileEntityTemplateMultiblock<?, ?, ?>)multiblock); }
 
-        @Override public void doProcessTick(@Nonnull TileEntityMultiblockMetal multiblock) { doProcessTick((TileEntityTemplateMultiblock<?, ?, ?>)multiblock); }
+        @Override public void doProcessTick(@Nonnull ICTileEntityMultiblockMetal<?, ?> multiblock) { doProcessTick((TileEntityTemplateMultiblock<?, ?, ?>)multiblock); }
 
         public boolean canProcess(TileEntityTemplateMultiblock<?, ?, ?> multiblock) { return super.canProcess(multiblock); }
 
@@ -70,22 +64,12 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
 
     protected boolean useMirroredShape() { return true; }
 
-    @Override @Nonnull public SideConfig getEnergySideConfig(@Nullable EnumFacing facing) {
-        if (this instanceof IICInternalFluxHandler) { return ((IICInternalFluxHandler) this).getSideConfig(facing).toIE(); }
-        return super.getEnergySideConfig(facing == null ? getFacing() : facing);
-    }
-
-    @Override @Nonnull public FluxStorage getFluxStorage() {
-        if (this instanceof IICInternalFluxHandler) { return ((IICInternalFluxHandler) this).getStorage(); }
-        return super.getFluxStorage();
-    }
-
     protected boolean isInputFluidPoI(BlockPos position) { return false; }
 
     protected int clearInputTanks() { return 0; }
 
     @Override public boolean interact(@Nonnull EnumFacing side, @Nonnull EntityPlayer player, @Nonnull EnumHand hand, @Nonnull ItemStack heldItem, float hitX, float hitY, float hitZ) {
-        if (!formed || !player.isSneaking() || !Utils.isHammer(heldItem)) { return false; }
+        if (!formed || !player.isSneaking() || !ICUtils.isHammer(heldItem)) { return false; }
         M master = master();
         if (master == null || !master.isInputFluidPoI(posInMultiblock())) { return false; }
         if (!world.isRemote) {
@@ -126,7 +110,7 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
     @SuppressWarnings("unchecked")
     @Override @Nullable public T getTileForPos(int targetPos) {
         BlockPos target = getBlockPosForPos(targetPos);
-        TileEntity tile = Utils.getExistingTileEntity(world, target);
+        TileEntity tile = ICUtils.getExistingTileEntity(world, target);
         if (tile instanceof TileEntityTemplateMultiblock && tile.getClass().isInstance(this)) return (T)tile;
         return null;
     }
@@ -140,7 +124,7 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
     }
 
     @SuppressWarnings("unchecked")
-    @Override @Nonnull public <TE> TE getCapability(@Nonnull Capability<TE> capability, @Nullable EnumFacing facing) {
+    @Override @Nullable public <TE> TE getCapability(@Nonnull Capability<TE> capability, @Nullable EnumFacing facing) {
         if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
             assert facing != null;
             if (this.getAccessibleFluidTanks(facing).length > 0) return (TE)new MultiblockFluidWrapper(this, facing);
@@ -156,7 +140,7 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
 
     public Set<BlockPos> comparatorPositions() {
         if (comparatorPositionsCache == null) {
-            MachineTemplateMultiblock<?> instance = (MachineTemplateMultiblock<?>)mutliblockInstance;
+            MachineTemplateMultiblock<?> instance = (MachineTemplateMultiblock<?>)multiblockInstance;
             Set<BlockPos> found = new LinkedHashSet<>();
             for (String name : comparatorPoINames()) {
                 for (PoIJSONSchema poi : instance.pointsOfInterest) {
@@ -187,19 +171,19 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
     }
 
     public BlockPos posInMultiblock() {
-        MachineTemplateMultiblock<?> instance = (MachineTemplateMultiblock<?>)mutliblockInstance;
+        MachineTemplateMultiblock<?> instance = (MachineTemplateMultiblock<?>)multiblockInstance;
         return MultiblockShapes.localPos(pos, instance.width, instance.length);
     }
 
     public int toFlatIndex(BlockPos posInMultiblock) {
-        MachineTemplateMultiblock<?> instance = (MachineTemplateMultiblock<?>)mutliblockInstance;
+        MachineTemplateMultiblock<?> instance = (MachineTemplateMultiblock<?>)multiblockInstance;
         return posInMultiblock.getY() * (instance.length * instance.width) + posInMultiblock.getZ() * instance.width + posInMultiblock.getX();
     }
 
     public BlockPos getBlockPosForPos(BlockPos posInMultiblock) { return getBlockPosForPos(toFlatIndex(posInMultiblock)); }
 
     private BlockPos posToMultiblock() {
-        MachineTemplateMultiblock<?> instance = (MachineTemplateMultiblock<?>)mutliblockInstance;
+        MachineTemplateMultiblock<?> instance = (MachineTemplateMultiblock<?>)multiblockInstance;
         return adjustPosInMultiblock(posInMultiblock(), instance.width);
     }
 
@@ -227,7 +211,7 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
 
     @Override @Nullable public BlockPos getModelOffset() { return formed ? new BlockPos(offset[0], offset[1], offset[2]) : null; }
 
-    @Override @Nonnull public ItemStack getOriginalBlock() { return ((MachineTemplateMultiblock<?>)this.mutliblockInstance).getOriginalBlock(pos); }
+    @Override @Nonnull public ItemStack getOriginalBlock() { return ((MachineTemplateMultiblock<?>)this.multiblockInstance).getOriginalBlock(pos); }
 
     @Override public void doGraphicalUpdates(int slot) { this.markDirty(); this.markContainingBlockForUpdate(null); }
 
@@ -281,8 +265,8 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
             BlockPos masterPos = getPos().add(-offset[0], -offset[1], -offset[2]);
             if (QueueProcessor.activeDisassemblies.contains(masterPos)) { return; }
             TileEntity teMaster = world.getTileEntity(masterPos);
-            if (teMaster instanceof IIEInventory && shouldDropInventory) {
-                NonNullList<ItemStack> inv = ((IIEInventory)teMaster).getInventory();
+            if (teMaster instanceof IICInventory && shouldDropInventory) {
+                NonNullList<ItemStack> inv = ((IICInventory)teMaster).getInventory();
                 for (ItemStack stack : inv) {
                     if (!stack.isEmpty()) {
                         float rx = world.rand.nextFloat() * 0.8F + 0.1F;
@@ -305,17 +289,17 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
                 BlockPos pos2 = startPos.offset(facing, l).offset(facing.rotateY(), ww).add(0, h, 0);
                 ItemStack s = ItemStack.EMPTY;
                 TileEntity te = world.getTileEntity(pos2);
-                if (te instanceof TileEntityMultiblockPart) {
-                    TileEntityMultiblockPart<?> part = (TileEntityMultiblockPart<?>)te;
+                if (te instanceof ICTileEntityMultiblockPart) {
+                    ICTileEntityMultiblockPart<?> part = (ICTileEntityMultiblockPart<?>)te;
                     Vec3i diff = pos2.subtract(masterPos);
                     if (part.offset[0] != diff.getX() || part.offset[1] != diff.getY() || part.offset[2] != diff.getZ()) continue;
-                    if (time != part.onlyLocalDissassembly) {
+                    if (time != part.onlyLocalDisassembly) {
                         s = part.getOriginalBlock();
                         part.formed = false;
                     }
                 }
                 if (pos2.equals(getPos())) s = this.getOriginalBlock();
-                IBlockState state = Utils.getStateFromItemStack(s);
+                IBlockState state = ICUtils.getStateFromItemStack(s);
                 if (state != null) {
                     if (pos2.equals(getPos())) { if (shouldDropOriginal) world.spawnEntity(new EntityItem(world, pos2.getX() + 0.5, pos2.getY() + 0.5, pos2.getZ() + 0.5, s)); }
                     else replaceStructureBlock(pos2, state, s, h, l, w);

@@ -14,3 +14,7 @@ ie.manual.entry.multiblockDisassembly0=破壞成型機器的任意方塊會拆�
 ie.manual.entry.clearingTanks.name=清空儲罐
 ie.manual.entry.clearingTanks.subtext=錯誤的流體請出去
 ie.manual.entry.clearingTanks0=流體輸入口會接受任何輸入的流體，若機器中進了錯誤的流體，它會一直停機，直到該儲罐被清空。潛行並對流體輸入口使用工程師槌即可清空儲罐。<br>流體會被丟棄而不是返還，因此儲罐可以立刻接收正確的流體。這適用於帶流體輸入的Immersive Engineering、Immersive Petroleum和Immersive Technology機器；輸出儲罐和儲存罐不會受到影響。
+chat.immersiveconvergence.info.rsControl.invertedOn=反相紅石信號控制：開
+chat.immersiveconvergence.info.rsControl.invertedOff=反相紅石信號控制：關
+desc.immersiveconvergence.info.energyStored=存儲能量：%1$s Flux
+desc.immersiveconvergence.info.chance=概率：

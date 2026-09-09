@@ -1,5 +1,7 @@
 package com.immersiveconvergence.api.energy;
 
+import com.immersiveconvergence.common.energy.IEWireBridge;
+
 import blusunrize.immersiveengineering.api.energy.wires.IImmersiveConnectable;
 import blusunrize.immersiveengineering.api.energy.wires.ImmersiveNetHandler.Connection;
 import blusunrize.immersiveengineering.common.blocks.metal.TileEntityConnectorRedstone;
@@ -18,7 +20,7 @@ public class ICTileEntityConnectorRedstone extends TileEntityConnectorRedstone {
     @Nullable public Vec3d raytraceOffset() { return null; }
 
     @Override @Nonnull public Vec3d getConnectionOffset(@Nonnull Connection con) {
-        Vec3d offset = connectionOffset(ICWireType.required(con.cableType));
+        Vec3d offset = connectionOffset(IEWireBridge.required(con.cableType));
         return offset != null ? offset : super.getConnectionOffset(con);
     }
 

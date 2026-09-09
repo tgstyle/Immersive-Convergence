@@ -22,6 +22,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class ConveyorCoveredAlternative extends ConveyorBasicAlternative {
     private ItemStack cover = ItemStack.EMPTY;
 
@@ -44,7 +45,7 @@ public class ConveyorCoveredAlternative extends ConveyorBasicAlternative {
     }
 
     @Override public String getModelCacheKey(TileEntity tile, EnumFacing facing) {
-        String key = "immersivetech:covered_conveyor" +
+        String key = "immersiveconvergence:covered_conveyor" +
                 "f" + facing.ordinal() +
                 "d" + getConveyorDirection().ordinal() +
                 "a" + (isActive(tile) ? 1 : 0) +

@@ -1,6 +1,8 @@
 package com.immersiveconvergence.client;
 
 import com.immersiveconvergence.ImmersiveConvergence;
+import com.immersiveconvergence.api.ICMods;
+import com.immersiveconvergence.api.manual.ICManual;
 import com.immersiveconvergence.api.client.split.MultiblockTextureHandler;
 import com.immersiveconvergence.api.client.split.SplitModelHandler;
 import com.immersiveconvergence.api.network.BinaryTileSyncMessage;
@@ -15,11 +17,6 @@ import com.immersiveconvergence.client.render.IEParticleTextures;
 import com.immersiveconvergence.client.render.TileRenderRotorCreative;
 import com.immersiveconvergence.client.render.ip.IPPumpjackSupport;
 
-import blusunrize.immersiveengineering.api.ManualHelper;
-import blusunrize.immersiveengineering.client.IECustomStateMapper;
-import blusunrize.lib.manual.ManualPages;
-import blusunrize.immersiveengineering.client.models.obj.IEOBJLoader;
-import blusunrize.immersiveengineering.common.blocks.IEBlockInterfaces.IIEMetaBlock;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
@@ -28,12 +25,9 @@ import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
-import java.util.Locale;
 
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -44,22 +38,22 @@ public class ClientProxy extends CommonProxy {
     @Override public void preInit() {
         super.preInit();
         OBJLoader.INSTANCE.addDomain(ImmersiveConvergence.MODID);
-        IEOBJLoader.instance.addDomain(ImmersiveConvergence.MODID);
+        if (ICMods.immersiveEngineering()) { IEModelSupport.addObjDomain(); }
         MultiblockTextureHandler.register(ImmersiveConvergence.MODID);
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRotorCreative.class, new TileRenderRotorCreative());
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new ICClientEventHandler());
-        registerSplitModels();
+        if (ICMods.immersiveEngineering()) { registerSplitModels(); }
         IEParticleTextures.register();
-        if (Loader.isModLoaded("immersivepetroleum")) { IPPumpjackSupport.init(); }
+        if (ICMods.immersivePetroleum()) { IPPumpjackSupport.init(); }
     }
 
     @Override public void loadComplete() {
-        if (Loader.isModLoaded("immersivepetroleum")) { IPPumpjackSupport.bindRenderer(); }
-        ManualHelper.addEntry("multiblockDisassembly", ManualHelper.CAT_CONSTRUCTION, new ManualPages.Text(ManualHelper.getManual(), "multiblockDisassembly0"));
-        ManualHelper.addEntry("clearingTanks", ManualHelper.CAT_CONSTRUCTION, new ManualPages.Text(ManualHelper.getManual(), "clearingTanks0"));
+        if (ICMods.immersivePetroleum()) { IPPumpjackSupport.bindRenderer(); }
+        ICManual.addEntry("multiblockDisassembly", ICManual.CAT_CONSTRUCTION, ICManual.text("multiblockDisassembly0"));
+        ICManual.addEntry("clearingTanks", ICManual.CAT_CONSTRUCTION, ICManual.text("clearingTanks0"));
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST) public static void registerPetroleumModels(ModelRegistryEvent event) { if (Loader.isModLoaded("immersivepetroleum")) { IPPumpjackSupport.registerStateMapper(); } }
+    @SubscribeEvent(priority = EventPriority.LOWEST) public static void registerPetroleumModels(ModelRegistryEvent event) { if (ICMods.immersivePetroleum()) { IPPumpjackSupport.registerStateMapper(); } }
 
     private static void registerSplitModels() {
         String ie = IEMultiblockRegistry.MODID;
@@ -70,26 +64,16 @@ public class ClientProxy extends CommonProxy {
         }
         String[][] sharedFile = {{"tank", "IE:SheetmetalTank"}, {"silo", "IE:Silo"}, {"assembler", "IE:Assembler"}, {"lightningrod", "IE:Lightningrod"}};
         for (String[] machine : sharedFile) { SplitModelHandler.register(ie, "metal_multiblock", machine[0], "metal_multiblock", machine[0], false, false, () -> IEMultiblockRegistry.get(machine[1])); }
-        if (Loader.isModLoaded("immersivepetroleum")) { SplitModelHandler.register("immersivepetroleum", "metal_multiblock_distillationtowerparent", null, "metal_multiblock", "distillation_tower", true, false, () -> IEMultiblockRegistry.get("IP:DistillationTower")); }
+        if (ICMods.immersivePetroleum()) { SplitModelHandler.register("immersivepetroleum", "metal_multiblock_distillationtowerparent", null, "metal_multiblock", "distillation_tower", true, false, () -> IEMultiblockRegistry.get("IP:DistillationTower")); }
     }
 
     @SubscribeEvent public static void registerModels(ModelRegistryEvent event) {
+        boolean ie = ICMods.immersiveEngineering();
         for (Block block : ICContent.registeredICBlocks) {
             ResourceLocation loc = Block.REGISTRY.getNameForObject(block);
             Item blockItem = Item.getItemFromBlock(block);
-            if (!(block instanceof IIEMetaBlock)) {
-                ModelLoader.setCustomModelResourceLocation(blockItem, 0, new ModelResourceLocation(loc, "inventory"));
-                continue;
-            }
-            IIEMetaBlock metaBlock = (IIEMetaBlock)block;
-            if (metaBlock.useCustomStateMapper()) { ModelLoader.setCustomStateMapper(block, IECustomStateMapper.getStateMapper(metaBlock)); }
-            ModelLoader.setCustomMeshDefinition(blockItem, stack -> new ModelResourceLocation(loc, "inventory"));
-            for (int meta = 0; meta < metaBlock.getMetaEnums().length; meta++) {
-                String location = loc.toString();
-                String properties = metaBlock.appendPropertiesToState() ? ("inventory," + metaBlock.getMetaProperty().getName() + "=" + metaBlock.getMetaEnums()[meta].toString().toLowerCase(Locale.US)) : "normal";
-                if (metaBlock.useCustomStateMapper()) { location += "_" + metaBlock.getCustomStateMapping(meta, true); }
-                ModelLoader.setCustomModelResourceLocation(blockItem, meta, new ModelResourceLocation(location, properties));
-            }
+            if (ie && IEModelSupport.isMetaBlock(block)) { IEModelSupport.registerMetaBlock(block, loc, blockItem); }
+            else { ModelLoader.setCustomModelResourceLocation(blockItem, 0, new ModelResourceLocation(loc, "inventory")); }
         }
     }
 

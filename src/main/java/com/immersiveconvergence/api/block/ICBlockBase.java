@@ -2,8 +2,7 @@ package com.immersiveconvergence.api.block;
 
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces;
 
-import blusunrize.immersiveengineering.api.IEProperties;
-import blusunrize.immersiveengineering.api.Lib;
+import com.immersiveconvergence.api.ICLib;
 import com.google.common.collect.Sets;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -93,9 +92,9 @@ public class ICBlockBase<E extends Enum<E> & ICBlockBase.IBlockEnum> extends Blo
         lightOpacity = 255;
     }
 
-    @Override @Nonnull public String getIEBlockName() { return this.name; }
+    @Override @Nonnull public String getBlockName() { return this.name; }
 
-    @Override @Nonnull public Enum[] getMetaEnums() { return enumValues; }
+    @Override @Nonnull public Enum<?>[] getMetaEnums() { return enumValues; }
 
     @Override @Nonnull public IBlockState getInventoryState(int meta) { return getStateFromMeta(meta); }
 
@@ -130,8 +129,8 @@ public class ICBlockBase<E extends Enum<E> & ICBlockBase.IBlockEnum> extends Blo
     protected static Object[] combineProperties(Object[] currentProperties) {
         Object[] array = new Object[currentProperties.length + 2];
         System.arraycopy(currentProperties, 0, array, 0, currentProperties.length);
-        array[currentProperties.length] = IEProperties.FACING_HORIZONTAL;
-        array[currentProperties.length + 1] = IEProperties.MULTIBLOCKSLAVE;
+        array[currentProperties.length] = ICProperties.FACING_HORIZONTAL;
+        array[currentProperties.length + 1] = ICProperties.MULTIBLOCKSLAVE;
         return array;
     }
 
@@ -289,8 +288,8 @@ public class ICBlockBase<E extends Enum<E> & ICBlockBase.IBlockEnum> extends Blo
     public boolean allowWirecutterHarvest() { return false; }
 
     @Override public boolean isToolEffective(@Nonnull String type, @Nonnull IBlockState state) {
-        if (allowHammerHarvest(state) && type.equals(Lib.TOOL_HAMMER)) return true;
-        if (allowWirecutterHarvest() && type.equals(Lib.TOOL_WIRECUTTER)) return true;
+        if (allowHammerHarvest(state) && type.equals(ICLib.TOOL_HAMMER)) return true;
+        if (allowWirecutterHarvest() && type.equals(ICLib.TOOL_WIRECUTTER)) return true;
         return super.isToolEffective(type, state);
     }
 
@@ -301,7 +300,6 @@ public class ICBlockBase<E extends Enum<E> & ICBlockBase.IBlockEnum> extends Blo
         boolean listForCreative();
     }
 
-    @SuppressWarnings("NullableProblems")
     @SideOnly(Side.CLIENT)
     @Override @Nullable public StateMapperBase getCustomMapper() { return null; }
 }

@@ -1,13 +1,11 @@
 package com.immersiveconvergence.api.multiblock;
 
-import blusunrize.immersiveengineering.common.blocks.TileEntityMultiblockPart;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public abstract class MachineTemplateMultiblock<T extends TileEntityMultiblockPart<T>> extends TemplateMultiblock {
+public abstract class MachineTemplateMultiblock<T extends ICTileEntityMultiblockPart<T>> extends TemplateMultiblock {
     public IBlockState masterBlockState;
     public IBlockState slaveBlockState;
     public int height;

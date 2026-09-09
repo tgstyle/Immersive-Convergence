@@ -1,6 +1,5 @@
 package com.immersiveconvergence.api.client.split;
 
-import blusunrize.immersiveengineering.common.blocks.TileEntityMultiblockPart;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
@@ -11,6 +10,8 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
+import com.immersiveconvergence.api.ICMods;
+import com.immersiveconvergence.common.client.IEClientBridge;
 import com.immersiveconvergence.common.util.ICLogger;
 
 import javax.annotation.Nullable;
@@ -64,8 +65,7 @@ public final class SplitModelProperties {
 
     @Nullable public static BlockPos modelOffset(@Nullable TileEntity te) {
         if (te instanceof ISubmodelOffsetProvider) { return ((ISubmodelOffsetProvider)te).getModelOffset(); }
-        if (!(te instanceof TileEntityMultiblockPart) || !((TileEntityMultiblockPart<?>)te).formed) { return null; }
-        int[] offset = ((TileEntityMultiblockPart<?>)te).offset;
-        return new BlockPos(offset[0], offset[1], offset[2]);
+        if (te == null || !ICMods.immersiveEngineering()) { return null; }
+        return IEClientBridge.multiblockPartOffset(te);
     }
 }

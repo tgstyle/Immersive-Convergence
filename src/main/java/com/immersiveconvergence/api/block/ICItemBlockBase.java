@@ -1,6 +1,9 @@
 package com.immersiveconvergence.api.block;
-import blusunrize.immersiveengineering.client.ClientProxy;
-import blusunrize.immersiveengineering.common.util.ItemNBTHelper;
+import com.immersiveconvergence.api.ICLib;
+import com.immersiveconvergence.api.ICMods;
+import com.immersiveconvergence.common.client.IEClientBridge;
+
+import com.immersiveconvergence.api.util.ICNBT;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
@@ -36,7 +39,7 @@ public class ICItemBlockBase extends ItemBlock {
     @Override public void getSubItems(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> itemList) { if (this.isInCreativeTab(tab)) this.block.getSubBlocks(tab, itemList); }
     @Override @Nonnull public String getTranslationKey(@Nonnull ItemStack stack) { return ((ICBlockBase<?>) this.block).getTranslationKey(stack); }
     @SideOnly(Side.CLIENT)
-    @Override public FontRenderer getFontRenderer(@Nonnull ItemStack stack) { return ClientProxy.itemFont; }
+    @Override public FontRenderer getFontRenderer(@Nonnull ItemStack stack) { return ICMods.immersiveEngineering() ? IEClientBridge.itemFont() : null; }
     @Override public void addInformation(@Nonnull ItemStack stack, World worldIn, @Nonnull List<String> list, @Nonnull ITooltipFlag advInfo) {
         if (((ICBlockBase<?>) block).hasFlavour(stack)) {
             String subName = ((ICBlockBase<?>) this.block).getStateFromMeta(stack.getItemDamage()).getValue(((ICBlockBase<?>) this.block).property).toString().toLowerCase(Locale.US);
@@ -44,9 +47,9 @@ public class ICItemBlockBase extends ItemBlock {
             list.add(TextFormatting.GRAY + I18n.format(flavourKey));
         }
         super.addInformation(stack, worldIn, list, advInfo);
-        if (ItemNBTHelper.hasKey(stack, "energyStorage")) list.add(I18n.format("desc.immersiveengineering.info.energyStored", ItemNBTHelper.getInt(stack, "energyStorage")));
-        if (ItemNBTHelper.hasKey(stack, "tank")) {
-            FluidStack fs = FluidStack.loadFluidStackFromNBT(ItemNBTHelper.getTagCompound(stack, "tank"));
+        if (ICNBT.hasKey(stack, "energyStorage")) list.add(I18n.format(ICLib.DESC_INFO + "energyStored", ICNBT.getInt(stack, "energyStorage")));
+        if (ICNBT.hasKey(stack, "tank")) {
+            FluidStack fs = FluidStack.loadFluidStackFromNBT(ICNBT.getTagCompound(stack, "tank"));
             if (fs != null) list.add(fs.getLocalizedName() + ": " + fs.amount + "mB");
         }
     }

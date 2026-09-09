@@ -15,6 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+@SuppressWarnings("unused")
 public class ConveyorUncontrolledAlternative extends ConveyorBasicAlternative {
 
     @Override public boolean isActive(TileEntity tile) {

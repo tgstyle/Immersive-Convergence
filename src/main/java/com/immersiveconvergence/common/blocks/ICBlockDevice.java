@@ -1,6 +1,7 @@
 package com.immersiveconvergence.common.blocks;
 
 import com.immersiveconvergence.api.block.ICBlockTileProvider;
+import com.immersiveconvergence.api.block.ICProperties;
 import com.immersiveconvergence.api.block.ICItemBlockBase;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces;
 import com.immersiveconvergence.common.ICBlockContext;
@@ -8,7 +9,6 @@ import com.immersiveconvergence.common.blocks.tileentities.TileEntityHeatCreativ
 import com.immersiveconvergence.common.blocks.tileentities.TileEntityRotorCreative;
 import com.immersiveconvergence.common.blocks.types.ICBlockType_Device;
 
-import blusunrize.immersiveengineering.api.IEProperties;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.IBlockState;
@@ -23,7 +23,7 @@ import javax.annotation.Nonnull;
 public class ICBlockDevice extends ICBlockTileProvider<ICBlockType_Device> {
 
     public ICBlockDevice() {
-        super(ICBlockContext.CONTEXT, "device", Material.IRON, PropertyEnum.create("type", ICBlockType_Device.class), ICItemBlockBase.class, IEProperties.FACING_ALL, IEProperties.MULTIBLOCKSLAVE, IEProperties.BOOLEANS[0], IEProperties.DYNAMICRENDER, IEProperties.TILEENTITY_PASSTHROUGH);
+        super(ICBlockContext.CONTEXT, "device", Material.IRON, PropertyEnum.create("type", ICBlockType_Device.class), ICItemBlockBase.class, ICProperties.FACING_ALL, ICProperties.MULTIBLOCKSLAVE, ICProperties.BOOLEANS[0], ICProperties.DYNAMICRENDER, ICProperties.TILEENTITY_PASSTHROUGH);
         this.setHardness(3.0F);
         this.setResistance(15.0F);
         lightOpacity = 0;

@@ -26,7 +26,8 @@ public abstract class MixinMCMinecraftServer {
     @Redirect(method = "run", remap = false,
             at = @At(value = "INVOKE",
                     target = "Lorg/apache/logging/log4j/Logger;error(Ljava/lang/String;Ljava/lang/Throwable;)V",
-                    ordinal = 0))
+                    ordinal = 0),
+            require = 0, expect = 0)
     private void redirectErrorLog$helper(Logger logger, String message, Throwable t) {
         logger.error(message, t);
         if (ICMixinConfig.mixinSettings.enableErrorLoggingRedirect) {

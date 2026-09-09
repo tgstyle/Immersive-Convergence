@@ -28,13 +28,13 @@ import org.lwjgl.util.vector.Vector3f;
 import javax.annotation.Nullable;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class ConveyorSplitAlternative extends ConveyorBasicAlternative {
     private enum SplitMode { SPLIT, ALL_LEFT, ALL_RIGHT, STOP }
     private SplitMode mode = SplitMode.SPLIT;
     private EnumFacing nextOutput = null;
     private transient String nbtKeyCache = null;
     private int prevRedstone = 0;
-    private long lastUpdateTick = 0;
 
     private static final ResourceLocation texture_on = new ResourceLocation("immersiveengineering", "blocks/conveyor_split");
     private static final ResourceLocation texture_off = new ResourceLocation("immersiveengineering", "blocks/conveyor_split_off");
@@ -218,7 +218,7 @@ public class ConveyorSplitAlternative extends ConveyorBasicAlternative {
     }
 
     @Override public String getModelCacheKey(TileEntity tile, EnumFacing facing) {
-        return "immersivetech:split_conveyor" +
+        return "immersiveconvergence:split_conveyor" +
                 "f" + facing.ordinal() +
                 "d" + getConveyorDirection().ordinal() +
                 "a" + (isActive(tile) ? 1 : 0) +

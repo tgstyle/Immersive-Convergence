@@ -1,6 +1,5 @@
 package com.immersiveconvergence.api.block;
 
-import blusunrize.immersiveengineering.common.items.IEItemInterfaces.IColouredItem;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -11,7 +10,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nonnull;
 
 @SuppressWarnings("unused")
-public class ICItemBase extends Item implements IColouredItem {
+public class ICItemBase extends Item {
     public String itemName;
     protected String[] subNames;
     boolean[] isMetaHidden;
@@ -64,8 +63,4 @@ public class ICItemBase extends Item implements IColouredItem {
         this.registerSubModels = register;
         return this;
     }
-
-    @Override public boolean hasCustomItemColours() { return false; }
-
-    @Override public int getColourForIEItem(ItemStack stack, int pass) { return 0xffffff; }
 }

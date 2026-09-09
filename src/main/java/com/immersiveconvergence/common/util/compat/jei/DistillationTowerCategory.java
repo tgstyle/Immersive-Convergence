@@ -1,5 +1,7 @@
 package com.immersiveconvergence.common.util.compat.jei;
 
+import com.immersiveconvergence.api.ICLib;
+
 import flaxbeard.immersivepetroleum.api.crafting.DistillationRecipe;
 import flaxbeard.immersivepetroleum.common.IPContent;
 import flaxbeard.immersivepetroleum.common.blocks.metal.BlockTypes_IPMetalMultiblock;
@@ -56,7 +58,7 @@ public class DistillationTowerCategory extends ICRecipeCategory<DistillationReci
         }
         float[] chances = wrapper.recipe.chances;
         slots.addTooltipCallback((slot, input, stack, tooltip) -> {
-            if (!input && chances != null && slot < chances.length) { tooltip.add(I18n.format("desc.immersiveengineering.info.chance") + " " + Math.round(chances[slot] * 100) + "%"); }
+            if (!input && chances != null && slot < chances.length) { tooltip.add(I18n.format(ICLib.DESC_INFO + "chance") + " " + Math.round(chances[slot] * 100) + "%"); }
         });
     }
 

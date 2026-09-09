@@ -7,9 +7,18 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 public class ICLateMixinLoader implements ILateMixinLoader {
+    private static final String IE_CONFIG = "mixins.immersiveconvergence.json";
     private static final String IP_CONFIG = "mixins.immersiveconvergence.ip.json";
+    private static final String IP_PUMPJACK_CONFIG = "mixins.immersiveconvergence.ip.pumpjack.json";
+    private static final String FORGE_CONFIG = "mixins.immersiveconvergence.forge.json";
 
-    @Override public List<String> getMixinConfigs() { return Arrays.asList("mixins.immersiveconvergence.json", IP_CONFIG); }
+    @Override public List<String> getMixinConfigs() { return Arrays.asList(IE_CONFIG, IP_CONFIG, IP_PUMPJACK_CONFIG, FORGE_CONFIG); }
 
-    @Override public boolean shouldMixinConfigQueue(Context context) { return !IP_CONFIG.equals(context.mixinConfig()) || context.isModPresent("immersivepetroleum"); }
+    @Override public boolean shouldMixinConfigQueue(Context context) {
+        String config = context.mixinConfig();
+        if (IE_CONFIG.equals(config)) { return context.isModPresent("immersiveengineering"); }
+        if (IP_CONFIG.equals(config)) { return context.isModPresent("immersivepetroleum"); }
+        if (IP_PUMPJACK_CONFIG.equals(config)) { return context.isModPresent("immersivepetroleum") && !context.isModPresent("tweakedpetroleum"); }
+        return true;
+    }
 }

@@ -2,8 +2,8 @@ package com.immersiveconvergence.client.render;
 import com.immersiveconvergence.api.client.RenderUtils;
 import com.immersiveconvergence.common.ICContent;
 import com.immersiveconvergence.common.blocks.tileentities.TileEntityRotorCreative;
-import blusunrize.immersiveengineering.api.IEProperties;
-import blusunrize.immersiveengineering.client.ClientUtils;
+import com.immersiveconvergence.api.block.ICProperties;
+import com.immersiveconvergence.api.client.ICClientUtils;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
@@ -25,7 +25,7 @@ public class TileRenderRotorCreative extends TileEntitySpecialRenderer<TileEntit
         IBlockState state = getWorld().getBlockState(blockPos);
         if (state.getBlock() != ICContent.blockDevice) { return; }
         state = state.getBlock().getActualState(state, getWorld(), blockPos);
-        IBlockState dynamicState = state.withProperty(IEProperties.DYNAMICRENDER, true);
+        IBlockState dynamicState = state.withProperty(ICProperties.DYNAMICRENDER, true);
         IBakedModel model = blockRenderer.getModelForState(dynamicState);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
@@ -37,7 +37,7 @@ public class TileRenderRotorCreative extends TileEntitySpecialRenderer<TileEntit
         else { GlStateManager.shadeModel(GL11.GL_FLAT); }
         float rotation = te.getAnimation().getAnimationRotation() + te.getAnimation().getAnimationMomentum() * partialTicks;
         GlStateManager.rotate(rotation, te.facing.getXOffset(), 0, te.facing.getZOffset());
-        ClientUtils.bindAtlas();
+        ICClientUtils.bindAtlas();
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
         buffer.setTranslation(-0.5, -0.5, -0.5);
         RenderUtils.renderModelTESRFancy(model.getQuads(dynamicState, null, 0L), buffer, te.getWorld(), blockPos, false);

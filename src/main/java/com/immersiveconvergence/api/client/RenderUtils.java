@@ -2,7 +2,6 @@ package com.immersiveconvergence.api.client;
 
 import com.immersiveconvergence.core.ICClientConfig;
 
-import blusunrize.immersiveengineering.client.ClientUtils;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.vertex.VertexFormat;
@@ -30,7 +29,7 @@ public class RenderUtils {
 
     public static void renderModelTESRFancy(List<BakedQuad> quads, BufferBuilder renderer, World world, BlockPos pos, boolean useCached) {
         if (ICClientConfig.rendering.disableFancyTESR) {
-            ClientUtils.renderModelTESRFast(quads, renderer, world, pos);
+            ICClientUtils.renderModelTESRFast(quads, renderer, world, pos);
             return;
         }
         CachedLight cached = useCached ? activeLight : null;

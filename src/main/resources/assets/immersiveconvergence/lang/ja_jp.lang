@@ -14,3 +14,7 @@ ie.manual.entry.multiblockDisassembly0=組み上がったマシンのブロッ�
 ie.manual.entry.clearingTanks.name=タンクを空にする
 ie.manual.entry.clearingTanks.subtext=誤った液体は捨てる
 ie.manual.entry.clearingTanks0=液体の入力口は流し込まれた液体を何でも受け入れるため、誤った液体が入ったマシンはそのタンクを空にするまで停止したままになります。スニークしながらエンジニア・ハンマーを液体の入力口に使うと、タンクを空にできます。<br>液体は回収されずに破棄されるので、タンクはすぐに正しい液体を受け入れられます。これは液体入力を持つImmersive Engineering、Immersive Petroleum、Immersive Technologyのマシンで機能し、出力タンクや貯蔵タンクには影響しません。
+chat.immersiveconvergence.info.rsControl.invertedOn=レッドストーン制御: 反転
+chat.immersiveconvergence.info.rsControl.invertedOff=レッドストーン制御: 反転していない
+desc.immersiveconvergence.info.energyStored=RF保有量: %1$s RF
+desc.immersiveconvergence.info.chance=確率:

@@ -24,6 +24,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nullable;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class ConveyorDropCoveredAlternative extends ConveyorDropAlternative {
     private ItemStack cover = ItemStack.EMPTY;
 
@@ -46,7 +47,7 @@ public class ConveyorDropCoveredAlternative extends ConveyorDropAlternative {
     }
 
     @Override public String getModelCacheKey(TileEntity tile, EnumFacing facing) {
-        String key = "immersivetech:drop_covered_conveyor" +
+        String key = "immersiveconvergence:drop_covered_conveyor" +
                 "f" + facing.ordinal() +
                 "d" + getConveyorDirection().ordinal() +
                 "a" + (isActive(tile) ? 1 : 0) +

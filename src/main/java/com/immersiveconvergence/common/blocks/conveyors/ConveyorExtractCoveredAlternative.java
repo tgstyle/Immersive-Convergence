@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+@SuppressWarnings("unused")
 public class ConveyorExtractCoveredAlternative extends ConveyorExtractAlternative {
     private ItemStack cover = ItemStack.EMPTY;
 
@@ -135,7 +136,7 @@ public class ConveyorExtractCoveredAlternative extends ConveyorExtractAlternativ
 
     @Override public String getModelCacheKey(TileEntity tile, EnumFacing facing) {
         initializeDirection(tile, facing);
-        String key = "immersivetech:extract_covered_conveyor" +
+        String key = "immersiveconvergence:extract_covered_conveyor" +
                 "f" + facing.ordinal() +
                 "d" + getConveyorDirection().ordinal() +
                 "a" + (isActive(tile) ? 1 : 0) +

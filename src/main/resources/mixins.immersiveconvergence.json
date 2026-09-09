@@ -1,5 +1,5 @@
 {
-  "required": true,
+  "required": false,
   "minVersion": "0.8",
   "package": "com.immersiveconvergence.mixin",
   "refmap": "mixins.immersiveconvergence.refmap.json",
@@ -35,12 +35,11 @@
     "ie.common.MixinIETileEntitySilo"
   ],
   "client": [
-    "forge.MixinForgeOBJModel",
     "ie.client.MixinIEClientProxySound",
     "ie.client.MixinIEManualConveyor",
     "ie.client.MixinIEManualTrigger"
   ],
   "injectors": {
-    "defaultRequire": 1
+    "defaultRequire": 0
   }
 }

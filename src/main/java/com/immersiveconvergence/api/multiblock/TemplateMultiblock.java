@@ -1,8 +1,7 @@
 package com.immersiveconvergence.api.multiblock;
 
-import blusunrize.immersiveengineering.api.Lib;
-import blusunrize.immersiveengineering.api.MultiblockHandler;
-import blusunrize.immersiveengineering.api.crafting.IngredientStack;
+import com.immersiveconvergence.api.ICLib;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -19,7 +18,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 @SuppressWarnings("unused")
-public abstract class TemplateMultiblock implements MultiblockHandler.IMultiblock {
+public abstract class TemplateMultiblock implements ICMultiblock {
     public final String uniqueName;
     public final TemplateData template;
     public final BlockPos masterPos, triggerPos;
@@ -28,7 +27,7 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
     public final List<LocalFacing> triggerFacings;
     public final float manualScale;
     private ItemStack[][][] structureManual;
-    private IngredientStack[] materials;
+    private List<ICMaterial> materials;
 
     protected TemplateMultiblock(String uniqueName, ShapeData shape) {
         this.uniqueName = uniqueName;
@@ -84,7 +83,7 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
         int width = template.width, height = template.height, length = template.length;
         BlockPos masterWorldPos = localToWorld(origin, localX(masterPos.getX(), mirror), masterPos.getY(), masterPos.getZ(), side);
         ItemStack mainhand = player.getHeldItemMainhand();
-        ItemStack hammer = mainhand.getItem().getToolClasses(mainhand).contains(Lib.TOOL_HAMMER) ? mainhand : player.getHeldItemOffhand();
+        ItemStack hammer = mainhand.getItem().getToolClasses(mainhand).contains(ICLib.TOOL_HAMMER) ? mainhand : player.getHeldItemOffhand();
         if (!allowFormation(player, pos, hammer)) { return false; }
         for (int h = 0; h < height; h++) {
             for (int l = 0; l < length; l++) {
@@ -120,9 +119,9 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
 
     protected int localX(int x, boolean mirrored) { return mirrored ? template.width - 1 - x : x; }
 
-    protected boolean allowFormation(EntityPlayer player, BlockPos pos, ItemStack hammer) { return !MultiblockHandler.fireMultiblockFormationEventPre(player, this, pos, hammer).isCanceled(); }
+    protected boolean allowFormation(EntityPlayer player, BlockPos pos, ItemStack hammer) { return !MultiblockRegistry.formationCancelled(player, this, pos, hammer); }
 
-    protected void onFormed(EntityPlayer player, BlockPos pos, ItemStack hammer) { MultiblockHandler.fireMultiblockFormationEventPost(player, this, pos, hammer); }
+    protected void onFormed(EntityPlayer player, BlockPos pos, ItemStack hammer) { MultiblockRegistry.formationDone(player, this, pos, hammer); }
 
     protected BlockPos originFor(BlockPos pos, EnumFacing side, BlockPos trigger, boolean mirror) {
         return pos.offset(side, -trigger.getZ()).offset(side.rotateY(), -localX(trigger.getX(), mirror)).offset(EnumFacing.DOWN, trigger.getY());
@@ -183,7 +182,7 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
         return structureManual;
     }
 
-    @Override public IngredientStack[] getTotalMaterials() {
+    @Override public List<ICMaterial> getTotalMaterialList() {
         if (materials == null && template != null) {
             LinkedHashMap<String, ItemStack> stacks = new LinkedHashMap<>();
             LinkedHashMap<String, Integer> counts = new LinkedHashMap<>();
@@ -201,17 +200,13 @@ public abstract class TemplateMultiblock implements MultiblockHandler.IMultibloc
                     }
                 }
             }
-            ArrayList<IngredientStack> ingredients = new ArrayList<>();
+            List<ICMaterial> ingredients = new ArrayList<>();
             for (Map.Entry<String, Integer> entry : counts.entrySet()) {
                 ItemStack stack = stacks.get(entry.getKey()).copy();
                 String oreName = BlockMatcher.getGenericOreName(stack);
-                if (oreName != null) { ingredients.add(new IngredientStack(oreName, entry.getValue())); }
-                else {
-                    stack.setCount(entry.getValue());
-                    ingredients.add(new IngredientStack(stack));
-                }
+                ingredients.add(oreName != null ? ICMaterial.ore(oreName, entry.getValue()) : ICMaterial.of(stack, entry.getValue()));
             }
-            materials = ingredients.toArray(new IngredientStack[0]);
+            materials = ingredients;
         }
         return materials;
     }

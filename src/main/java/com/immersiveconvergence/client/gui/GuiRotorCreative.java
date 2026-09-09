@@ -4,7 +4,7 @@ import com.immersiveconvergence.ImmersiveConvergence;
 import com.immersiveconvergence.api.network.TileSyncMessage;
 import com.immersiveconvergence.common.blocks.tileentities.TileEntityRotorCreative;
 
-import blusunrize.immersiveengineering.client.ClientUtils;
+import com.immersiveconvergence.api.client.ICClientUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -92,7 +92,7 @@ public class GuiRotorCreative extends GuiScreen {
 
     @Override public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         drawDefaultBackground();
-        ClientUtils.bindTexture("immersiveconvergence:textures/gui/rotor.png");
+        ICClientUtils.bindTexture("immersiveconvergence:textures/gui/rotor.png");
         drawModalRectWithCustomSizedTexture(guiLeft, guiTop, 0, 0, PANEL_WIDTH, PANEL_HEIGHT, PANEL_WIDTH, PANEL_HEIGHT);
         rpmField.drawTextBox();
         drawString(this.fontRenderer, I18n.format("gui.immersiveconvergence.rotor_creative.rpm"), guiLeft + 70, guiTop + 30, Color.WHITE.getRGB());

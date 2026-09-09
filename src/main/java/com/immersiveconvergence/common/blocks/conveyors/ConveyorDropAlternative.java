@@ -26,7 +26,7 @@ public class ConveyorDropAlternative extends ConveyorBasicAlternative {
     @Override public ResourceLocation getInactiveTexture() { return texture_off; }
 
     @Override public String getModelCacheKey(TileEntity tile, EnumFacing facing) {
-        return "immersivetech:drop_conveyor" +
+        return "immersiveconvergence:drop_conveyor" +
                 "f" + facing.ordinal() +
                 "a" + (isActive(tile) ? 1 : 0) +
                 "c" + getDyeColour();

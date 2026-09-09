@@ -1,11 +1,12 @@
 package com.immersiveconvergence.client.event;
 
+import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.ISelectionBounds;
+import com.immersiveconvergence.common.client.IEClientBridge;
 import com.immersiveconvergence.api.shapes.IBooleanOp;
 import com.immersiveconvergence.api.shapes.Shapes;
 import com.immersiveconvergence.api.shapes.VoxelShape;
 
-import blusunrize.immersiveengineering.common.blocks.IEBlockInterfaces.IAdvancedSelectionBounds;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -40,18 +41,15 @@ public class ICClientEventHandler {
         if (tile == null) { return; }
 
         ISelectionBounds icBounds = tile instanceof ISelectionBounds ? (ISelectionBounds)tile : null;
-        IAdvancedSelectionBounds ieBounds = (icBounds == null && tile instanceof IAdvancedSelectionBounds) ? (IAdvancedSelectionBounds)tile : null;
         List<AxisAlignedBB> bounds;
-        if (icBounds != null) {
-            bounds = icBounds.getAdvancedSelectionBounds();
-        } else if (ieBounds != null) {
-            List<AxisAlignedBB> worldBoxes = ieBounds.getAdvancedSelectionBounds();
-            if (worldBoxes.isEmpty()) { return; }
+        if (icBounds != null) { bounds = icBounds.getAdvancedSelectionBounds(); }
+        else if (ICMods.immersiveEngineering()) {
+            List<AxisAlignedBB> worldBoxes = IEClientBridge.advancedSelectionBounds(tile);
+            if (worldBoxes == null || worldBoxes.isEmpty()) { return; }
             bounds = new ArrayList<>(worldBoxes.size());
             for (AxisAlignedBB box : worldBoxes) { bounds.add(box.offset(-pos.getX(), -pos.getY(), -pos.getZ())); }
-        } else {
-            return;
         }
+        else { return; }
         if (bounds == null || bounds.isEmpty()) { return; }
 
         event.setCanceled(true);

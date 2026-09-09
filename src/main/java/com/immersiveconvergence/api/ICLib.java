@@ -1,12 +1,12 @@
 package com.immersiveconvergence.api;
 
-import blusunrize.immersiveengineering.api.Lib;
-
 @SuppressWarnings("unused")
 public class ICLib {
-    public static final String CHAT_INFO = Lib.CHAT_INFO;
-    public static final String DESC_INFO = Lib.DESC_INFO;
-    public static final String TOOL_HAMMER = Lib.TOOL_HAMMER;
-    public static final int COLOUR_I_ImmersiveOrange = Lib.COLOUR_I_ImmersiveOrange;
-    public static final int COLOUR_I_ImmersiveOrangeShadow = Lib.COLOUR_I_ImmersiveOrangeShadow;
+    public static final String CHAT_INFO = "chat.immersiveconvergence.info.";
+    public static final String DESC_INFO = "desc.immersiveconvergence.info.";
+    public static final String DESC_INFO_IE = "desc.immersiveengineering.info.";
+    public static final String TOOL_HAMMER = "IE_HAMMER";
+    public static final String TOOL_WIRECUTTER = "IE_WIRECUTTER";
+    public static final int COLOUR_I_ImmersiveOrange = 0xfff78034;
+    public static final int COLOUR_I_ImmersiveOrangeShadow = 0xff3e200d;
 }

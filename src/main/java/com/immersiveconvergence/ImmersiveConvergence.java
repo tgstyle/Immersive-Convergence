@@ -1,12 +1,17 @@
 package com.immersiveconvergence;
 
+import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.multiblock.QueueProcessor;
+import com.immersiveconvergence.common.energy.IEWireBridge;
+import com.immersiveconvergence.common.util.IEToolboxBridge;
 import com.immersiveconvergence.common.multiblock.IEMultiblockRegistry;
 import com.immersiveconvergence.common.multiblock.IEMultiblocks;
 import com.immersiveconvergence.common.CommonProxy;
 import com.immersiveconvergence.common.ICContent;
+import com.immersiveconvergence.common.event.ICTickingRegistry;
 import com.immersiveconvergence.common.registry.ICRegistryRemaps;
 import com.immersiveconvergence.common.util.ICLogger;
+import com.immersiveconvergence.common.util.compat.ICCompatModule;
 import com.immersiveconvergence.common.util.RdplBridge;
 import com.immersiveconvergence.common.util.ICResources;
 import com.immersiveconvergence.core.ICCommonConfig;
@@ -53,18 +58,25 @@ public class ImmersiveConvergence {
         ICResources.migrateToRdpl();
         QueueProcessor.queueEnabled = () -> ICCommonConfig.multiblocks.disassemblyMode == ICCommonConfig.DisassemblyMode.PROCESS_QUEUE;
         MinecraftForge.EVENT_BUS.register(ICRegistryRemaps.class);
+        MinecraftForge.EVENT_BUS.register(new ICTickingRegistry());
         ICContent.preInit();
-        IEMultiblocks.init();
+        ICCompatModule.preInitAll();
+        if (ICMods.immersiveEngineering()) { IEMultiblocks.init(); }
         proxy.preInit();
     }
 
     @EventHandler public void init(FMLInitializationEvent event) {
-        IEMultiblocks.alignRenderLayers();
+        if (ICMods.immersiveEngineering()) {
+            IEWireBridge.mirrorWireTypes();
+            IEMultiblocks.alignRenderLayers();
+            IEToolboxBridge.registerToolType();
+        }
+        ICCompatModule.initAll();
         proxy.init();
     }
 
     @EventHandler public void postInit(FMLPostInitializationEvent event) {
-        IEMultiblockRegistry.loadAll();
+        if (ICMods.immersiveEngineering()) { IEMultiblockRegistry.loadAll(); }
         proxy.postInit();
     }
 

@@ -1,5 +1,7 @@
 package com.immersiveconvergence.common.blocks.conveyors;
 
+import com.immersiveconvergence.api.ICLib;
+
 import blusunrize.immersiveengineering.api.tool.ConveyorHandler;
 import blusunrize.immersiveengineering.api.tool.ConveyorHandler.ConveyorDirection;
 import blusunrize.immersiveengineering.api.tool.ConveyorHandler.IConveyorTile;
@@ -40,7 +42,6 @@ public class ConveyorExtractAlternative extends ConveyorBasicAlternative {
     protected int transferCooldown = -1;
     protected int transferTickrate = 8;
     protected float extension = -1.0F;
-    private long lastUpdateTick = 0;
 
     private static final float PIXEL = 0.0625F;
     private static final float ARM_BASE_Z = 0.625F;
@@ -180,7 +181,7 @@ public class ConveyorExtractAlternative extends ConveyorBasicAlternative {
 
     @Override public String getModelCacheKey(TileEntity tile, EnumFacing facing) {
         initializeDirection(tile, facing);
-        String key = "immersivetech:extract_conveyor" +
+        String key = "immersiveconvergence:extract_conveyor" +
                 "f" + facing.ordinal() +
                 "d" + getConveyorDirection().ordinal() +
                 "a" + (isActive(tile) ? 1 : 0) +
@@ -267,7 +268,7 @@ public class ConveyorExtractAlternative extends ConveyorBasicAlternative {
             return true;
         } else if (Utils.isWirecutter(heldItem)) {
             if (this.transferTickrate == 4) { this.transferTickrate = 8; } else if (this.transferTickrate == 8) { this.transferTickrate = 16; } else if (this.transferTickrate == 16) { this.transferTickrate = 20; } else if (this.transferTickrate == 20) { this.transferTickrate = 4; }
-            player.sendStatusMessage(new TextComponentTranslation("chat.immersiveengineering.info.tickrate", this.transferTickrate), true);
+            player.sendStatusMessage(new TextComponentTranslation(ICLib.CHAT_INFO + "tickrate", this.transferTickrate), true);
             return true;
         }
         return false;

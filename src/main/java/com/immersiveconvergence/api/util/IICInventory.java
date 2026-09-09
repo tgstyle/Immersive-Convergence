@@ -1,5 +1,19 @@
 package com.immersiveconvergence.api.util;
 
-import blusunrize.immersiveengineering.common.util.inventory.IIEInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 
-public interface IICInventory extends IIEInventory {}
+@SuppressWarnings("unused")
+public interface IICInventory {
+    NonNullList<ItemStack> getInventory();
+
+    boolean isStackValid(int slot, ItemStack stack);
+
+    int getSlotLimit(int slot);
+
+    void doGraphicalUpdates(int slot);
+
+    default NonNullList<ItemStack> getDroppedItems() { return getInventory(); }
+
+    default int getComparatedSize() { return getInventory() != null ? getInventory().size() : 0; }
+}
