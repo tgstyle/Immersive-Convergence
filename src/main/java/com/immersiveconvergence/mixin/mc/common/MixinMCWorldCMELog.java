@@ -15,7 +15,7 @@ import java.util.ConcurrentModificationException;
 
 @Mixin(World.class)
 public abstract class MixinMCWorldCMELog {
-    @Redirect(method = "updateEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/ITickable;update()V"))
+    @Redirect(method = "updateEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/ITickable;update()V"), require = 0, expect = 0)
     private void redirectTEUpdate(ITickable instance) {
         if (ICMixinConfig.mixinSettings.enableWorldMixin) { instance.update(); return; }
         try { instance.update(); }
