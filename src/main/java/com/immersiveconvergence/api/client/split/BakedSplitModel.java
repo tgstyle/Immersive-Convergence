@@ -33,8 +33,12 @@ public class BakedSplitModel implements IBakedModel {
 
     @Override @Nonnull public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
         if (state == null) { return base.getQuads(null, side, rand); }
+        if (SplitModelProperties.missingOffset(state)) {
+            SplitModelProperties.warnMissingOffset(state);
+            return ImmutableList.of();
+        }
         if (side != null) { return ImmutableList.of(); }
-        BlockPos offset = state instanceof IExtendedBlockState ? ((IExtendedBlockState)state).getValue(SplitModelProperties.SUBMODEL_OFFSET) : null;
+        BlockPos offset = ((IExtendedBlockState)state).getValue(SplitModelProperties.SUBMODEL_OFFSET);
         if (offset == null) { return ImmutableList.of(); }
         List<BakedQuad> quads = splitFor(MinecraftForgeClient.getRenderLayer()).get(offset);
         return quads == null ? ImmutableList.of() : quads;

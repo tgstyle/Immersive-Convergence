@@ -1,15 +1,21 @@
 package com.immersiveconvergence.api.multiblock;
 
 import com.immersiveconvergence.api.client.split.ISubmodelOffsetProvider;
+import com.immersiveconvergence.api.energy.IICInternalFluxHandler;
+import com.immersiveconvergence.api.util.IICInventory;
 
+import blusunrize.immersiveengineering.api.IEEnums.SideConfig;
 import blusunrize.immersiveengineering.api.crafting.IMultiblockRecipe;
+import blusunrize.immersiveengineering.api.energy.immersiveflux.FluxStorage;
 import blusunrize.immersiveengineering.common.blocks.IEBlockInterfaces.IPlayerInteraction;
 import blusunrize.immersiveengineering.common.blocks.TileEntityMultiblockPart;
 import blusunrize.immersiveengineering.common.blocks.metal.TileEntityMultiblockMetal;
 import blusunrize.immersiveengineering.common.util.Utils;
 import blusunrize.immersiveengineering.common.util.inventory.IIEInventory;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
@@ -33,7 +39,7 @@ import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
 @SuppressWarnings("unused")
-public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateMultiblock<T, R, M>, R extends IMultiblockRecipe, M extends T> extends TileEntityMultiblockMetal<T, R> implements IPlayerInteraction, ISubmodelOffsetProvider {
+public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateMultiblock<T, R, M>, R extends IMultiblockRecipe, M extends T> extends TileEntityMultiblockMetal<T, R> implements IPlayerInteraction, ISubmodelOffsetProvider, IICInventory {
     private static final String KEY_INPUT_TANK_CLEARED = "gui.immersiveconvergence.input_tank_cleared";
     private static final String KEY_INPUT_TANKS_CLEARED = "gui.immersiveconvergence.input_tanks_cleared";
     private int blockUpdateCooldown = 0;
@@ -48,9 +54,31 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
 
     public abstract M master();
 
+    public static class ProcessInMachine<R extends IMultiblockRecipe> extends MultiblockProcessInMachine<R> {
+        public ProcessInMachine(R recipe, int... inputSlots) { super(recipe, inputSlots); }
+
+        @Override public boolean canProcess(@Nonnull TileEntityMultiblockMetal multiblock) { return canProcess((TileEntityTemplateMultiblock<?, ?, ?>)multiblock); }
+
+        @Override public void doProcessTick(@Nonnull TileEntityMultiblockMetal multiblock) { doProcessTick((TileEntityTemplateMultiblock<?, ?, ?>)multiblock); }
+
+        public boolean canProcess(TileEntityTemplateMultiblock<?, ?, ?> multiblock) { return super.canProcess(multiblock); }
+
+        public void doProcessTick(TileEntityTemplateMultiblock<?, ?, ?> multiblock) { super.doProcessTick(multiblock); }
+    }
+
     protected abstract GenericShape getShapeGetter();
 
     protected boolean useMirroredShape() { return true; }
+
+    @Override @Nonnull public SideConfig getEnergySideConfig(@Nullable EnumFacing facing) {
+        if (this instanceof IICInternalFluxHandler) { return ((IICInternalFluxHandler) this).getSideConfig(facing).toIE(); }
+        return super.getEnergySideConfig(facing == null ? getFacing() : facing);
+    }
+
+    @Override @Nonnull public FluxStorage getFluxStorage() {
+        if (this instanceof IICInternalFluxHandler) { return ((IICInternalFluxHandler) this).getStorage(); }
+        return super.getFluxStorage();
+    }
 
     protected boolean isInputFluidPoI(BlockPos position) { return false; }
 
@@ -118,6 +146,44 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
             if (this.getAccessibleFluidTanks(facing).length > 0) return (TE)new MultiblockFluidWrapper(this, facing);
         }
         return super.getCapability(capability, facing);
+    }
+
+    private static final String[] DEFAULT_COMPARATOR_POIS = {"comparator0"};
+
+    private Set<BlockPos> comparatorPositionsCache;
+
+    protected String[] comparatorPoINames() { return DEFAULT_COMPARATOR_POIS; }
+
+    public Set<BlockPos> comparatorPositions() {
+        if (comparatorPositionsCache == null) {
+            MachineTemplateMultiblock<?> instance = (MachineTemplateMultiblock<?>)mutliblockInstance;
+            Set<BlockPos> found = new LinkedHashSet<>();
+            for (String name : comparatorPoINames()) {
+                for (PoIJSONSchema poi : instance.pointsOfInterest) {
+                    if (name.equals(poi.name)) { found.add(poi.position); }
+                }
+            }
+            comparatorPositionsCache = found;
+        }
+        return comparatorPositionsCache;
+    }
+
+    public boolean isComparatorPos() {
+        Set<BlockPos> positions = comparatorPositions();
+        return positions.isEmpty() || positions.contains(posInMultiblock());
+    }
+
+    public void notifyComparators() {
+        if (world == null || world.isRemote) { return; }
+        Set<BlockPos> positions = comparatorPositions();
+        if (positions.isEmpty()) {
+            world.updateComparatorOutputLevel(getPos(), getBlockType());
+            return;
+        }
+        for (BlockPos poi : positions) {
+            BlockPos worldPos = getBlockPosForPos(poi);
+            world.updateComparatorOutputLevel(worldPos, world.getBlockState(worldPos).getBlock());
+        }
     }
 
     public BlockPos posInMultiblock() {

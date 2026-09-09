@@ -1,6 +1,7 @@
 package com.immersiveconvergence.api.block;
 
-import blusunrize.immersiveengineering.common.blocks.IEBlockInterfaces.IGuiTile;
+import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IGuiTile;
+
 import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;

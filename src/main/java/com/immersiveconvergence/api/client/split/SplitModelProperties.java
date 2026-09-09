@@ -11,10 +11,15 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
+import com.immersiveconvergence.common.util.ICLogger;
+
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("unused")
 public final class SplitModelProperties {
@@ -28,7 +33,20 @@ public final class SplitModelProperties {
         @Override public String valueToString(BlockPos value) { return value.toString(); }
     };
 
+    private static final Set<Block> WARNED = Collections.newSetFromMap(new ConcurrentHashMap<>());
+
     private SplitModelProperties() {}
+
+    public static boolean missingOffset(@Nullable IBlockState state) {
+        return !(state instanceof IExtendedBlockState) || !((IExtendedBlockState)state).getUnlistedNames().contains(SUBMODEL_OFFSET);
+    }
+
+    public static void warnMissingOffset(IBlockState state) {
+        if (WARNED.add(state.getBlock())) {
+            ICLogger.error("Split model bound to " + state.getBlock().getRegistryName() + ", which carries no " + SUBMODEL_OFFSET.getName()
+                    + " property - drawing it unsplit. Its createBlockState was probably already loaded before the late mixin config was queued.");
+        }
+    }
 
     public static BlockStateContainer withOffset(Block block, BlockStateContainer container) {
         Collection<IProperty<?>> listed = container.getProperties();
@@ -39,7 +57,7 @@ public final class SplitModelProperties {
     }
 
     public static IBlockState withOffset(IBlockState state, IBlockAccess world, BlockPos pos) {
-        if (!(state instanceof IExtendedBlockState)) { return state; }
+        if (missingOffset(state)) { return state; }
         BlockPos offset = modelOffset(world.getTileEntity(pos));
         return offset == null ? state : ((IExtendedBlockState)state).withProperty(SUBMODEL_OFFSET, offset);
     }

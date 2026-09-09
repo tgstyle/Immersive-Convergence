@@ -5,8 +5,6 @@
   "refmap": "mixins.immersiveconvergence.refmap.json",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "ie.common.MixinIEBlockSplitContainer",
-    "ie.common.MixinIEBlockSplitOffset",
     "ie.common.MixinIEClearTanks",
     "ie.common.MixinIEMultiblock",
     "ie.common.MixinIEMultiblockAdvancedBounds",

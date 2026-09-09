@@ -10,6 +10,7 @@ public interface IMechanicalEnergyConsumer {
     boolean isMechanicalEnergyReceiver(EnumFacing facing);
     int getSpeed();
     int getMaxSpeed();
+    default int getEffectiveMaxSpeed() { return getMaxSpeed(); }
     float getTorqueMultiplier();
     double getMass();
     double getFriction();

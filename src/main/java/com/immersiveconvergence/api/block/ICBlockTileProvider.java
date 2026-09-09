@@ -1,6 +1,7 @@
 package com.immersiveconvergence.api.block;
 
 import com.immersiveconvergence.ImmersiveConvergence;
+import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IGuiTile;
 
 import blusunrize.immersiveengineering.api.ApiUtils;
 import blusunrize.immersiveengineering.api.DimensionBlockPos;

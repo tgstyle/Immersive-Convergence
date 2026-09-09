@@ -5,8 +5,6 @@
   "refmap": "mixins.immersiveconvergence.refmap.json",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "ip.common.MixinIPBlockSplitContainer",
-    "ip.common.MixinIPBlockSplitOffset",
     "ip.common.MixinIPBoatFuel",
     "ip.common.MixinIPClearTanks",
     "ip.common.MixinIPGasGenerator",

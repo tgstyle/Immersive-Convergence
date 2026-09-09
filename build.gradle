@@ -99,6 +99,7 @@ dependencies {
     if (rdplJar != null && System.getProperty('ic.classes') == null) { compileOnly files(rdplJar) }
 
     compileOnly rfg.deobf("curse.maven:${common.imps_version}")
+    compileOnly rfg.deobf("curse.maven:${common.opcm_version}")
 
     annotationProcessor 'org.ow2.asm:asm-debug-all:5.2'
     annotationProcessor 'com.google.guava:guava:32.1.2-jre'

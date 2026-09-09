@@ -2,9 +2,9 @@ package com.immersiveconvergence.common;
 
 import com.immersiveconvergence.ImmersiveConvergence;
 import com.immersiveconvergence.api.block.BlockContext;
+import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IGuiTile;
 import com.immersiveconvergence.common.util.ICLogger;
 
-import blusunrize.immersiveengineering.common.blocks.IEBlockInterfaces.IGuiTile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 

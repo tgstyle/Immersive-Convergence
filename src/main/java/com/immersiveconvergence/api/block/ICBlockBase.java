@@ -1,8 +1,9 @@
 package com.immersiveconvergence.api.block;
 
+import com.immersiveconvergence.api.multiblock.ICBlockInterfaces;
+
 import blusunrize.immersiveengineering.api.IEProperties;
 import blusunrize.immersiveengineering.api.Lib;
-import blusunrize.immersiveengineering.common.blocks.IEBlockInterfaces.IIEMetaBlock;
 import com.google.common.collect.Sets;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -37,7 +38,7 @@ import java.util.*;
 
 
 @SuppressWarnings({"rawtypes", "unused"})
-public class ICBlockBase<E extends Enum<E> & ICBlockBase.IBlockEnum> extends Block implements IIEMetaBlock {
+public class ICBlockBase<E extends Enum<E> & ICBlockBase.IBlockEnum> extends Block implements ICBlockInterfaces.IMetaBlock {
     protected static IProperty[] tempProperties;
     protected static IUnlistedProperty[] tempUnlistedProperties;
     public final String name;
