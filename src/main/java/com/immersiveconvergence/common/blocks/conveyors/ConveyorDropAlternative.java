@@ -56,8 +56,10 @@ public class ConveyorDropAlternative extends ConveyorBasicAlternative {
     @Override public void handleInsertion(TileEntity tile, EntityItem entity, EnumFacing facing, ConveyorHandler.ConveyorDirection conDir, double distX, double distZ) {
         BlockPos posDown = tile.getPos().down();
         TileEntity inventoryTile = tile.getWorld().getTileEntity(posDown);
-        boolean contact = Math.abs((facing.getAxis() == EnumFacing.Axis.Z ? tile.getPos().getZ() : tile.getPos().getX()) + 0.5 -
-                (facing.getAxis() == EnumFacing.Axis.Z ? entity.posZ : entity.posX)) < 0.2;
+        boolean alongZ = facing.getAxis() == EnumFacing.Axis.Z;
+        double centre = (alongZ ? tile.getPos().getZ() : tile.getPos().getX()) + 0.5;
+        double delta = (alongZ ? entity.posZ : entity.posX) - centre;
+        boolean contact = facing.getAxisDirection() == EnumFacing.AxisDirection.POSITIVE ? delta >= -0.2 : delta <= 0.2;
 
         if (contact && inventoryTile != null && !(inventoryTile instanceof IConveyorTile)) {
             if (!tile.getWorld().isRemote) {

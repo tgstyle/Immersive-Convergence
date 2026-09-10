@@ -157,17 +157,69 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
         return positions.isEmpty() || positions.contains(posInMultiblock());
     }
 
+    private static final int COMPARATOR_NOTIFY_MIN_INTERVAL = 5;
+    private static final int COMPARATOR_NOTIFY_MAX_INTERVAL = 40;
+    private static final int COMPARATOR_POSITIONS_PER_TICK = 12;
+    private long lastComparatorNotify = Long.MIN_VALUE;
+    private boolean comparatorNotifyPending;
+
     public void notifyComparators() {
         if (world == null || world.isRemote) { return; }
-        Set<BlockPos> positions = comparatorPositions();
-        if (positions.isEmpty()) {
-            world.updateComparatorOutputLevel(getPos(), getBlockType());
+        long now = world.getTotalWorldTime();
+        if (now - lastComparatorNotify < comparatorInterval()) {
+            comparatorNotifyPending = true;
             return;
         }
-        for (BlockPos poi : positions) {
-            BlockPos worldPos = getBlockPosForPos(poi);
+        sweepComparators(now);
+    }
+
+    private int comparatorInterval() {
+        int size = comparatorSweepPositions().size();
+        int scaled = size / COMPARATOR_POSITIONS_PER_TICK;
+        return Math.max(COMPARATOR_NOTIFY_MIN_INTERVAL, Math.min(COMPARATOR_NOTIFY_MAX_INTERVAL, scaled));
+    }
+
+    private List<BlockPos> comparatorSweepCache;
+
+    private List<BlockPos> comparatorSweepPositions() {
+        if (comparatorSweepCache != null) { return comparatorSweepCache; }
+        List<BlockPos> found = new ArrayList<>();
+        Set<BlockPos> declared = comparatorPositions();
+        if (!declared.isEmpty()) {
+            for (BlockPos poi : declared) { found.add(getBlockPosForPos(poi)); }
+        }
+        else {
+            int levels = structureDimensions[1] * structureDimensions[2];
+            int total = structureDimensions[0] * levels;
+            ItemStack[][][] manual = multiblockInstance.getStructureManual();
+            for (int i = 0; i < total; i++) {
+                int h = i / levels;
+                int l = i % levels / structureDimensions[2];
+                int w = i % structureDimensions[2];
+                if (manual != null && !manual[h][l][w].isEmpty()) { found.add(getBlockPosForPos(i)); }
+            }
+        }
+        comparatorSweepCache = found;
+        return found;
+    }
+
+    @Override public void invalidateStructureCaches() {
+        super.invalidateStructureCaches();
+        comparatorSweepCache = null;
+    }
+
+    private void sweepComparators(long now) {
+        lastComparatorNotify = now;
+        comparatorNotifyPending = false;
+        for (BlockPos worldPos : comparatorSweepPositions()) {
             world.updateComparatorOutputLevel(worldPos, world.getBlockState(worldPos).getBlock());
         }
+    }
+
+    @Override protected void tickPendingNotifications() {
+        if (!comparatorNotifyPending || world == null || world.isRemote) { return; }
+        long now = world.getTotalWorldTime();
+        if (now - lastComparatorNotify >= comparatorInterval()) { sweepComparators(now); }
     }
 
     public BlockPos posInMultiblock() {

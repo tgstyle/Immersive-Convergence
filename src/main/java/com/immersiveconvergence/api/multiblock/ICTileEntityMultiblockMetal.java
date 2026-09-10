@@ -262,6 +262,8 @@ public abstract class ICTileEntityMultiblockMetal<T extends ICTileEntityMultiblo
     private boolean syncedThisTick;
     protected boolean lastRenderedActive;
 
+    protected void tickPendingNotifications() {}
+
     private boolean syncParity() { return ((world.getTotalWorldTime() + getPos().getX() + getPos().getZ()) & 1L) == 0L; }
 
     private void syncProgress() {
@@ -283,6 +285,7 @@ public abstract class ICTileEntityMultiblockMetal<T extends ICTileEntityMultiblo
         tickedProcesses = 0;
         if (world.isRemote || isDummy()) { return; }
         if (syncParity()) { flushClientSync(); }
+        tickPendingNotifications();
         if (isRSDisabled()) { return; }
         int max = getMaxProcessPerTick();
         int i = 0;
