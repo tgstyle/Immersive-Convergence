@@ -86,7 +86,7 @@ public abstract class ICTileEntityBase extends TileEntity {
     public void onEntityCollision(World world, Entity entity) {}
 
     @Override public boolean receiveClientEvent(int id, int type) {
-        if (id == 0 || id == 255) {
+        if (id == -1 || id == 0 || id == 255) {
             markContainingBlockForUpdate(null);
             return true;
         }

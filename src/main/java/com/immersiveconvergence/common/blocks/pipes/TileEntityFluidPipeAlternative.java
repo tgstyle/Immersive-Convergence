@@ -1,5 +1,6 @@
 package com.immersiveconvergence.common.blocks.pipes;
 
+import com.immersiveconvergence.api.fluid.IICFluidPipe;
 import com.immersiveconvergence.core.ICCommonConfig;
 
 import com.immersiveconvergence.api.fluid.ICPipes;
@@ -11,7 +12,6 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import blusunrize.immersiveengineering.api.fluid.IFluidPipe;
 import blusunrize.immersiveengineering.common.blocks.IEBlockInterfaces.IColouredTile;
 import blusunrize.immersiveengineering.common.blocks.IEBlockInterfaces.IPlacementInteraction;
 import blusunrize.immersiveengineering.common.blocks.IEBlockInterfaces.ITileDrop;
@@ -264,7 +264,7 @@ public class TileEntityFluidPipeAlternative extends TileEntityFluidPipe implemen
             EnumDyeColor other = (te instanceof TileEntityFluidPipeAlternative) ? ((TileEntityFluidPipeAlternative)te).getColor() : null;
             return color == other;
         }
-        return te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side.getOpposite()) || te instanceof IFluidPipe;
+        return te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side.getOpposite()) || IICFluidPipe.is(te);
     }
 
     @Override public boolean updateConnectionByte(@Nonnull EnumFacing side) {
@@ -484,7 +484,7 @@ public class TileEntityFluidPipeAlternative extends TileEntityFluidPipe implemen
                 if (!cc.equals(ccFrom) && world.isBlockLoaded(cc) && !TileEntityFluidPipeAlternative.this.equals(output.containingTile)) {
                     fillStack.amount = remaining;
                     FluidStack tempStack = fillStack.copy();
-                    if (!(output.containingTile instanceof IFluidPipe)) {
+                    if (!IICFluidPipe.is(output.containingTile)) {
                         if (tempStack.tag != null) {
                             tempStack.tag.removeTag("pressurized");
                             if (tempStack.tag.isEmpty()) { tempStack.tag = null; }
@@ -505,7 +505,7 @@ public class TileEntityFluidPipeAlternative extends TileEntityFluidPipe implemen
                 for (ITDirectionalFluidOutput output : toTry) {
                     fillStack.amount = remaining;
                     FluidStack tempStack = fillStack.copy();
-                    if (!(output.containingTile instanceof IFluidPipe)) {
+                    if (!IICFluidPipe.is(output.containingTile)) {
                         if (tempStack.tag != null) {
                             tempStack.tag.removeTag("pressurized");
                             if (tempStack.tag.isEmpty()) { tempStack.tag = null; }
@@ -533,7 +533,7 @@ public class TileEntityFluidPipeAlternative extends TileEntityFluidPipe implemen
                         }
                         FluidStack tempStack = fillStack.copy();
                         tempStack.amount = offer;
-                        if (!(output.containingTile instanceof IFluidPipe)) {
+                        if (!IICFluidPipe.is(output.containingTile)) {
                             if (tempStack.tag != null) {
                                 tempStack.tag.removeTag("pressurized");
                                 if (tempStack.tag.isEmpty()) { tempStack.tag = null; }

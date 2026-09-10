@@ -52,10 +52,12 @@ public final class ShapeData extends GenericShape {
         List<List<AxisAlignedBB>> shapes = new ArrayList<>();
         for (int i = 0; i < width * height * length; i++) { shapes.add(new ArrayList<>()); }
 
+        boolean[] explicitAir = new boolean[shapes.size()];
         if (data.shapeAABB != null) {
             int idx = 0;
             for (JsonElement posElem : data.shapeAABB) {
                 if (idx >= shapes.size()) { break; }
+                if (posElem.isJsonNull()) { explicitAir[idx] = true; }
                 if (posElem.isJsonArray()) {
                     for (JsonElement aabbElem : posElem.getAsJsonArray()) {
                         if (!aabbElem.isJsonArray()) { continue; }
@@ -71,7 +73,9 @@ public final class ShapeData extends GenericShape {
             for (int z = 0; z < length; z++) {
                 for (int x = 0; x < width; x++) {
                     if (template.getState(x, y, z) == null) { continue; }
-                    List<AxisAlignedBB> posShapes = shapes.get(x + z * width + y * width * length);
+                    int index = x + z * width + y * width * length;
+                    if (explicitAir[index]) { continue; }
+                    List<AxisAlignedBB> posShapes = shapes.get(index);
                     if (posShapes.isEmpty()) { posShapes.add(new AxisAlignedBB(0, 0, 0, 1, 1, 1)); }
                 }
             }

@@ -68,11 +68,10 @@ public class ClientProxy extends CommonProxy {
     }
 
     @SubscribeEvent public static void registerModels(ModelRegistryEvent event) {
-        boolean ie = ICMods.immersiveEngineering();
         for (Block block : ICContent.registeredICBlocks) {
             ResourceLocation loc = Block.REGISTRY.getNameForObject(block);
             Item blockItem = Item.getItemFromBlock(block);
-            if (ie && IEModelSupport.isMetaBlock(block)) { IEModelSupport.registerMetaBlock(block, loc, blockItem); }
+            if (ICModelSupport.isMetaBlock(block)) { ICModelSupport.registerMetaBlock(block, loc, blockItem); }
             else { ModelLoader.setCustomModelResourceLocation(blockItem, 0, new ModelResourceLocation(loc, "inventory")); }
         }
     }

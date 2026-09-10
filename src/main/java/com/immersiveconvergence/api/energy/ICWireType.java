@@ -14,6 +14,7 @@ public class ICWireType {
     public static final String LV_CATEGORY = "LV";
     public static final String MV_CATEGORY = "MV";
     public static final String HV_CATEGORY = "HV";
+    public static final String REDSTONE_CATEGORY = "REDSTONE";
 
     private static final Map<String, ICWireType> REGISTRY = new ConcurrentHashMap<>();
 
@@ -45,6 +46,12 @@ public class ICWireType {
     public String getUniqueName() { return uniqueName; }
 
     public String getCategory() { return category; }
+
+    public static boolean canMix(@Nullable ICWireType first, @Nullable ICWireType second) {
+        if (first == null || second == null) { return false; }
+        String category = first.getCategory();
+        return category != null && category.equals(second.getCategory());
+    }
 
     public double getRenderDiameter() { return renderDiameter; }
 

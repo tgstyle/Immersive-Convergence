@@ -3,6 +3,7 @@ package com.immersiveconvergence.common.util.compat;
 import com.immersiveconvergence.common.util.ICLogger;
 import com.immersiveconvergence.common.util.compat.crafttweaker.ICCraftTweaker;
 import com.immersiveconvergence.common.util.compat.top.ICOneProbe;
+import com.immersiveconvergence.common.util.compat.waila.ICWailaHelper;
 
 import net.minecraftforge.fml.common.Loader;
 
@@ -18,6 +19,7 @@ public abstract class ICCompatModule {
     static {
         CANDIDATES.put("crafttweaker", ICCraftTweaker.class);
         CANDIDATES.put("theoneprobe", ICOneProbe.class);
+        CANDIDATES.put("waila", ICWailaHelper.class);
     }
 
     public static void preInitAll() {

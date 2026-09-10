@@ -1,5 +1,7 @@
 package com.immersiveconvergence.api.crafting;
 
+import com.immersiveconvergence.api.ICMods;
+
 import blusunrize.immersiveengineering.api.crafting.CokeOvenRecipe;
 import blusunrize.immersiveengineering.api.crafting.IngredientStack;
 import net.minecraft.item.ItemStack;
@@ -34,6 +36,7 @@ public class ICCokeOvenRecipe {
     }
 
     @Nullable public static ICCokeOvenRecipe findRecipe(ItemStack input) {
+        if (!ICMods.immersiveEngineering()) { return null; }
         CokeOvenRecipe recipe = CokeOvenRecipe.findRecipe(input);
         return recipe == null ? null : new ICCokeOvenRecipe(recipe);
     }

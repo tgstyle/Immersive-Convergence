@@ -1,22 +1,31 @@
 package com.immersiveconvergence.client.event;
 
 import com.immersiveconvergence.api.ICMods;
+import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IBlockOverlayText;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.ISelectionBounds;
+import com.immersiveconvergence.api.energy.IICFluxAcceptor;
+import com.immersiveconvergence.api.energy.IICFluxProvider;
 import com.immersiveconvergence.common.client.IEClientBridge;
+import com.immersiveconvergence.api.util.ICUtils;
 import com.immersiveconvergence.api.shapes.IBooleanOp;
 import com.immersiveconvergence.api.shapes.Shapes;
 import com.immersiveconvergence.api.shapes.VoxelShape;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -31,6 +40,57 @@ public class ICClientEventHandler {
     private static long cachedMask;
     private static int cachedBoundsHash;
     private static VoxelShape cachedUnion;
+
+    @SubscribeEvent public void onRenderOverlayPost(RenderGameOverlayEvent.Post event) {
+        if (event.getType() != RenderGameOverlayEvent.ElementType.TEXT) { return; }
+        Minecraft mc = Minecraft.getMinecraft();
+        EntityPlayer player = mc.player;
+        if (player == null || mc.objectMouseOver == null || mc.objectMouseOver.getBlockPos() == null) { return; }
+        TileEntity tile = player.world.getTileEntity(mc.objectMouseOver.getBlockPos());
+        if (drawVoltmeter(event, player, tile)) { return; }
+        if (!(tile instanceof IBlockOverlayText)) { return; }
+        IBlockOverlayText overlay = (IBlockOverlayText)tile;
+        String[] text = overlay.getOverlayText(player, mc.objectMouseOver, ICUtils.isHammer(player.getHeldItem(EnumHand.MAIN_HAND)));
+        if (text == null || text.length == 0) { return; }
+        boolean nixie = overlay.useNixieFont(player, mc.objectMouseOver) && ICMods.immersiveEngineering();
+        FontRenderer font = nixie ? IEClientBridge.nixieFont() : mc.fontRenderer;
+        int colour = nixie ? IEClientBridge.nixieColour() : 0xffffff;
+        int line = 0;
+        for (String s : text) {
+            if (s == null) { continue; }
+            font.drawString(s, event.getResolution().getScaledWidth() / 2 + 8, event.getResolution().getScaledHeight() / 2 + 8 + (line++) * font.FONT_HEIGHT, colour, true);
+        }
+    }
+
+    private boolean drawVoltmeter(RenderGameOverlayEvent.Post event, EntityPlayer player, TileEntity tile) {
+        if (!ICMods.immersiveEngineering() || tile == null) { return false; }
+        if (!IEClientBridge.isVoltmeter(player.getHeldItem(EnumHand.MAIN_HAND))) { return false; }
+        EnumFacing side = mcSide();
+        int stored;
+        int max;
+        if (tile instanceof IICFluxAcceptor) {
+            stored = ((IICFluxAcceptor)tile).getEnergyStored(side);
+            max = ((IICFluxAcceptor)tile).getMaxEnergyStored(side);
+        }
+        else if (tile instanceof IICFluxProvider) {
+            stored = ((IICFluxProvider)tile).getEnergyStored(side);
+            max = ((IICFluxProvider)tile).getMaxEnergyStored(side);
+        }
+        else { return false; }
+        if (max <= 0) { return false; }
+        FontRenderer font = Minecraft.getMinecraft().fontRenderer;
+        int line = 0;
+        for (String s : IEClientBridge.energyStoredText(stored, max)) {
+            if (s == null) { continue; }
+            font.drawString(s, event.getResolution().getScaledWidth() / 2 + 8, event.getResolution().getScaledHeight() / 2 + 8 + (line++) * font.FONT_HEIGHT, IEClientBridge.nixieColour(), true);
+        }
+        return true;
+    }
+
+    private EnumFacing mcSide() {
+        RayTraceResult mop = Minecraft.getMinecraft().objectMouseOver;
+        return mop == null ? null : mop.sideHit;
+    }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onDrawBlockHighlight(DrawBlockHighlightEvent event) {

@@ -26,6 +26,7 @@
   "client": [
     "ip.client.MixinIPEventHandler",
     "ip.client.MixinIPProjector",
+    "ip.client.MixinIPProjectorMultiblockNames",
     "ip.client.MixinIPReservoirSync"
   ],
   "injectors": {

@@ -22,6 +22,14 @@ public class ICProperties {
     public static final PropertyBoolInverted DYNAMICRENDER = PropertyBoolInverted.create("_1dynamicrender");
     public static final PropertySet CONNECTIONS = new PropertySet("conns");
 
+    public static IUnlistedProperty<?>[] appendConnections(IUnlistedProperty<?>[] unlisted) {
+        int extra = com.immersiveconvergence.api.ICMods.immersiveEngineering() ? 2 : 1;
+        IUnlistedProperty<?>[] array = java.util.Arrays.copyOf(unlisted, unlisted.length + extra);
+        array[unlisted.length] = CONNECTIONS;
+        if (extra == 2) { array[unlisted.length + 1] = com.immersiveconvergence.common.block.IETileBridge.connectionsProperty(); }
+        return array;
+    }
+
     public static final PropertySideConfig[] SIDECONFIG = {
             new PropertySideConfig("sideconfig_down"),
             new PropertySideConfig("sideconfig_up"),

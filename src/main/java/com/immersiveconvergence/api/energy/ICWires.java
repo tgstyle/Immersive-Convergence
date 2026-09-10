@@ -1,5 +1,7 @@
 package com.immersiveconvergence.api.energy;
 
+import com.immersiveconvergence.api.ICMods;
+
 import blusunrize.immersiveengineering.api.ApiUtils;
 import blusunrize.immersiveengineering.api.energy.wires.IImmersiveConnectable;
 import blusunrize.immersiveengineering.api.energy.wires.ImmersiveNetHandler;
@@ -14,13 +16,14 @@ import java.util.function.IntSupplier;
 
 @SuppressWarnings("unused")
 public class ICWires {
-    public static void distributeToNetwork(World world, BlockPos pos, @Nullable BlockPos excludedFirstHop, IntSupplier available, IntConsumer onMoved) {
+    public static void distributeToNetwork(World world, BlockPos pos, @Nullable BlockPos allowedFirstHop, IntSupplier available, IntConsumer onMoved) {
+        if (!ICMods.immersiveEngineering()) { return; }
         Set<AbstractConnection> outputs = ImmersiveNetHandler.INSTANCE.getIndirectEnergyConnections(pos, world, true);
         for (AbstractConnection con : outputs) {
             int remaining = available.getAsInt();
             if (remaining <= 0) { break; }
-            if (!con.isEnergyOutput || con.cableType == null) { continue; }
-            if (leavesBy(con, excludedFirstHop)) { continue; }
+            if (con.cableType == null) { continue; }
+            if (!leavesBy(con, allowedFirstHop)) { continue; }
             IImmersiveConnectable end = ApiUtils.toIIC(con.end, world);
             if (end == null) { continue; }
             int moved = end.outputEnergy(Math.min(remaining, con.cableType.getTransferRate()), false, 0);
@@ -28,8 +31,9 @@ public class ICWires {
         }
     }
 
-    private static boolean leavesBy(AbstractConnection con, @Nullable BlockPos excludedFirstHop) {
+    private static boolean leavesBy(AbstractConnection con, @Nullable BlockPos firstHop) {
+        if (firstHop == null) { return true; }
         if (con.subConnections == null || con.subConnections.length == 0) { return false; }
-        return con.subConnections[0].end.equals(excludedFirstHop);
+        return con.subConnections[0].end.equals(firstHop);
     }
 }

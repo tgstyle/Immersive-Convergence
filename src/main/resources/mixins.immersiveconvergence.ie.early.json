@@ -5,6 +5,8 @@
   "refmap": "mixins.immersiveconvergence.refmap.json",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "ie.common.MixinICConnectableWires",
+    "ie.common.MixinICConnectorRedstoneWires",
     "ie.common.MixinIEBlockSplitContainer",
     "ie.common.MixinIEBlockSplitOffset"
   ],

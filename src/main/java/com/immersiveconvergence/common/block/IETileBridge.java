@@ -1,5 +1,7 @@
 package com.immersiveconvergence.common.block;
 
+import com.immersiveconvergence.api.energy.ICTileEntityConnectable;
+import com.immersiveconvergence.api.client.IICOBJModelCallback;
 import blusunrize.immersiveengineering.ImmersiveEngineering;
 import blusunrize.immersiveengineering.api.energy.wires.IImmersiveConnectable;
 import blusunrize.immersiveengineering.api.energy.wires.ImmersiveNetHandler;
@@ -41,11 +43,30 @@ public final class IETileBridge {
         if (tile instanceof TileEntityIEBase) { ((TileEntityIEBase)tile).onEntityCollision(world, entity); }
     }
 
+    private static <T> IEOBJCallbackAdapter<T> adapt(IICOBJModelCallback<T> callback) { return new IEOBJCallbackAdapter<>(callback); }
+
+    public static net.minecraftforge.common.property.IUnlistedProperty<?> objCallbackProperty() { return IOBJModelCallback.PROPERTY; }
+
+    public static net.minecraftforge.common.property.IUnlistedProperty<?> connectionsProperty() { return blusunrize.immersiveengineering.api.IEProperties.CONNECTIONS; }
+
     public static IExtendedBlockState extendState(IExtendedBlockState extended, TileEntity tile) {
-        if (tile instanceof IOBJModelCallback) { extended = extended.withProperty(IOBJModelCallback.PROPERTY, (IOBJModelCallback<?>)tile); }
-        if (tile.hasCapability(CapabilityShader.SHADER_CAPABILITY, null)) { extended = extended.withProperty(CapabilityShader.BLOCKSTATE_PROPERTY, tile.getCapability(CapabilityShader.SHADER_CAPABILITY, null)); }
+        if (extended.getUnlistedNames().contains(IOBJModelCallback.PROPERTY)) {
+            if (tile instanceof IOBJModelCallback) { extended = extended.withProperty(IOBJModelCallback.PROPERTY, (IOBJModelCallback<?>)tile); }
+            else if (tile instanceof IICOBJModelCallback) { extended = extended.withProperty(IOBJModelCallback.PROPERTY, adapt((IICOBJModelCallback<?>)tile)); }
+        }
+        if (extended.getUnlistedNames().contains(blusunrize.immersiveengineering.api.IEProperties.CONNECTIONS)) {
+            Set<?> conns = wireConnections(tile);
+            if (conns != null) { extended = extended.withProperty(blusunrize.immersiveengineering.api.IEProperties.CONNECTIONS, conns); }
+        }
+        if (extended.getUnlistedNames().contains(CapabilityShader.BLOCKSTATE_PROPERTY) && tile.hasCapability(CapabilityShader.SHADER_CAPABILITY, null)) {
+            extended = extended.withProperty(CapabilityShader.BLOCKSTATE_PROPERTY, tile.getCapability(CapabilityShader.SHADER_CAPABILITY, null));
+        }
         return extended;
     }
 
-    @Nullable public static Set<?> wireConnections(TileEntity tile) { return tile instanceof TileEntityImmersiveConnectable ? ((TileEntityImmersiveConnectable)tile).genConnBlockstate() : null; }
+    @Nullable public static Set<?> wireConnections(TileEntity tile) {
+        if (tile instanceof TileEntityImmersiveConnectable) { return ((TileEntityImmersiveConnectable)tile).genConnBlockstate(); }
+        if (tile instanceof ICTileEntityConnectable) { return ((ICTileEntityConnectable)tile).wireConnections(); }
+        return null;
+    }
 }

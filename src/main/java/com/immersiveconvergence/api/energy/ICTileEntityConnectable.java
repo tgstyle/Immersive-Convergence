@@ -1,12 +1,9 @@
 package com.immersiveconvergence.api.energy;
 
+import com.immersiveconvergence.api.block.ICTileEntityBase;
 import com.immersiveconvergence.common.energy.IEWireBridge;
 
-import blusunrize.immersiveengineering.api.TargetingInfo;
-import blusunrize.immersiveengineering.api.energy.wires.IImmersiveConnectable;
-import blusunrize.immersiveengineering.api.energy.wires.ImmersiveNetHandler.Connection;
-import blusunrize.immersiveengineering.api.energy.wires.TileEntityImmersiveConnectable;
-import blusunrize.immersiveengineering.api.energy.wires.WireType;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
@@ -15,44 +12,66 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @SuppressWarnings("unused")
-public abstract class ICTileEntityConnectable extends TileEntityImmersiveConnectable {
-    @Override @Nonnull public Vec3d getConnectionOffset(@Nonnull Connection con) { return connectionOffset(IEWireBridge.required(con.cableType), otherEnd(con)); }
+public abstract class ICTileEntityConnectable extends ICTileEntityBase {
 
-    @Override @Nonnull public Vec3d getConnectionOffset(@Nonnull Connection con, TargetingInfo target, Vec3i offsetLink) { return connectionOffset(IEWireBridge.required(con.cableType), IEWireBridge.targeting(target)); }
+    protected ICWireType limitType = null;
+
+    protected boolean canTakeLV() { return false; }
+
+    protected boolean canTakeMV() { return false; }
+
+    protected boolean canTakeHV() { return false; }
+
+    protected boolean isRelay() { return false; }
+
+    public void onEnergyPassthrough(int amount) {}
+
+    public boolean allowEnergyToPass() { return true; }
+
+    public boolean canConnect() { return true; }
+
+    public boolean isEnergyOutput() { return false; }
+
+    public int outputEnergy(int amount, boolean simulate, int energyType) { return 0; }
+
+    public BlockPos connectionMaster() { return getPos(); }
 
     @Nonnull public abstract Vec3d connectionOffset(@Nonnull ICWireType cable, @Nullable BlockPos otherEnd);
 
     @Nonnull public Vec3d connectionOffset(@Nonnull ICWireType cable, @Nonnull ICTargetingInfo target) { return connectionOffset(cable, (BlockPos)null); }
 
-    @Override public boolean allowEnergyToPass(Connection con) { return allowEnergyToPass(); }
-
-    public boolean allowEnergyToPass() { return true; }
-
-    @Override public boolean canConnectCable(WireType cableType, TargetingInfo target, @Nonnull Vec3i offset) {
-        Boolean accepted = canConnectCable(IEWireBridge.required(cableType), IEWireBridge.targeting(target), offset);
-        return accepted != null ? accepted : super.canConnectCable(cableType, target, offset);
-    }
-
     @Nullable public Boolean canConnectCable(@Nonnull ICWireType cable, @Nonnull ICTargetingInfo target, @Nonnull Vec3i offset) { return null; }
 
-    @Override public void connectCable(WireType cableType, TargetingInfo target, IImmersiveConnectable other) {
-        if (!connectCable(IEWireBridge.required(cableType), IEWireBridge.targeting(target), other.getConnectionMaster(cableType, target))) { super.connectCable(cableType, target, other); }
+    public boolean acceptsCable(@Nonnull ICWireType cable) {
+        String category = cable.getCategory();
+        boolean accepting = (ICWireType.HV_CATEGORY.equals(category) && canTakeHV())
+                || (ICWireType.MV_CATEGORY.equals(category) && canTakeMV())
+                || (ICWireType.LV_CATEGORY.equals(category) && canTakeLV());
+        if (!accepting) { return false; }
+        return limitType == null || (isRelay() && ICWireType.canMix(limitType, cable));
     }
 
     public boolean connectCable(@Nonnull ICWireType cable, @Nonnull ICTargetingInfo target, BlockPos otherMaster) { return false; }
 
-    @Override public WireType getCableLimiter(@Nonnull TargetingInfo target) {
-        ICWireType cable = cableLimiter(IEWireBridge.targeting(target));
-        return IEWireBridge.toIE(cable);
-    }
+    public void acceptCable(@Nonnull ICWireType cable) { this.limitType = cable; }
 
-    @Nullable public ICWireType cableLimiter(@Nonnull ICTargetingInfo target) { return IEWireBridge.of(limitType); }
-
-    @Override public void removeCable(Connection connection) {
-        if (!removeCable(connection == null ? null : otherEnd(connection), connection == null)) { super.removeCable(connection); }
-    }
+    @Nullable public ICWireType cableLimiter(@Nonnull ICTargetingInfo target) { return limitType; }
 
     public boolean removeCable(@Nullable BlockPos otherEnd, boolean all) { return false; }
 
-    private BlockPos otherEnd(Connection con) { return con.start.equals(pos) ? con.end : con.start; }
+    @Nullable public java.util.Set<?> wireConnections() { return null; }
+
+    public void forgetCable(@Nullable ICWireType type) {
+        if (IEWireBridge.connectionCount(world, pos) == 0 && (type == limitType || type == null)) { this.limitType = null; }
+        markDirty();
+        if (world != null) { markContainingBlockForUpdate(null); }
+    }
+
+    @Override public void readCustomNBT(@Nonnull NBTTagCompound nbt, boolean descPacket) {
+        limitType = ICWireType.readFromNBT(nbt, "limitType");
+    }
+
+    @Override public void writeCustomNBT(@Nonnull NBTTagCompound nbt, boolean descPacket) {
+        if (limitType != null) { limitType.writeToNBT(nbt, "limitType"); }
+    }
 }

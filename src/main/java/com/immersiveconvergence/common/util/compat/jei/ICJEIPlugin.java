@@ -1,5 +1,6 @@
 package com.immersiveconvergence.common.util.compat.jei;
 
+import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.jei.MultiblockIngredient;
 import com.immersiveconvergence.core.ICClientConfig;
 
@@ -14,12 +15,12 @@ import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Collections;
 
-@JEIPlugin
+@JEIPlugin @SuppressWarnings("unused")
 public class ICJEIPlugin implements IModPlugin {
 
     @SuppressWarnings("deprecation")
     @Override public void registerIngredients(@Nonnull IModIngredientRegistration registry) {
-        EngineeringMultiblockIngredients.register();
+        if (ICMods.immersiveEngineering()) { EngineeringMultiblockIngredients.register(); }
         Collection<MultiblockIngredient> listed = ICClientConfig.jei.showMultiblockItems ? MultiblockIngredient.list : Collections.emptyList();
         registry.register(MultiblockIngredient.class, listed, new MultiblockIngredientHelper(), MultiblockIngredientRenderer.INSTANCE);
     }

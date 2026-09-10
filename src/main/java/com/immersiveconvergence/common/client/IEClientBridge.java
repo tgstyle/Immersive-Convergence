@@ -27,6 +27,10 @@ public final class IEClientBridge {
 
     public static FontRenderer itemFont() { return ClientProxy.itemFont; }
 
+    public static FontRenderer nixieFont() { return ClientProxy.nixieFontOptional; }
+
+    public static int nixieColour() { return blusunrize.immersiveengineering.common.Config.IEConfig.nixietubeFont ? blusunrize.immersiveengineering.api.Lib.colour_nixieTubeText : 0xffffff; }
+
     public static void registerOBJLoader() { ModelLoaderRegistry.registerLoader(IEOBJLoader.instance); }
 
     public static void addOBJDomain(String modid) { IEOBJLoader.instance.addDomain(modid); }
@@ -39,6 +43,16 @@ public final class IEClientBridge {
         Field itemCacheField = ModelConveyor.class.getDeclaredField("itemModelCache");
         itemCacheField.setAccessible(true);
         ((Map<?, ?>)itemCacheField.get(null)).clear();
+    }
+
+    public static boolean isVoltmeter(net.minecraft.item.ItemStack stack) {
+        return net.minecraftforge.oredict.OreDictionary.itemMatches(new net.minecraft.item.ItemStack(blusunrize.immersiveengineering.common.IEContent.itemTool, 1, 2), stack, true);
+    }
+
+    public static String[] energyStoredText(int stored, int max) {
+        return net.minecraft.client.resources.I18n.format(blusunrize.immersiveengineering.api.Lib.DESC_INFO + "energyStored",
+                "<br>" + blusunrize.immersiveengineering.common.util.Utils.toScientificNotation(stored, "0##", 100000)
+                        + " / " + blusunrize.immersiveengineering.common.util.Utils.toScientificNotation(max, "0##", 100000)).split("<br>");
     }
 
     public static void addFluidTooltip(FluidStack fluid, List<String> tooltip, int tankCapacity) { ClientUtils.addFluidTooltip(fluid, tooltip, tankCapacity); }

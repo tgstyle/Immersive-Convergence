@@ -30,21 +30,24 @@
     "ie.common.MixinIEPortsSheetmetalTank",
     "ie.common.MixinIEPortsSilo",
     "ie.common.MixinIEPortsSqueezer",
+    "ie.common.MixinIERecipeCategory",
     "ie.common.MixinIETileEntityAlloySmelter",
     "ie.common.MixinIETileEntityBlastFurnace",
     "ie.common.MixinIETileEntityBlastFurnaceAdvanced",
     "ie.common.MixinIETileEntityBucketWheel",
     "ie.common.MixinIETileEntityCokeOven",
-    "ie.common.MixinIETileEntityLightningrod",
     "ie.common.MixinIETileEntityFluidPipe",
+    "ie.common.MixinIETileEntityLightningrod",
     "ie.common.MixinIETileEntityMultiblockPart",
     "ie.common.MixinIETileEntitySheetmetalTank",
-    "ie.common.MixinIETileEntitySilo"
+    "ie.common.MixinIETileEntitySilo",
+    "ie.common.MixinIEToolVoltmeter"
   ],
   "client": [
     "ie.client.MixinIEClientProxySound",
     "ie.client.MixinIEManualConveyor",
-    "ie.client.MixinIEManualTrigger"
+    "ie.client.MixinIEManualTrigger",
+    "ie.client.MixinIEToolMultiblockNames"
   ],
   "injectors": {
     "defaultRequire": 0

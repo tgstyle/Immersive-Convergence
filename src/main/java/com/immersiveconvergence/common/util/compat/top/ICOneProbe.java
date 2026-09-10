@@ -3,6 +3,9 @@ package com.immersiveconvergence.common.util.compat.top;
 import com.immersiveconvergence.ImmersiveConvergence;
 import com.immersiveconvergence.api.ICLib;
 import com.immersiveconvergence.api.ICMods;
+import com.immersiveconvergence.api.energy.IICFluxProvider;
+import com.immersiveconvergence.api.energy.IICFluxAcceptor;
+import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IProcessTile;
 import com.immersiveconvergence.api.petroleum.ICPowerTier;
 import com.immersiveconvergence.api.petroleum.ICPumpjackHandler;
 import com.immersiveconvergence.api.petroleum.ICReservoirData;
@@ -30,12 +33,61 @@ public class ICOneProbe extends ICCompatModule implements Function<ITheOneProbe,
     private static final NumberFormat NUMBERS = NumberFormat.getInstance();
 
     @Override public void preInit() {
-        if (ICMods.immersivePetroleum()) { FMLInterModComms.sendFunctionMessage("theoneprobe", "getTheOneProbe", getClass().getName()); }
+        FMLInterModComms.sendFunctionMessage("theoneprobe", "getTheOneProbe", getClass().getName());
     }
 
     @Override @Nullable public Void apply(@Nullable ITheOneProbe probe) {
-        if (probe != null) { probe.registerProvider(new ReservoirProvider()); }
+        if (probe == null) { return null; }
+        probe.registerProvider(new EnergyProvider());
+        probe.registerProvider(new ProcessProvider());
+        if (ICMods.immersivePetroleum()) { probe.registerProvider(new ReservoirProvider()); }
         return null;
+    }
+
+    private static class EnergyProvider implements IProbeInfoProvider {
+        @Override public String getID() { return ImmersiveConvergence.MODID + ":energy"; }
+
+        @Override public void addProbeInfo(ProbeMode mode, IProbeInfo info, EntityPlayer player, World world, IBlockState state, IProbeHitData data) {
+            TileEntity tile = world.getTileEntity(data.getPos());
+            int stored = 0;
+            int max = 0;
+            if (tile instanceof IICFluxAcceptor) {
+                stored = ((IICFluxAcceptor)tile).getEnergyStored(null);
+                max = ((IICFluxAcceptor)tile).getMaxEnergyStored(null);
+            }
+            else if (tile instanceof IICFluxProvider) {
+                stored = ((IICFluxProvider)tile).getEnergyStored(null);
+                max = ((IICFluxProvider)tile).getMaxEnergyStored(null);
+            }
+            if (max <= 0) { return; }
+            info.progress(stored, max, info.defaultProgressStyle()
+                    .suffix("IF")
+                    .filledColor(ICLib.COLOUR_I_ImmersiveOrange)
+                    .alternateFilledColor(0xff994f20)
+                    .borderColor(ICLib.COLOUR_I_ImmersiveOrangeShadow)
+                    .numberFormat(mcjty.theoneprobe.api.NumberFormat.COMPACT));
+        }
+
+
+    }
+
+    private static class ProcessProvider implements IProbeInfoProvider {
+        @Override public String getID() { return ImmersiveConvergence.MODID + ":process"; }
+
+        @Override public void addProbeInfo(ProbeMode mode, IProbeInfo info, EntityPlayer player, World world, IBlockState state, IProbeHitData data) {
+            TileEntity tile = world.getTileEntity(data.getPos());
+            if (!(tile instanceof IProcessTile)) { return; }
+            int[] current = ((IProcessTile)tile).getCurrentProcessesStep();
+            int[] maximum = ((IProcessTile)tile).getCurrentProcessesMax();
+            int height = Math.max(4, (int)Math.ceil(12 / (float)current.length));
+            for (int i = 0; i < current.length && i < maximum.length; i++) {
+                if (maximum[i] <= 0) { continue; }
+                float percent = current[i] / (float)maximum[i] * 100;
+                info.progress((int)percent, 100, info.defaultProgressStyle().showText(height >= 10).suffix("%").height(height));
+            }
+        }
+
+
     }
 
     private static class ReservoirProvider implements IProbeInfoProvider {
