@@ -9,7 +9,7 @@ displayName = "Immersive Convergence"
 description = "API for Immersive Engineering addons."
 authors = "tgstyle"
 displayURL = "https://www.curseforge.com/minecraft/mc-mods/immersive-convergence"
-logoFile = "IClogo.png"
+logoFile = "logo.png"
 credits = "tgstyle"
 
 [[dependencies.immersiveconvergence]]
