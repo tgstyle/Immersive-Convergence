@@ -38,11 +38,14 @@ public abstract class ICTileEntityMultiblockPart<T extends ICTileEntityMultibloc
     public long onlyLocalDisassembly = -1;
     protected final int[] structureDimensions;
 
+    private T masterCache;
+    private MultiblockFluidWrapper[] fluidWrappers;
+
     protected ICTileEntityMultiblockPart(int[] structureDimensions) { this.structureDimensions = structureDimensions; }
 
     @Override public boolean isPartUnformed() { return !formed; }
 
-    @Override public void unformPart() { this.formed = false; }
+    @Override public void unformPart() { this.formed = false; invalidateStructureCaches(); }
 
     @Override public int[] getPartOffset() { return offset; }
 
@@ -71,6 +74,7 @@ public abstract class ICTileEntityMultiblockPart<T extends ICTileEntityMultibloc
     @Override public boolean cannotRotate(EnumFacing axis) { return true; }
 
     @Override public void readCustomNBT(NBTTagCompound nbt, boolean descPacket) {
+        invalidateStructureCaches();
         formed = nbt.getBoolean("formed");
         pos = nbt.getInteger("pos");
         offset = nbt.getIntArray("offset");
@@ -93,8 +97,19 @@ public abstract class ICTileEntityMultiblockPart<T extends ICTileEntityMultibloc
 
     @SuppressWarnings("unchecked")
     @Override public <C> C getCapability(@Nonnull Capability<C> capability, @Nullable EnumFacing facing) {
-        if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && this.getAccessibleFluidTanks(facing).length > 0) { return (C)new MultiblockFluidWrapper(this, facing); }
+        if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && this.getAccessibleFluidTanks(facing).length > 0) { return (C)fluidWrapper(facing); }
         return super.getCapability(capability, facing);
+    }
+
+    private MultiblockFluidWrapper fluidWrapper(@Nullable EnumFacing facing) {
+        if (fluidWrappers == null) { fluidWrappers = new MultiblockFluidWrapper[EnumFacing.VALUES.length + 1]; }
+        int index = facing == null ? EnumFacing.VALUES.length : facing.ordinal();
+        MultiblockFluidWrapper wrapper = fluidWrappers[index];
+        if (wrapper == null) {
+            wrapper = new MultiblockFluidWrapper(this, facing);
+            fluidWrappers[index] = wrapper;
+        }
+        return wrapper;
     }
 
     @Nonnull protected abstract IFluidTank[] getAccessibleFluidTanks(@Nullable EnumFacing side);
@@ -180,9 +195,30 @@ public abstract class ICTileEntityMultiblockPart<T extends ICTileEntityMultibloc
     @SuppressWarnings("unchecked")
     @Nullable public T master() {
         if (offset[0] == 0 && offset[1] == 0 && offset[2] == 0) { return (T)this; }
+        T cached = masterCache;
+        if (cached != null && !cached.isInvalid()) { return cached; }
         BlockPos masterPos = getPos().add(-offset[0], -offset[1], -offset[2]);
         TileEntity te = ICUtils.getExistingTileEntity(world, masterPos);
-        return this.getClass().isInstance(te) ? (T)te : null;
+        masterCache = this.getClass().isInstance(te) ? (T)te : null;
+        return masterCache;
+    }
+
+    public void invalidateStructureCaches() { masterCache = null; }
+
+    private IFluidTank[][] tankViews;
+
+    protected IFluidTank[] tankView(int index, IFluidTank tank) {
+        if (tankViews == null || tankViews.length <= index) {
+            IFluidTank[][] grown = new IFluidTank[index + 1][];
+            if (tankViews != null) { System.arraycopy(tankViews, 0, grown, 0, tankViews.length); }
+            tankViews = grown;
+        }
+        IFluidTank[] view = tankViews[index];
+        if (view == null || view[0] != tank) {
+            view = new IFluidTank[]{tank};
+            tankViews[index] = view;
+        }
+        return view;
     }
 
     public void updateMasterBlock(IBlockState state, boolean blockUpdate) {

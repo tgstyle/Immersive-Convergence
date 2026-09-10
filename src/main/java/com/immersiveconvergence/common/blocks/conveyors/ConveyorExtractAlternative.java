@@ -231,8 +231,7 @@ public class ConveyorExtractAlternative extends ConveyorBasicAlternative {
                                 this.transferCooldown = this.transferTickrate;
                                 runTimer = IDLE_TIME_TICKS;
                                 tile.markDirty();
-                                IBlockState state = world.getBlockState(tile.getPos());
-                                world.notifyBlockUpdate(tile.getPos(), state, state, 3);
+                                syncRenderState(tile);
                                 return;
                             }
                         }
@@ -242,11 +241,7 @@ public class ConveyorExtractAlternative extends ConveyorBasicAlternative {
         }
         if (runTimer > 0) {
             --runTimer;
-            if (runTimer == 0 && !tile.getWorld().isRemote) {
-                tile.markDirty();
-                IBlockState state = tile.getWorld().getBlockState(tile.getPos());
-                tile.getWorld().notifyBlockUpdate(tile.getPos(), state, state, 3);
-            }
+            if (runTimer == 0) { syncRenderState(tile); }
         }
     }
 

@@ -93,13 +93,9 @@ public class ConveyorSplitAlternative extends ConveyorBasicAlternative {
 
         World world = tile.getWorld();
 
-        if (entity instanceof EntityItem) {
-            if (!world.isRemote && world.getTotalWorldTime() - lastUpdateTick > 4) {
-                tile.markDirty();
-                IBlockState state = world.getBlockState(tile.getPos());
-                world.notifyBlockUpdate(tile.getPos(), state, state, 3);
-                lastUpdateTick = world.getTotalWorldTime();
-            }
+        if (entity instanceof EntityItem && !world.isRemote && world.getTotalWorldTime() - lastUpdateTick > 4) {
+            lastUpdateTick = world.getTotalWorldTime();
+            tile.markDirty();
         }
 
         BlockPos pos = tile.getPos();

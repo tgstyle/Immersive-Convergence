@@ -17,7 +17,9 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.server.management.PlayerChunkMapEntry;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -57,6 +59,24 @@ public abstract class ICTileEntityBase extends TileEntity {
     }
 
     @Override public void onDataPacket(@Nonnull NetworkManager net, SPacketUpdateTileEntity pkt) { this.readCustomNBT(pkt.getNbtCompound(), true); }
+
+    private boolean clientSyncPending;
+
+    public void requestClientSync() { clientSyncPending = true; }
+
+    public void flushClientSync() {
+        if (!clientSyncPending) { return; }
+        clientSyncPending = false;
+        syncToTrackingClients();
+    }
+
+    public void syncToTrackingClients() {
+        if (world == null || world.isRemote || !(world instanceof WorldServer)) { return; }
+        SPacketUpdateTileEntity packet = getUpdatePacket();
+        if (packet == null) { return; }
+        PlayerChunkMapEntry entry = ((WorldServer)world).getPlayerChunkMap().getEntry(pos.getX() >> 4, pos.getZ() >> 4);
+        if (entry != null) { entry.sendPacket(packet); }
+    }
 
     @Override public void rotate(@Nonnull Rotation rot) {
         if (rot == Rotation.NONE || !(this instanceof IDirectionalTile) || ((IDirectionalTile)this).cannotRotate(EnumFacing.UP)) { return; }

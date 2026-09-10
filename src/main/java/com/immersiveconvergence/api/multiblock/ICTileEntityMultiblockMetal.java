@@ -9,6 +9,7 @@ import com.immersiveconvergence.api.crafting.ICRecipe;
 import com.immersiveconvergence.api.energy.ICFluxWrapper;
 import com.immersiveconvergence.api.energy.IICInternalFluxHandler;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IComparatorOverride;
+import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IActiveState;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IHammerInteraction;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IMirrorAble;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IProcessTile;
@@ -78,6 +79,7 @@ public abstract class ICTileEntityMultiblockMetal<T extends ICTileEntityMultiblo
                 MultiblockProcess<R> process = loadProcessFromNBT(tag);
                 if (process != null) {
                     process.processTick = processTick;
+                    process.displaySlot = tag.hasKey("process_displaySlot") ? tag.getInteger("process_displaySlot") : -1;
                     processQueue.add(process);
                 }
             }
@@ -115,6 +117,7 @@ public abstract class ICTileEntityMultiblockMetal<T extends ICTileEntityMultiblo
     protected NBTTagCompound writeProcessToNBT(MultiblockProcess<R> process) {
         NBTTagCompound tag = process.recipe.writeToNBT(new NBTTagCompound());
         tag.setInteger("process_processTick", process.processTick);
+        tag.setInteger("process_displaySlot", process.displaySlot);
         process.writeExtraDataToNBT(tag);
         return tag;
     }
@@ -122,10 +125,33 @@ public abstract class ICTileEntityMultiblockMetal<T extends ICTileEntityMultiblo
     public abstract int[] getEnergyPos();
 
     public boolean isEnergyPos() {
-        for (int i : getEnergyPos()) {
+        for (int i : cachedEnergyPos()) {
             if (pos == i) { return true; }
         }
         return false;
+    }
+
+    private int[] energyPosCache;
+    private int[] redstonePosCache;
+    private T redstoneTileCache;
+
+    private int[] cachedEnergyPos() {
+        if (energyPosCache == null) { energyPosCache = getEnergyPos(); }
+        return energyPosCache == null ? EMPTY_POS : energyPosCache;
+    }
+
+    private int[] cachedRedstonePos() {
+        if (redstonePosCache == null) { redstonePosCache = getRedstonePos(); }
+        return redstonePosCache == null ? EMPTY_POS : redstonePosCache;
+    }
+
+    private static final int[] EMPTY_POS = new int[0];
+
+    @Override public void invalidateStructureCaches() {
+        super.invalidateStructureCaches();
+        energyPosCache = null;
+        redstonePosCache = null;
+        redstoneTileCache = null;
     }
 
     @Override @Nonnull public ICFluxStorage getStorage() {
@@ -144,7 +170,11 @@ public abstract class ICTileEntityMultiblockMetal<T extends ICTileEntityMultiblo
     }
 
     @Override public void postEnergyTransferUpdate(int energy, boolean simulate) {
-        if (!simulate) { this.updateMasterBlock(null, energy != 0); }
+        if (simulate) { return; }
+        T master = master();
+        if (master == null) { return; }
+        master.markDirty();
+        if (energy != 0) { master.requestClientSync(); }
     }
 
     @SideOnly(Side.CLIENT)
@@ -159,8 +189,8 @@ public abstract class ICTileEntityMultiblockMetal<T extends ICTileEntityMultiblo
     public abstract int[] getRedstonePos();
 
     public boolean isRedstonePos() {
-        if (!hasRedstoneControl || getRedstonePos() == null) { return false; }
-        for (int i : getRedstonePos()) {
+        if (!hasRedstoneControl) { return false; }
+        for (int i : cachedRedstonePos()) {
             if (pos == i) { return true; }
         }
         return false;
@@ -187,13 +217,17 @@ public abstract class ICTileEntityMultiblockMetal<T extends ICTileEntityMultiblo
 
     public boolean isRSDisabled() {
         if (computerOn != null) { return !computerOn; }
-        int[] rsPositions = getRedstonePos();
-        if (rsPositions == null || rsPositions.length < 1) { return false; }
+        T cached = redstoneTileCache;
+        if (cached != null && !cached.isInvalid()) {
+            return redstoneControlInverted != (world.getRedstonePowerFromNeighbors(cached.getPos()) > 0);
+        }
+        int[] rsPositions = cachedRedstonePos();
+        if (rsPositions.length < 1) { return false; }
         for (int rsPos : rsPositions) {
             T tile = this.getTileForPos(rsPos);
             if (tile != null) {
-                boolean b = world.getRedstonePowerFromNeighbors(tile.getPos()) > 0;
-                return redstoneControlInverted != b;
+                redstoneTileCache = tile;
+                return redstoneControlInverted != (world.getRedstonePowerFromNeighbors(tile.getPos()) > 0);
             }
         }
         return false;
@@ -225,10 +259,31 @@ public abstract class ICTileEntityMultiblockMetal<T extends ICTileEntityMultiblo
 
     @Override @Nonnull public PropertyBoolInverted getBoolProperty(@Nonnull Class<? extends IUsesBooleanProperty> inf) { return ICProperties.BOOLEANS[0]; }
 
+    private boolean syncedThisTick;
+    protected boolean lastRenderedActive;
+
+    private boolean syncParity() { return ((world.getTotalWorldTime() + getPos().getX() + getPos().getZ()) & 1L) == 0L; }
+
+    private void syncProgress() {
+        T master = master();
+        if (master == null) { return; }
+        master.markDirty();
+        boolean active = master instanceof IActiveState && ((IActiveState)master).getIsActive();
+        if (active != master.lastRenderedActive) {
+            master.lastRenderedActive = active;
+            master.markContainingBlockForUpdate(null);
+            return;
+        }
+        if (syncParity()) { master.syncToTrackingClients(); }
+    }
+
     @Override public void update() {
         ICTickingRegistry.checkForNeedlessTicking(this);
+        syncedThisTick = false;
         tickedProcesses = 0;
-        if (world.isRemote || isDummy() || isRSDisabled()) { return; }
+        if (world.isRemote || isDummy()) { return; }
+        if (syncParity()) { flushClientSync(); }
+        if (isRSDisabled()) { return; }
         int max = getMaxProcessPerTick();
         int i = 0;
         Iterator<MultiblockProcess<R>> processIterator = processQueue.iterator();
@@ -238,10 +293,11 @@ public abstract class ICTileEntityMultiblockMetal<T extends ICTileEntityMultiblo
             if (process.canProcess(this)) {
                 process.doProcessTick(this);
                 tickedProcesses++;
-                updateMasterBlock(null, true);
+                syncedThisTick = true;
             }
             if (process.clearProcess) { processIterator.remove(); }
         }
+        if (syncedThisTick) { syncProgress(); }
     }
 
     public abstract IFluidTank[] getInternalTanks();
@@ -311,25 +367,56 @@ public abstract class ICTileEntityMultiblockMetal<T extends ICTileEntityMultiblo
                 if (p != null) { dist = p.processTick / (float)p.maxTicks; }
             }
             if (p != null && dist < getMinProcessDistance(p)) { return false; }
-            if (!simulate) { processQueue.add(process); }
+            if (!simulate) {
+                processQueue.add(process);
+                assignDisplaySlot(process);
+            }
             return true;
         }
         return false;
     }
 
+    private int displaySlotCount() {
+        int slots = getProcessQueueMaxLength();
+        if (slots < 1) { slots = processQueue.size(); }
+        for (MultiblockProcess<R> process : processQueue) {
+            if (process.displaySlot >= slots) { slots = process.displaySlot + 1; }
+        }
+        return slots;
+    }
+
+    private void assignDisplaySlot(MultiblockProcess<R> process) {
+        if (process.displaySlot >= 0) { return; }
+        int slots = Math.max(1, getProcessQueueMaxLength());
+        for (int slot = 0; slot < slots; slot++) {
+            boolean taken = false;
+            for (MultiblockProcess<R> other : processQueue) {
+                if (other != process && other.displaySlot == slot) { taken = true; break; }
+            }
+            if (!taken) { process.displaySlot = slot; return; }
+        }
+        process.displaySlot = processQueue.size();
+    }
+
     @Override public int[] getCurrentProcessesStep() {
         T master = master();
         if (master != this && master != null) { return master.getCurrentProcessesStep(); }
-        int[] ia = new int[processQueue.size()];
-        for (int i = 0; i < ia.length; i++) { ia[i] = processQueue.get(i).processTick; }
+        if (processQueue.isEmpty()) { return EMPTY_POS; }
+        int[] ia = new int[displaySlotCount()];
+        for (MultiblockProcess<R> process : processQueue) {
+            if (process.displaySlot >= 0 && process.displaySlot < ia.length) { ia[process.displaySlot] = process.processTick; }
+        }
         return ia;
     }
 
     @Override public int[] getCurrentProcessesMax() {
         T master = master();
         if (master != this && master != null) { return master.getCurrentProcessesMax(); }
-        int[] ia = new int[processQueue.size()];
-        for (int i = 0; i < ia.length; i++) { ia[i] = processQueue.get(i).maxTicks; }
+        if (processQueue.isEmpty()) { return EMPTY_POS; }
+        int[] ia = new int[displaySlotCount()];
+        for (MultiblockProcess<R> process : processQueue) {
+            if (process.displaySlot >= 0 && process.displaySlot < ia.length) { ia[process.displaySlot] = process.maxTicks; }
+        }
         return ia;
     }
 
@@ -341,6 +428,7 @@ public abstract class ICTileEntityMultiblockMetal<T extends ICTileEntityMultiblo
         public int maxTicks;
         public int energyPerTick;
         public boolean clearProcess = false;
+        public int displaySlot = -1;
 
         public MultiblockProcess(R recipe) {
             this.recipe = recipe;

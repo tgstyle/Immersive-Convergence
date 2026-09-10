@@ -39,6 +39,7 @@ public abstract class MachineTemplateMultiblock<T extends ICTileEntityMultiblock
             tile.pos = position;
             tile.offset = new int[]{worldPos.getX() - masterWorldPos.getX(), worldPos.getY() - masterWorldPos.getY(), worldPos.getZ() - masterWorldPos.getZ()};
             tile.mirrored = mirrored;
+            tile.invalidateStructureCaches();
             tile.markDirty();
             world.notifyBlockUpdate(worldPos, placed, placed, 2);
             world.addBlockEvent(worldPos, slaveBlockState.getBlock(), 255, 0);

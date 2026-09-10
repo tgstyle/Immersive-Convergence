@@ -84,8 +84,30 @@ public class ConveyorBasicAlternative implements IConveyorBelt {
         return true;
     }
 
+    private long powerCheckTick = Long.MIN_VALUE;
+    private boolean powerCached = true;
+    protected boolean lastRenderedActive;
+
     protected boolean isPowered(TileEntity tile) {
-        return tile.getWorld().getRedstonePowerFromNeighbors(tile.getPos()) <= 0;
+        long now = tile.getWorld().getTotalWorldTime();
+        if (now != powerCheckTick) {
+            powerCheckTick = now;
+            powerCached = tile.getWorld().getRedstonePowerFromNeighbors(tile.getPos()) <= 0;
+        }
+        return powerCached;
+    }
+
+    protected void syncRenderState(TileEntity tile) {
+        boolean active = isActive(tile);
+        if (active == lastRenderedActive) { return; }
+        lastRenderedActive = active;
+        World world = tile.getWorld();
+        if (!world.isRemote) {
+            tile.markDirty();
+            IBlockState state = world.getBlockState(tile.getPos());
+            world.notifyBlockUpdate(tile.getPos(), state, state, 3);
+        }
+        else { world.markBlockRangeForRenderUpdate(tile.getPos(), tile.getPos()); }
     }
 
     @Override public boolean isActive(TileEntity tile) {
@@ -100,13 +122,7 @@ public class ConveyorBasicAlternative implements IConveyorBelt {
         --runTimer;
         if (runTimer != 0) return;
 
-        if (!tile.getWorld().isRemote) {
-            tile.markDirty();
-            IBlockState state = tile.getWorld().getBlockState(tile.getPos());
-            tile.getWorld().notifyBlockUpdate(tile.getPos(), state, state, 3);
-        } else {
-            tile.getWorld().markBlockRangeForRenderUpdate(tile.getPos(), tile.getPos());
-        }
+        syncRenderState(tile);
     }
 
     @Override public boolean canBeDyed() { return true; }
@@ -212,13 +228,7 @@ public class ConveyorBasicAlternative implements IConveyorBelt {
             lastActivationTick = now;
             runTimer = IDLE_TIME_TICKS;
 
-            if (!world.isRemote) {
-                tile.markDirty();
-                IBlockState state = world.getBlockState(tile.getPos());
-                world.notifyBlockUpdate(tile.getPos(), state, state, 3);
-            } else {
-                world.markBlockRangeForRenderUpdate(tile.getPos(), tile.getPos());
-            }
+            syncRenderState(tile);
         }
 
         BlockPos pos = tile.getPos();

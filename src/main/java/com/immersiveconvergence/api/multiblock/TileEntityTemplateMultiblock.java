@@ -314,6 +314,6 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
             return;
         }
         blockUpdateCooldown = 20;
-        markContainingBlockForUpdate(null);
+        syncToTrackingClients();
     }
 }

@@ -79,10 +79,11 @@ public class ICOneProbe extends ICCompatModule implements Function<ITheOneProbe,
             if (!(tile instanceof IProcessTile)) { return; }
             int[] current = ((IProcessTile)tile).getCurrentProcessesStep();
             int[] maximum = ((IProcessTile)tile).getCurrentProcessesMax();
-            int height = Math.max(4, (int)Math.ceil(12 / (float)current.length));
-            for (int i = 0; i < current.length && i < maximum.length; i++) {
-                if (maximum[i] <= 0) { continue; }
-                float percent = current[i] / (float)maximum[i] * 100;
+            int slots = Math.min(current.length, maximum.length);
+            if (slots < 1) { return; }
+            int height = Math.max(4, (int)Math.ceil(12 / (float)slots));
+            for (int i = 0; i < slots; i++) {
+                float percent = maximum[i] > 0 ? current[i] / (float)maximum[i] * 100 : 0;
                 info.progress((int)percent, 100, info.defaultProgressStyle().showText(height >= 10).suffix("%").height(height));
             }
         }

@@ -31,22 +31,12 @@ public class ConveyorUncontrolledAlternative extends ConveyorBasicAlternative {
             lastActivationTick = now;
             runTimer = IDLE_TIME_TICKS;
 
-            if (!world.isRemote) {
-                tile.markDirty();
-                IBlockState state = world.getBlockState(tile.getPos());
-                world.notifyBlockUpdate(tile.getPos(), state, state, 3);
-            } else {
-                world.markBlockRangeForRenderUpdate(tile.getPos(), tile.getPos());
-            }
+            syncRenderState(tile);
         }
 
-        if (entity instanceof EntityItem) {
-            if (!world.isRemote && world.getTotalWorldTime() - lastUpdateTick > 4) {
-                tile.markDirty();
-                IBlockState state = world.getBlockState(tile.getPos());
-                world.notifyBlockUpdate(tile.getPos(), state, state, 3);
-                lastUpdateTick = world.getTotalWorldTime();
-            }
+        if (entity instanceof EntityItem && !world.isRemote && world.getTotalWorldTime() - lastUpdateTick > 4) {
+            lastUpdateTick = world.getTotalWorldTime();
+            tile.markDirty();
         }
 
         BlockPos pos = tile.getPos();
