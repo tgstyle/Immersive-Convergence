@@ -46,7 +46,7 @@ public class IEMultiblock extends TemplateMultiblock {
     private final PoIJSONSchema[] pointsOfInterest;
     private final Map<String, int[]> namedPositions = new HashMap<>();
     private final Map<Integer, List<AxisAlignedBB>> boundsCache = new ConcurrentHashMap<>();
-    private volatile Map<Integer, Integer> ports;
+    private volatile int[] portTable;
     private EnumFacing formedFacing;
 
     public IEMultiblock(String uniqueName, ShapeData shape, Supplier<IBlockState> blockState, Supplier<IBlockState> masterState, Anchor anchor, boolean mirrorable, PostFormation postFormation) {
@@ -79,21 +79,36 @@ public class IEMultiblock extends TemplateMultiblock {
     public float[] blockBoundsFor(int position, EnumFacing facing, boolean mirrored) { return MultiblockShapes.blockBounds(boundsFor(position, facing, mirrored)); }
 
     public int portPos(int position) {
-        if (ports == null) { immersiveconvergence$buildPorts(); }
-        Integer canonical = ports.get(position);
-        if (canonical != null) { return canonical; }
-        return ports.containsValue(position) ? -1 : position;
+        int[] table = portTable;
+        if (table == null) {
+            immersiveconvergence$buildPorts();
+            table = portTable;
+        }
+        return position >= 0 && position < table.length ? table[position] : position;
     }
 
     private synchronized void immersiveconvergence$buildPorts() {
-        if (ports != null) { return; }
+        if (portTable != null) { return; }
         Map<Integer, Integer> built = new HashMap<>();
+        int max = 0;
         for (PoIJSONSchema poi : pointsOfInterest) {
             if (poi.name == null || poi.position == null || !poi.name.startsWith("port")) { continue; }
             int canonical = Integer.parseInt(poi.name.substring(4));
-            built.put(poi.position.getY() * (template.width * template.length) + poi.position.getZ() * template.width + poi.position.getX(), canonical);
+            int index = poi.position.getY() * (template.width * template.length) + poi.position.getZ() * template.width + poi.position.getX();
+            built.put(index, canonical);
+            max = Math.max(max, Math.max(index, canonical) + 1);
         }
-        ports = built;
+        int[] table = new int[max];
+        boolean[] declared = new boolean[max];
+        for (int i = 0; i < max; i++) { table[i] = i; }
+        for (Map.Entry<Integer, Integer> entry : built.entrySet()) {
+            table[entry.getKey()] = entry.getValue();
+            declared[entry.getKey()] = true;
+        }
+        for (int canonical : built.values()) {
+            if (canonical >= 0 && canonical < max && !declared[canonical]) { table[canonical] = -1; }
+        }
+        portTable = table;
     }
 
     public int[] positionsNamed(String prefix) {

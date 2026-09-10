@@ -23,6 +23,7 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.GameType;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -34,8 +35,10 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.BooleanSupplier;
@@ -45,11 +48,16 @@ public class QueueProcessor {
     public static final int DISASSEMBLE_QUEUE_SIZE = 8;
     public static BooleanSupplier queueEnabled = () -> true;
     public static final List<QueueProcessor> pendingQueues = new ArrayList<>();
-    public static final Set<BlockPos> activeDisassemblies = new HashSet<>();
+    private static final Map<Integer, Set<BlockPos>> activeDisassemblies = new HashMap<>();
     public static BlockPos currentlyBreakingPos = null;
     public static boolean sneakBreaking = false;
     private static final Comparator<BlockPos> Y_DESC_COMPARATOR = Comparator.comparingInt(pos -> -pos.getY());
     private static final GameProfile FALLBACK_PROFILE = new GameProfile(UUID.fromString("256cb34d-064f-3b7b-be9f-aa63f5ff7d65"), "[IC-Disassembler]");
+
+    public static boolean isDisassembling(World world, BlockPos masterPos) {
+        Set<BlockPos> active = activeDisassemblies.get(world.provider.getDimension());
+        return active != null && active.contains(masterPos);
+    }
 
     private final WorldServer world;
     private final Deque<BlockPos> queue = new ArrayDeque<>();
@@ -78,7 +86,7 @@ public class QueueProcessor {
         if (queue.isEmpty()) {
             if (dropItems && !allDrops.isEmpty()) { for (ItemStack stack : allDrops) { world.spawnEntity(new EntityItem(world, dropAt.getX() + 0.5, dropAt.getY() + 0.5, dropAt.getZ() + 0.5, stack)); } }
             allDrops.clear();
-            if (masterPos != null) { activeDisassemblies.remove(masterPos); }
+            if (masterPos != null) { endDisassembly(world, masterPos); }
             finished = true;
             return;
         }
@@ -116,7 +124,7 @@ public class QueueProcessor {
         BlockPos brokenPos = broken.getPos();
         int[] brokenOffset = broken.getPartOffset();
         BlockPos masterPos = brokenPos.add(-brokenOffset[0], -brokenOffset[1], -brokenOffset[2]);
-        if (activeDisassemblies.contains(masterPos)) { return Result.QUEUED; }
+        if (isDisassembling(world, masterPos)) { return Result.QUEUED; }
         EntityPlayer breakingPlayer = world.getClosestPlayer(masterPos.getX() + 0.5, masterPos.getY() + 0.5, masterPos.getZ() + 0.5, -1, false);
         boolean creative = breakingPlayer != null && breakingPlayer.isCreative();
         boolean templateMode = !queueEnabled.getAsBoolean() || (sneakBreaking && brokenPos.equals(currentlyBreakingPos));
@@ -177,10 +185,23 @@ public class QueueProcessor {
                 }
             }
         }
-        activeDisassemblies.add(masterPos);
+        activeDisassemblies.computeIfAbsent(world.provider.getDimension(), dim -> new HashSet<>()).add(masterPos);
         boolean dropItems = !creative && dropOriginal && world.getGameRules().getBoolean("doTileDrops");
         pendingQueues.add(new QueueProcessor((WorldServer)world, toBreak, breakingPlayer instanceof EntityPlayerMP ? (EntityPlayerMP)breakingPlayer : null, dropItems, brokenPos, allDrops, masterPos));
         return Result.QUEUED;
+    }
+
+    private static void endDisassembly(World world, BlockPos masterPos) {
+        int dim = world.provider.getDimension();
+        Set<BlockPos> active = activeDisassemblies.get(dim);
+        if (active != null && active.remove(masterPos) && active.isEmpty()) { activeDisassemblies.remove(dim); }
+    }
+
+    @SubscribeEvent public static void onWorldUnload(WorldEvent.Unload event) {
+        World world = event.getWorld();
+        if (world.isRemote) { return; }
+        activeDisassemblies.remove(world.provider.getDimension());
+        pendingQueues.removeIf(processor -> processor.world == world);
     }
 
     @SubscribeEvent public static void onServerTick(TickEvent.ServerTickEvent event) {

@@ -3,7 +3,6 @@ package com.immersiveconvergence.common.blocks.pipes;
 import com.immersiveconvergence.api.util.ICUtils;
 import com.immersiveconvergence.core.ICCommonConfig;
 
-import com.immersiveconvergence.api.fluid.ICPipes;
 import com.immersiveconvergence.api.fluid.IICPipe;
 import com.immersiveconvergence.api.ICLib;
 import javax.annotation.Nonnull;
@@ -16,7 +15,6 @@ import blusunrize.immersiveengineering.api.ApiUtils;
 import blusunrize.immersiveengineering.api.fluid.IFluidPipe;
 import blusunrize.immersiveengineering.common.Config.IEConfig;
 import blusunrize.immersiveengineering.common.blocks.IEBlockInterfaces.*;
-import blusunrize.immersiveengineering.common.util.ChatUtils;
 import blusunrize.immersiveengineering.common.util.EnergyHelper.IIEInternalFluxHandler;
 import blusunrize.immersiveengineering.common.util.Utils;
 

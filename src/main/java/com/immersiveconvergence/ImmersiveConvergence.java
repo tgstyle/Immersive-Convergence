@@ -56,6 +56,10 @@ public class ImmersiveConvergence {
     @EventHandler public void preInit(FMLPreInitializationEvent event) {
         ICLogger.logger = event.getModLog();
         ConfigManager.sync(MODID, Type.INSTANCE);
+        ICMods.init(ICCommonConfig.experimental.disableImmersiveEngineering);
+        if (ICCommonConfig.experimental.disableImmersiveEngineering) {
+            ICLogger.logger.warn("Experimental: disableImmersiveEngineering is on, so Immersive Engineering and Immersive Petroleum are being treated as absent. Their recipes, multiblocks and placed blocks will not work. You said you can replace the needed recipes and NBT data yourself.");
+        }
         if (ICResources.deferToRdpl()) { RdplBridge.registerDataFolders("recipes_multiblocks", "multiblocks"); }
         ICResources.migrateToRdpl();
         QueueProcessor.queueEnabled = () -> ICCommonConfig.multiblocks.disassemblyMode == ICCommonConfig.DisassemblyMode.PROCESS_QUEUE;

@@ -79,6 +79,13 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    clientRuntime {
+        canBeConsumed = false
+        canBeResolved = true
+    }
+}
+
 def rdplJar = null
 def rdplDir = file('../MCT-Resource-Data-Pack-Loader-Legacy/build/libs')
 def rdplJars = rdplDir.exists() ? fileTree(rdplDir) {
@@ -106,6 +113,8 @@ dependencies {
     compileOnly("${common.gscr_version}") { transitive = false }
     compileOnly rfg.deobf("curse.maven:${common.hwya_version}")
 
+    clientRuntime rfg.deobf("curse.maven:${common.bf3r_version}")
+
     annotationProcessor 'org.ow2.asm:asm-debug-all:5.2'
     annotationProcessor 'com.google.guava:guava:32.1.2-jre'
     annotationProcessor 'com.google.code.gson:gson:2.8.9'
@@ -116,6 +125,7 @@ dependencies {
 
 tasks.named('runClient').configure {
     extraArgs.addAll('--width', '1920', '--height', '1080')
+    classpath configurations.clientRuntime
 }
 
 tasks.named('runServer').configure {

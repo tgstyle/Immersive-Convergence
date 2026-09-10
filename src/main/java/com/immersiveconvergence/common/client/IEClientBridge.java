@@ -46,7 +46,7 @@ public final class IEClientBridge {
     }
 
     public static boolean isVoltmeter(net.minecraft.item.ItemStack stack) {
-        return net.minecraftforge.oredict.OreDictionary.itemMatches(new net.minecraft.item.ItemStack(blusunrize.immersiveengineering.common.IEContent.itemTool, 1, 2), stack, true);
+        return !stack.isEmpty() && stack.getItem() == blusunrize.immersiveengineering.common.IEContent.itemTool && stack.getMetadata() == 2;
     }
 
     public static String[] energyStoredText(int stored, int max) {

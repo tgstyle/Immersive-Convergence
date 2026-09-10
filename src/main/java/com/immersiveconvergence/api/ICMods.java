@@ -8,7 +8,15 @@ public final class ICMods {
 
     private ICMods() {}
 
-    public static boolean immersiveEngineering() { return Loader.isModLoaded(IMMERSIVE_ENGINEERING); }
+    private static boolean immersiveEngineering;
+    private static boolean immersivePetroleum;
 
-    public static boolean immersivePetroleum() { return Loader.isModLoaded(IMMERSIVE_PETROLEUM); }
+    public static void init(boolean disableImmersiveEngineering) {
+        immersiveEngineering = !disableImmersiveEngineering && Loader.isModLoaded(IMMERSIVE_ENGINEERING);
+        immersivePetroleum = immersiveEngineering && Loader.isModLoaded(IMMERSIVE_PETROLEUM);
+    }
+
+    public static boolean immersiveEngineering() { return immersiveEngineering; }
+
+    public static boolean immersivePetroleum() { return immersivePetroleum; }
 }

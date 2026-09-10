@@ -6,9 +6,7 @@ import blusunrize.immersiveengineering.client.models.ModelConveyor;
 import blusunrize.immersiveengineering.common.util.chickenbones.Matrix4;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -27,7 +25,6 @@ import javax.vecmath.Matrix4f;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
 
@@ -105,19 +102,7 @@ public class ConveyorVerticalCoveredAlternative extends ConveyorVerticalAlternat
         Block b = Block.getBlockFromItem(coverStack.getItem());
         IBlockState state = ICUtils.stateOf(b, coverStack.getMetadata());
 
-        IBakedModel model = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelForState(state);
-        TextureAtlasSprite particle = model.getParticleTexture();
-        HashMap<EnumFacing, TextureAtlasSprite> sprites = new HashMap<>();
-        for (EnumFacing f : EnumFacing.VALUES) {
-            for (BakedQuad q : model.getQuads(state, f, 0L)) {
-                if (q != null) sprites.put(f, q.getSprite());
-            }
-        }
-        for (BakedQuad q : model.getQuads(state, null, 0L)) {
-            if (q != null) sprites.put(q.getFace(), q.getSprite());
-        }
-
-        Function<EnumFacing, TextureAtlasSprite> getSprite = fx -> sprites.getOrDefault(fx, particle);
+        Function<EnumFacing, TextureAtlasSprite> getSprite = ConveyorCoveredHelper.coverSprites(state);
         float[] colour = {1.0F, 1.0F, 1.0F, 1.0F};
         Matrix4 matrix = new Matrix4(facing);
 

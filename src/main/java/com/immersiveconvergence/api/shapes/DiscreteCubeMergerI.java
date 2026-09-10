@@ -15,12 +15,12 @@ public final class DiscreteCubeMergerI implements IIndexMerger {
         this.secondDiv = bb / gcd;
     }
 
-    public void forMergedIndexes(IndexConsumer consumer) {
+    @Override public void forMergedIndexes(IndexConsumer consumer) {
         int size = this.result.size() - 1;
         for (int j = 0; j < size; j++) { if (!consumer.merge(j / this.secondDiv, j / this.firstDiv, j)) { return; } }
     }
 
-    public int size() { return this.result.size(); }
+    @Override public int size() { return this.result.size(); }
 
-    public DoubleList getList() { return this.result; }
+    @Override public DoubleList getList() { return this.result; }
 }

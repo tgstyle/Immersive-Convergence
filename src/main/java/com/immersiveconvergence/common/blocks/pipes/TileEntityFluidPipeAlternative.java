@@ -63,8 +63,8 @@ public class TileEntityFluidPipeAlternative extends TileEntityFluidPipe implemen
 
     public EnumDyeColor getColor() { return color; }
 
-    @SuppressWarnings("unchecked")
-    @Override @Nonnull public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
+    @SuppressWarnings({"unchecked", "NullableProblems"})
+    @Override @Nullable public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
         if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && facing != null && (sideConfig[facing.ordinal()] == 0 || sideConfig[facing.ordinal()] == 1)) { return (T)sidedHandlers[facing.ordinal()]; }
         return super.getCapability(capability, facing);
     }

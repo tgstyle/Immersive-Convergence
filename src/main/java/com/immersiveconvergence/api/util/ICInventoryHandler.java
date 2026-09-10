@@ -45,25 +45,9 @@ public class ICInventoryHandler implements IItemHandlerModifiable {
         int offsetSlot = this.slotOffset + slot;
         if (!inv.isStackValid(offsetSlot, stack)) { return stack; }
         ItemStack currentStack = inv.getInventory().get(offsetSlot);
-        if (currentStack.isEmpty()) {
-            int accepted = Math.min(stack.getMaxStackSize(), inv.getSlotLimit(offsetSlot));
-            if (accepted < stack.getCount()) {
-                if (simulate) {
-                    stack.shrink(accepted);
-                    return stack;
-                }
-                inv.getInventory().set(offsetSlot, stack.splitStack(accepted));
-                inv.doGraphicalUpdates(offsetSlot);
-                return stack;
-            }
-            if (!simulate) {
-                inv.getInventory().set(offsetSlot, stack);
-                inv.doGraphicalUpdates(offsetSlot);
-            }
-            return ItemStack.EMPTY;
-        }
-        if (!ItemHandlerHelper.canItemStacksStack(stack, currentStack)) { return stack; }
+        if (!currentStack.isEmpty() && !ItemHandlerHelper.canItemStacksStack(stack, currentStack)) { return stack; }
         int accepted = Math.min(stack.getMaxStackSize(), inv.getSlotLimit(offsetSlot)) - currentStack.getCount();
+        if (accepted <= 0) { return stack; }
         if (accepted < stack.getCount()) {
             if (simulate) {
                 stack.shrink(accepted);
@@ -101,7 +85,7 @@ public class ICInventoryHandler implements IItemHandlerModifiable {
         return copy;
     }
 
-    @Override public int getSlotLimit(int slot) { return 64; }
+    @Override public int getSlotLimit(int slot) { return inv.getSlotLimit(this.slotOffset + slot); }
 
     @Override public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
         inv.getInventory().set(this.slotOffset + slot, stack);

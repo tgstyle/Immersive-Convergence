@@ -10,7 +10,7 @@ public class ICMixinConfig {
     public static MixinSettings mixinSettings = new MixinSettings();
 
     public static class MixinSettings {
-        @Config.Comment("Replace Immersive Engineering's fluid pipes and fluid pump with Immersive Convergence's own implementations. Has no effect without Immersive Engineering [Default=true]")
+        @Config.Comment("Replace Immersive Engineering's fluid pipes and fluid pump with Immersive Convergence's own implementations. Turning this off also means Immersive Engineering's own pipes no longer recognise Immersive Technology's fluid valve as a pipe, so pressurized flow stops at the valve. Has no effect without Immersive Engineering [Default=true]")
         public boolean replaceIEPipes = true;
 
         @Config.Comment("Replace Immersive Engineering's conveyors with Immersive Convergence's own implementations. Has no effect without Immersive Engineering [Default=true]")

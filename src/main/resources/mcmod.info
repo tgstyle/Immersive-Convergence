@@ -8,6 +8,6 @@
     "url": "${mod_url}",
     "authorList": ["${mod_authors}"],
     "logoFile": "IClogo.png",
-    "dependencies": ["immersiveengineering"]
+    "dependencies": []
   }
 ]

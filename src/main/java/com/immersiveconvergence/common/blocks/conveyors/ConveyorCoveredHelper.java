@@ -26,6 +26,8 @@ import org.lwjgl.util.vector.Vector3f;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -38,7 +40,7 @@ public class ConveyorCoveredHelper {
 
     public static final ItemStack defaultCover;
 
-    private static final HashMap<IBlockState, CoverRenderData> coverRenderCache = new HashMap<>();
+    private static final Map<IBlockState, CoverRenderData> coverRenderCache = new ConcurrentHashMap<>();
 
     private static final float[] COVER_COLOUR = {1.0F, 1.0F, 1.0F, 1.0F};
 
@@ -114,28 +116,34 @@ public class ConveyorCoveredHelper {
         defaultCover = new ItemStack(IEContent.blockMetalDecoration1, 1, BlockTypes_MetalDecoration1.STEEL_SCAFFOLDING_0.getMeta());
     }
 
+    private static CoverRenderData coverRenderData(IBlockState state) {
+        return coverRenderCache.computeIfAbsent(state, key -> {
+            IBakedModel model = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelForState(key);
+            HashMap<EnumFacing, TextureAtlasSprite> sprites = new HashMap<>();
+            for (EnumFacing f : EnumFacing.VALUES) {
+                for (BakedQuad q : model.getQuads(key, f, 0L)) {
+                    if (q != null) sprites.put(f, q.getSprite());
+                }
+            }
+            for (BakedQuad q : model.getQuads(key, null, 0L)) {
+                if (q != null) sprites.put(q.getFace(), q.getSprite());
+            }
+            return new CoverRenderData(model.getParticleTexture(), sprites);
+        });
+    }
+
+    public static Function<EnumFacing, TextureAtlasSprite> coverSprites(IBlockState state) {
+        CoverRenderData data = coverRenderData(state);
+        return f -> data.faceSprites.getOrDefault(f, data.particle);
+    }
+
     public static void addCoverToQuads(List<BakedQuad> baseModel, EnumFacing facing, Supplier<ItemStack> coverGet, ConveyorDirection conDir, boolean[] walls) {
         ItemStack coverStack = coverGet.get();
         ItemStack cover = coverStack.isEmpty() ? defaultCover : coverStack;
         Block b = Block.getBlockFromItem(cover.getItem());
         IBlockState state = ICUtils.stateOf(b, cover.getMetadata());
 
-        CoverRenderData renderData = coverRenderCache.get(state);
-        if (renderData == null) {
-            IBakedModel model = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelForState(state);
-            TextureAtlasSprite particle = model.getParticleTexture();
-            HashMap<EnumFacing, TextureAtlasSprite> sprites = new HashMap<>();
-            for (EnumFacing f : EnumFacing.VALUES) {
-                for (BakedQuad q : model.getQuads(state, f, 0L)) {
-                    if (q != null) sprites.put(f, q.getSprite());
-                }
-            }
-            for (BakedQuad q : model.getQuads(state, null, 0L)) {
-                if (q != null) sprites.put(q.getFace(), q.getSprite());
-            }
-            renderData = new CoverRenderData(particle, sprites);
-            coverRenderCache.put(state, renderData);
-        }
+        CoverRenderData renderData = coverRenderData(state);
 
         final TextureAtlasSprite particleSprite = renderData.particle;
         final HashMap<EnumFacing, TextureAtlasSprite> faceSprites = renderData.faceSprites;

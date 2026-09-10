@@ -5,6 +5,8 @@ import com.immersiveconvergence.api.ICLib;
 import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.energy.IICFluxProvider;
 import com.immersiveconvergence.api.energy.IICFluxAcceptor;
+import com.immersiveconvergence.api.block.ICSideConfig;
+import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IConfigurableSides;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IProcessTile;
 import com.immersiveconvergence.api.petroleum.ICPowerTier;
 import com.immersiveconvergence.api.petroleum.ICPumpjackHandler;
@@ -22,6 +24,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 
@@ -40,6 +43,7 @@ public class ICOneProbe extends ICCompatModule implements Function<ITheOneProbe,
         if (probe == null) { return null; }
         probe.registerProvider(new EnergyProvider());
         probe.registerProvider(new ProcessProvider());
+        probe.registerProvider(new SideConfigProvider());
         if (ICMods.immersivePetroleum()) { probe.registerProvider(new ReservoirProvider()); }
         return null;
     }
@@ -89,6 +93,19 @@ public class ICOneProbe extends ICCompatModule implements Function<ITheOneProbe,
         }
 
 
+    }
+
+    private static class SideConfigProvider implements IProbeInfoProvider {
+        @Override public String getID() { return ImmersiveConvergence.MODID + ":sideconfig"; }
+
+        @Override public void addProbeInfo(ProbeMode mode, IProbeInfo info, EntityPlayer player, World world, IBlockState state, IProbeHitData data) {
+            TileEntity tile = world.getTileEntity(data.getPos());
+            if (!(tile instanceof IConfigurableSides) || data.getSideHit() == null) { return; }
+            boolean flip = player.isSneaking();
+            EnumFacing side = flip ? data.getSideHit().getOpposite() : data.getSideHit();
+            ICSideConfig config = ((IConfigurableSides)tile).sideConfig(side.getIndex());
+            info.text(I18n.format(ICLib.DESC_INFO + "blockSide." + (flip ? "opposite" : "facing")) + ": " + I18n.format(ICLib.DESC_INFO + "blockSide.io." + (config.ordinal() - 1)));
+        }
     }
 
     private static class ReservoirProvider implements IProbeInfoProvider {

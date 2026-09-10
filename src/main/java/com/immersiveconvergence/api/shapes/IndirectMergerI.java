@@ -58,12 +58,12 @@ public class IndirectMergerI implements IIndexMerger {
         }
     }
 
-    public void forMergedIndexes(IndexConsumer pConsumer) {
+    @Override public void forMergedIndexes(IndexConsumer pConsumer) {
         int i = this.resultLength - 1;
         for (int j = 0; j < i; j++) { if (!pConsumer.merge(this.firstIndices[j], this.secondIndices[j], j)) { return; } }
     }
 
-    public int size() { return this.resultLength; }
+    @Override public int size() { return this.resultLength; }
 
-    public DoubleList getList() { return this.resultLength <= 1 ? EMPTY : DoubleArrayList.wrap(this.result, this.resultLength); }
+    @Override public DoubleList getList() { return this.resultLength <= 1 ? EMPTY : DoubleArrayList.wrap(this.result, this.resultLength); }
 }

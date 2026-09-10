@@ -1,6 +1,7 @@
 package com.immersiveconvergence.api.multiblock;
 
 import com.immersiveconvergence.api.client.split.ISubmodelOffsetProvider;
+import com.immersiveconvergence.common.util.ICLogger;
 import com.immersiveconvergence.api.crafting.ICRecipe;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IPlayerInteraction;
 import com.immersiveconvergence.api.util.ICUtils;
@@ -191,12 +192,23 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
         else {
             int levels = structureDimensions[1] * structureDimensions[2];
             int total = structureDimensions[0] * levels;
-            ItemStack[][][] manual = multiblockInstance.getStructureManual();
-            for (int i = 0; i < total; i++) {
-                int h = i / levels;
-                int l = i % levels / structureDimensions[2];
-                int w = i % structureDimensions[2];
-                if (manual != null && !manual[h][l][w].isEmpty()) { found.add(getBlockPosForPos(i)); }
+            boolean filtered = false;
+            try {
+                ItemStack[][][] manual = multiblockInstance.getStructureManual();
+                if (manual != null) {
+                    for (int i = 0; i < total; i++) {
+                        ItemStack stack = manual[i / levels][i % levels / structureDimensions[2]][i % structureDimensions[2]];
+                        if (stack == null || !stack.isEmpty()) { found.add(getBlockPosForPos(i)); }
+                    }
+                    filtered = true;
+                }
+            }
+            catch (Exception e) {
+                ICLogger.error("Multiblock structure manual did not match its dimensions: " + e);
+                found.clear();
+            }
+            if (!filtered) {
+                for (int i = 0; i < total; i++) { found.add(getBlockPosForPos(i)); }
             }
         }
         comparatorSweepCache = found;
@@ -315,7 +327,7 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
     @Override public void disassemble() {
         if (formed && !world.isRemote) {
             BlockPos masterPos = getPos().add(-offset[0], -offset[1], -offset[2]);
-            if (QueueProcessor.activeDisassemblies.contains(masterPos)) { return; }
+            if (QueueProcessor.isDisassembling(world, masterPos)) { return; }
             TileEntity teMaster = world.getTileEntity(masterPos);
             if (teMaster instanceof IICInventory && shouldDropInventory) {
                 NonNullList<ItemStack> inv = ((IICInventory)teMaster).getInventory();

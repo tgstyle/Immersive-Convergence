@@ -14,9 +14,9 @@ public class NonOverlappingMergerI extends AbstractDoubleList implements IIndexM
         this.swap = swap;
     }
 
-    public int size() { return this.lower.size() + this.upper.size(); }
+    @Override public int size() { return this.lower.size() + this.upper.size(); }
 
-    public void forMergedIndexes(IndexConsumer consumer) {
+    @Override public void forMergedIndexes(IndexConsumer consumer) {
         if (this.swap) {this.forNonSwappedIndexes((p1, p2, p3) -> consumer.merge(p2, p1, p3));} else {this.forNonSwappedIndexes(consumer);}
     }
 
@@ -29,5 +29,5 @@ public class NonOverlappingMergerI extends AbstractDoubleList implements IIndexM
 
     public double getDouble(int index) { return index < this.lower.size() ? this.lower.getDouble(index) : this.upper.getDouble(index - this.lower.size()); }
 
-    public DoubleList getList() { return this; }
+    @Override public DoubleList getList() { return this; }
 }

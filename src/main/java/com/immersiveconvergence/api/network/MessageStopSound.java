@@ -3,6 +3,7 @@ package com.immersiveconvergence.api.network;
 import com.immersiveconvergence.api.client.ICSoundHandler;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -25,7 +26,7 @@ public class MessageStopSound implements IMessage {
     @SideOnly(Side.CLIENT)
     public static class HandlerClient implements IMessageHandler<MessageStopSound, IMessage> {
         @Override public IMessage onMessage(MessageStopSound message, MessageContext ctx) {
-            ICSoundHandler.stopSound(message.pos);
+            Minecraft.getMinecraft().addScheduledTask(() -> ICSoundHandler.stopSound(message.pos));
             return null;
         }
     }

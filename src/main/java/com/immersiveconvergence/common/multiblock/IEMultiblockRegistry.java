@@ -1,6 +1,7 @@
 package com.immersiveconvergence.common.multiblock;
 
 import com.immersiveconvergence.api.multiblock.ShapeData;
+import java.util.concurrent.ConcurrentHashMap;
 
 import blusunrize.immersiveengineering.common.blocks.TileEntityMultiblockPart;
 import net.minecraft.block.state.IBlockState;
@@ -40,9 +41,16 @@ public final class IEMultiblockRegistry {
 
     public static void registerTile(Class<?> tile, String uniqueName) { tileNames.put(tile, uniqueName); }
 
+    private static final Map<Class<?>, IEMultiblock> templateByClass = new ConcurrentHashMap<>();
+
     public static IEMultiblock templateFor(TileEntityMultiblockPart<?> part) {
-        String name = tileNames.get(part.getClass());
-        return name == null ? null : get(name);
+        Class<?> type = part.getClass();
+        IEMultiblock cached = templateByClass.get(type);
+        if (cached != null) { return cached; }
+        String name = tileNames.get(type);
+        IEMultiblock resolved = name == null ? null : get(name);
+        if (resolved != null) { templateByClass.put(type, resolved); }
+        return resolved;
     }
 
     public static int portPos(TileEntityMultiblockPart<?> part) {

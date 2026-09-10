@@ -150,6 +150,7 @@ public class ConveyorBasicAlternative implements IConveyorBelt {
         dyeColour = nbt.hasKey("dyeColour") ? nbt.getInteger("dyeColour") : -1;
         runTimer = nbt.getInteger("runTimer");
         lastActivationTick = 0;
+        lastRenderedActive = runTimer > 0;
     }
 
     @Override public ResourceLocation getActiveTexture() { return TEXTURE_ON; }

@@ -111,7 +111,8 @@ public abstract class ICTileEntityMultiblockMetal<T extends ICTileEntityMultiblo
         R recipe = readRecipeFromNBT(tag);
         if (recipe == null) { return null; }
         if (isInWorldProcessingMachine()) { return new MultiblockProcessInWorld<>(recipe, tag.getFloat("process_transformationPoint"), ICUtils.loadItemStacksFromNBT(tag.getTag("process_inputItem"))); }
-        return new MultiblockProcessInMachine<>(recipe, tag.getIntArray("process_inputSlots")).setInputTanks(tag.getIntArray("process_inputTanks"));
+        MultiblockProcessInMachine<R> process = new MultiblockProcessInMachine<>(recipe, tag.getIntArray("process_inputSlots")).setInputTanks(tag.getIntArray("process_inputTanks"));
+        return tag.hasKey("process_inputAmounts") ? process.setInputAmounts(tag.getIntArray("process_inputAmounts")) : process;
     }
 
     protected NBTTagCompound writeProcessToNBT(MultiblockProcess<R> process) {
@@ -259,7 +260,6 @@ public abstract class ICTileEntityMultiblockMetal<T extends ICTileEntityMultiblo
 
     @Override @Nonnull public PropertyBoolInverted getBoolProperty(@Nonnull Class<? extends IUsesBooleanProperty> inf) { return ICProperties.BOOLEANS[0]; }
 
-    private boolean syncedThisTick;
     protected boolean lastRenderedActive;
 
     protected void tickPendingNotifications() {}
@@ -281,7 +281,7 @@ public abstract class ICTileEntityMultiblockMetal<T extends ICTileEntityMultiblo
 
     @Override public void update() {
         ICTickingRegistry.checkForNeedlessTicking(this);
-        syncedThisTick = false;
+        boolean syncedThisTick = false;
         tickedProcesses = 0;
         if (world.isRemote || isDummy()) { return; }
         if (syncParity()) { flushClientSync(); }

@@ -66,13 +66,11 @@ public class ConveyorDropAlternative extends ConveyorBasicAlternative {
                 ItemStack stack = entity.getItem();
                 if (!stack.isEmpty()) {
                     ItemStack ret = ApiUtils.insertStackIntoInventory(inventoryTile, stack, EnumFacing.UP);
-                    if (ret.isEmpty()) {
-                        entity.setDead();
-                    } else if (ret.getCount() < stack.getCount()) {
-                        entity.setItem(ret);
-                    }
+                    if (ret.isEmpty()) { entity.setDead(); return; }
+                    if (ret.getCount() < stack.getCount()) { entity.setItem(ret); return; }
                 }
             }
+            super.handleInsertion(tile, entity, facing, conDir, distX, distZ);
         } else if (contact && isEmptySpace(tile.getWorld(), posDown, inventoryTile)) {
             entity.motionX = 0;
             entity.motionZ = 0;

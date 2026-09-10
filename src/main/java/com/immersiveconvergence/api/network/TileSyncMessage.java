@@ -2,6 +2,7 @@ package com.immersiveconvergence.api.network;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -38,9 +39,10 @@ public class TileSyncMessage implements IMessage {
 
     public static class HandlerServer implements IMessageHandler<TileSyncMessage, IMessage> {
         @Override public IMessage onMessage(TileSyncMessage message, MessageContext ctx) {
-            WorldServer world = ctx.getServerHandler().player.getServerWorld();
+            EntityPlayerMP player = ctx.getServerHandler().player;
+            WorldServer world = player.getServerWorld();
             world.addScheduledTask(() -> {
-                if (world.isBlockLoaded(message.pos)) {
+                if (world.isBlockLoaded(message.pos) && player.getDistanceSq(message.pos) < 64) {
                     TileEntity tile = world.getTileEntity(message.pos);
                     if (tile instanceof ITileSyncReceiver) { ((ITileSyncReceiver)tile).receiveMessageFromClient(message.nbt); }
                 }

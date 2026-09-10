@@ -12,8 +12,20 @@ public class ICCommonConfig {
     public static Heat heat = new Heat();
     public static Pipes pipes = new Pipes();
     public static Petroleum petroleum = new Petroleum();
+    public static Experimental experimental = new Experimental();
 
     public enum DisassemblyMode { PROCESS_QUEUE, TEMPLATE_BLOCKS }
+
+    public static class Experimental {
+        @Config.Comment({
+                "EXPERIMENTAL. Run as though Immersive Engineering were not installed, even when it is.",
+                "Every Immersive Engineering path in Immersive Convergence and Immersive Technology gates off: no wires, no conveyors, no connectors, no IE multiblock templates, and none of the content built out of IE blocks or items. Immersive Petroleum gates off with it, because it cannot work without Immersive Engineering.",
+                "Recipes that name IE items will have no valid ingredients, multiblocks whose templates are built from IE blocks cannot be assembled, and anything already placed from them will not come back.",
+                "Turning this on means: I know what I am doing, and I can replace the needed recipes, and NBT data myself.",
+                "[Default=false]"})
+        @Config.RequiresMcRestart
+        public boolean disableImmersiveEngineering = false;
+    }
 
     public static class Multiblocks {
         @Config.Comment("How a machine comes apart. PROCESS_QUEUE breaks it down block by block over a few ticks and drops all its materials at the broken block; TEMPLATE_BLOCKS instantly reverts it to the blocks it was built from. Sneak-breaking always uses TEMPLATE_BLOCKS. Applies to Immersive Engineering, Immersive Petroleum and Immersive Technology multiblocks alike [Default=PROCESS_QUEUE]")
