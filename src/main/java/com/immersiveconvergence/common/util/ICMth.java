@@ -19,13 +19,6 @@ public class ICMth {
         return pMin;
     }
 
-    public static double clamp(double pValue, double pMin, double pMax) { return Math.max(pMin, Math.min(pValue, pMax)); }
-
-    public static int floor(double pValue) {
-        int i = (int)pValue;
-        return pValue < (double)i ? i - 1 : i;
-    }
-
     public static int gcd(int a, int b) {
         a = Math.abs(a);
         b = Math.abs(b);

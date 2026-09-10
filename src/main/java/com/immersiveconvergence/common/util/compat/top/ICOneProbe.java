@@ -8,6 +8,7 @@ import com.immersiveconvergence.api.energy.IICFluxAcceptor;
 import com.immersiveconvergence.api.block.ICSideConfig;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IConfigurableSides;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IProcessTile;
+import com.immersiveconvergence.api.multiblock.ICTileEntityMultiblockPart;
 import com.immersiveconvergence.api.petroleum.ICPowerTier;
 import com.immersiveconvergence.api.petroleum.ICPumpjackHandler;
 import com.immersiveconvergence.api.petroleum.ICReservoirData;
@@ -15,14 +16,20 @@ import com.immersiveconvergence.common.util.compat.ICCompatModule;
 
 import flaxbeard.immersivepetroleum.api.crafting.PumpjackHandler;
 import flaxbeard.immersivepetroleum.common.blocks.metal.TileEntityPumpjack;
+import mcjty.theoneprobe.Tools;
+import mcjty.theoneprobe.api.ElementAlignment;
+import mcjty.theoneprobe.api.IBlockDisplayOverride;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.IProbeInfoProvider;
 import mcjty.theoneprobe.api.ITheOneProbe;
 import mcjty.theoneprobe.api.ProbeMode;
+import mcjty.theoneprobe.api.TextStyleClass;
+import mcjty.theoneprobe.config.Config;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
@@ -41,11 +48,22 @@ public class ICOneProbe extends ICCompatModule implements Function<ITheOneProbe,
 
     @Override @Nullable public Void apply(@Nullable ITheOneProbe probe) {
         if (probe == null) { return null; }
+        probe.registerBlockDisplayOverride(new MultiblockDisplayOverride());
         probe.registerProvider(new EnergyProvider());
         probe.registerProvider(new ProcessProvider());
         probe.registerProvider(new SideConfigProvider());
         if (ICMods.immersivePetroleum()) { probe.registerProvider(new ReservoirProvider()); }
         return null;
+    }
+
+    private static class MultiblockDisplayOverride implements IBlockDisplayOverride {
+        @Override public boolean overrideStandardInfo(ProbeMode mode, IProbeInfo info, EntityPlayer player, World world, IBlockState state, IProbeHitData data) {
+            if (!(world.getTileEntity(data.getPos()) instanceof ICTileEntityMultiblockPart)) { return false; }
+            ItemStack stack = new ItemStack(state.getBlock(), 1, state.getBlock().getMetaFromState(state));
+            if (Tools.show(mode, Config.getRealConfig().getShowModName())) { info.horizontal().item(stack).vertical().itemLabel(stack).text(TextStyleClass.MODNAME + Tools.getModName(state.getBlock())); }
+            else { info.horizontal(info.defaultLayoutStyle().alignment(ElementAlignment.ALIGN_CENTER)).item(stack).itemLabel(stack); }
+            return true;
+        }
     }
 
     private static class EnergyProvider implements IProbeInfoProvider {

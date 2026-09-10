@@ -118,6 +118,8 @@ public abstract class ICTileEntityMultiblockPart<T extends ICTileEntityMultibloc
 
     protected abstract boolean canDrainTankFrom(int iTank, EnumFacing side);
 
+    protected int internalTankIndex(IFluidTank tank, int accessibleIndex) { return accessibleIndex; }
+
     public static class MultiblockFluidWrapper implements IFluidHandler {
         final ICTileEntityMultiblockPart<?> multiblock;
         final EnumFacing side;
@@ -136,57 +138,65 @@ public abstract class ICTileEntityMultiblockPart<T extends ICTileEntityMultibloc
         }
 
         @Override public int fill(FluidStack resource, boolean doFill) {
-            if (!this.multiblock.formed || resource == null) { return 0; }
+            if (!this.multiblock.formed || resource == null || resource.amount <= 0) { return 0; }
             IFluidTank[] tanks = this.multiblock.getAccessibleFluidTanks(side);
-            int fill = -1;
-            for (int i = 0; i < tanks.length; i++) {
+            FluidStack remaining = resource.copy();
+            int filled = 0;
+            for (int i = 0; i < tanks.length && remaining.amount > 0; i++) {
                 IFluidTank tank = tanks[i];
-                if (tank != null && this.multiblock.canFillTankFrom(i, side, resource) && tank.getFluid() != null && tank.getFluid().isFluidEqual(resource)) {
-                    fill = tank.fill(resource, doFill);
-                    if (fill > 0) { break; }
+                if (tank == null) { continue; }
+                if (this.multiblock.canFillTankFrom(this.multiblock.internalTankIndex(tank, i), side, remaining)) {
+                    int moved = tank.fill(remaining, doFill);
+                    filled += moved;
+                    remaining.amount -= moved;
                 }
             }
-            if (fill == -1) {
-                for (int i = 0; i < tanks.length; i++) {
-                    IFluidTank tank = tanks[i];
-                    if (tank != null && this.multiblock.canFillTankFrom(i, side, resource)) {
-                        fill = tank.fill(resource, doFill);
-                        if (fill > 0) { break; }
-                    }
-                }
-            }
-            if (fill > 0) { this.multiblock.updateMasterBlock(null, true); }
-            return Math.max(fill, 0);
+            if (filled > 0 && doFill) { this.multiblock.markDirty(); }
+            return filled;
         }
 
         @Nullable @Override public FluidStack drain(FluidStack resource, boolean doDrain) {
-            if (!this.multiblock.formed || resource == null) { return null; }
+            if (!this.multiblock.formed || resource == null || resource.amount <= 0) { return null; }
             IFluidTank[] tanks = this.multiblock.getAccessibleFluidTanks(side);
-            FluidStack drain = null;
-            for (int i = 0; i < tanks.length; i++) {
+            FluidStack drained = null;
+            int remaining = resource.amount;
+            for (int i = 0; i < tanks.length && remaining > 0; i++) {
                 IFluidTank tank = tanks[i];
-                if (tank != null && this.multiblock.canDrainTankFrom(i, side)) {
-                    drain = tank instanceof IFluidHandler ? ((IFluidHandler)tank).drain(resource, doDrain) : tank.drain(resource.amount, doDrain);
-                    if (drain != null) { break; }
+                if (tank == null) { continue; }
+                FluidStack held = tank.getFluid();
+                if (held == null || !held.isFluidEqual(resource)) { continue; }
+                if (this.multiblock.canDrainTankFrom(this.multiblock.internalTankIndex(tank, i), side)) {
+                    FluidStack moved = tank.drain(Math.min(remaining, held.amount), doDrain);
+                    if (moved == null || moved.amount <= 0) { continue; }
+                    if (drained == null) { drained = moved.copy(); }
+                    else { drained.amount += moved.amount; }
+                    remaining -= moved.amount;
                 }
             }
-            if (drain != null) { this.multiblock.updateMasterBlock(null, true); }
-            return drain;
+            if (drained != null && doDrain) { this.multiblock.markDirty(); }
+            return drained;
         }
 
         @Nullable @Override public FluidStack drain(int maxDrain, boolean doDrain) {
-            if (!this.multiblock.formed || maxDrain == 0) { return null; }
+            if (!this.multiblock.formed || maxDrain <= 0) { return null; }
             IFluidTank[] tanks = this.multiblock.getAccessibleFluidTanks(side);
-            FluidStack drain = null;
-            for (int i = 0; i < tanks.length; i++) {
+            FluidStack drained = null;
+            int remaining = maxDrain;
+            for (int i = 0; i < tanks.length && remaining > 0; i++) {
                 IFluidTank tank = tanks[i];
-                if (tank != null && this.multiblock.canDrainTankFrom(i, side)) {
-                    drain = tank.drain(maxDrain, doDrain);
-                    if (drain != null) { break; }
+                if (tank == null) { continue; }
+                FluidStack held = tank.getFluid();
+                if (held == null || (drained != null && !held.isFluidEqual(drained))) { continue; }
+                if (this.multiblock.canDrainTankFrom(this.multiblock.internalTankIndex(tank, i), side)) {
+                    FluidStack moved = tank.drain(remaining, doDrain);
+                    if (moved == null || moved.amount <= 0) { continue; }
+                    if (drained == null) { drained = moved.copy(); }
+                    else { drained.amount += moved.amount; }
+                    remaining -= moved.amount;
                 }
             }
-            if (drain != null) { this.multiblock.updateMasterBlock(null, true); }
-            return drain;
+            if (drained != null && doDrain) { this.multiblock.markDirty(); }
+            return drained;
         }
     }
 

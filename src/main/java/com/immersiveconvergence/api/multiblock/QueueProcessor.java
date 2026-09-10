@@ -119,6 +119,22 @@ public class QueueProcessor {
     }
 
     public static Result handleDisassembly(ICMultiblockPart broken, int[] structureDimensions, boolean dropOriginal) {
+        EnumFacing facing = broken.getPartFacing();
+        boolean mirrored = broken.isPartMirrored();
+        BlockPos startPos = broken.getPartOrigin();
+        List<BlockPos> positions = new ArrayList<>(structureDimensions[0] * structureDimensions[1] * structureDimensions[2]);
+        for (int h = 0; h < structureDimensions[0]; h++) {
+            for (int l = 0; l < structureDimensions[1]; l++) {
+                for (int w = 0; w < structureDimensions[2]; w++) {
+                    int ww = mirrored ? -w : w;
+                    positions.add(startPos.offset(facing, l).offset(facing.rotateY(), ww).add(0, h, 0));
+                }
+            }
+        }
+        return handleDisassembly(broken, positions, dropOriginal);
+    }
+
+    public static Result handleDisassembly(ICMultiblockPart broken, List<BlockPos> positions, boolean dropOriginal) {
         World world = broken.getWorld();
         if (world.isRemote || broken.isPartUnformed()) { return Result.FALLBACK; }
         BlockPos brokenPos = broken.getPos();
@@ -128,62 +144,46 @@ public class QueueProcessor {
         EntityPlayer breakingPlayer = world.getClosestPlayer(masterPos.getX() + 0.5, masterPos.getY() + 0.5, masterPos.getZ() + 0.5, -1, false);
         boolean creative = breakingPlayer != null && breakingPlayer.isCreative();
         boolean templateMode = !queueEnabled.getAsBoolean() || (sneakBreaking && brokenPos.equals(currentlyBreakingPos));
-        EnumFacing facing = broken.getPartFacing();
-        boolean mirrored = broken.isPartMirrored();
-        BlockPos startPos = broken.getPartOrigin();
         long time = world.getTotalWorldTime();
         if (templateMode) {
             if (!creative) { return Result.FALLBACK; }
-            for (int h = 0; h < structureDimensions[0]; h++) {
-                for (int l = 0; l < structureDimensions[1]; l++) {
-                    for (int w = 0; w < structureDimensions[2]; w++) {
-                        int ww = mirrored ? -w : w;
-                        BlockPos pos2 = startPos.offset(facing, l).offset(facing.rotateY(), ww).add(0, h, 0);
-                        ICMultiblockPart part = ICMultiblockPart.of(world.getTileEntity(pos2));
-                        if (part != null) {
-                            int[] partOffset = part.getPartOffset();
-                            Vec3i diff = pos2.subtract(masterPos);
-                            if (partOffset[0] != diff.getX() || partOffset[1] != diff.getY() || partOffset[2] != diff.getZ()) { continue; }
-                            if (time == part.getPartDisassemblyTime()) { continue; }
-                            ItemStack s = part.getPartOriginalBlock();
-                            part.unformPart();
-                            if (pos2.equals(brokenPos)) { continue; }
-                            IBlockState state = ICUtils.getStateFromItemStack(s);
-                            if (state != null) {
-                                world.setBlockState(pos2, state);
-                                readOnPlacement(world.getTileEntity(pos2), s);
-                            }
-                        }
-                    }
+            for (BlockPos pos2 : positions) {
+                ICMultiblockPart part = ICMultiblockPart.of(world.getTileEntity(pos2));
+                if (part == null) { continue; }
+                int[] partOffset = part.getPartOffset();
+                Vec3i diff = pos2.subtract(masterPos);
+                if (partOffset[0] != diff.getX() || partOffset[1] != diff.getY() || partOffset[2] != diff.getZ()) { continue; }
+                if (time == part.getPartDisassemblyTime()) { continue; }
+                ItemStack s = part.getPartOriginalBlock();
+                part.unformPart();
+                if (pos2.equals(brokenPos)) { continue; }
+                IBlockState state = ICUtils.getStateFromItemStack(s);
+                if (state != null) {
+                    world.setBlockState(pos2, state);
+                    readOnPlacement(world.getTileEntity(pos2), s);
                 }
             }
             return Result.CLEARED;
         }
         List<BlockPos> toBreak = new ArrayList<>();
         List<ItemStack> allDrops = new ArrayList<>();
-        for (int h = 0; h < structureDimensions[0]; h++) {
-            for (int l = 0; l < structureDimensions[1]; l++) {
-                for (int w = 0; w < structureDimensions[2]; w++) {
-                    int ww = mirrored ? -w : w;
-                    BlockPos pos2 = startPos.offset(facing, l).offset(facing.rotateY(), ww).add(0, h, 0);
-                    ItemStack s = ItemStack.EMPTY;
-                    boolean breakable = false;
-                    ICMultiblockPart part = ICMultiblockPart.of(world.getTileEntity(pos2));
-                    if (part != null) {
-                        int[] partOffset = part.getPartOffset();
-                        Vec3i diff = pos2.subtract(masterPos);
-                        if (partOffset[0] != diff.getX() || partOffset[1] != diff.getY() || partOffset[2] != diff.getZ()) { continue; }
-                        if (time != part.getPartDisassemblyTime()) {
-                            s = part.getPartOriginalBlock();
-                            part.unformPart();
-                            breakable = true;
-                        }
-                    }
-                    if (pos2.equals(brokenPos)) { s = broken.getPartOriginalBlock(); }
-                    if (!s.isEmpty()) { allDrops.add(s.copy()); }
-                    if (breakable && !pos2.equals(brokenPos)) { toBreak.add(pos2); }
+        for (BlockPos pos2 : positions) {
+            ItemStack s = ItemStack.EMPTY;
+            boolean breakable = false;
+            ICMultiblockPart part = ICMultiblockPart.of(world.getTileEntity(pos2));
+            if (part != null) {
+                int[] partOffset = part.getPartOffset();
+                Vec3i diff = pos2.subtract(masterPos);
+                if (partOffset[0] != diff.getX() || partOffset[1] != diff.getY() || partOffset[2] != diff.getZ()) { continue; }
+                if (time != part.getPartDisassemblyTime()) {
+                    s = part.getPartOriginalBlock();
+                    part.unformPart();
+                    breakable = true;
                 }
             }
+            if (pos2.equals(brokenPos)) { s = broken.getPartOriginalBlock(); }
+            if (!s.isEmpty()) { allDrops.add(s.copy()); }
+            if (breakable && !pos2.equals(brokenPos)) { toBreak.add(pos2); }
         }
         activeDisassemblies.computeIfAbsent(world.provider.getDimension(), dim -> new HashSet<>()).add(masterPos);
         boolean dropItems = !creative && dropOriginal && world.getGameRules().getBoolean("doTileDrops");

@@ -3,7 +3,6 @@ package com.immersiveconvergence.common.blocks;
 import com.immersiveconvergence.api.block.ICBlockTileProvider;
 import com.immersiveconvergence.api.block.ICProperties;
 import com.immersiveconvergence.api.block.ICItemBlockBase;
-import com.immersiveconvergence.api.multiblock.ICBlockInterfaces;
 import com.immersiveconvergence.common.ICBlockContext;
 import com.immersiveconvergence.common.blocks.tileentities.TileEntityHeatCreative;
 import com.immersiveconvergence.common.blocks.tileentities.TileEntityRotorCreative;
@@ -13,9 +12,6 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -35,15 +31,6 @@ public class ICBlockDevice extends ICBlockTileProvider<ICBlockType_Device> {
     @Override @Nonnull public String getCustomStateMapping(int meta, boolean itemBlock) { return ICBlockType_Device.values()[meta].getName(); }
 
     @Override public boolean allowHammerHarvest(IBlockState state) { return true; }
-
-    @Override @Nonnull public AxisAlignedBB getBoundingBox(@Nonnull IBlockState state, @Nonnull IBlockAccess source, @Nonnull BlockPos pos) {
-        TileEntity te = source.getTileEntity(pos);
-        if (te instanceof ICBlockInterfaces.IBlockBounds) {
-            float[] bounds = ((ICBlockInterfaces.IBlockBounds)te).getBlockBounds();
-            return new AxisAlignedBB(bounds[0], bounds[1], bounds[2], bounds[3], bounds[4], bounds[5]);
-        }
-        return super.getBoundingBox(state, source, pos);
-    }
 
     @Override public TileEntity createBasicTE(World worldIn, ICBlockType_Device type) {
         switch (type) {

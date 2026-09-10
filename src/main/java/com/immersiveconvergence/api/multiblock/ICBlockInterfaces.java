@@ -206,16 +206,6 @@ public class ICBlockInterfaces {
         boolean getIsSecondState();
     }
 
-    public interface IAdvancedSelectionBounds extends IBlockBounds {
-        List<AxisAlignedBB> getAdvancedSelectionBounds();
-
-        boolean isOverrideBox(AxisAlignedBB box, EntityPlayer player, RayTraceResult mop, ArrayList<AxisAlignedBB> list);
-    }
-
-    public interface IAdvancedCollisionBounds extends IBlockBounds {
-        List<AxisAlignedBB> getAdvancedCollisionBounds();
-    }
-
     public interface IHasObjProperty {
         ArrayList<String> compileDisplayList();
     }

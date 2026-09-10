@@ -1,9 +1,8 @@
 package com.immersiveconvergence.api.shapes;
 
-import com.immersiveconvergence.common.util.ICMth;
-
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.MathHelper;
 
 public final class CubeVoxelShape extends VoxelShape {
     CubeVoxelShape(DiscreteVoxelShape pShape) {
@@ -16,6 +15,6 @@ public final class CubeVoxelShape extends VoxelShape {
 
     protected int findIndex(EnumFacing.Axis pAxis, double pPosition) {
         int i = this.shape.getSize(pAxis);
-        return ICMth.floor(ICMth.clamp(pPosition * (double)i, -1.0D, i));
+        return MathHelper.floor(MathHelper.clamp(pPosition * (double)i, -1.0D, i));
     }
 }

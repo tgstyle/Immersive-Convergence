@@ -49,6 +49,9 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -346,34 +349,51 @@ public abstract class ICBlockTileProvider<E extends Enum<E> & ICBlockBase.IBlock
         return super.getBoundingBox(state, world, pos);
     }
 
-    @Override public void addCollisionBoxToList(@Nonnull IBlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull AxisAlignedBB mask, @Nonnull List<AxisAlignedBB> list, @Nullable Entity ent, boolean p_185477_7_) {
+    @SideOnly(Side.CLIENT)
+    @Override @Nonnull public AxisAlignedBB getSelectedBoundingBox(@Nonnull IBlockState state, @Nonnull World world, @Nonnull BlockPos pos) {
         TileEntity te = world.getTileEntity(pos);
-        if (te instanceof IAdvancedCollisionBounds) {
-            List<AxisAlignedBB> bounds = ((IAdvancedCollisionBounds)te).getAdvancedCollisionBounds();
+        if (te instanceof ISelectionBounds) {
+            List<AxisAlignedBB> list = ((ISelectionBounds)te).getAdvancedSelectionBounds();
+            if (!list.isEmpty()) { return new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D); }
+        }
+        return getBoundingBox(state, world, pos).offset(pos);
+    }
+
+    @Override public void addCollisionBoxToList(@Nonnull IBlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull AxisAlignedBB mask, @Nonnull List<AxisAlignedBB> list, @Nullable Entity ent, boolean isActualState) {
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof ICollisionBounds) {
+            List<AxisAlignedBB> bounds = ((ICollisionBounds)te).getAdvancedCollisionBounds();
             if (!bounds.isEmpty()) {
-                for (AxisAlignedBB aabb : bounds) { if (aabb != null && mask.intersects(aabb)) { list.add(aabb); } }
+                for (AxisAlignedBB aabb : bounds) {
+                    AxisAlignedBB worldAABB = aabb.offset(pos);
+                    if (worldAABB.intersects(mask)) { list.add(worldAABB); }
+                }
                 return;
             }
         }
-        super.addCollisionBoxToList(state, world, pos, mask, list, ent, p_185477_7_);
+        super.addCollisionBoxToList(state, world, pos, mask, list, ent, isActualState);
     }
 
     @Override public RayTraceResult collisionRayTrace(@Nonnull IBlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull Vec3d start, @Nonnull Vec3d end) {
         TileEntity te = world.getTileEntity(pos);
-        if (te instanceof IAdvancedSelectionBounds) {
-            List<AxisAlignedBB> list = ((IAdvancedSelectionBounds)te).getAdvancedSelectionBounds();
-            if (!list.isEmpty()) {
-                RayTraceResult min = null;
-                double minDist = Double.POSITIVE_INFINITY;
-                for (AxisAlignedBB aabb : list) {
-                    RayTraceResult mop = this.rayTrace(pos, start, end, aabb.offset(-pos.getX(), -pos.getY(), -pos.getZ()));
-                    if (mop != null) {
-                        double dist = mop.hitVec.squareDistanceTo(start);
-                        if (dist < minDist) { min = mop; minDist = dist; }
+        if (te instanceof ISelectionBounds) {
+            RayTraceResult minMOP = null;
+            double minDist = Double.POSITIVE_INFINITY;
+            int subHit = 0;
+            for (AxisAlignedBB aabb : ((ISelectionBounds)te).getAdvancedSelectionBounds()) {
+                RayTraceResult mop = aabb.offset(pos).calculateIntercept(start, end);
+                if (mop != null) {
+                    mop = new RayTraceResult(mop.hitVec, mop.sideHit, pos);
+                    double dist = mop.hitVec.squareDistanceTo(start);
+                    if (dist < minDist) {
+                        minMOP = mop;
+                        minMOP.subHit = subHit;
+                        minDist = dist;
                     }
                 }
-                return min;
+                subHit++;
             }
+            if (minMOP != null) { return minMOP; }
         }
         return super.collisionRayTrace(state, world, pos, start, end);
     }

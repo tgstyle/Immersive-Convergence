@@ -1,15 +1,21 @@
 package com.immersiveconvergence.api.multiblock;
 
+import com.immersiveconvergence.ImmersiveConvergence;
+import com.immersiveconvergence.api.client.ICSoundHandler;
 import com.immersiveconvergence.api.client.split.ISubmodelOffsetProvider;
 import com.immersiveconvergence.common.util.ICLogger;
 import com.immersiveconvergence.api.crafting.ICRecipe;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IPlayerInteraction;
+import com.immersiveconvergence.api.network.MessageStopSound;
 import com.immersiveconvergence.api.util.ICUtils;
 import com.immersiveconvergence.api.util.IICInventory;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -28,10 +34,11 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SuppressWarnings("unused")
 public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateMultiblock<T, R, M>, R extends ICRecipe, M extends T> extends ICTileEntityMultiblockMetal<T, R> implements IPlayerInteraction, ISubmodelOffsetProvider, IICInventory {
@@ -44,10 +51,126 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
     private boolean boundsCacheMirrored;
     public boolean shouldDropOriginal = true;
     public boolean shouldDropInventory = true;
+    private Map<String, List<PoICache>> poiCache;
+    protected boolean needsNotify = true;
 
     public TileEntityTemplateMultiblock(MachineTemplateMultiblock<?> instance, int energyCapacity, boolean redstoneControl) { super(instance, new int[]{instance.height, instance.length, instance.width}, energyCapacity, redstoneControl); }
 
     public abstract M master();
+
+    @Nullable protected M resolveMaster(Class<M> type) {
+        T resolved = super.master();
+        return type.isInstance(resolved) ? type.cast(resolved) : null;
+    }
+
+    private Map<String, List<PoICache>> poiByName() {
+        Map<String, List<PoICache>> cache = poiCache;
+        if (cache == null) {
+            cache = new LinkedHashMap<>();
+            for (PoIJSONSchema poi : ((MachineTemplateMultiblock<?>)multiblockInstance).pointsOfInterest) {
+                if (poi.name == null) { continue; }
+                cache.computeIfAbsent(poi.name, name -> new ArrayList<>(1)).add(new PoICache(facing, poi, mirrored));
+            }
+            poiCache = cache;
+        }
+        return cache;
+    }
+
+    @Nonnull public PoICache poi(String name) {
+        List<PoICache> found = poiByName().get(name);
+        if (found == null) { throw new IllegalStateException("No point of interest '" + name + "' in " + multiblockInstance.getUniqueName()); }
+        return found.get(0);
+    }
+
+    @Nonnull public List<PoICache> pois(String name) {
+        List<PoICache> found = poiByName().get(name);
+        return found == null ? Collections.emptyList() : found;
+    }
+
+    @Nonnull public List<PoICache> poisWithPrefix(String prefix) {
+        List<PoICache> found = new ArrayList<>();
+        for (Map.Entry<String, List<PoICache>> entry : poiByName().entrySet()) {
+            if (entry.getKey().startsWith(prefix)) { found.addAll(entry.getValue()); }
+        }
+        return found;
+    }
+
+    @Nonnull public BlockPos poiWorldPos(String name) { return poiWorldPos(poi(name)); }
+
+    @Nonnull public BlockPos poiWorldPos(PoICache poi) { return getBlockPosForPos(poi.position); }
+
+    @Nonnull public BlockPos poiFrontPos(String name) { return poiFrontPos(poi(name)); }
+
+    @Nonnull public BlockPos poiFrontPos(PoICache poi) {
+        BlockPos worldPos = getBlockPosForPos(poi.position);
+        return poi.facing == null ? worldPos : worldPos.offset(poi.facing);
+    }
+
+    public boolean isPoI(String name, EnumFacing side, BlockPos posInMultiblock) {
+        for (PoICache poi : pois(name)) { if (poi.isPoI(side, posInMultiblock)) { return true; } }
+        return false;
+    }
+
+    public boolean isPoIWithPrefix(String prefix, EnumFacing side, BlockPos posInMultiblock) {
+        for (PoICache poi : poisWithPrefix(prefix)) { if (poi.isPoI(side, posInMultiblock)) { return true; } }
+        return false;
+    }
+
+    public boolean isPoIPosition(String prefix, BlockPos posInMultiblock) {
+        for (PoICache poi : poisWithPrefix(prefix)) { if (poi.position.equals(posInMultiblock)) { return true; } }
+        return false;
+    }
+
+    public int[] poiFlatIndices(String prefix) {
+        List<PoICache> found = poisWithPrefix(prefix);
+        int[] indices = new int[found.size()];
+        for (int i = 0; i < indices.length; i++) { indices[i] = toFlatIndex(found.get(i).position); }
+        return indices;
+    }
+
+    public boolean isEnergyPosition(@Nullable EnumFacing side, BlockPos posInMultiblock) { return formed && side != null && isPoIWithPrefix("energy", side, posInMultiblock); }
+
+    protected List<BlockPos> soundPositions() {
+        List<PoICache> found = poisWithPrefix("sound");
+        if (found.isEmpty()) { return Collections.emptyList(); }
+        List<BlockPos> positions = new ArrayList<>(found.size());
+        for (PoICache poi : found) { positions.add(getBlockPosForPos(poi.position)); }
+        return positions;
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void stopSounds() { for (BlockPos soundPos : soundPositions()) { ICSoundHandler.stopSound(soundPos); } }
+
+    private void sendStopSounds() {
+        for (BlockPos soundPos : soundPositions()) {
+            ImmersiveConvergence.packetHandler.sendToAllTracking(new MessageStopSound(soundPos), new NetworkRegistry.TargetPoint(world.provider.getDimension(), soundPos.getX(), soundPos.getY(), soundPos.getZ(), 0));
+        }
+    }
+
+    @Override public void onChunkUnload() {
+        if (world.isRemote && formed) { stopSounds(); }
+        super.onChunkUnload();
+    }
+
+    public void notifyIONeighbors() {
+        for (Map.Entry<String, List<PoICache>> entry : poiByName().entrySet()) {
+            if (!isPortName(entry.getKey())) { continue; }
+            for (PoICache poi : entry.getValue()) { world.notifyNeighborsOfStateChange(getBlockPosForPos(poi.position), getBlockType(), true); }
+        }
+        notifyComparators();
+    }
+
+    private static boolean isPortName(String name) {
+        return name.startsWith("energy") || name.startsWith("fluid") || name.startsWith("item") || name.startsWith("mechanical") || name.startsWith("heat") || name.startsWith("redstone");
+    }
+
+    @Override public void update() {
+        if (needsNotify && formed && !world.isRemote && master() == this) {
+            needsNotify = false;
+            notifyIONeighbors();
+        }
+        super.update();
+    }
 
     public static class ProcessInMachine<R extends ICRecipe> extends MultiblockProcessInMachine<R> {
         public ProcessInMachine(R recipe, int... inputSlots) { super(recipe, inputSlots); }
@@ -65,9 +188,18 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
 
     protected boolean useMirroredShape() { return true; }
 
-    protected boolean isInputFluidPoI(BlockPos position) { return false; }
+    protected boolean isInputFluidPoI(BlockPos position) { return isPoIPosition("fluid_input", position); }
 
-    protected int clearInputTanks() { return 0; }
+    protected int clearInputTanks() {
+        int cleared = 0;
+        for (PoICache poi : poisWithPrefix("fluid_input")) {
+            for (IFluidTank tank : getAccessibleFluidTanks(poi.facing, poi.position)) {
+                tank.drain(Integer.MAX_VALUE, true);
+                cleared++;
+            }
+        }
+        return cleared;
+    }
 
     @Override public boolean interact(@Nonnull EnumFacing side, @Nonnull EntityPlayer player, @Nonnull EnumHand hand, @Nonnull ItemStack heldItem, float hitX, float hitY, float hitZ) {
         if (!formed || !player.isSneaking() || !ICUtils.isHammer(heldItem)) { return false; }
@@ -97,6 +229,7 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
         offset = nbt.getIntArray("offset");
         facing = EnumFacing.values()[nbt.getInteger("facing")];
         mirrored = nbt.getBoolean("mirrored");
+        if (formed && !descPacket) { needsNotify = true; }
     }
 
     @Override public void writeCustomNBT(@Nonnull NBTTagCompound nbt, boolean descPacket) {
@@ -114,23 +247,6 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
         TileEntity tile = ICUtils.getExistingTileEntity(world, target);
         if (tile instanceof TileEntityTemplateMultiblock && tile.getClass().isInstance(this)) return (T)tile;
         return null;
-    }
-
-    @Override public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
-        if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-            assert facing != null;
-            if (this.getAccessibleFluidTanks(facing).length > 0) return true;
-        }
-        return super.hasCapability(capability, facing);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override @Nullable public <TE> TE getCapability(@Nonnull Capability<TE> capability, @Nullable EnumFacing facing) {
-        if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-            assert facing != null;
-            if (this.getAccessibleFluidTanks(facing).length > 0) return (TE)new MultiblockFluidWrapper(this, facing);
-        }
-        return super.getCapability(capability, facing);
     }
 
     private static final String[] DEFAULT_COMPARATOR_POIS = {"comparator0"};
@@ -218,6 +334,7 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
     @Override public void invalidateStructureCaches() {
         super.invalidateStructureCaches();
         comparatorSweepCache = null;
+        poiCache = null;
     }
 
     private void sweepComparators(long now) {
@@ -281,13 +398,20 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
 
     @Override @Nonnull public R findRecipeForInsertion(@Nonnull ItemStack inserting) { throw new UnsupportedOperationException(); }
 
-    @Override @Nonnull public int[] getEnergyPos() { return new int[0]; }
+    @Override @Nonnull public int[] getEnergyPos() {
+        M master = master();
+        if (master == null) { return new int[0]; }
+        if (master != this) { return master.getEnergyPos(); }
+        return formed ? poiFlatIndices("energy") : new int[0];
+    }
 
     @Override @Nonnull public int[] getOutputSlots() { return new int[0]; }
 
     @Override @Nonnull public int[] getRedstonePos() {
         M master = master();
-        return master == null ? new int[0] : master.getRedstonePos();
+        if (master == null) { return new int[0]; }
+        if (master != this) { return master.getRedstonePos(); }
+        return formed ? poiFlatIndices("redstone") : new int[0];
     }
 
     @Override public boolean additionalCanProcessCheck(@Nonnull MultiblockProcess<R> process) { return false; }
@@ -312,6 +436,14 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
         return master.getAccessibleFluidTanks(side, posInMultiblock());
     }
 
+    @Override protected int internalTankIndex(IFluidTank tank, int accessibleIndex) {
+        M master = master();
+        if (master == null) { return accessibleIndex; }
+        IFluidTank[] internal = master.getInternalTanks();
+        for (int i = 0; i < internal.length; i++) { if (internal[i] == tank) { return i; } }
+        return accessibleIndex;
+    }
+
     @Override protected boolean canFillTankFrom(int iTank, @Nonnull EnumFacing side, @Nonnull FluidStack resource) {
         M master = master();
         if (master == null) return false;
@@ -328,6 +460,7 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
         if (formed && !world.isRemote) {
             BlockPos masterPos = getPos().add(-offset[0], -offset[1], -offset[2]);
             if (QueueProcessor.isDisassembling(world, masterPos)) { return; }
+            sendStopSounds();
             TileEntity teMaster = world.getTileEntity(masterPos);
             if (teMaster instanceof IICInventory && shouldDropInventory) {
                 NonNullList<ItemStack> inv = ((IICInventory)teMaster).getInventory();

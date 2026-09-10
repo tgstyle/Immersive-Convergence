@@ -4,7 +4,6 @@ import com.immersiveconvergence.api.client.split.SplitModelProperties;
 import com.immersiveconvergence.api.multiblock.MultiblockDrops;
 import com.immersiveconvergence.api.multiblock.TileEntityTemplateMultiblock;
 
-import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IBlockBounds;
 import com.immersiveconvergence.api.multiblock.ICTileEntityMultiblockPart;
 
 import net.minecraft.block.material.Material;
@@ -16,13 +15,10 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -89,19 +85,6 @@ public abstract class ICBlockMultiblock<E extends Enum<E> & ICBlockBase.IBlockEn
         if (te instanceof ICTileEntityMultiblockPart) return ((ICTileEntityMultiblockPart<?>) te).getOriginalBlock();
         return ItemStack.EMPTY;
     }
-
-    @Override @Nonnull public AxisAlignedBB getBoundingBox(@Nonnull IBlockState state, @Nonnull IBlockAccess source, @Nonnull BlockPos pos) {
-        TileEntity te = source.getTileEntity(pos);
-        if (te instanceof IBlockBounds) {
-            float[] bounds = ((IBlockBounds) te).getBlockBounds();
-            return new AxisAlignedBB(bounds[0], bounds[1], bounds[2], bounds[3], bounds[4], bounds[5]).offset(pos);
-        }
-        return FULL_BLOCK_AABB;
-    }
-
-    @SuppressWarnings("deprecation")
-    @SideOnly(Side.CLIENT)
-    @Override @Nonnull public AxisAlignedBB getSelectedBoundingBox(@Nonnull IBlockState state, @Nonnull World world, @Nonnull BlockPos pos) { return getBoundingBox(state, world, pos); }
 
     @Override @Nonnull public String getCustomStateMapping(int meta, boolean itemBlock) {
         if (!itemBlock && enumValues[meta].name().toLowerCase(Locale.US).endsWith("_slave")) { return "multiblockSlave"; }

@@ -1,6 +1,6 @@
 package com.immersiveconvergence.common.util.compat.jei;
 
-import com.immersiveconvergence.api.crafting.MultiblockRecipeBase;
+import com.immersiveconvergence.api.crafting.ICRecipeBase;
 
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
@@ -20,7 +20,7 @@ public abstract class ICMultiblockRecipeWrapper implements IRecipeWrapper {
     protected List<FluidStack> fluidInputs;
     protected List<FluidStack> fluidOutputs;
 
-    public ICMultiblockRecipeWrapper(MultiblockRecipeBase recipe) {
+    public ICMultiblockRecipeWrapper(ICRecipeBase recipe) {
         recipe.setupJEI();
         this.inputs = recipe.getJEITotalItemInputs();
         this.recipeInputs = recipe.jeiItemInputList;

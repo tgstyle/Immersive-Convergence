@@ -31,16 +31,9 @@
     "ie.common.MixinIEPortsSilo",
     "ie.common.MixinIEPortsSqueezer",
     "ie.common.MixinIERecipeCategory",
-    "ie.common.MixinIETileEntityAlloySmelter",
-    "ie.common.MixinIETileEntityBlastFurnace",
-    "ie.common.MixinIETileEntityBlastFurnaceAdvanced",
-    "ie.common.MixinIETileEntityBucketWheel",
-    "ie.common.MixinIETileEntityCokeOven",
     "ie.common.MixinIETileEntityFluidPipe",
-    "ie.common.MixinIETileEntityLightningrod",
     "ie.common.MixinIETileEntityMultiblockPart",
-    "ie.common.MixinIETileEntitySheetmetalTank",
-    "ie.common.MixinIETileEntitySilo",
+    "ie.common.MixinIETileEntityOriginalBlock",
     "ie.common.MixinIEToolVoltmeter"
   ],
   "client": [
