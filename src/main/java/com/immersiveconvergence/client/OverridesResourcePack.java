@@ -14,6 +14,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -40,15 +41,20 @@ public final class OverridesResourcePack implements IResourcePack {
         return ordered;
     }
 
-    private Path resolve(ResourceLocation location) { return root.resolve(location.getNamespace()).resolve(location.getPath()); }
+    @Nullable private Path find(ResourceLocation location) {
+        try {
+            Path file = root.resolve(location.getNamespace()).resolve(location.getPath());
+            return Files.isRegularFile(file) ? file : null;
+        } catch (InvalidPathException e) { return null; }
+    }
 
     @Override @Nonnull public InputStream getInputStream(@Nonnull ResourceLocation location) throws IOException {
-        Path file = resolve(location);
-        if (!Files.isRegularFile(file)) { throw new FileNotFoundException(location.toString()); }
+        Path file = find(location);
+        if (file == null) { throw new FileNotFoundException(location.toString()); }
         return Files.newInputStream(file);
     }
 
-    @Override public boolean resourceExists(@Nonnull ResourceLocation location) { return Files.isRegularFile(resolve(location)); }
+    @Override public boolean resourceExists(@Nonnull ResourceLocation location) { return find(location) != null; }
 
     @Override @Nonnull public Set<String> getResourceDomains() {
         Set<String> domains = new HashSet<>();
