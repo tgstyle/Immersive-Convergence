@@ -7,7 +7,7 @@ import net.neoforged.neoforge.capabilities.BlockCapability;
 
 @SuppressWarnings("unused")
 public class HeatCapabilities {
-    public static final double MAX_HEAT = ICCommonConfig.maxHeat;
+    public static double maxHeat() { return ICCommonConfig.maxHeat; }
 
     public static final BlockCapability<IHeatProvider, Direction> HEAT_PROVIDER =
             BlockCapability.createSided(

@@ -7,7 +7,7 @@ import net.neoforged.neoforge.capabilities.BlockCapability;
 
 @SuppressWarnings("unused")
 public class MechanicalCapabilities {
-    public static final int MAX_RPM = ICCommonConfig.maxRpm;
+    public static int maxRpm() { return ICCommonConfig.maxRpm; }
 
     public static final BlockCapability<IMechanicalEnergyProvider, Direction> MECHANICAL_PROVIDER =
             BlockCapability.createSided(

@@ -22,14 +22,14 @@ public class RotorCreativeBlockEntity extends BaseBlockEntity implements MenuPro
     public float animation_rotation = 0f;
     public float animation_step = 0f;
     private final Provider mechanicalProvider = new Provider();
-    public RotorCreativeBlockEntity(BlockPos pos, BlockState state) { super(ICBlockEntities.ROTOR_CREATIVE.get(), pos, state); rpm = MechanicalCapabilities.MAX_RPM; }
+    public RotorCreativeBlockEntity(BlockPos pos, BlockState state) { super(ICBlockEntities.ROTOR_CREATIVE.get(), pos, state); rpm = MechanicalCapabilities.maxRpm(); }
     public IMechanicalEnergyProvider getMechanicalProvider(@Nullable Direction side) {
         Direction facing = getBlockState().getValue(RotorCreativeBlock.FACING);
         if (side == null || side == facing || side == facing.getOpposite()) { return mechanicalProvider; }
         return null;
     }
     @Override public void tickClient() {
-        animation_step = (Math.abs(rpm) / (float) MechanicalCapabilities.MAX_RPM) * 72f;
+        animation_step = (Math.abs(rpm) / (float) MechanicalCapabilities.maxRpm()) * 72f;
         float dir = Math.signum(rpm);
         animation_rotation += animation_step * dir;
         animation_rotation %= 360;
@@ -37,7 +37,7 @@ public class RotorCreativeBlockEntity extends BaseBlockEntity implements MenuPro
     private class Provider implements IMechanicalEnergyProvider {
         @Override public int getSpeed() { return rpm; }
         @Override public float getTorque() { return 1f; }
-        @Override public int getMaxSpeed() { return MechanicalCapabilities.MAX_RPM; }
+        @Override public int getMaxSpeed() { return MechanicalCapabilities.maxRpm(); }
         @Override public double getBaseMass() { return 0; }
         @Override public double getDriveTorque() { return 0; }
         @Override public double getFriction() { return 0; }
@@ -59,7 +59,7 @@ public class RotorCreativeBlockEntity extends BaseBlockEntity implements MenuPro
     @Override public void receiveMessageFromClient(CompoundTag message) {
         if (message.contains("rpm")) {
             int newRpm = message.getInt("rpm");
-            rpm = Math.clamp(newRpm, -MechanicalCapabilities.MAX_RPM, MechanicalCapabilities.MAX_RPM);
+            rpm = Math.clamp(newRpm, -MechanicalCapabilities.maxRpm(), MechanicalCapabilities.maxRpm());
             setChanged();
             markContainingBlockForUpdate(null);
         }
