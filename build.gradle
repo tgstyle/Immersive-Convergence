@@ -22,9 +22,12 @@ file('version.properties').withInputStream { versionProps.load(it) }
 def gradleProps = new Properties()
 file('gradle.properties').withInputStream { gradleProps.load(it) }
 
-version = versionProps.getProperty('version')
-ext.version_buildnumber = versionProps.getProperty('build_number')?.toInteger() ?: 0
+def requestedTasks = gradle.startParameter.taskNames
+def releaseBuild = !requestedTasks.any { it.startsWith('run') || it.contains('Client') || it.contains('Server') } && requestedTasks.any { it in ['build', 'jar', 'sourcesJar', 'datagenJar'] }
+def currentBuild = versionProps.getProperty('build_number')?.toInteger() ?: 0
+ext.version_buildnumber = releaseBuild ? currentBuild + 1 : currentBuild
 ext.stage = versionProps.getProperty('stage') ?: ''
+version = "${versionProps.getProperty('version')}-b${version_buildnumber}-${stage}"
 
 println "-> build.gradle applying version: $version (build ${version_buildnumber})"
 
@@ -243,25 +246,12 @@ if (customGradle.exists()) {
 }
 
 tasks.register('bumpVersion') {
-    onlyIf {
-        def requested = gradle.startParameter.taskNames
-        if (requested.any { it.startsWith('run') || it.contains('Client') || it.contains('Server') }) { return false }
-        return requested.any { it in ['build', 'jar', 'sourcesJar', 'datagenJar'] }
-    }
+    onlyIf { releaseBuild }
     doLast {
         def props = new Properties()
         file('version.properties').withInputStream { props.load(it) }
-        def currentBuild = props['build_number'].toInteger()
-        def nextBuild = currentBuild + 1
-        props['build_number'] = nextBuild.toString()
+        props['build_number'] = version_buildnumber.toString()
         file('version.properties').withOutputStream { props.store(it, null) }
-        ext.version_buildnumber = nextBuild
-        def stage = props['stage']
-        def newVersion = "${props['version']}-b${nextBuild}-${stage}"
-        project.version = newVersion
-        tasks.withType(Jar).configureEach {
-            it.archiveVersion.set(newVersion)
-        }
     }
 }
 

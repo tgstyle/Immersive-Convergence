@@ -36,7 +36,7 @@ public class ICCommonConfig {
         BUILDER.comment("Multiblock settings shared by every machine built on Immersive Convergence, Immersive Engineering's and Immersive Petroleum's included").push("multiblocks");
         DISASSEMBLY_MODE = BUILDER
                 .comment("How a machine comes apart. PROCESS_QUEUE breaks it down block by block over a few ticks and drops all its materials at the broken block; TEMPLATE_BLOCKS instantly reverts it to its placed blocks. Sneaking while breaking always uses TEMPLATE_BLOCKS.")
-                .defineEnum("disassemblyMode", DisassemblyMode.PROCESS_QUEUE);
+                .defineEnum("disassembly_mode", DisassemblyMode.PROCESS_QUEUE);
         BUILDER.pop();
     }
 
