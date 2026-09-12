@@ -27,7 +27,7 @@ import mcjty.theoneprobe.api.ProbeMode;
 import mcjty.theoneprobe.api.TextStyleClass;
 import mcjty.theoneprobe.config.Config;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -113,6 +113,7 @@ public class ICOneProbe extends ICCompatModule implements Function<ITheOneProbe,
 
     }
 
+    @SuppressWarnings("deprecation")
     private static class SideConfigProvider implements IProbeInfoProvider {
         @Override public String getID() { return ImmersiveConvergence.MODID + ":sideconfig"; }
 
@@ -122,10 +123,11 @@ public class ICOneProbe extends ICCompatModule implements Function<ITheOneProbe,
             boolean flip = player.isSneaking();
             EnumFacing side = flip ? data.getSideHit().getOpposite() : data.getSideHit();
             ICSideConfig config = ((IConfigurableSides)tile).sideConfig(side.getIndex());
-            info.text(I18n.format(ICLib.DESC_INFO + "blockSide." + (flip ? "opposite" : "facing")) + ": " + I18n.format(ICLib.DESC_INFO + "blockSide.io." + (config.ordinal() - 1)));
+            info.text(I18n.translateToLocal(ICLib.DESC_INFO + "blockSide." + (flip ? "opposite" : "facing")) + ": " + I18n.translateToLocal(ICLib.DESC_INFO + "blockSide.io." + (config.ordinal() - 1)));
         }
     }
 
+    @SuppressWarnings("deprecation")
     private static class ReservoirProvider implements IProbeInfoProvider {
         @Override public String getID() { return ImmersiveConvergence.MODID + ":reservoir"; }
 
@@ -134,19 +136,19 @@ public class ICOneProbe extends ICCompatModule implements Function<ITheOneProbe,
             if (!(tile instanceof TileEntityPumpjack)) { return; }
             PumpjackHandler.ReservoirType reservoir = ICPumpjackHandler.reservoirUnder(world, data.getPos());
             if (reservoir == null) {
-                info.text(I18n.format(ICLib.DESC_INFO + "reservoir.none"));
+                info.text(I18n.translateToLocal(ICLib.DESC_INFO + "reservoir.none"));
                 return;
             }
             PumpjackHandler.OilWorldInfo deposit = PumpjackHandler.getOilWorldInfo(world, data.getPos().getX() >> 4, data.getPos().getZ() >> 4);
             String name = reservoir.name;
             String key = "desc.immersivepetroleum.info.reservoir." + name;
-            info.text(I18n.hasKey(key) ? I18n.format(key) : name);
-            if (deposit != null) { info.text(I18n.format(ICLib.DESC_INFO + "reservoir.remaining", NUMBERS.format(deposit.current), NUMBERS.format(deposit.capacity))); }
-            info.text(I18n.format(ICLib.DESC_INFO + "reservoir.pumpSpeed", NUMBERS.format(ICPumpjackHandler.pumpSpeedUnder(world, data.getPos()))));
+            info.text(I18n.canTranslate(key) ? I18n.translateToLocal(key) : name);
+            if (deposit != null) { info.text(I18n.translateToLocalFormatted(ICLib.DESC_INFO + "reservoir.remaining", NUMBERS.format(deposit.current), NUMBERS.format(deposit.capacity))); }
+            info.text(I18n.translateToLocalFormatted(ICLib.DESC_INFO + "reservoir.pumpSpeed", NUMBERS.format(ICPumpjackHandler.pumpSpeedUnder(world, data.getPos()))));
             ICPowerTier tier = ICPumpjackHandler.powerTierUnder(world, data.getPos());
-            info.text(I18n.format(ICLib.DESC_INFO + "reservoir.powerTier", NUMBERS.format(tier.getUsage()), NUMBERS.format(tier.getCapacity())));
+            info.text(I18n.translateToLocalFormatted(ICLib.DESC_INFO + "reservoir.powerTier", NUMBERS.format(tier.getUsage()), NUMBERS.format(tier.getCapacity())));
             ICReservoirData extra = ICPumpjackHandler.dataUnder(world, data.getPos());
-            if (extra != null && extra.drainChance != 1F) { info.text(I18n.format(ICLib.DESC_INFO + "reservoir.drainChance", Math.round(extra.drainChance * 100))); }
+            if (extra != null && extra.drainChance != 1F) { info.text(I18n.translateToLocalFormatted(ICLib.DESC_INFO + "reservoir.drainChance", Math.round(extra.drainChance * 100))); }
         }
     }
 }
