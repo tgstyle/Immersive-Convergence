@@ -18,4 +18,8 @@ public class CommonProxy {
     public void postInit() { }
 
     public void loadComplete() {}
+
+    public boolean isMultiplayerClient() { return false; }
+
+    public void scheduleClient(Runnable task) {}
 }

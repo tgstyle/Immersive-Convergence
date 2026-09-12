@@ -47,7 +47,7 @@ public class TileEntityRotorCreative extends ICTileEntityBase implements ITickab
     @Override public boolean isMechanicalEnergyTransmitter(EnumFacing side) { return side.getAxis() == facing.getAxis(); }
     @Override public int getSpeed() { return rpm; }
     @Override public int getMaxSpeed() { return maxSpeed(); }
-    @Override public float getTorqueMultiplier() { return 1f; }
+    @Override public float getTorque() { return 1f; }
     @Override public double getBaseMass() { return 0; }
     @Override public double getDriveTorque() { return 0; }
     @Override public double getFriction() { return 0; }

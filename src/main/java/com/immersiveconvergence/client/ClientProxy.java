@@ -18,6 +18,7 @@ import com.immersiveconvergence.client.render.TileRenderRotorCreative;
 import com.immersiveconvergence.client.render.ip.IPPumpjackSupport;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
@@ -85,4 +86,8 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override public void postInit() { super.postInit(); }
+
+    @Override public boolean isMultiplayerClient() { return !Minecraft.getMinecraft().isSingleplayer(); }
+
+    @Override public void scheduleClient(Runnable task) { Minecraft.getMinecraft().addScheduledTask(task); }
 }

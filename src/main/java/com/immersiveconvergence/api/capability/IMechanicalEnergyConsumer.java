@@ -6,13 +6,12 @@ import net.minecraft.util.EnumFacing;
 
 @SuppressWarnings("unused")
 public interface IMechanicalEnergyConsumer {
+    double getMass();
+    double getFriction();
+    int getMaxSpeed();
     boolean isValid();
     boolean isMechanicalEnergyReceiver(EnumFacing facing);
     int getSpeed();
-    int getMaxSpeed();
     default int getEffectiveMaxSpeed() { return getMaxSpeed(); }
-    float getTorqueMultiplier();
-    double getMass();
-    double getFriction();
     MechanicalEnergyAnimation getAnimation();
 }

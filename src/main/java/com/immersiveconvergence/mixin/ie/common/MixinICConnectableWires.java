@@ -1,5 +1,6 @@
 package com.immersiveconvergence.mixin.ie.common;
 
+import com.immersiveconvergence.ImmersiveConvergence;
 import com.immersiveconvergence.api.energy.ICTargetingInfo;
 import com.immersiveconvergence.api.energy.ICTileEntityConnectable;
 import com.immersiveconvergence.api.energy.ICWireType;
@@ -13,7 +14,6 @@ import blusunrize.immersiveengineering.api.energy.wires.ImmersiveNetHandler;
 import blusunrize.immersiveengineering.api.energy.wires.ImmersiveNetHandler.Connection;
 import blusunrize.immersiveengineering.api.energy.wires.WireType;
 import com.google.common.collect.ImmutableSet;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -138,7 +138,7 @@ public abstract class MixinICConnectableWires extends net.minecraft.tileentity.T
     }
 
     @Unique private void immersiveconvergence$readConns(NBTTagCompound nbt) {
-        if (world != null && world.isRemote && !Minecraft.getMinecraft().isSingleplayer() && nbt != null) {
+        if (world != null && world.isRemote && ImmersiveConvergence.proxy.isMultiplayerClient() && nbt != null) {
             NBTTagList connectionList = nbt.getTagList("connectionList", 10);
             ImmersiveNetHandler.INSTANCE.clearConnectionsOriginatingFrom(pos, world);
             for (int i = 0; i < connectionList.tagCount(); i++) {
@@ -188,7 +188,7 @@ public abstract class MixinICConnectableWires extends net.minecraft.tileentity.T
 
     @Override public void onLoad() {
         super.onLoad();
-        if (world.isRemote) { Minecraft.getMinecraft().addScheduledTask(this::immersiveconvergence$refreshWires); }
+        if (world.isRemote) { ImmersiveConvergence.proxy.scheduleClient(this::immersiveconvergence$refreshWires); }
     }
 
     @Unique private void immersiveconvergence$refreshWires() {
@@ -215,6 +215,6 @@ public abstract class MixinICConnectableWires extends net.minecraft.tileentity.T
 
     @Override public void invalidate() {
         super.invalidate();
-        if (world.isRemote && !Minecraft.getMinecraft().isSingleplayer()) { ImmersiveNetHandler.INSTANCE.clearAllConnectionsFor(pos, world, this, false); }
+        if (world.isRemote && ImmersiveConvergence.proxy.isMultiplayerClient()) { ImmersiveNetHandler.INSTANCE.clearAllConnectionsFor(pos, world, this, false); }
     }
 }
