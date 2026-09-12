@@ -25,7 +25,7 @@ public class HeatCreativeBlockEntity extends BaseBlockEntity {
     }
 
     private static class Provider implements IHeatProvider {
-        @Override public double getHeatLevel() { return HeatCapabilities.MAX_HEAT; }
+        @Override public double getHeatLevel() { return HeatCapabilities.maxHeat(); }
     }
 
     @Override public void readCustomNBT(CompoundTag nbt, boolean descPacket) {}
