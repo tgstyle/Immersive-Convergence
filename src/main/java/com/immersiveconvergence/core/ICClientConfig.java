@@ -19,7 +19,7 @@ public class ICClientConfig {
         BUILDER.comment("Rendering settings shared by every mod built on Immersive Convergence").push("rendering");
         DISABLE_FANCY_TESR = BUILDER
                 .comment("Disables most lighting code for models rendered dynamically (TESR). May improve FPS. Affects various multiblocks.")
-                .define("disableFancyTESR", false);
+                .define("disable_fancy_tesr", false);
         BUILDER.pop();
     }
 

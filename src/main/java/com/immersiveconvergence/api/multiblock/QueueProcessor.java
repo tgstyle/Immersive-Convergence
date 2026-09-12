@@ -41,6 +41,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 
 import javax.annotation.Nullable;
 import java.util.ArrayDeque;
@@ -51,6 +52,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 
 @SuppressWarnings("unused")
 @EventBusSubscriber(modid = ICLib.MODID)
@@ -96,7 +98,9 @@ public class QueueProcessor {
         sneakBreaking = event.getPlayer().isShiftKeyDown();
     }
 
-    @SuppressWarnings("deprecation") public static boolean disassemble(ServerLevel serverLevel, List<StructureBlockInfo> structure, BlockPos origin, Mirror mirror, Rotation rot, BlockPos masterPos, Vec3i size, Block partBlock, boolean handleTemplateMode) {
+    public static boolean disassemble(ServerLevel serverLevel, List<StructureBlockInfo> structure, BlockPos origin, Mirror mirror, Rotation rot, BlockPos masterPos, Vec3i size, Block partBlock, boolean handleTemplateMode) { return disassemble(serverLevel, structure, origin, mirror, rot, masterPos, size, partBlock, handleTemplateMode, null); }
+
+    @SuppressWarnings("deprecation") public static boolean disassemble(ServerLevel serverLevel, List<StructureBlockInfo> structure, BlockPos origin, Mirror mirror, Rotation rot, BlockPos masterPos, Vec3i size, Block partBlock, boolean handleTemplateMode, @Nullable Function<BlockPos, BlockState> cellState) {
         BlockPos initiatedAt = currentlyBreakingPos;
         boolean templateMode = sneakBreaking || ICCommonConfig.disassemblyMode == DisassemblyMode.TEMPLATE_BLOCKS;
         if (templateMode && !handleTemplateMode) { return false; }
@@ -151,7 +155,7 @@ public class QueueProcessor {
             BlockState brokenTemplate = null;
             for (StructureBlockInfo info : structure) {
                 BlockPos actualPos = TemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot);
-                BlockState template = info.state().mirror(mirror).rotate(rot);
+                BlockState template = placedState(info, cellState).mirror(mirror).rotate(rot);
                 if (actualPos.equals(brokenPos)) { brokenTemplate = template; }
                 serverLevel.setBlockAndUpdate(actualPos, template);
             }
@@ -173,7 +177,7 @@ public class QueueProcessor {
         else {
             for (StructureBlockInfo info : structure) {
                 BlockPos actualPos = TemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot);
-                BlockState template = info.state().mirror(mirror).rotate(rot);
+                BlockState template = placedState(info, cellState).mirror(mirror).rotate(rot);
                 toBreak.add(actualPos);
                 if (dropItems && !template.isAir()) {
                     BlockEntity templateBE = null;
@@ -191,6 +195,11 @@ public class QueueProcessor {
         if (templateMode || toBreak.isEmpty()) { activeDisassemblies.remove(masterPos); }
         else { pendingQueues.add(new QueueProcessor(serverLevel, toBreak, breakingPlayer, dropItems, brokenPos, allDrops, masterPos)); }
         return true;
+    }
+
+    private static BlockState placedState(StructureBlockInfo info, @Nullable Function<BlockPos, BlockState> cellState) {
+        BlockState memorized = cellState != null ? cellState.apply(info.pos()) : null;
+        return memorized != null ? memorized : info.state();
     }
 
     private static List<BlockPos> findStrayParts(ServerLevel level, List<StructureBlockInfo> structure, BlockPos origin, Mirror mirror, Rotation rot, Vec3i size, Block partBlock) {
@@ -229,6 +238,14 @@ public class QueueProcessor {
         List<QueueProcessor> copy = new ArrayList<>(pendingQueues);
         copy.forEach(QueueProcessor::tick);
         pendingQueues.removeIf(QueueProcessor::isEmpty);
+    }
+
+    @SubscribeEvent public static void onServerStopping(ServerStoppingEvent event) {
+        for (QueueProcessor processor : new ArrayList<>(pendingQueues)) { while (!processor.isEmpty()) { processor.tick(); } }
+        pendingQueues.clear();
+        activeDisassemblies.clear();
+        currentlyBreakingPos = null;
+        sneakBreaking = false;
     }
 
     public void tick() {

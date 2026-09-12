@@ -21,9 +21,9 @@ file('version.properties').withInputStream { versionProps.load(it) }
 def gradleProps = new Properties()
 file('gradle.properties').withInputStream { gradleProps.load(it) }
 
-version = versionProps.getProperty('version')
-ext.version_buildnumber = versionProps.getProperty('build_number')?.toInteger() ?: 0
+ext.version_buildnumber = (versionProps.getProperty('build_number')?.toInteger() ?: 0) + 1
 ext.stage = versionProps.getProperty('stage') ?: ''
+version = "${versionProps.getProperty('version')}-b${version_buildnumber}${stage ? "-${stage}" : ''}"
 
 println "-> build.gradle applying version: $version (build ${version_buildnumber}) ${stage}"
 
@@ -176,20 +176,8 @@ tasks.register('bumpVersion') {
     doLast {
         def props = new Properties()
         file('version.properties').withInputStream { props.load(it) }
-        def currentBuild = props['build_number'].toInteger()
-        def nextBuild = currentBuild + 1
-        props['build_number'] = nextBuild.toString()
+        props['build_number'] = version_buildnumber.toString()
         file('version.properties').withOutputStream { props.store(it, null) }
-
-        ext.version_buildnumber = nextBuild
-        def stage = props['stage'] ?: ''
-        def stagePart = stage ? "-${stage}" : ""
-        def newVersion = "${props['version']}-b${nextBuild}${stagePart}"
-
-        project.version = newVersion
-        tasks.withType(Jar).configureEach {
-            it.archiveVersion.set(newVersion)
-        }
     }
 }
 

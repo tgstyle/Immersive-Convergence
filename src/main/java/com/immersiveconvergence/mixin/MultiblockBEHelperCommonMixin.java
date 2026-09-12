@@ -11,11 +11,13 @@ import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockBEH
 import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockBEHelperMaster;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockLevel;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockContext;
+import blusunrize.immersiveengineering.api.multiblocks.blocks.logic.IMultiblockState;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.util.MultiblockOrientation;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.util.ShapeType;
 import blusunrize.immersiveengineering.api.utils.DirectionUtils;
 import blusunrize.immersiveengineering.common.blocks.multiblocks.blockimpl.MultiblockBEHelperCommon;
 import blusunrize.immersiveengineering.common.blocks.multiblocks.blockimpl.MultiblockBEHelperMaster;
+import blusunrize.immersiveengineering.common.blocks.multiblocks.logic.interfaces.MBMemorizeStructure;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -25,6 +27,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -36,8 +39,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import javax.annotation.Nullable;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.function.Function;
 
 @Mixin(MultiblockBEHelperCommon.class)
 public abstract class MultiblockBEHelperCommonMixin implements IDisassemblingAware {
@@ -70,13 +75,20 @@ public abstract class MultiblockBEHelperCommonMixin implements IDisassemblingAwa
         Mirror mirror = orientation.mirrored() ? Mirror.FRONT_BACK : Mirror.NONE;
         BlockPos origin = mbLevel.getAbsoluteOrigin();
         BlockPos masterPos = mbLevel.toAbsolute(registration.getMasterPosInMB().get());
-        if (QueueProcessor.disassemble(serverLevel, registration.getStructure().apply(serverLevel), origin, mirror, rot, masterPos, registration.size(serverLevel), registration.block().get(), false)) {
+        if (QueueProcessor.disassemble(serverLevel, registration.getStructure().apply(serverLevel), origin, mirror, rot, masterPos, registration.size(serverLevel), registration.block().get(), false, ic$memorizedStates(master, registration))) {
             beingDisassembled = true;
             BlockPos brokenPos = mbLevel.toAbsolute(self.getPositionInMB());
             serverLevel.removeBlock(brokenPos, false);
             QueueProcessor.refreshLight(serverLevel, brokenPos);
             ci.cancel();
         }
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    @Unique private static @Nullable Function<BlockPos, BlockState> ic$memorizedStates(IMultiblockBEHelperMaster<?> master, MultiblockRegistration<?> registration) {
+        IMultiblockState state = master.getState();
+        if (state != null && registration.logic() instanceof MBMemorizeStructure memo) { return pos -> memo.getMemorizedBlockState(state, pos); }
+        return null;
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
