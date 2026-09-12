@@ -1,5 +1,7 @@
 package com.immersiveconvergence.api;
 
+import com.immersiveconvergence.core.ICCommonConfig;
+
 import net.minecraftforge.fml.common.Loader;
 
 public final class ICMods {
@@ -10,13 +12,17 @@ public final class ICMods {
 
     private static boolean immersiveEngineering;
     private static boolean immersivePetroleum;
+    private static boolean initialized;
 
     public static void init(boolean disableImmersiveEngineering) {
         immersiveEngineering = !disableImmersiveEngineering && Loader.isModLoaded(IMMERSIVE_ENGINEERING);
         immersivePetroleum = immersiveEngineering && Loader.isModLoaded(IMMERSIVE_PETROLEUM);
+        initialized = true;
     }
 
-    public static boolean immersiveEngineering() { return immersiveEngineering; }
+    private static void ensureInitialized() { if (!initialized) { init(ICCommonConfig.experimental.disableImmersiveEngineering); } }
 
-    public static boolean immersivePetroleum() { return immersivePetroleum; }
+    public static boolean immersiveEngineering() { ensureInitialized(); return immersiveEngineering; }
+
+    public static boolean immersivePetroleum() { ensureInitialized(); return immersivePetroleum; }
 }
