@@ -47,6 +47,8 @@ public abstract class ICTileEntityMultiblockPart<T extends ICTileEntityMultibloc
 
     @Override public void unformPart() { this.formed = false; invalidateStructureCaches(); }
 
+    @Override public int getPartPos() { return pos; }
+
     @Override public int[] getPartOffset() { return offset; }
 
     @Override public EnumFacing getPartFacing() { return facing; }

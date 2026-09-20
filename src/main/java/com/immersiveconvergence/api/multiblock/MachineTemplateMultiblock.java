@@ -6,6 +6,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -59,9 +60,10 @@ public abstract class MachineTemplateMultiblock<T extends ICTileEntityMultiblock
         boolean isMaster = worldPos.equals(masterWorldPos);
         IBlockState placed = isMaster ? masterBlockState : slaveBlockState;
         world.setBlockState(worldPos, placed, 2);
-        @SuppressWarnings("unchecked")
-        T tile = (T) world.getTileEntity(worldPos);
-        if (tile != null) {
+        TileEntity found = world.getTileEntity(worldPos);
+        if (!(found instanceof ICTileEntityMultiblockPart)) { found = MultiblockFormationTrace.retryPart(world, worldPos, position, found, ICTileEntityMultiblockPart.class); }
+        if (found instanceof ICTileEntityMultiblockPart) {
+            @SuppressWarnings("unchecked") T tile = (T)found;
             tile.facing = side;
             tile.formed = true;
             tile.pos = position;
@@ -71,6 +73,7 @@ public abstract class MachineTemplateMultiblock<T extends ICTileEntityMultiblock
             tile.markDirty();
             world.notifyBlockUpdate(worldPos, placed, placed, 2);
             world.addBlockEvent(worldPos, slaveBlockState.getBlock(), 255, 0);
+            MultiblockFormationTrace.verifyWritten(world, worldPos, masterWorldPos, position, tile);
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.immersiveconvergence.common.multiblock;
 
 import com.immersiveconvergence.api.multiblock.LocalFacing;
+import com.immersiveconvergence.api.multiblock.MultiblockFormationTrace;
 import com.immersiveconvergence.api.multiblock.MultiblockShapes;
 import com.immersiveconvergence.api.multiblock.PoIJSONSchema;
 import com.immersiveconvergence.api.multiblock.ShapeData;
@@ -190,6 +191,7 @@ public class IEMultiblock extends TemplateMultiblock {
         IBlockState state = chosen.get();
         world.setBlockState(worldPos, state);
         TileEntity tile = world.getTileEntity(worldPos);
+        if (!(tile instanceof TileEntityMultiblockPart)) { tile = MultiblockFormationTrace.retryPart(world, worldPos, position, tile, TileEntityMultiblockPart.class); }
         if (tile instanceof TileEntityMultiblockPart) {
             TileEntityMultiblockPart<?> part = (TileEntityMultiblockPart<?>)tile;
             part.facing = side;
@@ -199,6 +201,7 @@ public class IEMultiblock extends TemplateMultiblock {
             part.mirrored = mirrored;
             part.markDirty();
             world.addBlockEvent(worldPos, state.getBlock(), 255, 0);
+            MultiblockFormationTrace.verifyWritten(world, worldPos, masterWorldPos, position, part);
         }
     }
 

@@ -25,6 +25,8 @@ public interface ICMultiblockPart {
 
     void unformPart();
 
+    int getPartPos();
+
     int[] getPartOffset();
 
     EnumFacing getPartFacing();

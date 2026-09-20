@@ -7,8 +7,10 @@
   "mixins": [
     "ie.common.MixinICConnectableWires",
     "ie.common.MixinICConnectorRedstoneWires",
+    "ie.common.MixinIEBlockLightTile",
     "ie.common.MixinIEBlockSplitContainer",
-    "ie.common.MixinIEBlockSplitOffset"
+    "ie.common.MixinIEBlockSplitOffset",
+    "ie.common.MixinIEConnectorLightTile"
   ],
   "injectors": {
     "defaultRequire": 1

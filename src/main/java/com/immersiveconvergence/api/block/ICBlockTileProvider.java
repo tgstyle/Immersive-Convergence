@@ -334,7 +334,7 @@ public abstract class ICBlockTileProvider<E extends Enum<E> & ICBlockBase.IBlock
     }
 
     @Override public int getLightValue(@Nonnull IBlockState state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos) {
-        TileEntity te = world.getTileEntity(pos);
+        TileEntity te = ICUtils.getExistingTileEntity(world, pos);
         if (te instanceof ILightValue) { return ((ILightValue)te).getLightValue(); }
         return 0;
     }

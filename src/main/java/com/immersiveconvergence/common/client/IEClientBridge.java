@@ -66,4 +66,6 @@ public final class IEClientBridge {
         int[] offset = ((TileEntityMultiblockPart<?>)te).offset;
         return new BlockPos(offset[0], offset[1], offset[2]);
     }
+
+    public static boolean unformedMultiblockPart(TileEntity te) { return te instanceof TileEntityMultiblockPart && !((TileEntityMultiblockPart<?>)te).formed; }
 }

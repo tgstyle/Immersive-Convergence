@@ -35,6 +35,7 @@ public final class SplitModelProperties {
     };
 
     private static final Set<Block> WARNED = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    private static final Set<BlockPos> WARNED_POSITIONS = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     private SplitModelProperties() {}
 
@@ -59,8 +60,19 @@ public final class SplitModelProperties {
 
     public static IBlockState withOffset(IBlockState state, IBlockAccess world, BlockPos pos) {
         if (missingOffset(state)) { return state; }
-        BlockPos offset = modelOffset(world.getTileEntity(pos));
-        return offset == null ? state : ((IExtendedBlockState)state).withProperty(SUBMODEL_OFFSET, offset);
+        TileEntity te = world.getTileEntity(pos);
+        BlockPos offset = modelOffset(te);
+        if (offset == null) {
+            warnUnformedPart(state, pos, te);
+            return state;
+        }
+        return ((IExtendedBlockState)state).withProperty(SUBMODEL_OFFSET, offset);
+    }
+
+    private static void warnUnformedPart(IBlockState state, BlockPos pos, @Nullable TileEntity te) {
+        if (ICMods.immersiveEngineering() && IEClientBridge.unformedMultiblockPart(te) && WARNED_POSITIONS.add(pos.toImmutable())) {
+            ICLogger.error("IC split model: unformed multiblock part at " + pos + " on " + state.getBlock().getRegistryName() + " (" + te.getClass().getName() + "), so the block draws nothing");
+        }
     }
 
     @Nullable public static BlockPos modelOffset(@Nullable TileEntity te) {

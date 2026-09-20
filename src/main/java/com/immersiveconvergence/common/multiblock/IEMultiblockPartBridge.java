@@ -42,6 +42,8 @@ public final class IEMultiblockPartBridge {
 
         @Override public void unformPart() { part.formed = false; }
 
+        @Override public int getPartPos() { return part.pos; }
+
         @Override public int[] getPartOffset() { return part.offset; }
 
         @Override public EnumFacing getPartFacing() { return part.facing; }

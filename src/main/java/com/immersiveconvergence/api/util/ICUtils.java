@@ -27,7 +27,9 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.event.ForgeEventFactory;
@@ -58,7 +60,14 @@ public class ICUtils {
         synchronized (server.futureTaskQueue) { server.futureTaskQueue.add(ListenableFutureTask.create(task, null)); }
     }
 
-    public static TileEntity getExistingTileEntity(World world, BlockPos pos) { return world != null && world.isBlockLoaded(pos) ? world.getTileEntity(pos) : null; }
+    public static TileEntity getExistingTileEntity(IBlockAccess access, BlockPos pos) {
+        if (access == null) { return null; }
+        if (!(access instanceof World)) { return access.getTileEntity(pos); }
+        World world = (World)access;
+        if (world.isOutsideBuildHeight(pos)) { return null; }
+        Chunk chunk = world.getChunkProvider().getLoadedChunk(pos.getX() >> 4, pos.getZ() >> 4);
+        return chunk == null ? null : chunk.getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK);
+    }
 
     public static FluidStack copyFluidStackWithAmount(FluidStack stack, int amount, boolean stripPressure) {
         if (stack == null) { return null; }
