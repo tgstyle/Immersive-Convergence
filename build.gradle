@@ -153,6 +153,9 @@ legacyForge {
     }
 
     runs {
+        configureEach {
+            jvmArgument '-Xmx4G'
+        }
         client {
             client()
             sourceSet = sourceSets.main
