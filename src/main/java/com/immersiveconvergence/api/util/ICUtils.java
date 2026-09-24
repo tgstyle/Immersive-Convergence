@@ -60,6 +60,8 @@ public class ICUtils {
         synchronized (server.futureTaskQueue) { server.futureTaskQueue.add(ListenableFutureTask.create(task, null)); }
     }
 
+    public static TileEntity getExistingTileEntity(World world, BlockPos pos) { return getExistingTileEntity((IBlockAccess)world, pos); }
+
     public static TileEntity getExistingTileEntity(IBlockAccess access, BlockPos pos) {
         if (access == null) { return null; }
         if (!(access instanceof World)) { return access.getTileEntity(pos); }
