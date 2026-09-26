@@ -75,9 +75,9 @@ sourceSets {
 }
 
 subsystems {
-    parchment {
-        minecraftVersion = version_minecraft
-        mappingsVersion = version_parchment
+    parchment { net.neoforged.gradle.dsl.common.extensions.subsystems.Parchment p ->
+        p.minecraftVersion.set(version_minecraft as String)
+        p.mappingsVersion.set(version_parchment as String)
     }
 }
 
@@ -139,8 +139,8 @@ runs {
     }
 
     data {
-        modSource project.sourceSets.datagen
-        programArguments.addAll '--mod', project.mod_id as String, '--all',
+        modSource project.extensions.getByType(SourceSetContainer).getByName('datagen')
+        arguments.addAll '--mod', project.mod_id as String, '--all',
                 '--output', file('src/generated/resources/').absolutePath,
                 '--existing', file('src/main/resources/').absolutePath
     }
@@ -187,13 +187,6 @@ tasks.register('bumpVersion') {
 
 build.dependsOn bumpVersion
 
-tasks.register('sourcesJar', Jar) {
-    dependsOn classes
-    archiveBaseName.set("ImmersiveConvergence-${version_minecraft}")
-    archiveClassifier = 'sources'
-    from sourceSets.main.allSource
-}
-
 tasks.register('devJar', Jar) {
     group = 'build'
     description = 'Creates a deobfuscated dev jar for local cross-mod dependencies (used by ImmersiveTechnology)'
@@ -204,7 +197,6 @@ tasks.register('devJar', Jar) {
 }
 
 artifacts {
-    archives sourcesJar
     archives devJar
 }
 
@@ -252,8 +244,17 @@ idea {
 
 processResources.dependsOn bumpVersion
 jar.dependsOn bumpVersion
-sourcesJar.dependsOn bumpVersion
-devJar.dependsOn bumpVersion
+devJar.mustRunAfter bumpVersion
+
+def devSyncScript = null
+for (def dir = rootDir; dir != null && devSyncScript == null; dir = dir.parentFile) {
+    def candidate = new File(dir, '#scripts/mods-devsync.gradle')
+    if (candidate.isFile()) { devSyncScript = candidate }
+}
+if (devSyncScript != null) {
+    apply from: devSyncScript
+    build.finalizedBy 'devSync'
+}
 
 jar {
     archiveBaseName.set("ImmersiveConvergence-${version_minecraft}")
