@@ -101,19 +101,19 @@ def rdplJar = devSyncScript == null ? null : devSyncStaged(devSyncPin('MCT-Resou
 if (rdplJar == null) { logger.warn('No Resource Data Pack Loader devSync pin: set devsync_rdpl in version.properties to a snapshot in the devsync cache, or the RDPL bridge will not compile') }
 
 dependencies {
-    compileOnly rfg.deobf("curse.maven:${common.imme_version}")
-    implementation rfg.deobf("${common.mjei_version}")
+    compileOnly(rfg.deobf("curse.maven:${common.imme_version}") as String)
+    implementation(rfg.deobf("${common.mjei_version}") as String)
     if (rdplJar != null && System.getProperty('ic.classes') == null) { compileOnly files(rdplJar) }
 
-    compileOnly rfg.deobf("curse.maven:${common.imps_version}")
-    compileOnly rfg.deobf("curse.maven:${common.opcm_version}")
-    compileOnly rfg.deobf("curse.maven:${common.mtop_version}")
-    compileOnly rfg.deobf("${common.crft_version}")
-    compileOnly rfg.deobf("${common.zens_version}")
+    compileOnly(rfg.deobf("curse.maven:${common.imps_version}") as String)
+    compileOnly(rfg.deobf("curse.maven:${common.opcm_version}") as String)
+    compileOnly(rfg.deobf("curse.maven:${common.mtop_version}") as String)
+    compileOnly(rfg.deobf("${common.crft_version}") as String)
+    compileOnly(rfg.deobf("${common.zens_version}") as String)
     compileOnly("${common.gscr_version}") { transitive = false }
-    compileOnly rfg.deobf("curse.maven:${common.hwya_version}")
+    compileOnly(rfg.deobf("curse.maven:${common.hwya_version}") as String)
 
-    clientRuntime rfg.deobf("curse.maven:${common.bf3r_version}")
+    clientRuntime(rfg.deobf("curse.maven:${common.bf3r_version}") as String)
 
     annotationProcessor 'org.ow2.asm:asm-debug-all:5.2'
     annotationProcessor 'com.google.guava:guava:32.1.2-jre'
