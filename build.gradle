@@ -23,7 +23,7 @@ def gradleProps = new Properties()
 file('gradle.properties').withInputStream { gradleProps.load(it) }
 
 def requestedTasks = gradle.startParameter.taskNames
-def releaseBuild = !requestedTasks.any { it.startsWith('run') || it.contains('Client') || it.contains('Server') } && requestedTasks.any { it in ['build', 'jar', 'sourcesJar', 'datagenJar'] }
+def releaseBuild = !requestedTasks.any { it.startsWith('run') || it.contains('Client') || it.contains('Server') } && requestedTasks.any { it in ['build', 'jar', 'datagenJar'] }
 def currentBuild = versionProps.getProperty('build_number')?.toInteger() ?: 0
 ext.version_buildnumber = releaseBuild ? currentBuild + 1 : currentBuild
 ext.stage = versionProps.getProperty('stage') ?: ''
@@ -146,10 +146,11 @@ legacyForge {
     validateAccessTransformers = true
 
     mods {
-        "${mod_id}" {
-            sourceSet sourceSets.main
-            sourceSet sourceSets.datagen
-            sourceSet sourceSets.gametest
+        register(mod_id.toString()) { net.neoforged.moddevgradle.dsl.ModModel mod ->
+            SourceSetContainer sets = project.extensions.getByType(SourceSetContainer)
+            mod.modSourceSets.add(sets.named('main'))
+            mod.modSourceSets.add(sets.named('datagen'))
+            mod.modSourceSets.add(sets.named('gametest'))
         }
     }
 
@@ -161,7 +162,7 @@ legacyForge {
             client()
             sourceSet = sourceSets.main
             systemProperty 'forge.logging.markers', ''
-            systemProperty 'forge.enabledGameTestNamespaces', mod_id
+            systemProperty 'forge.enabledGameTestNamespaces', mod_id.toString()
             jvmArgument '-XX:StartFlightRecording=maxsize=512M,dumponexit=true,filename=logs/profile.jfr,settings=profile'
             programArguments.addAll '--username', 'tgstyle', '--width', '1920', '--height', '1080'
         }
@@ -169,7 +170,7 @@ legacyForge {
             server()
             sourceSet = sourceSets.main
             systemProperty 'forge.logging.markers', ''
-            systemProperty 'forge.enabledGameTestNamespaces', mod_id
+            systemProperty 'forge.enabledGameTestNamespaces', mod_id.toString()
             jvmArgument '-XX:StartFlightRecording=maxsize=512M,dumponexit=true,filename=logs/profile.jfr,settings=profile'
             programArguments.addAll '--nogui'
         }
@@ -178,18 +179,18 @@ legacyForge {
             sourceSet = sourceSets.datagen
             systemProperty 'forge.logging.markers', ''
             systemProperty 'fml.earlyprogresswindow', 'false'
-            programArguments.addAll '--mod', mod_id, '--all',
-                    '--output', file('src/generated/resources/').toString(), '--validate',
-                    '--existing', sourceSets.main.resources.srcDirs.first().toString()
+            programArguments.addAll '--mod', mod_id.toString(), '--all',
+                    '--output', file('src/generated/resources/').getAbsolutePath(), '--validate',
+                    '--existing', file('src/main/resources/').getAbsolutePath()
         }
         gameTestServer {
             type = 'gameTestServer'
             sourceSet = sourceSets.gametest
             systemProperty 'forge.logging.markers', ''
-            systemProperty 'forge.enabledGameTestNamespaces', mod_id
+            systemProperty 'forge.enabledGameTestNamespaces', mod_id.toString()
         }
         configureEach {
-            gameDirectory = project.file('run')
+            gameDirectory = layout.projectDirectory.dir('run')
         }
     }
 }
@@ -281,13 +282,6 @@ if (!project.hasProperty('keyStore')) {
     logger.warn("No key store found, not signing the output jar\n")
 }
 
-tasks.register('sourcesJar', Jar) {
-    dependsOn classes
-    archiveBaseName.set("ImmersiveConvergence-${version_minecraft}")
-    archiveClassifier.set('sources')
-    from sourceSets.main.allSource
-}
-
 tasks.register('devJar', Jar) {
     dependsOn classes
     archiveBaseName.set("ImmersiveConvergence-${version_minecraft}")
@@ -297,7 +291,6 @@ tasks.register('devJar', Jar) {
 }
 
 artifacts {
-    archives sourcesJar
     archives devJar
 }
 
@@ -336,9 +329,18 @@ tasks.withType(Task).configureEach {
 }
 
 jar.dependsOn bumpVersion
-sourcesJar.dependsOn bumpVersion
-devJar.dependsOn bumpVersion
+devJar.mustRunAfter bumpVersion
 build.dependsOn devJar
+
+def devSyncScript = null
+for (def dir = rootDir; dir != null && devSyncScript == null; dir = dir.parentFile) {
+    def candidate = new File(dir, '#scripts/mods-devsync.gradle')
+    if (candidate.isFile()) { devSyncScript = candidate }
+}
+if (devSyncScript != null) {
+    apply from: devSyncScript
+    build.finalizedBy 'devSync'
+}
 
 jar {
     archiveBaseName.set("ImmersiveConvergence-${version_minecraft}")
