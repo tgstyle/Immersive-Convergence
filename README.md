@@ -204,7 +204,37 @@ labeled: they are simply read in order, running along X first, then Z, then Y
 (entry number `x + z * width + y * width * length`). An empty entry does not mean
 an empty block: wherever the blueprint has a block, an empty entry falls back to
 a full cube. That is why most machines list `[]` for their solid blocks and only
-spell out boxes for the shaped ones.
+spell out boxes for the shaped ones. A `null` entry is the way to say a block
+has no collision at all.
+
+Writing the boxes by hand is slow for anything curved. The
+[`bb_shape.py`](https://github.com/tgstyle/MCT-Immersive-Technology/blob/1.21.1-3.0-Dev/mb_shapes_v2/bb_shape.py)
+script, in the
+[`mb_shapes_v2`](https://github.com/tgstyle/MCT-Immersive-Technology/tree/1.21.1-3.0-Dev/mb_shapes_v2)
+folder of Immersive Technology's 1.21.1 branch, turns a Blockbench `.bbmodel`
+of the machine into a finished `shapeAABB` list, and its `readme.txt` explains
+the setup and the options. An OBJ goes through `obj_to_bbmodel.py` and
+`bb_sterilize.py` first. Check the result in game with F3+B before shipping it.
+
+Immersive Technology uses these names:
+
+| Name | What it marks |
+| --- | --- |
+| `fluid_input`, `fluid_output`, `fluid_io` | Pipe connections |
+| `item_input`, `item_output` | Item connections |
+| `energy_input`, `energy_output` | Wire or cable connections |
+| `mechanical_input`, `mechanical_output` | Where a turbine and an alternator meet |
+| `heat_input`, `heat_output` | The heat link between a burner boiler and the boiler tank |
+| `baseheater` | Where the advanced coke oven's base heaters attach |
+| `redstone` | The redstone control block |
+| `comparator`, `comparator_layer`, `comparator_base` | Blocks that give a comparator reading |
+| `ignition` | The block a burner boiler is lit from with a torch or flint and steel |
+| `link`, `sun`, `reflector`, `beam`, `collector` | How the solar tower, solar melter and reflectors find and aim at each other |
+| `sound`, `smoke`, `particle`, `exhaust` | Where sounds and effects come from; these need no free face |
+
+Names with a number on the end are separate ports, so `fluid_input0` and
+`fluid_input1` are two inputs, and `comparator0` is listed once for every block
+that gives a comparator reading.
 
 ## Blocks a machine is built from
 `overrides/<modid>/structures/multiblocks/<id>.nbt` is the machine's blueprint,
@@ -355,6 +385,28 @@ needed for it. The blockstate points `boolean0=true` at the same OBJ as
 middle of the master block, so a replacement OBJ is mirrored along with it.
 Immersive Engineering's and Immersive Petroleum's own machines keep their own
 `_mirrored` files.
+
+## A replacement model keeps the original's groups
+An OBJ file splits its geometry into named groups (the `o` and `g` lines) and
+names its materials (the `usemtl` lines), and a mod's blockstates and code show,
+hide, tint or retexture parts of a model by those names. A replacement model has
+to carry the same groups as the one it replaces: a part in a renamed group is
+never switched, and a missing group leaves that state with nothing to show. Open
+the original, note every `o`, `g` and `usemtl` name in it, and give your model
+the same ones, with the same parts in each.
+
+These are Immersive Technology's models whose groups do something:
+
+| Model | Group or material | What uses it |
+| --- | --- | --- |
+| `models/block/metal/valve_fluid/valve_fluid.obj.ie` | `Pipe`, `Handle_Open`, `Handle_Closed` | Only the handle matching the valve's state is drawn; the item shows the open handle |
+| `models/block/metal/valve_load/valve_load.obj.ie` | `Base`, `Handle_Open`, `Handle_Closed` | Same as the fluid valve |
+| `models/block/connector/connector_timer/connector_timer.obj.ie` | `cube`, `glass`, `colour_out` | `glass` is drawn in the translucent layer; `colour_out` is tinted with the output's redstone channel color |
+| `models/block/multiblock/metal/boiler_solid/boiler_solid.obj` | material `cube_front` | The blockstate points `#cube_front` at the lit texture while the boiler runs |
+
+Every other machine model is a single group, and its name is free. The turbine
+rotors are separate models under `models/block/multiblock/metal/rotor/`, drawn
+and spun by the machine, so replacing a turbine's body leaves its rotor as it was.
 
 # Reporting issues
 When you are reporting bugs, please attach the crash report, mod and forge version.<br/>
