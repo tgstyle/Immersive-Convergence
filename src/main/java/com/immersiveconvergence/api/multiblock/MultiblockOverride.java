@@ -22,6 +22,8 @@ public final class MultiblockOverride {
     private final List<Port> ports;
     @Nullable private ShapeData shape;
 
+    static { MultiblockDataLoader.onReload(CACHE::clear); }
+
     private record Port(Capability<?> capability, BlockPos pos, @Nullable List<RelativeBlockFace> faces, BlockPos origin, @Nullable RelativeBlockFace originFace, boolean originFaceSet) {}
 
     private MultiblockOverride(MultiblockData data, List<Port> ports) {
@@ -35,7 +37,7 @@ public final class MultiblockOverride {
         if (QueueProcessor.MANAGED.contains(id)) { return null; }
         String modid = id.getNamespace();
         String name = id.getPath();
-        if (ICLib.class.getResource("/assets/" + modid + "/multiblocks/" + name + ".json") == null) { return null; }
+        if (MultiblockDataLoader.absent(ICLib.class, modid, name)) { return null; }
         MultiblockData data = MultiblockDataLoader.loadMultiblockData(ICLib.class, modid, name);
         if (data == null) { return null; }
         List<Port> ports = new ArrayList<>();
@@ -68,9 +70,9 @@ public final class MultiblockOverride {
         return shape;
     }
 
-    public boolean covers(Capability<?> capability) {
-        for (Port port : ports) { if (port.capability == capability) { return true; } }
-        return false;
+    public boolean ignores(Capability<?> capability) {
+        for (Port port : ports) { if (port.capability == capability) { return false; } }
+        return true;
     }
 
     @Nullable public CapabilityPosition map(Capability<?> capability, CapabilityPosition query) {

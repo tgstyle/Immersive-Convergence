@@ -11,6 +11,8 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import javax.annotation.Nullable;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,27 +22,35 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 public abstract class GenericShape implements Function<BlockPos, VoxelShape> {
+    static final String STRUCTURE_FOLDER = "structures/multiblocks/";
     public static final AABB FULL_BLOCK = new AABB(0D, 0D, 0D, 1D, 1D, 1D);
     private final Map<BlockPos, VoxelShape> shapeCache = new ConcurrentHashMap<>();
 
     public static int[] loadDimensions(Class<?> owner, String modid, String multiblockName) {
-        String path = "/data/" + modid + "/structures/multiblocks/" + multiblockName + ".nbt";
+        int[] packed = MultiblockDataLoader.packSize(modid, multiblockName);
+        if (packed != null) { return packed; }
+        String path = "/data/" + modid + "/" + STRUCTURE_FOLDER + multiblockName + ".nbt";
         try (InputStream is = owner.getResourceAsStream(path)) {
             if (is == null) {
                 ICLib.IC_LOGGER.error("Structure file not found at resource path: {} for multiblock: {}", path, multiblockName);
                 return new int[]{0, 0, 0};
             }
-            ListTag size = NbtIo.readCompressed(is).getList("size", Tag.TAG_INT);
-            if (size.size() != 3) {
+            int[] size = readSize(is);
+            if (size == null) {
                 ICLib.IC_LOGGER.error("Structure file {} has no usable size tag for multiblock: {}", path, multiblockName);
                 return new int[]{0, 0, 0};
             }
-            return new int[]{size.getInt(0), size.getInt(1), size.getInt(2)};
+            return size;
         }
         catch (Exception e) {
             ICLib.IC_LOGGER.error("Error reading structure file at {} for multiblock: {}", path, multiblockName, e);
             return new int[]{0, 0, 0};
         }
+    }
+
+    @Nullable static int[] readSize(InputStream is) throws IOException {
+        ListTag size = NbtIo.readCompressed(is).getList("size", Tag.TAG_INT);
+        return size.size() == 3 ? new int[]{size.getInt(0), size.getInt(1), size.getInt(2)} : null;
     }
 
     public static List<List<AABB>> loadShapes(MultiblockData data, int expectedNum) {

@@ -42,6 +42,7 @@ below is `metal` or `stone`, the folder the mod keeps the machine under.
 | Textures | `assets/<modid>/textures/multiblock/<material>/<id>.png` | Resource pack, same path |
 | Machine recipes | `data/<modid>/recipes/<machine>/` | Data pack, same path |
 | Blocks it is built from | `data/<modid>/structures/multiblocks/<id>.nbt` | Data pack, same path |
+| Ports and collision shapes | `data/<modid>/multiblocks/<id>.json` | Data pack, same path |
 
 A resource pack has to be enabled in the resource pack screen and takes effect
 on the next reload, F3+T included. A data pack has to be in the world's
@@ -59,15 +60,17 @@ new files under the mod's namespace and point an overridden blockstate at them,
 so your model does not have to carry the mod's name or sit where the mod's model
 sat.
 
-One thing cannot be overridden. Where a machine's pipes, wires and hoppers
-connect, and the shape you walk into, come from
-`assets/<modid>/multiblocks/<id>.json`, which the mod reads straight out of its
-own jar rather than through the resource system. A pack copy of that file is
-ignored. Immersive Convergence reads the same kind of file for Immersive
-Engineering's and Immersive Petroleum's machines out of its own jar, at
-`assets/immersiveengineering/multiblocks/<id>.json` and
-`assets/immersivepetroleum/multiblocks/<id>.json`, and applies the shapes and
-ports it finds there over the machine's own.
+Where a machine's pipes, wires and hoppers connect, and the shape you walk into,
+come from `data/<modid>/multiblocks/<id>.json`. It is data, so a data pack copy
+at the same path replaces it on the next start or `/reload`, and the server
+sends it to every player who joins, so a client's collision matches the
+server's. Immersive Convergence ships the same kind of file for Immersive
+Engineering's and Immersive Petroleum's machines, at
+`data/immersiveengineering/multiblocks/<id>.json` and
+`data/immersivepetroleum/multiblocks/<id>.json`, and applies the shapes and
+ports it finds there over the machine's own; a data pack overrides those the
+same way. The cell order of `shapeAABB` follows the structure file's size, so a
+pack that changes a machine's structure has to change this file to match.
 
 ## Immersive Engineering and Immersive Petroleum
 Immersive Engineering's own machines, and Immersive Petroleum's, are not
@@ -126,6 +129,119 @@ off, and it leaves nothing behind for another pack to trip over:
 }
 ```
 
+## Ports and collision
+`data/<modid>/multiblocks/<id>.json` holds everything about a machine that is
+not its look: which block is the master, which block the hammer forms it from,
+where its pipes, wires, redstone and comparators connect, the shape you walk
+into and click on, and how large the engineer's manual draws it. It is data, so
+a data pack copy at the same path replaces it on the next start or `/reload`,
+and every port in the file, including the fluid cell the sneak hammer empties,
+follows the pack from that point on: a formed machine picks the change up
+without being rebuilt, a pipe or cable already attached reconnects at the new
+cell through an ordinary neighbor update instead of staying on the old one,
+and the server sends the change to every connected player, not only one who
+joins after it, so both sides keep agreeing.
+
+This is an abridged `data/immersivetechnology/multiblocks/alternator.json`:
+
+```json
+{
+  "manualScale": 16,
+  "pointsOfInterest": [
+    { "name": "master", "pos": [0, 0, 0], "facing": null },
+    { "name": "trigger", "pos": [1, 1, 3], "facing": null },
+    { "name": "mechanical_input0", "pos": [1, 1, 0], "facing": "front" },
+    { "name": "energy_right0", "pos": [2, 0, 3], "facing": "left" },
+    { "name": "energy_right0", "pos": [2, 1, 3], "facing": "left" },
+    { "name": "comparator0", "pos": [0, 0, 0], "facing": null }
+  ],
+  "shapeAABB": [
+    [[0.0, 0.0, 0.5, 1.0, 1.0, 1.0], [0.375, 0.0, 0.0, 1.0, 1.0, 0.5]],
+    [],
+    null
+  ]
+}
+```
+
+| Field | Meaning |
+| --- | --- |
+| `manualScale` | How far the engineer's manual zooms out to draw the machine; larger draws it smaller |
+| `pointsOfInterest` | The blocks of the machine that do something, one entry per block and job |
+| `name` | The job, looked up by the mod by exact name |
+| `pos` | The block, as `[x, y, z]` within the structure, counted from `0` |
+| `facing` | The side of that block the connection is on, one value or a list of them; `null` for none, `"any"` for every side |
+| `shapeAABB` | The collision and selection boxes, one entry per block of the structure |
+
+### Points of interest
+`master` is the block that runs the machine and holds its tanks, inventory and
+progress, and everything else, the model included, is placed relative to it.
+It is the one entry a pack cannot move: it decides which block holds the
+machine's data, so it is read once while the game starts. `trigger` is the block
+the engineer's hammer forms the machine from, and `symmetric_trigger` marks a
+second block that forms it too.
+
+The other names belong to the mod, which finds its ports by them. Keep every
+name that is in the file and change only its `pos` and `facing`: a name the mod
+does not know does nothing, and a missing name the machine needs is an error.
+Names with a different number on the end are separate ports, so `fluid_input0`
+and `fluid_input1` are two inputs. The same name listed on several blocks is one
+port reachable from each of them, which is how the alternator's `energy_right0`
+covers a whole side.
+
+Immersive Technology uses these names:
+
+| Name | What it marks |
+| --- | --- |
+| `fluid_input`, `fluid_output`, `fluid_io` | Pipe connections |
+| `item_input`, `item_output` | Item connections |
+| `energy_input`, `energy_input_hv`, `energy_input_mv`, `energy_left`, `energy_right` | Wire or cable connections |
+| `mechanical_input`, `mechanical_output` | Where a turbine and an alternator meet |
+| `heat_input`, `heat_output` | The heat link between a burner boiler and the boiler tank |
+| `baseheater` | Where the advanced coke oven's base heaters attach |
+| `redstone` | The redstone control block |
+| `comparator`, `comparator_layer`, `comparator_base` | Blocks that give a comparator reading |
+| `ignition` | The block a burner boiler is lit from |
+| `link`, `sun`, `reflector`, `beam` | How the solar tower, solar melter and reflectors find and aim at each other |
+| `sound`, `sound_running`, `sound_starter`, `sound_ignite`, `sound_spark`, `sound_arc`, `smoke`, `particle`, `exhaust` | Where sounds and effects come from; these need no free face |
+
+The files for Immersive Engineering's and Immersive Petroleum's machines use
+only `master`, `trigger` and ports whose names start with `fluid_`, `item_` or
+`energy_`; each such entry moves or adds that kind of port at its block.
+
+`facing` names a side relative to the machine, so it holds in every rotation:
+`front`, `back`, `left`, `right`, `up` and `down`. Most shipped files put their
+`front` ports in the `z = 0` row and their `back` ports in the highest `z` row,
+which is the quickest way to get your bearings. A port needs its facing side to
+be open to the world.
+
+### Collision shape
+`shapeAABB` has one entry per block of the structure, in order along `x` first,
+then `z`, then `y`: entry number `x + z * width + y * width * length`, where the
+width, height and length are the size of the machine's structure file. The
+points of interest and the shape count their blocks the same way. Each entry is
+one of:
+
+| Entry | Result |
+| --- | --- |
+| A list of boxes | Each box is `[minX, minY, minZ, maxX, maxY, maxZ]`, measured within that one block from `0` to `1` |
+| `[]` | A full block |
+| `null` | No collision at all for that block |
+
+The list must have exactly `width * height * length` entries; any other count
+is logged as an error and the whole machine falls back to full blocks. A
+`shapeAABB` that is itself an empty list, `[]`, makes every block full. The
+order follows the structure file, so a pack that changes a machine's structure
+has to change this file to match.
+
+Writing the boxes by hand is slow for anything curved. The
+[`bb_shape.py`](https://github.com/tgstyle/MCT-Immersive-Technology/blob/1.21.1-3.0-Dev/mb_shapes_v2/bb_shape.py)
+script, in the
+[`mb_shapes_v2`](https://github.com/tgstyle/MCT-Immersive-Technology/tree/1.21.1-3.0-Dev/mb_shapes_v2)
+folder of Immersive Technology's 1.21.1 branch, turns a Blockbench `.bbmodel`
+of the machine into a finished `shapeAABB` list, and its `readme.txt` explains
+the setup and the options. An OBJ goes through `obj_to_bbmodel.py` and
+`bb_sterilize.py` first. Check the result in game with F3+B before shipping it.
+
 ## Blocks a machine is built from
 The layout of a machine is a vanilla structure file, the same format a structure
 block saves. Replacing it in a data pack changes what the player has to build
@@ -136,6 +252,12 @@ formed if every block matches, so a structure listing blocks a player cannot get
 makes the machine unbuildable. And the model is cut up along the same cells, so
 adding or removing blocks changes how the model is sliced without you touching
 the model at all.
+
+One thing about the structure cannot change: its overall width, height and
+length. The game checks a loaded structure's size against what the machine
+registered for it at the start, and a `.nbt` with a different bounding box
+fails that check. The blocks inside the box are free to change; only the
+footprint itself is fixed.
 
 ## Models and textures
 A machine is drawn as one model of the whole thing, and the game slices it
@@ -282,6 +404,28 @@ Replacing the OBJ at its own path is therefore mirrored along with it and needs
 nothing else. Pointing the base model at a different OBJ means changing the
 `model` inside `inner_model` too, or the machine keeps mirroring the old
 geometry.
+
+## A replacement model keeps the original's groups
+An OBJ file splits its geometry into named groups (the `o` and `g` lines) and
+names its materials (the `usemtl` lines), and the mod's model files show, hide or
+retexture parts of a model by those names. A replacement model has to carry the
+same groups as the one it replaces: a part in a renamed group is never switched,
+and a missing group leaves that state with nothing to show. Open the original,
+note every `o`, `g` and `usemtl` name in it, and give your model the same ones,
+with the same parts in each.
+
+These are Immersive Technology's models whose groups do something:
+
+| Model | Group or material | What uses it |
+| --- | --- | --- |
+| `models/block/metal/valve_fluid/valve_fluid.obj` | `Pipe`, `Handle_Open`, `Handle_Closed` | `valve_fluid_open.json` and `valve_fluid_closed.json` each hide the other handle through `visibility` |
+| `models/block/metal/valve_load/valve_load.obj` | `Base`, `Handle_Open`, `Handle_Closed` | Same as the fluid valve, in `valve_load_open.json` and `valve_load_closed.json` |
+| `models/multiblock/metal/boiler_solid/boiler_solid.obj` | material `cube_front` | `boiler_solid_active.json` points the `cube_front` texture at the lit front while the boiler runs |
+| `models/block/metal/advanced_coke_oven_baseheater/advanced_coke_oven_baseheater.obj` | `Fan`, `Rotor` | Hidden by the base heater's model files; the spinning fan is its own model, `advanced_coke_oven_baseheater_fan.obj`, drawn by the block |
+
+Every other machine model is a single group, and its name is free. The turbine
+rotors are separate models under `models/multiblock/metal/rotor/`, drawn and
+spun by the machine, so replacing a turbine's body leaves its rotor as it was.
 
 # Reporting issues
 When you are reporting bugs, please attach the crash report, mod and forge version.<br/>

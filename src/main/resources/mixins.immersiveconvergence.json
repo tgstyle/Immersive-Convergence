@@ -6,6 +6,8 @@
   "refmap": "immersiveconvergence.refmap.json",
   "mixins": [
     "MultiblockBEHelperCommonMixin",
+    "CachedValueMixin",
+    "MultiblockBEHelperMasterMixin",
     "MultiblockRegistrationBuilderAccessor",
     "InitializationTrackerMixin",
     "FluidPipeBlockEntityMixin",

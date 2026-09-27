@@ -31,6 +31,12 @@ import com.immersiveconvergence.mixin.MultiblockRegistrationBuilderAccessor;
 
     public MultiblockBuilder<S> redstone(IMultiblockComponent.StateWrapper<S, RedstoneControl.RSState> getState, BlockPos... positions) { redstoneAware(); return selfWrappingComponent(new RedstoneControl<>(getState, positions)); }
 
+    public MultiblockBuilder<S> redstone(IMultiblockComponent.StateWrapper<S, RedstoneControl.RSState> getState, Supplier<BlockPos> position) {
+        BlockPos[] cell = {position.get()};
+        MultiblockDataLoader.onReload(() -> cell[0] = position.get());
+        return redstone(getState, cell);
+    }
+
     @SuppressWarnings("ConstantConditions") public MultiblockBuilder<S> customBEs(DeferredRegister<BlockEntityType<?>> register) {
         MultiblockRegistrationBuilderAccessor accessor = (MultiblockRegistrationBuilderAccessor) this;
         ResourceLocation rl = accessor.ic$getName();

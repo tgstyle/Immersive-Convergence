@@ -34,6 +34,7 @@ import javax.annotation.Nullable;
 @SuppressWarnings({"unused", "RedundantSuppression", "rawtypes", "unchecked", "MismatchedQueryAndUpdateOfCollection"}) public abstract class TemplateMultiblock extends blusunrize.immersiveengineering.api.multiblocks.TemplateMultiblock {
     private List<StructureBlockInfo> sortedStructureBlocks;
     private Map<BlockPos, BlockState> triggerStateMap;
+    private int cacheGeneration;
 
     public record TriggerPoint(BlockPos cell, Rotation offset) {}
 
@@ -45,12 +46,14 @@ import javax.annotation.Nullable;
         super(loc, masterFromOrigin, triggerFromOrigin, size, additionalPredicates);
     }
 
-    protected List<TriggerPoint> getTriggerPoints() { return List.of(new TriggerPoint(this.triggerFromOrigin, Rotation.NONE)); }
+    protected List<TriggerPoint> getTriggerPoints() { return List.of(new TriggerPoint(getTriggerOffset(), Rotation.NONE)); }
 
     protected List<Mirror> getMirrorsToTry() { return canBeMirrored() ? List.of(Mirror.NONE, FRONT_BACK) : List.of(Mirror.NONE); }
 
     private void ensureCaches(blusunrize.immersiveengineering.api.multiblocks.TemplateMultiblock.TemplateData data) {
-        if (sortedStructureBlocks != null) { return; }
+        int generation = MultiblockDataLoader.generation();
+        if (sortedStructureBlocks != null && cacheGeneration == generation) { return; }
+        cacheGeneration = generation;
         List<StructureBlockInfo> nonAir = data.blocksWithoutAir();
         sortedStructureBlocks = new ArrayList<>(data.template().palettes.get(0).blocks());
         sortedStructureBlocks.sort(Comparator.comparingInt(info -> -info.pos().getY()));

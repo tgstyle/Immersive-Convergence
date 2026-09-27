@@ -2,6 +2,7 @@ package com.immersiveconvergence.core.proxy;
 
 import com.immersiveconvergence.api.block.BlockInterfaces;
 import com.immersiveconvergence.api.client.StandaloneModel;
+import com.immersiveconvergence.api.multiblock.MultiblockDataLoader;
 import com.immersiveconvergence.client.gui.RotorCreativeScreen;
 import com.immersiveconvergence.client.models.ICRotorModels;
 import com.immersiveconvergence.client.renderer.RotorCreativeRenderer;
@@ -10,6 +11,7 @@ import com.immersiveconvergence.core.lib.ICLib;
 import com.immersiveconvergence.core.registration.ICBlockEntities;
 import com.immersiveconvergence.core.registration.ICMenuTypes;
 
+import blusunrize.immersiveengineering.ImmersiveEngineering;
 import blusunrize.immersiveengineering.api.IEApi;
 import blusunrize.immersiveengineering.api.ManualHelper;
 import blusunrize.lib.manual.ManualEntry;
@@ -67,6 +69,7 @@ public class ClientProxy extends CommonProxy {
                 builder.readFromFile(ICLib.rl(name));
                 manual.addEntry(construction, builder.create());
             }
+            MultiblockDataLoader.onReload(() -> Minecraft.getInstance().execute(ImmersiveEngineering.proxy::resetManual));
         });
     }
 

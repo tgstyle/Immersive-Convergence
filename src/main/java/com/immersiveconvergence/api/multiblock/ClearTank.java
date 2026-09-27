@@ -12,17 +12,24 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.BlockHitResult;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public record ClearTank<S>(List<BlockPos> pois, Consumer<S> clearAction, Component message) implements IMultiblockComponent<S> {
+@SuppressWarnings({"unused", "RedundantSuppression"}) public record ClearTank<S>(Supplier<? extends Collection<BlockPos>> pois, Consumer<S> clearAction, Component message) implements IMultiblockComponent<S> {
     public static Predicate<ItemStack> additionalTool = stack -> false;
 
-    public ClearTank { pois = ImmutableList.copyOf(pois); }
+    public ClearTank(List<BlockPos> pois, Consumer<S> clearAction, Component message) { this(constant(pois), clearAction, message); }
+
+    private static Supplier<List<BlockPos>> constant(List<BlockPos> pois) {
+        List<BlockPos> copy = ImmutableList.copyOf(pois);
+        return () -> copy;
+    }
 
     @Override public InteractionResult click(IMultiblockContext<S> context, BlockPos posInMultiblock, Player player, InteractionHand hand, BlockHitResult absoluteHit, boolean isClient) {
-        if (pois.contains(posInMultiblock) && player.isShiftKeyDown()) {
+        if (player.isShiftKeyDown() && pois.get().contains(posInMultiblock)) {
             ItemStack held = player.getItemInHand(hand);
             if (held.getItem() == IEItems.Tools.HAMMER.get() || additionalTool.test(held)) {
                 if (!isClient) {

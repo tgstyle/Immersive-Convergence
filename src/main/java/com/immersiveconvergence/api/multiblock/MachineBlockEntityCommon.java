@@ -5,10 +5,10 @@ import com.immersiveconvergence.api.client.split.SplitModelProperties;
 
 import blusunrize.immersiveengineering.api.IEProperties;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.MultiblockRegistration;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.component.IMultiblockComponent;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockBEHelper;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockContext;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.logic.IMultiblockState;
+import blusunrize.immersiveengineering.common.blocks.multiblocks.blockimpl.ComponentInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -40,15 +40,15 @@ import java.util.stream.Stream;
 
     public boolean interact(Direction side, Player player, InteractionHand hand, ItemStack heldItem, float hitX, float hitY, float hitZ) {
         IMultiblockContext<State> ctx = helperSupplier.get().getContext();
+        if (ctx == null) { return false; }
         BlockPos posInMultiblock = helperSupplier.get().getPositionInMB();
         Vec3 hitVec = new Vec3(hitX, hitY, hitZ);
         BlockHitResult absoluteHit = new BlockHitResult(hitVec, side, BlockPos.ZERO, false);
         boolean isClient = levelSupplier.get().isClientSide;
         InteractionResult result = InteractionResult.PASS;
         for (MultiblockRegistration.ExtraComponent<State, ?> extra : multiblock.extraComponents()) {
-            @SuppressWarnings("unchecked")
-            IMultiblockComponent<State> component = (IMultiblockComponent<State>) extra.component();
-            InteractionResult componentResult = component.click(ctx, posInMultiblock, player, hand, absoluteHit, isClient);
+            ComponentInstance<?> component = ComponentInstance.make(extra, ctx.getState(), ctx);
+            InteractionResult componentResult = component.click(posInMultiblock, player, hand, absoluteHit, isClient);
             if (componentResult.consumesAction()) {
                 result = componentResult;
                 break;

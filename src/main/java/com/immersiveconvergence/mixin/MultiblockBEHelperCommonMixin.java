@@ -2,6 +2,8 @@ package com.immersiveconvergence.mixin;
 
 import com.immersiveconvergence.api.multiblock.ClearTankRegistry;
 import com.immersiveconvergence.api.multiblock.IDisassemblingAware;
+import com.immersiveconvergence.api.multiblock.IResettableCache;
+import com.immersiveconvergence.api.multiblock.MultiblockDataLoader;
 import com.immersiveconvergence.api.multiblock.MultiblockOverride;
 import com.immersiveconvergence.api.multiblock.QueueProcessor;
 import com.immersiveconvergence.api.multiblock.ShapeData;
@@ -56,6 +58,8 @@ public abstract class MultiblockBEHelperCommonMixin implements IDisassemblingAwa
     @Shadow(remap = false) @Final protected MultiblockOrientation orientation;
     @Unique private Map<ShapeType, VoxelShape> ic$overrideShapes;
     @Unique private BlockPos ic$overrideShapesPos;
+    @Shadow(remap = false) @Final private EnumMap<ShapeType, ?> cachedShape;
+    @Unique private int ic$shapeGeneration;
 
     @Override public boolean ic$isDisassembling() { return beingDisassembled; }
 
@@ -87,6 +91,12 @@ public abstract class MultiblockBEHelperCommonMixin implements IDisassemblingAwa
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Inject(method = "getShape", at = @At("HEAD"), cancellable = true, remap = false)
     private void ic$overrideShape(CollisionContext ctx, ShapeType type, CallbackInfoReturnable<VoxelShape> cir) {
+        int generation = MultiblockDataLoader.generation();
+        if (ic$shapeGeneration != generation) {
+            ic$shapeGeneration = generation;
+            for (Object cached : cachedShape.values()) { ((IResettableCache) cached).ic$reset(); }
+            ic$overrideShapesPos = null;
+        }
         MultiblockOverride override = MultiblockOverride.get(multiblock.id());
         if (override == null || be.getLevel() == null) { return; }
         ShapeData shape = override.shape(multiblock.id(), multiblock.size(be.getLevel()));
@@ -109,7 +119,7 @@ public abstract class MultiblockBEHelperCommonMixin implements IDisassemblingAwa
     @Redirect(method = "getCapability", at = @At(value = "INVOKE", target = "Lblusunrize/immersiveengineering/api/multiblocks/blocks/logic/IMultiblockLogic;getCapability(Lblusunrize/immersiveengineering/api/multiblocks/blocks/env/IMultiblockContext;Lblusunrize/immersiveengineering/api/multiblocks/blocks/util/CapabilityPosition;Lnet/minecraftforge/common/capabilities/Capability;)Lnet/minecraftforge/common/util/LazyOptional;"), remap = false)
     private LazyOptional ic$overridePorts(IMultiblockLogic logic, IMultiblockContext ctx, CapabilityPosition position, Capability cap) {
         MultiblockOverride override = MultiblockOverride.get(multiblock.id());
-        if (override == null || !override.covers(cap)) { return logic.getCapability(ctx, position, cap); }
+        if (override == null || override.ignores(cap)) { return logic.getCapability(ctx, position, cap); }
         CapabilityPosition mapped = override.map(cap, position);
         return mapped == null ? LazyOptional.empty() : logic.getCapability(ctx, mapped, cap);
     }
