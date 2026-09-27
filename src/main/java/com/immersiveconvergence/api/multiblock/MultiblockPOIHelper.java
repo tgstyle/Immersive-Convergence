@@ -1,6 +1,7 @@
 package com.immersiveconvergence.api.multiblock;
 
 import blusunrize.immersiveengineering.api.multiblocks.blocks.util.CapabilityPosition;
+import blusunrize.immersiveengineering.api.multiblocks.blocks.util.MultiblockFace;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.util.RelativeBlockFace;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.core.BlockPos;
@@ -36,5 +37,10 @@ import java.util.List;
         }
         if (result.isEmpty()) { throw new RuntimeException("No POI found for " + name); }
         return ImmutableList.copyOf(result);
+    }
+
+    public static MultiblockFace opposing(RelativeBlockFace face, BlockPos posInMultiblock) {
+        CapabilityPosition opposite = CapabilityPosition.opposing(new MultiblockFace(face, posInMultiblock));
+        return new MultiblockFace(opposite.side(), opposite.posInMultiblock());
     }
 }

@@ -1,6 +1,7 @@
 package com.immersiveconvergence.api.multiblock;
 
 import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockContext;
+import blusunrize.immersiveengineering.api.multiblocks.blocks.util.CapabilityPosition;
 import blusunrize.immersiveengineering.common.util.Utils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -9,6 +10,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.capabilities.Capabilities;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -26,9 +28,18 @@ import java.util.function.ToIntFunction;
 
     public static void register(ResourceLocation multiblock, Collection<BlockPos> inputPositions, ToIntFunction<Object> clear) { ENTRIES.put(multiblock, new Entry(Set.copyOf(inputPositions), clear)); }
 
+    @Nullable private static BlockPos portOrigin(ResourceLocation multiblock, BlockPos posInMultiblock) {
+        MultiblockOverride override = MultiblockOverride.get(multiblock);
+        if (override == null || override.ignores(Capabilities.FluidHandler.BLOCK)) { return posInMultiblock; }
+        CapabilityPosition mapped = override.map(Capabilities.FluidHandler.BLOCK, new CapabilityPosition(posInMultiblock, null));
+        return mapped == null ? null : mapped.posInMultiblock();
+    }
+
     @Nullable public static ItemInteractionResult handle(ResourceLocation multiblock, BlockPos posInMultiblock, IMultiblockContext<?> context, Player player, InteractionHand hand) {
         Entry entry = ENTRIES.get(multiblock);
-        if (entry == null || !entry.inputPositions().contains(posInMultiblock) || !player.isShiftKeyDown()) { return null; }
+        if (entry == null || !player.isShiftKeyDown()) { return null; }
+        BlockPos origin = portOrigin(multiblock, posInMultiblock);
+        if (origin == null || !entry.inputPositions().contains(origin)) { return null; }
         ItemStack held = player.getItemInHand(hand);
         if (!Utils.isHammer(held) && !ClearTank.additionalTool.test(held)) { return null; }
         boolean isClient = player.level().isClientSide;

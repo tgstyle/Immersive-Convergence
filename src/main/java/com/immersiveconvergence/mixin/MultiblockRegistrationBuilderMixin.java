@@ -1,6 +1,8 @@
 package com.immersiveconvergence.mixin;
 
 import com.immersiveconvergence.api.multiblock.MultiblockOverride;
+import com.immersiveconvergence.api.multiblock.QueueProcessor;
+
 import blusunrize.immersiveengineering.api.multiblocks.blocks.MultiblockRegistrationBuilder;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.component.IMultiblockComponent.CapabilityRegistrar;
 import net.minecraft.resources.ResourceLocation;
@@ -17,8 +19,7 @@ public abstract class MultiblockRegistrationBuilderMixin {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @ModifyArg(method = "registerCapabilities", at = @At(value = "INVOKE", target = "Lblusunrize/immersiveengineering/api/multiblocks/blocks/logic/IMultiblockLogic;registerCapabilities(Lblusunrize/immersiveengineering/api/multiblocks/blocks/component/IMultiblockComponent$CapabilityRegistrar;)V"), remap = false)
     private CapabilityRegistrar ic$overridePorts(CapabilityRegistrar registrar) {
-        MultiblockOverride override = MultiblockOverride.get(name);
-        if (override == null || !override.hasPorts()) { return registrar; }
-        return override.wrap(registrar);
+        if (QueueProcessor.MANAGED.contains(name)) { return registrar; }
+        return MultiblockOverride.wrap(name, registrar);
     }
 }

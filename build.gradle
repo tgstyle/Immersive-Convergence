@@ -1,5 +1,7 @@
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import net.neoforged.gradle.dsl.common.extensions.subsystems.Parchment
+import net.neoforged.gradle.dsl.common.extensions.subsystems.Subsystems
 
 plugins {
     id 'idea'
@@ -74,12 +76,9 @@ sourceSets {
     }
 }
 
-subsystems {
-    parchment { net.neoforged.gradle.dsl.common.extensions.subsystems.Parchment p ->
-        p.minecraftVersion.set(version_minecraft as String)
-        p.mappingsVersion.set(version_parchment as String)
-    }
-}
+Parchment parchmentMappings = extensions.getByType(Subsystems).parchment
+parchmentMappings.minecraftVersion.set(version_minecraft as String)
+parchmentMappings.mappingsVersion.set(version_parchment as String)
 
 def version_replaces = {
     [
@@ -139,7 +138,7 @@ runs {
     }
 
     data {
-        modSource project.extensions.getByType(SourceSetContainer).getByName('datagen')
+        modSource project.extensions.getByType(SourceSetContainer).named('datagen').get()
         arguments.addAll '--mod', project.mod_id as String, '--all',
                 '--output', file('src/generated/resources/').absolutePath,
                 '--existing', file('src/main/resources/').absolutePath

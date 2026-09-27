@@ -25,6 +25,8 @@ public final class MultiblockOverride {
     private final List<Port> ports;
     @Nullable private ShapeData shape;
 
+    static { MultiblockDataLoader.onReload(CACHE::clear); }
+
     private record Port(BlockCapability<?, Direction> capability, BlockPos pos, @Nullable List<RelativeBlockFace> faces, BlockPos origin, @Nullable RelativeBlockFace originFace, boolean originFaceSet) {}
 
     private MultiblockOverride(MultiblockData data, List<Port> ports) {
@@ -38,7 +40,7 @@ public final class MultiblockOverride {
         if (QueueProcessor.MANAGED.contains(id)) { return null; }
         String modid = id.getNamespace();
         String name = id.getPath();
-        if (ICLib.class.getResource("/assets/" + modid + "/multiblocks/" + name + ".json") == null) { return null; }
+        if (MultiblockDataLoader.absent(ICLib.class, modid, name)) { return null; }
         MultiblockData data = MultiblockDataLoader.loadMultiblockData(ICLib.class, modid, name);
         if (data == null) { return null; }
         List<Port> ports = new ArrayList<>();
@@ -71,11 +73,9 @@ public final class MultiblockOverride {
         return shape;
     }
 
-    public boolean hasPorts() { return !ports.isEmpty(); }
-
-    public boolean covers(BlockCapability<?, ?> capability) {
-        for (Port port : ports) { if (port.capability == capability) { return true; } }
-        return false;
+    public boolean ignores(BlockCapability<?, ?> capability) {
+        for (Port port : ports) { if (port.capability == capability) { return false; } }
+        return true;
     }
 
     @Nullable public CapabilityPosition map(BlockCapability<?, ?> capability, CapabilityPosition query) {
@@ -88,15 +88,13 @@ public final class MultiblockOverride {
         return null;
     }
 
-    public <State> CapabilityRegistrar<State> wrap(CapabilityRegistrar<State> inner) {
+    public static <State> CapabilityRegistrar<State> wrap(ResourceLocation id, CapabilityRegistrar<State> inner) {
         return new CapabilityRegistrar<>() {
             @Override public <T> void register(BlockCapability<T, Direction> capability, CapabilityGetter<T, State> getter) {
-                if (!covers(capability)) {
-                    inner.register(capability, getter);
-                    return;
-                }
                 inner.register(capability, (state, position) -> {
-                    CapabilityPosition mapped = map(capability, position);
+                    MultiblockOverride override = get(id);
+                    if (override == null || override.ignores(capability)) { return getter.getCapability(state, position); }
+                    CapabilityPosition mapped = override.map(capability, position);
                     return mapped == null ? null : getter.getCapability(state, mapped);
                 });
             }

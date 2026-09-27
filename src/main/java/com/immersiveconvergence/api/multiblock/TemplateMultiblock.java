@@ -45,13 +45,16 @@ import javax.annotation.Nullable;
 
     private List<StructureBlockInfo> sortedStructureBlocks;
     private Map<BlockPos, BlockState> triggerStateMap;
+    private int cacheGeneration;
 
-    protected List<TriggerPoint> getTriggerPoints() { return List.of(new TriggerPoint(this.triggerFromOrigin, Rotation.NONE)); }
+    protected List<TriggerPoint> getTriggerPoints() { return List.of(new TriggerPoint(getTriggerOffset(), Rotation.NONE)); }
 
     protected List<Mirror> getMirrorsToTry() { return canBeMirrored() ? List.of(Mirror.NONE, FRONT_BACK) : List.of(Mirror.NONE); }
 
     private void ensureCaches(TemplateData data) {
-        if (sortedStructureBlocks != null) { return; }
+        int generation = MultiblockDataLoader.generation();
+        if (sortedStructureBlocks != null && cacheGeneration == generation) { return; }
+        cacheGeneration = generation;
         List<StructureBlockInfo> nonAir = data.blocksWithoutAir();
         sortedStructureBlocks = new ArrayList<>(nonAir);
         sortedStructureBlocks.sort(Comparator.comparingInt(info -> -info.pos().getY()));

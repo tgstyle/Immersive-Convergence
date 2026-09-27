@@ -6,6 +6,8 @@
   "plugin": "com.immersiveconvergence.mixin.ICMixinPlugin",
   "mixins": [
     "MultiblockBEHelperCommonMixin",
+    "CachedValueMixin",
+    "MultiblockBEHelperMasterMixin",
     "MultiblockRegistrationBuilderAccessor",
     "MultiblockRegistrationBuilderMixin",
     "InitializationTrackerMixin",
