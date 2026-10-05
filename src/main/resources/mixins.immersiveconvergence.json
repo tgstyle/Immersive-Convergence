@@ -11,7 +11,16 @@
     "MultiblockRegistrationBuilderAccessor",
     "InitializationTrackerMixin",
     "FluidPipeBlockEntityMixin",
-    "MultiblockPartBlockMixin"
+    "MultiblockPartBlockMixin",
+    "CallbacksMixin",
+    "MetalPressStateAccessor",
+    "LightningRodStateAccessor",
+    "FluidPumpAccessor",
+    "ThermoelectricGenAccessor",
+    "ClocheAccessor",
+    "TurretAccessor",
+    "GasGeneratorAccessor",
+    "RefineryStateAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
