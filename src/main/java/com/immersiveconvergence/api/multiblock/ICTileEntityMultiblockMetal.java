@@ -4,6 +4,7 @@ import com.immersiveconvergence.api.ICLib;
 import com.immersiveconvergence.api.block.ICProperties;
 import com.immersiveconvergence.api.block.ICProperties.PropertyBoolInverted;
 import com.immersiveconvergence.api.block.ICSideConfig;
+import com.immersiveconvergence.api.compat.ICComputerControl;
 import com.immersiveconvergence.api.crafting.ICIngredient;
 import com.immersiveconvergence.api.crafting.ICRecipe;
 import com.immersiveconvergence.api.energy.ICFluxWrapper;
@@ -35,7 +36,6 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -84,7 +84,7 @@ public abstract class ICTileEntityMultiblockMetal<T extends ICTileEntityMultiblo
                 }
             }
         }
-        if (nbt.hasKey("computerOn", Constants.NBT.TAG_BYTE) && Loader.isModLoaded("opencomputers")) {
+        if (nbt.hasKey("computerOn", Constants.NBT.TAG_BYTE) && ICComputerControl.computerModLoaded()) {
             byte cOn = nbt.getByte("computerOn");
             switch (cOn) {
                 case 0: computerOn = Boolean.FALSE; break;

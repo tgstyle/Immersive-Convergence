@@ -1,7 +1,9 @@
 package com.immersiveconvergence.common.util.compat;
 
 import com.immersiveconvergence.common.util.ICLogger;
+import com.immersiveconvergence.common.util.compat.computercraft.ICComputerCraft;
 import com.immersiveconvergence.common.util.compat.crafttweaker.ICCraftTweaker;
+import com.immersiveconvergence.common.util.compat.opencomputers.ICOpenComputers;
 import com.immersiveconvergence.common.util.compat.top.ICOneProbe;
 import com.immersiveconvergence.common.util.compat.waila.ICWailaHelper;
 
@@ -17,7 +19,9 @@ public abstract class ICCompatModule {
     private static final List<ICCompatModule> ACTIVE = new ArrayList<>();
 
     static {
+        CANDIDATES.put("computercraft", ICComputerCraft.class);
         CANDIDATES.put("crafttweaker", ICCraftTweaker.class);
+        CANDIDATES.put("opencomputers", ICOpenComputers.class);
         CANDIDATES.put("theoneprobe", ICOneProbe.class);
         CANDIDATES.put("waila", ICWailaHelper.class);
     }

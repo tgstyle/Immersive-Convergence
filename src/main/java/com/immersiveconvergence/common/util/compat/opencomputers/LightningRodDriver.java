@@ -1,0 +1,24 @@
+package com.immersiveconvergence.common.util.compat.opencomputers;
+
+import com.immersiveconvergence.api.compat.opencomputers.ICTableDriver;
+import com.immersiveconvergence.api.compat.opencomputers.ICTableEnvironment;
+import com.immersiveconvergence.common.util.compat.computers.IEMachineComputerTables;
+
+import blusunrize.immersiveengineering.common.blocks.metal.TileEntityLightningrod;
+import li.cil.oc.api.machine.Arguments;
+import li.cil.oc.api.machine.Callback;
+import li.cil.oc.api.machine.Context;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+
+public class LightningRodDriver extends ICTableDriver<TileEntityLightningrod> {
+    public LightningRodDriver() { super(IEMachineComputerTables.LIGHTNING_ROD, LightningRodEnvironment::new); }
+
+    @SuppressWarnings("unused") public static class LightningRodEnvironment extends ICTableEnvironment<TileEntityLightningrod> {
+        public LightningRodEnvironment(World world, BlockPos pos) { super(world, pos, IEMachineComputerTables.LIGHTNING_ROD); }
+
+        @Callback(doc = ICCallbackDocs.ENERGY_STORED) public Object[] getEnergyStored(Context context, Arguments args) { return call("getEnergyStored", args); }
+
+        @Callback(doc = ICCallbackDocs.MAX_ENERGY_STORED) public Object[] getMaxEnergyStored(Context context, Arguments args) { return call("getMaxEnergyStored", args); }
+    }
+}

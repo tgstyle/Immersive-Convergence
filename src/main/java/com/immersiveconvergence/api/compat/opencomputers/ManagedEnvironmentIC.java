@@ -1,6 +1,8 @@
 package com.immersiveconvergence.api.compat.opencomputers;
 
 import com.immersiveconvergence.api.block.ICTileEntityBase;
+import com.immersiveconvergence.api.compat.ICComputerControl;
+import com.immersiveconvergence.api.compat.ICComputerTable;
 import com.immersiveconvergence.api.multiblock.ICTileEntityMultiblockMetal;
 
 import li.cil.oc.api.Network;
@@ -36,17 +38,17 @@ public abstract class ManagedEnvironmentIC<T extends ICTileEntityBase> extends A
     public abstract static class ManagedEnvMultiblock<T2 extends ICTileEntityMultiblockMetal<?, ?>> extends ManagedEnvironmentIC<T2> {
         public ManagedEnvMultiblock(World world, BlockPos pos, Class<? extends ICTileEntityBase> tileClass) { super(world, pos, tileClass); }
 
+        protected Object[] call(ICComputerTable<T2> table, String method) { return table.invoke(getTileEntity(), method); }
+
         protected Object[] enableComputerControl(Context context, Arguments args) {
             boolean allow = args.checkBoolean(0);
-            getTileEntity().computerOn = allow ? Boolean.TRUE : null;
+            ICComputerControl.enableComputerControl(getTileEntity(), allow);
             return null;
         }
 
         protected Object[] setEnabled(Context context, Arguments args) {
             boolean enabled = args.checkBoolean(0);
-            ICTileEntityMultiblockMetal<?, ?> te = getTileEntity();
-            if (te.computerOn == null) { throw new IllegalStateException("Computer control must be enabled to enable or disable the machine"); }
-            te.computerOn = enabled;
+            ICComputerControl.setEnabled(getTileEntity(), enabled);
             return null;
         }
     }
