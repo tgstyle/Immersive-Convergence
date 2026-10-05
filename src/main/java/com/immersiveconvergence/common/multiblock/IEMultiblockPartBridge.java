@@ -34,9 +34,9 @@ public final class IEMultiblockPartBridge {
 
         private Adapter(TileEntityMultiblockPart<?> part) { this.part = part; }
 
-        @Override public World getWorld() { return part.getWorld(); }
+        @Override public World getPartWorld() { return part.getWorld(); }
 
-        @Override public BlockPos getPos() { return part.getPos(); }
+        @Override public BlockPos getPartBlockPos() { return part.getPos(); }
 
         @Override public boolean isPartUnformed() { return !part.formed; }
 

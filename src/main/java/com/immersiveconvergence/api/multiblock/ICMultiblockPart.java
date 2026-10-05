@@ -17,9 +17,9 @@ public interface ICMultiblockPart {
         return tile != null && ICMods.immersiveEngineering() ? IEMultiblockPartBridge.partOf(tile) : null;
     }
 
-    World getWorld();
+    World getPartWorld();
 
-    BlockPos getPos();
+    BlockPos getPartBlockPos();
 
     boolean isPartUnformed();
 

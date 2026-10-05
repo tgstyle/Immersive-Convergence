@@ -135,9 +135,9 @@ public class QueueProcessor {
     }
 
     public static Result handleDisassembly(ICMultiblockPart broken, List<BlockPos> positions, boolean dropOriginal) {
-        World world = broken.getWorld();
+        World world = broken.getPartWorld();
         if (world.isRemote || broken.isPartUnformed()) { return Result.FALLBACK; }
-        BlockPos brokenPos = broken.getPos();
+        BlockPos brokenPos = broken.getPartBlockPos();
         int[] brokenOffset = broken.getPartOffset();
         BlockPos masterPos = brokenPos.add(-brokenOffset[0], -brokenOffset[1], -brokenOffset[2]);
         if (isDisassembling(world, masterPos)) { return Result.QUEUED; }

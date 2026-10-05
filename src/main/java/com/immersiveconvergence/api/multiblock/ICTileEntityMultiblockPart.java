@@ -17,6 +17,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
@@ -42,6 +43,10 @@ public abstract class ICTileEntityMultiblockPart<T extends ICTileEntityMultibloc
     private MultiblockFluidWrapper[] fluidWrappers;
 
     protected ICTileEntityMultiblockPart(int[] structureDimensions) { this.structureDimensions = structureDimensions; }
+
+    @Override public World getPartWorld() { return getWorld(); }
+
+    @Override public BlockPos getPartBlockPos() { return getPos(); }
 
     @Override public boolean isPartUnformed() { return !formed; }
 
