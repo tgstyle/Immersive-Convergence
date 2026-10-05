@@ -98,7 +98,7 @@ public class QueueProcessor {
         sneakBreaking = event.getPlayer().isShiftKeyDown();
     }
 
-    public static boolean disassemble(ServerLevel serverLevel, List<StructureBlockInfo> structure, BlockPos origin, Mirror mirror, Rotation rot, BlockPos masterPos, Vec3i size, Block partBlock, boolean handleTemplateMode) { return disassemble(serverLevel, structure, origin, mirror, rot, masterPos, size, partBlock, handleTemplateMode, null); }
+    public static void disassemble(ServerLevel serverLevel, List<StructureBlockInfo> structure, BlockPos origin, Mirror mirror, Rotation rot, BlockPos masterPos, Vec3i size, Block partBlock, boolean handleTemplateMode) { disassemble(serverLevel, structure, origin, mirror, rot, masterPos, size, partBlock, handleTemplateMode, null); }
 
     @SuppressWarnings("deprecation") public static boolean disassemble(ServerLevel serverLevel, List<StructureBlockInfo> structure, BlockPos origin, Mirror mirror, Rotation rot, BlockPos masterPos, Vec3i size, Block partBlock, boolean handleTemplateMode, @Nullable Function<BlockPos, BlockState> cellState) {
         BlockPos initiatedAt = currentlyBreakingPos;
@@ -175,11 +175,12 @@ public class QueueProcessor {
             }
         }
         else {
+            BlockPos harvestedByPlayer = handleTemplateMode ? null : initiatedAt;
             for (StructureBlockInfo info : structure) {
                 BlockPos actualPos = TemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot);
                 BlockState template = placedState(info, cellState).mirror(mirror).rotate(rot);
                 toBreak.add(actualPos);
-                if (dropItems && !template.isAir()) {
+                if (dropItems && !template.isAir() && !actualPos.equals(harvestedByPlayer)) {
                     BlockEntity templateBE = null;
                     if (template.hasBlockEntity() && template.getBlock() instanceof EntityBlock entityBlock) {
                         try { templateBE = entityBlock.newBlockEntity(actualPos, template); }
