@@ -189,12 +189,13 @@ public class QueueProcessor {
             }
         }
         else {
+            BlockPos harvestedByPlayer = handleTemplateMode ? null : initiatedAt;
             for (StructureBlockInfo info : structure) {
                 BlockPos actualPos = TemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot);
                 BlockState stateAfterMirror = placedState(info, cellState).mirror(mirror);
                 BlockState template = stateAfterMirror.rotate(rot);
                 toBreak.add(actualPos);
-                if (dropItems && !template.isAir()) {
+                if (dropItems && !template.isAir() && !actualPos.equals(harvestedByPlayer)) {
                     BlockEntity templateBE = null;
                     if (template.hasBlockEntity() && template.getBlock() instanceof EntityBlock entityBlock) {
                         try { templateBE = entityBlock.newBlockEntity(actualPos, template); }
