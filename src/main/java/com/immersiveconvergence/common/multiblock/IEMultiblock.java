@@ -147,7 +147,9 @@ public class IEMultiblock extends TemplateMultiblock {
             case CONVEYOR_ROW: {
                 EnumFacing row = (vertical ? yaw : side).rotateY();
                 TileEntity tile = world.getTileEntity(pos.offset(row));
-                return tile instanceof TileEntityConveyorBelt ? ((TileEntityConveyorBelt)tile).getFacing() : row;
+                if (!(tile instanceof TileEntityConveyorBelt)) { return row; }
+                EnumFacing belt = ((TileEntityConveyorBelt)tile).getFacing();
+                return belt.getAxis().isHorizontal() ? belt : row;
             }
             default: return vertical ? yaw : side.getOpposite();
         }
