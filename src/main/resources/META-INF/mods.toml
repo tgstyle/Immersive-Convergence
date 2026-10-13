@@ -35,3 +35,9 @@ side="BOTH"
 
 [[mixins]]
 config="mixins.immersiveconvergence.json"
+
+[[mixins]]
+config="mixins.immersiveconvergence.ie.json"
+
+[[mixins]]
+config="mixins.immersiveconvergence.ip.json"

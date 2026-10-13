@@ -4,24 +4,6 @@
   "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
   "refmap": "immersiveconvergence.refmap.json",
-  "mixins": [
-    "MultiblockBEHelperCommonMixin",
-    "CachedValueMixin",
-    "MultiblockBEHelperMasterMixin",
-    "MultiblockRegistrationBuilderAccessor",
-    "InitializationTrackerMixin",
-    "FluidPipeBlockEntityMixin",
-    "MultiblockPartBlockMixin",
-    "CallbacksMixin",
-    "MetalPressStateAccessor",
-    "LightningRodStateAccessor",
-    "FluidPumpAccessor",
-    "ThermoelectricGenAccessor",
-    "ClocheAccessor",
-    "TurretAccessor",
-    "GasGeneratorAccessor",
-    "RefineryStateAccessor"
-  ],
   "injectors": {
     "defaultRequire": 1
   },

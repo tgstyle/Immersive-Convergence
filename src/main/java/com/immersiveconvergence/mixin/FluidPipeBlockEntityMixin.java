@@ -1,8 +1,11 @@
 package com.immersiveconvergence.mixin;
 
+import com.immersiveconvergence.api.fluid.IICFluidPipe;
+
 import blusunrize.immersiveengineering.api.utils.CapabilityReference;
 import blusunrize.immersiveengineering.common.blocks.metal.FluidPipeBlockEntity;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import org.spongepowered.asm.mixin.Final;
@@ -43,5 +46,10 @@ public abstract class FluidPipeBlockEntityMixin {
             }
             catch (Exception ignored) {}
         }
+    }
+
+    @Inject(method = "canOutputPressurized(Lnet/minecraft/world/level/block/entity/BlockEntity;Z)Z", at = @At("HEAD"), cancellable = true, remap = false)
+    private void ic$pipeOutputPressurized(BlockEntity output, boolean consumePower, CallbackInfoReturnable<Boolean> cir) {
+        if (output instanceof IICFluidPipe pipe) { cir.setReturnValue(pipe.canOutputPressurized(consumePower)); }
     }
 }

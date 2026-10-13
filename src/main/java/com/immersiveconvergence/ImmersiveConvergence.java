@@ -1,5 +1,6 @@
 package com.immersiveconvergence;
 
+import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.capability.*;
 import com.immersiveconvergence.api.integration.top.ProbeIntegration;
 import com.immersiveconvergence.api.loot.LootEntryTypes;
@@ -60,7 +61,7 @@ public class ImmersiveConvergence {
         ICLib.IC_LOGGER.info("HELLO FROM COMMON SETUP");
         event.enqueueWork(PacketHandler::initialize);
         IEClearTanks.register();
-        if (ModList.get().isLoaded(IPClearTanks.MODID)) { IPClearTanks.register(); }
+        if (ICMods.immersivePetroleum()) { IPClearTanks.register(); }
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event) {

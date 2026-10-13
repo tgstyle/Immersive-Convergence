@@ -1,5 +1,6 @@
 package com.immersiveconvergence.mixin;
 
+import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.util.ComputerCallbacks;
 import com.immersiveconvergence.core.compat.computer.IEComputerIntegration;
 import com.immersiveconvergence.core.compat.computer.IPComputerIntegration;
@@ -7,7 +8,6 @@ import com.immersiveconvergence.core.compat.computer.IPComputerIntegration;
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.CallbackOwner;
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.Callbacks;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.ModList;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -23,7 +23,7 @@ public class CallbacksMixin {
 
     @Inject(method = "ensureInitialized", at = @At("TAIL")) private static void ic$registerComputerCallbacks(CallbackInfo ci) {
         IEComputerIntegration.register();
-        if (ModList.get().isLoaded(IPComputerIntegration.MODID)) { IPComputerIntegration.register(); }
+        if (ICMods.immersivePetroleum()) { IPComputerIntegration.register(); }
         CALLBACKS.putAll(ComputerCallbacks.all());
     }
 }

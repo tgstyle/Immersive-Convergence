@@ -246,12 +246,16 @@ project.ext.lwjglNatives = "natives-linux"
 mixin {
     add sourceSets.main, "${mod_id}.refmap.json"
     config "mixins.${mod_id}.json"
+    config "mixins.${mod_id}.ie.json"
+    config "mixins.${mod_id}.ip.json"
 }
 
 dependencies {
     annotationProcessor "org.spongepowered:mixin:${version_mixin}:processor"
-    modImplementation "curse.maven:${version_ie_curse}"
-    modImplementation "curse.maven:${version_ip_curse}"
+    modCompileOnly "curse.maven:${version_ie_curse}"
+    modRuntimeOnly "curse.maven:${version_ie_curse}"
+    modCompileOnly "curse.maven:${version_ip_curse}"
+    modRuntimeOnly "curse.maven:${version_ip_curse}"
     modCompileOnly "mezz.jei:jei-${version_minecraft}-forge-api:${version_jei}"
     modCompileOnly "mezz.jei:jei-${version_minecraft}-common-api:${version_jei}"
     modImplementation "mezz.jei:jei-${version_minecraft}-forge:${version_jei}"
@@ -309,7 +313,7 @@ tasks.register('devJar', Jar) {
     archiveBaseName.set("ImmersiveConvergence-${version_minecraft}")
     archiveClassifier.set('dev')
     from sourceSets.main.output
-    manifest { attributes 'MixinConfigs': "mixins.${mod_id}.json" }
+    manifest { attributes 'MixinConfigs': "mixins.${mod_id}.json,mixins.${mod_id}.ie.json,mixins.${mod_id}.ip.json" }
 }
 
 artifacts {
@@ -369,7 +373,7 @@ jar {
     archiveClassifier.set('')
     // MDG's mixin { config } only feeds the dev runs; the release jar must carry
     // the attribute itself or no mixin applies in production.
-    manifest { attributes 'MixinConfigs': "mixins.${mod_id}.json" }
+    manifest { attributes 'MixinConfigs': "mixins.${mod_id}.json,mixins.${mod_id}.ie.json,mixins.${mod_id}.ip.json" }
     onlyIf { needsJar() }
 }
 

@@ -1,5 +1,6 @@
 package com.immersiveconvergence.core.compat;
 
+import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.multiblock.ClearTankRegistry;
 
 import flaxbeard.immersivepetroleum.common.blocks.multiblocks.logic.DerrickLogic;
@@ -12,8 +13,6 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.List;
 
 public class IPClearTanks {
-    public static final String MODID = "immersivepetroleum";
-
     public static void register() {
         ClearTankRegistry.register(ipLoc("distillation_tower"), List.of(new BlockPos(3, 0, 3)), state -> {
             ((DistillationTowerLogic.State) state).tanks.input().fluids.clear();
@@ -24,5 +23,5 @@ public class IPClearTanks {
         ClearTankRegistry.register(ipLoc("coker_unit"), List.of(new BlockPos(2, 0, 4)), state -> IEClearTanks.empty(((CokerUnitLogic.State) state).bufferTanks.input()));
     }
 
-    private static ResourceLocation ipLoc(String path) { return ResourceLocation.fromNamespaceAndPath(MODID, path); }
+    private static ResourceLocation ipLoc(String path) { return ResourceLocation.fromNamespaceAndPath(ICMods.IMMERSIVE_PETROLEUM, path); }
 }
