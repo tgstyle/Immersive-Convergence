@@ -3,30 +3,7 @@
   "package": "com.immersiveconvergence.mixin",
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
-  "plugin": "com.immersiveconvergence.mixin.ICMixinPlugin",
-  "mixins": [
-    "MultiblockBEHelperCommonMixin",
-    "CachedValueMixin",
-    "MultiblockBEHelperMasterMixin",
-    "MultiblockRegistrationBuilderAccessor",
-    "MultiblockRegistrationBuilderMixin",
-    "InitializationTrackerMixin",
-    "MultiblockPartBlockMixin",
-    "CallbacksMixin",
-    "MetalPressStateAccessor",
-    "LightningRodStateAccessor",
-    "FluidPumpAccessor",
-    "ThermoelectricGenAccessor",
-    "ClocheAccessor",
-    "TurretAccessor",
-    "GasGeneratorAccessor",
-    "RefineryStateAccessor"
-  ],
   "client": [
-    "AbstractSplitModelMixin",
-    "BakedBasicSplitModelMixin",
-    "BakedDynamicSplitModelMixin",
-    "PolygonUtilsMixin",
     "BlockRenderDispatcherMixin"
   ],
   "injectors": {

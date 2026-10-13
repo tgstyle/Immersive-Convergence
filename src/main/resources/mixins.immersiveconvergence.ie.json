@@ -1,0 +1,35 @@
+{
+  "required": false,
+  "package": "com.immersiveconvergence.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "minVersion": "0.8",
+  "plugin": "com.immersiveconvergence.core.ICIEMixinPlugin",
+  "mixins": [
+    "MultiblockBEHelperCommonMixin",
+    "CachedValueMixin",
+    "MultiblockBEHelperMasterMixin",
+    "MultiblockRegistrationBuilderAccessor",
+    "MultiblockRegistrationBuilderMixin",
+    "FluidPipeBlockEntityMixin",
+    "DirectionalFluidOutputMixin",
+    "InitializationTrackerMixin",
+    "MultiblockPartBlockMixin",
+    "CallbacksMixin",
+    "MetalPressStateAccessor",
+    "LightningRodStateAccessor",
+    "FluidPumpAccessor",
+    "ThermoelectricGenAccessor",
+    "ClocheAccessor",
+    "TurretAccessor",
+    "RefineryStateAccessor"
+  ],
+  "client": [
+    "AbstractSplitModelMixin",
+    "BakedBasicSplitModelMixin",
+    "BakedDynamicSplitModelMixin",
+    "PolygonUtilsMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

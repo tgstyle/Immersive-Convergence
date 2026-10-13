@@ -1,5 +1,6 @@
 package com.immersiveconvergence;
 
+import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.integration.top.ProbeIntegration;
 import com.immersiveconvergence.api.loot.LootEntryTypes;
 import com.immersiveconvergence.core.compat.IEClearTanks;
@@ -71,7 +72,7 @@ public class ImmersiveConvergence {
 
     private void commonSetup(final FMLCommonSetupEvent event) {
         IEClearTanks.register();
-        if (ModList.get().isLoaded(IPClearTanks.MODID)) { IPClearTanks.register(); }
+        if (ICMods.immersivePetroleum()) { IPClearTanks.register(); }
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event) {

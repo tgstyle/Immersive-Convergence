@@ -1,4 +1,6 @@
-package com.immersiveconvergence.mixin;
+package com.immersiveconvergence.core;
+
+import com.immersiveconvergence.api.ICMods;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -8,22 +10,16 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
-import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
-import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import org.spongepowered.asm.service.MixinService;
 
-import java.util.List;
-import java.util.Set;
-
-public class ICMixinPlugin implements IMixinConfigPlugin {
+public class ICIEMixinPlugin extends ICMixinPlugin {
     private static final Logger LOGGER = LogManager.getLogger("ImmersiveConvergence/Mixin");
 
-    @Override public void onLoad(String mixinPackage) {}
-
-    @Override public String getRefMapperConfig() { return null; }
+    public ICIEMixinPlugin() { super(ICMods.IMMERSIVE_ENGINEERING); }
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+        if (!super.shouldApplyMixin(targetClassName, mixinClassName)) { return false; }
         String mixin = mixinClassName.substring(mixinClassName.lastIndexOf('.') + 1);
         boolean apply = switch (mixin) {
             case "AbstractSplitModelMixin" -> lacksMethod(targetClassName, "useAmbientOcclusion");
@@ -84,12 +80,4 @@ public class ICMixinPlugin implements IMixinConfigPlugin {
         }
         return false;
     }
-
-    @Override public void acceptTargets(Set<String> myTargets, Set<String> otherTargets) {}
-
-    @Override public List<String> getMixins() { return null; }
-
-    @Override public void preApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {}
-
-    @Override public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {}
 }

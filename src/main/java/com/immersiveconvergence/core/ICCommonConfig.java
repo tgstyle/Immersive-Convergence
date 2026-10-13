@@ -39,6 +39,18 @@ public class ICCommonConfig {
                 .comment("How a machine comes apart. PROCESS_QUEUE breaks it down block by block over a few ticks and drops all its materials at the broken block; TEMPLATE_BLOCKS instantly reverts it to its placed blocks. Sneaking while breaking always uses TEMPLATE_BLOCKS.")
                 .defineEnum("disassembly_mode", DisassemblyMode.PROCESS_QUEUE);
         BUILDER.pop();
+
+        BUILDER.comment("Experimental settings").push("experimental");
+        BUILDER
+                .comment(
+                        "EXPERIMENTAL. Run as though Immersive Engineering were not installed, even when it is.",
+                        "Every Immersive Engineering path in Immersive Convergence and Immersive Technology gates off: no wires, no conveyors, no connectors, no IE multiblock templates, and none of the content built out of IE blocks or items. Immersive Petroleum gates off with it, because it cannot work without Immersive Engineering.",
+                        "Recipes that name IE items will have no valid ingredients, multiblocks whose templates are built from IE blocks cannot be assembled, and anything already placed from them will not come back.",
+                        "Turning this on means: I know what I am doing, and I can replace the needed recipes, and NBT data myself.",
+                        "Read once at startup; a change needs a game restart.")
+                .gameRestart()
+                .define("disable_immersive_engineering", false);
+        BUILDER.pop();
     }
 
     public static final ModConfigSpec SPEC = BUILDER.build();

@@ -1,0 +1,13 @@
+{
+  "required": false,
+  "package": "com.immersiveconvergence.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "minVersion": "0.8",
+  "plugin": "com.immersiveconvergence.core.ICIPMixinPlugin",
+  "mixins": [
+    "GasGeneratorAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

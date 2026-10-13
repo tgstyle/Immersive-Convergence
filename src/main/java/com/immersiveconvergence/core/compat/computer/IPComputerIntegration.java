@@ -11,8 +11,6 @@ import flaxbeard.immersivepetroleum.common.blocks.tileentities.AutoLubricatorTil
 import flaxbeard.immersivepetroleum.common.blocks.tileentities.GasGeneratorTileEntity;
 
 public final class IPComputerIntegration {
-    public static final String MODID = "immersivepetroleum";
-
     private IPComputerIntegration() {}
 
     public static void register() {
