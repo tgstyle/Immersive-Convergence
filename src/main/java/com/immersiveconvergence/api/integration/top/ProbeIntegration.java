@@ -6,7 +6,6 @@ import com.immersiveconvergence.api.multiblock.IDisplayContext;
 import com.immersiveconvergence.core.lib.ICLib;
 
 import blusunrize.immersiveengineering.api.Lib;
-import blusunrize.immersiveengineering.api.energy.AveragingEnergyStorage;
 import mcjty.theoneprobe.api.ElementAlignment;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
@@ -23,6 +22,7 @@ import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fml.InterModComms;
@@ -48,7 +48,7 @@ public class ProbeIntegration {
             IDisplayContext context = DisplayContexts.of(level.getBlockEntity(data.getPos()));
             if (context == null) { return; }
             for (IFluidTank tank : context.getInternalTanks()) { if (tank != null) { addFluidTank(probeInfo, tank); } }
-            for (AveragingEnergyStorage energy : context.getEnergies()) { addEnergy(probeInfo, energy.getEnergyStored(), energy.getMaxEnergyStored()); }
+            for (IEnergyStorage energy : context.getEnergies()) { addEnergy(probeInfo, energy.getEnergyStored(), energy.getMaxEnergyStored()); }
             DisplayLines lines = new DisplayLines();
             context.addDisplayLines(level, lines);
             for (DisplayLines.Line line : lines.lines()) {

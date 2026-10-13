@@ -2,10 +2,10 @@ package com.immersiveconvergence.api.multiblock;
 
 import com.immersiveconvergence.api.integration.DisplayLines;
 
-import blusunrize.immersiveengineering.api.energy.AveragingEnergyStorage;
 import blusunrize.immersiveengineering.common.blocks.multiblocks.process.ProcessContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
@@ -14,9 +14,9 @@ import java.util.List;
 @SuppressWarnings({"unused", "RedundantSuppression"}) public interface IDisplayContext {
     default boolean isActive() { return false; }
 
-    default AveragingEnergyStorage getEnergy() { return null; }
+    default IEnergyStorage getEnergyStorage() { return null; }
 
-    default List<AveragingEnergyStorage> getEnergies() { AveragingEnergyStorage e = getEnergy(); return e != null ? List.of(e) : List.of(); }
+    default List<IEnergyStorage> getEnergies() { IEnergyStorage e = getEnergyStorage(); return e != null ? List.of(e) : List.of(); }
 
     default IItemHandlerModifiable getInventory() { return ProcessContext.EMPTY_ITEM_HANDLER; }
 

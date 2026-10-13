@@ -1,5 +1,6 @@
 package com.immersiveconvergence.api.block;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringRepresentable;
 
 import javax.annotation.Nonnull;
@@ -25,6 +26,8 @@ import java.util.Locale;
         public String getTextureName() {
             return this.texture;
         }
+
+        public Component getTextComponent() { return Component.translatable("desc.immersiveengineering.info.blockSide.io." + getSerializedName()); }
 
         public static Enums.IOSideConfig next(Enums.IOSideConfig current) {
             return current == INPUT ? OUTPUT : (current == OUTPUT ? NONE : INPUT);

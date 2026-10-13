@@ -23,6 +23,9 @@
     "TurretAccessor",
     "RefineryStateAccessor"
   ],
+  "client": [
+    "ClientEventHandlerMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }

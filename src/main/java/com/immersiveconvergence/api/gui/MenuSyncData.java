@@ -1,6 +1,7 @@
 package com.immersiveconvergence.api.gui;
 
-import blusunrize.immersiveengineering.api.energy.IMutableEnergyStorage;
+import com.immersiveconvergence.api.energy.IICEnergyStorage;
+
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
@@ -23,7 +24,7 @@ import java.util.function.Supplier;
 
     public static MenuSyncData<Integer> int32(Supplier<Integer> get, Consumer<Integer> set) { return new MenuSyncData<>(MenuSyncSerializers.INT32, get, set); }
 
-    public static MenuSyncData<Integer> energy(IMutableEnergyStorage storage) {
+    public static MenuSyncData<Integer> energy(IICEnergyStorage storage) {
         Objects.requireNonNull(storage);
         Supplier<Integer> getEnergy = storage::getEnergyStored;
         Consumer<Integer> setEnergy = storage::setStoredEnergy;
