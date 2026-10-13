@@ -4,10 +4,10 @@ import com.immersiveconvergence.api.integration.DisplayContexts;
 import com.immersiveconvergence.api.multiblock.IDisplayContext;
 import com.immersiveconvergence.core.lib.ICLib;
 
-import blusunrize.immersiveengineering.api.energy.AveragingEnergyStorage;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.view.ClientViewGroup;
 import snownee.jade.api.view.EnergyView;
@@ -25,10 +25,10 @@ public enum JadeEnergyProvider implements IServerExtensionProvider<CompoundTag>,
     @Override @Nullable public List<ViewGroup<CompoundTag>> getGroups(Accessor<?> accessor) {
         IDisplayContext context = accessor.getTarget() instanceof BlockEntity be ? DisplayContexts.of(be) : null;
         if (context == null) { return null; }
-        List<AveragingEnergyStorage> energies = context.getEnergies();
+        List<IEnergyStorage> energies = context.getEnergies();
         if (energies.isEmpty()) { return null; }
         List<CompoundTag> list = new ArrayList<>();
-        for (AveragingEnergyStorage energy : energies) { list.add(EnergyView.of(energy.getEnergyStored(), energy.getMaxEnergyStored())); }
+        for (IEnergyStorage energy : energies) { list.add(EnergyView.of(energy.getEnergyStored(), energy.getMaxEnergyStored())); }
         return List.of(new ViewGroup<>(list));
     }
 

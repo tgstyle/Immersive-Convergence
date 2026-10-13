@@ -27,7 +27,8 @@
     "AbstractSplitModelMixin",
     "BakedBasicSplitModelMixin",
     "BakedDynamicSplitModelMixin",
-    "PolygonUtilsMixin"
+    "PolygonUtilsMixin",
+    "BlockOverlayUtilsMixin"
   ],
   "injectors": {
     "defaultRequire": 1
