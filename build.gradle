@@ -60,6 +60,7 @@ ext {
     version_parchment = versionProps['version_parchment']
     version_ie_curse = versionProps['version_ie_curse']
     version_ie_min = versionProps['version_ie_min']
+    version_dualcodecs = versionProps['version_dualcodecs']
     version_jei = versionProps['version_jei']
     version_jade_curse = versionProps['version_jade_curse']
     version_top_curse = versionProps['version_top_curse']
@@ -178,6 +179,7 @@ dependencies {
     implementation "net.neoforged:neoforge:${version_neoforge}"
     compileOnly "curse.maven:${version_ie_curse}"
     runtimeOnly "curse.maven:${version_ie_curse}"
+    compileOnly "malte0811:DualCodecs:${version_dualcodecs}"
     compileOnly "curse.maven:${version_ip_curse}"
     runtimeOnly "curse.maven:${version_ip_curse}"
     compileOnly "mezz.jei:jei-${version_minecraft}-neoforge-api:${version_jei}"

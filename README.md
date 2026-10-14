@@ -34,15 +34,15 @@ go in a resource pack under `assets`; the structure a machine is built from and
 its recipes are server data and go in a data pack under `data`. `<material>`
 below is `metal` or `stone`, the folder the mod keeps the machine under.
 
-| What you are changing | The mod's file | Your copy |
-| --- | --- | --- |
-| Which model a machine uses | `assets/<modid>/blockstates/<id>.json` | Resource pack, same path |
-| The model a blockstate points at | `assets/<modid>/models/multiblock/<material>/<id>.json` | Resource pack, same path |
-| Geometry | `assets/<modid>/models/multiblock/<material>/<id>/<id>.obj` and its `.mtl` | Resource pack, same path |
-| Textures | `assets/<modid>/textures/multiblock/<material>/<id>.png` | Resource pack, same path |
-| Machine recipes | `data/<modid>/recipe/<machine>/` | Data pack, same path |
-| Blocks it is built from | `data/<modid>/structure/multiblocks/<id>.nbt` | Data pack, same path |
-| Ports and collision shapes | `data/<modid>/multiblocks/<id>.json` | Data pack, same path |
+| What you are changing            | The mod's file                                                             | Your copy                |
+|----------------------------------|----------------------------------------------------------------------------|--------------------------|
+| Which model a machine uses       | `assets/<modid>/blockstates/<id>.json`                                     | Resource pack, same path |
+| The model a blockstate points at | `assets/<modid>/models/multiblock/<material>/<id>.json`                    | Resource pack, same path |
+| Geometry                         | `assets/<modid>/models/multiblock/<material>/<id>/<id>.obj` and its `.mtl` | Resource pack, same path |
+| Textures                         | `assets/<modid>/textures/multiblock/<material>/<id>.png`                   | Resource pack, same path |
+| Machine recipes                  | `data/<modid>/recipe/<machine>/`                                           | Data pack, same path     |
+| Blocks it is built from          | `data/<modid>/structure/multiblocks/<id>.nbt`                              | Data pack, same path     |
+| Ports and collision shapes       | `data/<modid>/multiblocks/<id>.json`                                       | Data pack, same path     |
 
 A resource pack has to be enabled in the resource pack screen and takes effect
 on the next reload, F3+T included. A data pack has to be in the world's
@@ -78,13 +78,13 @@ Immersive Convergence's files, but they are overridden the same way: put your
 copy at the path their own jar uses, under their own namespace, in a pack.
 The originals come out of their jars.
 
-| What you are changing | Immersive Engineering | Immersive Petroleum |
-| --- | --- | --- |
-| Which model a machine uses | `assets/immersiveengineering/blockstates/<id>.json` | `assets/immersivepetroleum/blockstates/<id>.json` |
-| Models | `assets/immersiveengineering/models/block/metal_multiblock/` and `models/block/stone_multiblocks/` | `assets/immersivepetroleum/models/multiblock/` |
-| Textures | `assets/immersiveengineering/textures/block/multiblocks/` | `assets/immersivepetroleum/textures/multiblock/` |
-| Machine recipes | `data/immersiveengineering/recipe/<machine>/` | `data/immersivepetroleum/recipe/<machine>/` |
-| Blocks it is built from | `data/immersiveengineering/structure/multiblocks/<id>.nbt` | `data/immersivepetroleum/structure/multiblocks/<id>.nbt` |
+| What you are changing      | Immersive Engineering                                                                              | Immersive Petroleum                                      |
+|----------------------------|----------------------------------------------------------------------------------------------------|----------------------------------------------------------|
+| Which model a machine uses | `assets/immersiveengineering/blockstates/<id>.json`                                                | `assets/immersivepetroleum/blockstates/<id>.json`        |
+| Models                     | `assets/immersiveengineering/models/block/metal_multiblock/` and `models/block/stone_multiblocks/` | `assets/immersivepetroleum/models/multiblock/`           |
+| Textures                   | `assets/immersiveengineering/textures/block/multiblocks/`                                          | `assets/immersivepetroleum/textures/multiblock/`         |
+| Machine recipes            | `data/immersiveengineering/recipe/<machine>/`                                                      | `data/immersivepetroleum/recipe/<machine>/`              |
+| Blocks it is built from    | `data/immersiveengineering/structure/multiblocks/<id>.nbt`                                         | `data/immersivepetroleum/structure/multiblocks/<id>.nbt` |
 
 Their models are drawn by Immersive Engineering's own model code rather than
 sliced by Immersive Convergence, so the notes further down about building one
@@ -163,14 +163,14 @@ This is an abridged `data/immersivetechnology/multiblocks/alternator.json`:
 }
 ```
 
-| Field | Meaning |
-| --- | --- |
-| `manualScale` | How far the engineer's manual zooms out to draw the machine; larger draws it smaller |
-| `pointsOfInterest` | The blocks of the machine that do something, one entry per block and job |
-| `name` | The job, looked up by the mod by exact name |
-| `pos` | The block, as `[x, y, z]` within the structure, counted from `0` |
-| `facing` | The side of that block the connection is on, one value or a list of them; `null` for none, `"any"` for every side |
-| `shapeAABB` | The collision and selection boxes, one entry per block of the structure |
+| Field              | Meaning                                                                                                           |
+|--------------------|-------------------------------------------------------------------------------------------------------------------|
+| `manualScale`      | How far the engineer's manual zooms out to draw the machine; larger draws it smaller                              |
+| `pointsOfInterest` | The blocks of the machine that do something, one entry per block and job                                          |
+| `name`             | The job, looked up by the mod by exact name                                                                       |
+| `pos`              | The block, as `[x, y, z]` within the structure, counted from `0`                                                  |
+| `facing`           | The side of that block the connection is on, one value or a list of them; `null` for none, `"any"` for every side |
+| `shapeAABB`        | The collision and selection boxes, one entry per block of the structure                                           |
 
 ### Points of interest
 `master` is the block that runs the machine and holds its tanks, inventory and
@@ -190,19 +190,19 @@ covers a whole side.
 
 Immersive Technology uses these names:
 
-| Name | What it marks |
-| --- | --- |
-| `fluid_input`, `fluid_output`, `fluid_io` | Pipe connections |
-| `item_input`, `item_output` | Item connections |
-| `energy_input`, `energy_input_hv`, `energy_input_mv`, `energy_left`, `energy_right` | Wire or cable connections |
-| `mechanical_input`, `mechanical_output` | Where a turbine and an alternator meet |
-| `heat_input`, `heat_output` | The heat link between a burner boiler and the boiler tank |
-| `baseheater` | Where the advanced coke oven's base heaters attach |
-| `redstone` | The redstone control block |
-| `comparator`, `comparator_layer`, `comparator_base` | Blocks that give a comparator reading |
-| `ignition` | The block a burner boiler is lit from |
-| `link`, `sun`, `reflector`, `beam` | How the solar tower, solar melter and reflectors find and aim at each other |
-| `sound`, `sound_running`, `sound_starter`, `sound_ignite`, `sound_spark`, `sound_arc`, `smoke`, `particle`, `exhaust` | Where sounds and effects come from; these need no free face |
+| Name                                                                                                                  | What it marks                                                               |
+|-----------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------|
+| `fluid_input`, `fluid_output`, `fluid_io`                                                                             | Pipe connections                                                            |
+| `item_input`, `item_output`                                                                                           | Item connections                                                            |
+| `energy_input`, `energy_input_hv`, `energy_input_mv`, `energy_left`, `energy_right`                                   | Wire or cable connections                                                   |
+| `mechanical_input`, `mechanical_output`                                                                               | Where a turbine and an alternator meet                                      |
+| `heat_input`, `heat_output`                                                                                           | The heat link between a burner boiler and the boiler tank                   |
+| `baseheater`                                                                                                          | Where the advanced coke oven's base heaters attach                          |
+| `redstone`                                                                                                            | The redstone control block                                                  |
+| `comparator`, `comparator_layer`, `comparator_base`                                                                   | Blocks that give a comparator reading                                       |
+| `ignition`                                                                                                            | The block a burner boiler is lit from                                       |
+| `link`, `sun`, `reflector`, `beam`                                                                                    | How the solar tower, solar melter and reflectors find and aim at each other |
+| `sound`, `sound_running`, `sound_starter`, `sound_ignite`, `sound_spark`, `sound_arc`, `smoke`, `particle`, `exhaust` | Where sounds and effects come from; these need no free face                 |
 
 The files for Immersive Engineering's and Immersive Petroleum's machines use
 only `master`, `trigger` and ports whose names start with `fluid_`, `item_` or
@@ -221,11 +221,11 @@ width, height and length are the size of the machine's structure file. The
 points of interest and the shape count their blocks the same way. Each entry is
 one of:
 
-| Entry | Result |
-| --- | --- |
+| Entry           | Result                                                                                             |
+|-----------------|----------------------------------------------------------------------------------------------------|
 | A list of boxes | Each box is `[minX, minY, minZ, maxX, maxY, maxZ]`, measured within that one block from `0` to `1` |
-| `[]` | A full block |
-| `null` | No collision at all for that block |
+| `[]`            | A full block                                                                                       |
+| `null`          | No collision at all for that block                                                                 |
 
 The list must have exactly `width * height * length` entries; any other count
 is logged as an error and the whole machine falls back to full blocks. A
@@ -288,12 +288,12 @@ produce. Leaving one out leaves that state with no model rather than falling
 back to something sensible. Copy the original file and change what you need
 instead of writing one from scratch, and this stays out of your way.
 
-| Property | What it means |
-| --- | --- |
-| `facing` | Which way the machine was built: `north`, `south`, `east` or `west` |
-| `multiblockslave` | `false` on the master block, `true` on all the others |
-| `mirrored` | Whether the machine was built mirrored, on machines that allow it |
-| `active` | An on and off state, used by machines that change appearance when running, such as the solid fuel boiler |
+| Property          | What it means                                                                                            |
+|-------------------|----------------------------------------------------------------------------------------------------------|
+| `facing`          | Which way the machine was built: `north`, `south`, `east` or `west`                                      |
+| `multiblockslave` | `false` on the master block, `true` on all the others                                                    |
+| `mirrored`        | Whether the machine was built mirrored, on machines that allow it                                        |
+| `active`          | An on and off state, used by machines that change appearance when running, such as the solid fuel boiler |
 
 The master and the slave variants point at the same model. That is deliberate:
 every block of the machine is handed the same whole machine model and draws only
@@ -355,13 +355,13 @@ only ever seen from outside its own cube. Machines that are solid all the way
 through look right; a model with large hollow interiors can show its inside
 faces where the cuts fall.
 
-| Convention | Detail |
-| --- | --- |
-| Scale | One unit is one block |
-| Center point | The corner of the master block |
-| Direction | Build it in the orientation of the unrotated `facing` entry; the game rotates it for the other three |
-| Extent | The model runs from minus the master's position to the size of the structure minus it |
-| Textures | The model sets `flip_v`, so textures are flipped vertically |
+| Convention   | Detail                                                                                               |
+|--------------|------------------------------------------------------------------------------------------------------|
+| Scale        | One unit is one block                                                                                |
+| Center point | The corner of the master block                                                                       |
+| Direction    | Build it in the orientation of the unrotated `facing` entry; the game rotates it for the other three |
+| Extent       | The model runs from minus the master's position to the size of the structure minus it                |
+| Textures     | The model sets `flip_v`, so textures are flipped vertically                                          |
 
 Textures are named by a companion `.mtl` file, listed at the top of the OBJ with
 `mtllib` as a bare file name and kept beside it. In it, `map_Kd` gives a texture
@@ -416,12 +416,12 @@ with the same parts in each.
 
 These are Immersive Technology's models whose groups do something:
 
-| Model | Group or material | What uses it |
-| --- | --- | --- |
-| `models/block/metal/valve_fluid/valve_fluid.obj` | `Pipe`, `Handle_Open`, `Handle_Closed` | `valve_fluid_open.json` and `valve_fluid_closed.json` each hide the other handle through `visibility` |
-| `models/block/metal/valve_load/valve_load.obj` | `Base`, `Handle_Open`, `Handle_Closed` | Same as the fluid valve, in `valve_load_open.json` and `valve_load_closed.json` |
-| `models/multiblock/metal/boiler_solid/boiler_solid.obj` | material `cube_front` | `boiler_solid_active.json` points the `cube_front` texture at the lit front while the boiler runs |
-| `models/block/metal/advanced_coke_oven_baseheater/advanced_coke_oven_baseheater.obj` | `Fan`, `Rotor` | Hidden by the base heater's model files; the spinning fan is its own model, `advanced_coke_oven_baseheater_fan.obj`, drawn by the block |
+| Model                                                                                | Group or material                      | What uses it                                                                                                                            |
+|--------------------------------------------------------------------------------------|----------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| `models/block/metal/valve_fluid/valve_fluid.obj`                                     | `Pipe`, `Handle_Open`, `Handle_Closed` | `valve_fluid_open.json` and `valve_fluid_closed.json` each hide the other handle through `visibility`                                   |
+| `models/block/metal/valve_load/valve_load.obj`                                       | `Base`, `Handle_Open`, `Handle_Closed` | Same as the fluid valve, in `valve_load_open.json` and `valve_load_closed.json`                                                         |
+| `models/multiblock/metal/boiler_solid/boiler_solid.obj`                              | material `cube_front`                  | `boiler_solid_active.json` points the `cube_front` texture at the lit front while the boiler runs                                       |
+| `models/block/metal/advanced_coke_oven_baseheater/advanced_coke_oven_baseheater.obj` | `Fan`, `Rotor`                         | Hidden by the base heater's model files; the spinning fan is its own model, `advanced_coke_oven_baseheater_fan.obj`, drawn by the block |
 
 Every other machine model is a single group, and its name is free. The turbine
 rotors are separate models under `models/multiblock/metal/rotor/`, drawn and
@@ -435,3 +435,6 @@ Feel free to translate the mod and put it in a pull request.<br/>
 
 # About Modpack and License
 Immersive Convergence is licensed under the GNU GENERAL PUBLIC LICENSE Version 3. You may use it in modpacks, reviews or any other form as long as you abide by the terms.<br/>
+
+# Credits
+Parts of Immersive Convergence's recipe and multiblock code are ported from [Immersive Engineering](https://github.com/BluSunrize/ImmersiveEngineering) by BluSunrize, which is licensed under Blu's License of Common Sense. Credit for that code goes to BluSunrize and the Immersive Engineering contributors; its source stays visible in this repository.<br/>
