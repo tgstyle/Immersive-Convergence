@@ -1,6 +1,14 @@
 package com.immersiveconvergence.api.fluid;
 
+import com.immersiveconvergence.api.ICMods;
+import com.immersiveconvergence.common.ie.IEFluidPipeBridge;
+
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidType;
+
+import javax.annotation.Nullable;
 
 @SuppressWarnings("unused") public interface IICFluidPipe {
     int AMOUNT_PRESSURIZED = FluidType.BUCKET_VOLUME;
@@ -8,6 +16,12 @@ import net.minecraftforge.fluids.FluidType;
     String NBT_PRESSURIZED = "pressurized";
 
     static int getTransferableAmount(boolean pressurized) { return pressurized ? AMOUNT_PRESSURIZED : AMOUNT_UNPRESSURIZED; }
+
+    static boolean isPipe(@Nullable BlockEntity tile) { return ICMods.immersiveEngineering() && IEFluidPipeBridge.isPipe(tile); }
+
+    static void refreshConnection(BlockEntity tile, Direction side) { if (ICMods.immersiveEngineering()) { IEFluidPipeBridge.refreshConnection(tile, side); } }
+
+    static void markPressurized(FluidStack stack) { stack.getOrCreateTag().putBoolean(NBT_PRESSURIZED, true); }
 
     default boolean stripPressureTag() { return false; }
 

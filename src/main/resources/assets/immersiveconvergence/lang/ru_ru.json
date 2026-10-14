@@ -2,6 +2,7 @@
   "block.immersiveconvergence.heat_creative": "Творческий нагреватель",
   "block.immersiveconvergence.rotor_creative": "Творческий ротор",
   "config.jade.plugin_immersiveconvergence.lines": "Показания машин",
+  "config.jade.plugin_immersiveconvergence.multiblock_icon": "Значки мультиблоков",
   "config.jade.plugin_immersiveconvergence.status": "Состояние машин",
   "desc.immersiveconvergence.info.holdShiftForInfo": "§8Удерживайте Shift для подробностей§r",
   "gui.immersiveconvergence.apply": "Применить",

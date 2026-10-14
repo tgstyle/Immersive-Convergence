@@ -12,6 +12,7 @@
     "InitializationTrackerMixin",
     "FluidPipeBlockEntityMixin",
     "DirectionalFluidOutputMixin",
+    "HammerItemMixin",
     "MultiblockPartBlockMixin",
     "CallbacksMixin",
     "MetalPressStateAccessor",

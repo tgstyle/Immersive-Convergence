@@ -34,5 +34,6 @@ public class ICLanguage extends LanguageProvider {
         add("gui.immersiveconvergence.input_tanks_cleared", "Input tanks cleared");
         add("config.jade.plugin_immersiveconvergence.status", "Machine Status");
         add("config.jade.plugin_immersiveconvergence.lines", "Machine Readouts");
+        add("config.jade.plugin_immersiveconvergence.multiblock_icon", "Multiblock Icons");
     }
 }

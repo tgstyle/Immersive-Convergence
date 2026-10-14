@@ -2,6 +2,7 @@ package com.immersiveconvergence.api.integration.jade;
 
 import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockBlockEntityDummy;
 import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockBlockEntityMaster;
+import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockPartBlock;
 
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -16,6 +17,7 @@ public class ICJadePlugin implements IWailaPlugin {
     @Override public void registerClient(IWailaClientRegistration registration) {
         registration.registerBlockComponent(JadeStatusProvider.INSTANCE, Block.class);
         registration.registerBlockComponent(JadeLinesProvider.INSTANCE, Block.class);
+        registration.registerBlockIcon(JadeMultiblockIconProvider.INSTANCE, MultiblockPartBlock.class);
         registration.registerEnergyStorageClient(JadeEnergyProvider.INSTANCE);
         registration.registerFluidStorageClient(JadeFluidProvider.INSTANCE);
     }

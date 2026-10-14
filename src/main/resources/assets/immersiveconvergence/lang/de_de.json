@@ -2,6 +2,7 @@
   "block.immersiveconvergence.heat_creative": "Kreativer Heizer",
   "block.immersiveconvergence.rotor_creative": "Kreativer Rotor",
   "config.jade.plugin_immersiveconvergence.lines": "Maschinenanzeigen",
+  "config.jade.plugin_immersiveconvergence.multiblock_icon": "Multiblock-Symbole",
   "config.jade.plugin_immersiveconvergence.status": "Maschinenstatus",
   "desc.immersiveconvergence.info.holdShiftForInfo": "§8Shift halten für mehr Infos§r",
   "gui.immersiveconvergence.apply": "Anwenden",
