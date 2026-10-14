@@ -12,6 +12,7 @@ import net.neoforged.fml.loading.FMLPaths;
 public final class ICMods {
     public static final String IMMERSIVE_ENGINEERING = "immersiveengineering";
     public static final String IMMERSIVE_PETROLEUM = "immersivepetroleum";
+    public static final String COMPUTERCRAFT = "computercraft";
     private static final String DISABLE_IMMERSIVE_ENGINEERING = "experimental.disable_immersive_engineering";
     private static boolean immersiveEngineering;
     private static boolean immersivePetroleum;
@@ -41,4 +42,6 @@ public final class ICMods {
     public static boolean immersiveEngineering() { ensureInitialized(); return immersiveEngineering; }
 
     public static boolean immersivePetroleum() { ensureInitialized(); return immersivePetroleum; }
+
+    public static boolean computerCraft() { return ModList.get().isLoaded(COMPUTERCRAFT); }
 }

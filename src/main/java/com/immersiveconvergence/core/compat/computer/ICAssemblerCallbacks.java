@@ -1,7 +1,5 @@
 package com.immersiveconvergence.core.compat.computer;
 
-import com.immersiveconvergence.api.util.ComputerValues;
-
 import blusunrize.immersiveengineering.api.tool.assembler.RecipeQuery;
 import blusunrize.immersiveengineering.common.blocks.metal.CrafterPatternInventory;
 import blusunrize.immersiveengineering.common.blocks.multiblocks.logic.AssemblerLogic;
@@ -34,8 +32,8 @@ import java.util.Map;
     @ComputerCallable public Map<String, Object> getRecipe(CallbackEnvironment<State> env, @IndexArgument int recipe) {
         CrafterPatternInventory pattern = pattern(env.object(), recipe);
         Map<String, Object> result = new HashMap<>();
-        for (int i = 0; i < 9; i++) { result.put("in" + (i + 1), ComputerValues.item(pattern.inv.get(i))); }
-        result.put("out", ComputerValues.item(pattern.inv.get(9)));
+        for (int i = 0; i < 9; i++) { result.put("in" + (i + 1), IEComputerValues.item(pattern.inv.get(i))); }
+        result.put("out", IEComputerValues.item(pattern.inv.get(9)));
         return result;
     }
 

@@ -1,6 +1,7 @@
-package com.immersiveconvergence.api.util;
+package com.immersiveconvergence.core.compat.computer;
 
-import blusunrize.immersiveengineering.api.IEProperties;
+import com.immersiveconvergence.api.block.ModProperties;
+
 import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockBEHelper;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockContext;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.logic.IMultiblockState;
@@ -15,6 +16,6 @@ public class ActiveBlockCallbacks<S extends IMultiblockState> extends Callback<I
         IMultiblockContext<S> context = helper.getContext();
         if (context == null) { return false; }
         BlockState state = context.getLevel().getBlockState(helper.getPositionInMB());
-        return state.hasProperty(IEProperties.ACTIVE) && state.getValue(IEProperties.ACTIVE);
+        return state.hasProperty(ModProperties.ACTIVE) && state.getValue(ModProperties.ACTIVE);
     }
 }

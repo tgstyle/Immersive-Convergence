@@ -1,7 +1,7 @@
 package com.immersiveconvergence.mixin;
 
 import com.immersiveconvergence.api.ICMods;
-import com.immersiveconvergence.api.util.ComputerCallbacks;
+import com.immersiveconvergence.core.compat.computer.IEComputerCallbacks;
 import com.immersiveconvergence.core.compat.computer.IEComputerIntegration;
 import com.immersiveconvergence.core.compat.computer.IPComputerIntegration;
 
@@ -22,8 +22,9 @@ public class CallbacksMixin {
     @Shadow @Final private static Map<ResourceLocation, CallbackOwner<?>> CALLBACKS;
 
     @Inject(method = "ensureInitialized", at = @At("TAIL")) private static void ic$registerComputerCallbacks(CallbackInfo ci) {
+        if (!ICMods.immersiveEngineering()) { return; }
         IEComputerIntegration.register();
         if (ICMods.immersivePetroleum()) { IPComputerIntegration.register(); }
-        CALLBACKS.putAll(ComputerCallbacks.all());
+        CALLBACKS.putAll(IEComputerCallbacks.all());
     }
 }

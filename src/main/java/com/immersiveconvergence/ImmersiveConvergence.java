@@ -6,6 +6,7 @@ import com.immersiveconvergence.api.loot.LootEntryTypes;
 import com.immersiveconvergence.api.multiblock.MultiblockRegistry;
 import com.immersiveconvergence.core.compat.IEClearTanks;
 import com.immersiveconvergence.core.compat.IPClearTanks;
+import com.immersiveconvergence.core.compat.computercraft.ICComputerCraft;
 import com.immersiveconvergence.core.ICClientConfig;
 import com.immersiveconvergence.core.ICCommonConfig;
 import com.immersiveconvergence.core.lib.ICLib;
@@ -58,6 +59,7 @@ public class ImmersiveConvergence {
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::enqueueIMC);
         modEventBus.addListener(ICBlockEntities::registerCapabilities);
+        if (ICMods.computerCraft()) { ICComputerCraft.init(modEventBus); }
         CommonProxy.modConstruction(modEventBus);
         MultiblockRegistry.init(modEventBus);
         ICBlocks.init(modEventBus);

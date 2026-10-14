@@ -1,7 +1,5 @@
 package com.immersiveconvergence.core.compat.computer;
 
-import com.immersiveconvergence.api.util.TankInfoCallbacks;
-
 import blusunrize.immersiveengineering.common.blocks.metal.TurretChemBlockEntity;
 
 public class TurretChemCallbacks extends TurretCallbacks<TurretChemBlockEntity> {

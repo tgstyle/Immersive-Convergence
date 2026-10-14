@@ -1,4 +1,4 @@
-package com.immersiveconvergence.api.util;
+package com.immersiveconvergence.core.compat.computer;
 
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.Callback;
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.CallbackOwner;

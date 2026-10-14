@@ -17,6 +17,6 @@ import net.minecraft.world.item.crafting.RecipeHolder;
         RecipeHolder<SqueezerRecipe> holder = SqueezerRecipe.findRecipe(env.level(), input);
         if (holder == null) { return new Object[0]; }
         SqueezerRecipe recipe = holder.value();
-        return ComputerValues.recipe(input, recipe.itemOutput.get(), recipe.fluidOutput, recipe.getTotalProcessTime());
+        return IEComputerValues.recipe(input, recipe.itemOutput.get(), recipe.fluidOutput, recipe.getTotalProcessTime());
     }
 }
