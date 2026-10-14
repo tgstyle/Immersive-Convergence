@@ -23,7 +23,12 @@
     "TurretAccessor",
     "RefineryStateAccessor",
     "ICConnectableBlockEntityMixin",
-    "ICConnectorRedstoneBlockEntityMixin"
+    "ICConnectorRedstoneBlockEntityMixin",
+    "CapacitorBlockEntityMixin",
+    "IFluidPipeMixin",
+    "MixerLogicMixin",
+    "MixerLogicStateMixin",
+    "MixerRecipeMixin"
   ],
   "client": [
     "AbstractSplitModelMixin",

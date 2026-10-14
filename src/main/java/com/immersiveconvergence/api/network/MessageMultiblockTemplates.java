@@ -1,8 +1,7 @@
 package com.immersiveconvergence.api.network;
 
-import com.immersiveconvergence.api.ICMods;
+import com.immersiveconvergence.api.manual.ICManual;
 import com.immersiveconvergence.api.multiblock.ICTemplateMultiblock;
-import com.immersiveconvergence.common.ie.IEMultiblockBridge;
 import com.immersiveconvergence.core.lib.ICLib;
 
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -32,7 +31,7 @@ public record MessageMultiblockTemplates(Map<ResourceLocation, CompoundTag> temp
                 template.load(BuiltInRegistries.BLOCK.asLookup(), entry.getValue());
                 ICTemplateMultiblock.SYNCED_CLIENT_TEMPLATES.put(entry.getKey(), template);
             }
-            if (ICMods.immersiveEngineering()) { IEMultiblockBridge.resetManual(); }
+            ICManual.reset();
         });
     }
 }
