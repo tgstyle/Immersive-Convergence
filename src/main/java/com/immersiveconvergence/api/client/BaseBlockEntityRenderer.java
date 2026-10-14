@@ -1,6 +1,7 @@
 package com.immersiveconvergence.api.client;
 
-import blusunrize.immersiveengineering.api.utils.DirectionUtils;
+import com.immersiveconvergence.api.multiblock.util.DirectionUtils;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.Util;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;

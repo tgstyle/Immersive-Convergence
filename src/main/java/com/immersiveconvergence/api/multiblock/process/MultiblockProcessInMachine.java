@@ -63,7 +63,7 @@ import java.util.function.BiFunction;
 
     protected List<ICIngredientWithSize> getRecipeItemInputs(ProcessContextInMachine<R> context, Level level) {
         R recipe = getLevelData(level).recipe();
-        return recipe == null ? List.of() : recipe.getICItemInputs();
+        return recipe == null ? List.of() : recipe.getItemInputs();
     }
 
     protected List<SizedFluidIngredient> getRecipeFluidInputs(ProcessContextInMachine<R> context, Level level) {
@@ -123,12 +123,12 @@ import java.util.function.BiFunction;
         R recipe = getLevelData(level.getRawLevel()).recipe();
         if (recipe == null) { return; }
         IItemHandlerModifiable inv = context.getInventory();
-        if (recipe.shouldCheckItemAvailability() && recipe.getICItemInputs() != null && inv != null) {
+        if (recipe.shouldCheckItemAvailability() && recipe.getItemInputs() != null && inv != null) {
             NonNullList<ItemStack> query = NonNullList.withSize(inputSlots.length, ItemStack.EMPTY);
             for (int i = 0; i < inputSlots.length; i++) {
                 if (inputSlots[i] >= 0 && inputSlots[i] < inv.getSlots()) { query.set(i, context.getInventory().getStackInSlot(inputSlots[i])); }
             }
-            if (!IngredientUtils.stacksMatchIngredientWithSizeList(recipe.getICItemInputs(), query)) {
+            if (!IngredientUtils.stacksMatchIngredientWithSizeList(recipe.getItemInputs(), query)) {
                 this.clearProcess = true;
                 return;
             }

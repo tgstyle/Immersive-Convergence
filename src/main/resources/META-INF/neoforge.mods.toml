@@ -28,7 +28,7 @@ side="BOTH"
 
 [[dependencies.immersiveconvergence]]
 modId="immersiveengineering"
-type="required"
+type="optional"
 versionRange="[${version_ie_min},)"
 ordering="AFTER"
 side="BOTH"

@@ -75,7 +75,7 @@ public class ImmersiveConvergence {
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
-        IEClearTanks.register();
+        if (ICMods.immersiveEngineering()) { IEClearTanks.register(); }
         if (ICMods.immersivePetroleum()) { IPClearTanks.register(); }
     }
 

@@ -1,6 +1,5 @@
 package com.immersiveconvergence.api.crafting;
 
-import blusunrize.immersiveengineering.api.crafting.IERecipeTypes;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -14,6 +13,4 @@ public record ICRecipeType<T extends Recipe<?>>(DeferredHolder<RecipeType<?>, Re
     }
 
     @Override public RecipeType<T> get() { return type.get(); }
-
-    IERecipeTypes.TypeWithClass<T> ie() { return new IERecipeTypes.TypeWithClass<>(type, recipeClass); }
 }

@@ -1,6 +1,6 @@
 package com.immersiveconvergence.core.compat.computer;
 
-import com.immersiveconvergence.mixin.MetalPressStateAccessor;
+import com.immersiveconvergence.mixin.ie.MetalPressStateAccessor;
 
 import blusunrize.immersiveengineering.api.crafting.MetalPressRecipe;
 import blusunrize.immersiveengineering.common.blocks.multiblocks.logic.MetalPressLogic.State;

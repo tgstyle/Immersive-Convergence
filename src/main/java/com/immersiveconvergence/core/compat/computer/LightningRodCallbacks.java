@@ -1,6 +1,6 @@
 package com.immersiveconvergence.core.compat.computer;
 
-import com.immersiveconvergence.mixin.LightningRodStateAccessor;
+import com.immersiveconvergence.mixin.ie.LightningRodStateAccessor;
 
 import blusunrize.immersiveengineering.common.blocks.multiblocks.logic.LightningRodLogic.State;
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.Callback;

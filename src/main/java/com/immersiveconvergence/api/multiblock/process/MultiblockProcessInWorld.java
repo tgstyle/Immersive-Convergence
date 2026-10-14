@@ -78,7 +78,7 @@ import java.util.function.BiFunction;
         int size = -1;
         R recipe = getLevelData(level.getRawLevel()).recipe();
         if (recipe == null) { return; }
-        final List<ICIngredientWithSize> itemInputs = recipe.getICItemInputs();
+        final List<ICIngredientWithSize> itemInputs = recipe.getItemInputs();
         if (itemInputs == null) { return; }
         for (ItemStack inputItem : this.inputItems) {
             for (ICIngredientWithSize s : itemInputs) {

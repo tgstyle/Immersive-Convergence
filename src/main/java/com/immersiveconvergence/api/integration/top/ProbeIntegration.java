@@ -8,7 +8,6 @@ import com.immersiveconvergence.api.multiblock.IDisplayContext;
 import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockBE;
 import com.immersiveconvergence.core.lib.ICLib;
 
-import blusunrize.immersiveengineering.api.Lib;
 import mcjty.theoneprobe.Tools;
 import mcjty.theoneprobe.api.ElementAlignment;
 import mcjty.theoneprobe.api.IBlockDisplayOverride;
@@ -101,7 +100,7 @@ public class ProbeIntegration {
         row(probeInfo).progress(amount, tank.getCapacity(), probeInfo.defaultProgressStyle().suffix(" mB").numberFormat(NumberFormat.COMPACT).filledColor(color).alternateFilledColor(color).backgroundColor(0xff000000).borderColor(0xffffffff)).text(fluidName);
     }
 
-    private static void addEnergy(IProbeInfo probeInfo, int stored, int max) { row(probeInfo).progress(stored, max, probeInfo.defaultProgressStyle().suffix(" IF").filledColor(Lib.COLOUR_I_ImmersiveOrange).alternateFilledColor(0xff994f20).borderColor(Lib.COLOUR_I_ImmersiveOrangeShadow).numberFormat(NumberFormat.COMPACT)); }
+    private static void addEnergy(IProbeInfo probeInfo, int stored, int max) { row(probeInfo).progress(stored, max, probeInfo.defaultProgressStyle().suffix(" IF").filledColor(ICLib.COLOR_ORANGE).alternateFilledColor(0xff994f20).borderColor(ICLib.COLOR_ORANGE_SHADOW).numberFormat(NumberFormat.COMPACT)); }
 
     private static void addProgress(IProbeInfo probeInfo, DisplayLines.Progress progress) {
         IProgressStyle style = probeInfo.defaultProgressStyle().suffix(progress.suffix()).numberFormat(progress.compact() ? NumberFormat.COMPACT : NumberFormat.FULL);

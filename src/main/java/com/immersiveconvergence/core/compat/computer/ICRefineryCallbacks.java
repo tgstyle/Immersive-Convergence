@@ -1,6 +1,6 @@
 package com.immersiveconvergence.core.compat.computer;
 
-import com.immersiveconvergence.mixin.RefineryStateAccessor;
+import com.immersiveconvergence.mixin.ie.RefineryStateAccessor;
 
 import blusunrize.immersiveengineering.api.crafting.RefineryRecipe;
 import blusunrize.immersiveengineering.common.blocks.multiblocks.logic.RefineryLogic.State;

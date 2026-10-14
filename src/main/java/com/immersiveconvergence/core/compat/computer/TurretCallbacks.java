@@ -1,6 +1,6 @@
 package com.immersiveconvergence.core.compat.computer;
 
-import com.immersiveconvergence.mixin.TurretAccessor;
+import com.immersiveconvergence.mixin.ie.TurretAccessor;
 
 import blusunrize.immersiveengineering.common.blocks.metal.TurretBlockEntity;
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.Callback;

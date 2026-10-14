@@ -3,10 +3,10 @@ package com.immersiveconvergence.client.renderer;
 import com.immersiveconvergence.client.models.ICRotorModels;
 import com.immersiveconvergence.api.client.RenderUtils;
 import com.immersiveconvergence.api.client.StandaloneModel;
+import com.immersiveconvergence.api.util.ICUtils;
 import com.immersiveconvergence.common.blocks.RotorCreativeBlock;
 import com.immersiveconvergence.common.blocks.logic.RotorCreativeBlockEntity;
 
-import blusunrize.immersiveengineering.api.ApiUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -47,7 +47,7 @@ public class RotorCreativeRenderer implements BlockEntityRenderer<RotorCreativeB
     }
 
     private void renderDynamicModel(StandaloneModel model, PoseStack matrix, MultiBufferSource buffer, Level level, BlockPos pos, int light) {
-        List<BakedQuad> quads = model.get().getQuads(null, null, ApiUtils.RANDOM_SOURCE, ModelData.EMPTY, null);
+        List<BakedQuad> quads = model.get().getQuads(null, null, ICUtils.RANDOM_SOURCE, ModelData.EMPTY, null);
         RenderUtils.renderModelTESRFancy(quads, buffer.getBuffer(RenderType.solid()), matrix, level, pos, false, 0xffffff, light);
     }
 }

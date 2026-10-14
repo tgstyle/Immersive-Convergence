@@ -1,8 +1,8 @@
 package com.immersiveconvergence.api.client;
 
+import com.immersiveconvergence.api.multiblock.util.DirectionUtils;
 import com.immersiveconvergence.core.ICClientConfig;
 
-import blusunrize.immersiveengineering.api.utils.DirectionUtils;
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;

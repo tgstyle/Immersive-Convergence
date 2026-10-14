@@ -1,8 +1,8 @@
 package com.immersiveconvergence.api.block;
 
-
-import blusunrize.immersiveengineering.api.client.TextUtils;
 import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockPartBlock;
+import com.immersiveconvergence.api.util.ICTextUtils;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
@@ -45,7 +45,7 @@ import javax.annotation.Nullable;
     public void appendHoverText(@Nonnull ItemStack stack, @Nonnull Item.TooltipContext context, @Nonnull List<Component> tooltipComponents, @Nonnull TooltipFlag tooltipFlag) {
         if (getBlock() instanceof IBlock ieBlock && ieBlock.hasFlavour()) {
             String flavourKey = BlockToolGates.descFlavour + ieBlock.getNameForFlavour();
-            tooltipComponents.add(TextUtils.applyFormat(Component.translatable(flavourKey), ChatFormatting.GRAY));
+            tooltipComponents.add(ICTextUtils.applyFormat(Component.translatable(flavourKey), ChatFormatting.GRAY));
         }
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
 
@@ -53,14 +53,14 @@ import javax.annotation.Nullable;
         CompoundTag tag = customData.copyTag();
 
         if (tag.contains(ENERGY_KEY)) {
-            tooltipComponents.add(TextUtils.applyFormat(Component.translatable(BlockToolGates.descInfo + "energyStored", tag.getInt(ENERGY_KEY)), ChatFormatting.GRAY));
+            tooltipComponents.add(ICTextUtils.applyFormat(Component.translatable(BlockToolGates.descInfo + "energyStored", tag.getInt(ENERGY_KEY)), ChatFormatting.GRAY));
         }
         if (tag.contains("tank")) {
             CompoundTag tankTag = tag.getCompound("tank");
             Level level = context.level();
             FluidStack fs = level != null ? FluidStack.parseOptional(level.registryAccess(), tankTag) : FluidStack.EMPTY;
             if (!fs.isEmpty()) {
-                tooltipComponents.add(TextUtils.applyFormat(Component.translatable(BlockToolGates.descInfo + "fluidStored", fs.getHoverName(), fs.getAmount()), ChatFormatting.GRAY));
+                tooltipComponents.add(ICTextUtils.applyFormat(Component.translatable(BlockToolGates.descInfo + "fluidStored", fs.getHoverName(), fs.getAmount()), ChatFormatting.GRAY));
             }
         }
     }

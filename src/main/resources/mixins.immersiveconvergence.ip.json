@@ -1,6 +1,6 @@
 {
   "required": false,
-  "package": "com.immersiveconvergence.mixin",
+  "package": "com.immersiveconvergence.mixin.ip",
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
   "plugin": "com.immersiveconvergence.core.ICIPMixinPlugin",

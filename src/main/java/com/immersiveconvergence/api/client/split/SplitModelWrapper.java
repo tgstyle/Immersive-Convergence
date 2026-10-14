@@ -1,12 +1,13 @@
 package com.immersiveconvergence.api.client.split;
 
+import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.client.split.geometry.Polygon;
 import com.immersiveconvergence.api.client.split.geometry.SplitObjModel;
 import com.immersiveconvergence.api.client.split.geometry.SplitModel;
 import com.immersiveconvergence.api.client.split.geometry.ClumpedModel;
 import com.immersiveconvergence.api.client.split.geometry.ModelSplitterVec3i;
+import com.immersiveconvergence.common.ie.IERenderBridge;
 
-import blusunrize.immersiveengineering.api.IEApi;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
@@ -33,7 +34,7 @@ public abstract class SplitModelWrapper<T extends BakedModel> extends BakedModel
     private static final Set<SplitModelWrapper<?>> WEAK_INSTANCES = Collections.newSetFromMap(new WeakHashMap<>());
 
     static {
-        IEApi.renderCacheClearers.add(() -> WEAK_INSTANCES.forEach(SplitModelWrapper::clearCache));
+        if (ICMods.immersiveEngineering()) { IERenderBridge.addRenderCacheClearer(() -> WEAK_INSTANCES.forEach(SplitModelWrapper::clearCache)); }
     }
 
     protected SplitModelWrapper(T base, @Nonnull Supplier<SplitData> splitData) {
