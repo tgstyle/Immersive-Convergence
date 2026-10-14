@@ -22,6 +22,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
@@ -99,4 +100,6 @@ public class ClientProxy extends CommonProxy {
         }
         pose.popPose();
     }
+
+    @Override public Player getClientPlayer() { return Minecraft.getInstance().player; }
 }

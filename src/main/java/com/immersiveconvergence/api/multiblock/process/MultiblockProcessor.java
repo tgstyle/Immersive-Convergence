@@ -1,0 +1,201 @@
+package com.immersiveconvergence.api.multiblock.process;
+
+import com.immersiveconvergence.api.crafting.ICMultiblockRecipe;
+import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockLevel;
+import com.immersiveconvergence.api.multiblock.process.ProcessContext.ProcessContextInMachine;
+import com.immersiveconvergence.api.multiblock.process.ProcessContext.ProcessContextInWorld;
+
+import net.minecraft.core.HolderLookup.Provider;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.IntToDoubleFunction;
+
+@SuppressWarnings({"unused", "RedundantSuppression"}) public class MultiblockProcessor<R extends ICMultiblockRecipe, CTX extends ProcessContext<R>> {
+    private final List<MultiblockProcess<R, CTX>> processQueue = new ArrayList<>();
+    private final int maxQueueLength;
+    private final IntToDoubleFunction minDelayAfter;
+    private final int maxProcessPerTick;
+    private final Runnable markDirty;
+    private final Runnable onQueueChange;
+    private final BiFunction<Level, ResourceLocation, @Nullable R> getRecipeFromID;
+
+    public MultiblockProcessor(
+            int maxQueueLength,
+            float minDelayAfter,
+            int maxProcessPerTick,
+            Runnable markDirty,
+            BiFunction<Level, ResourceLocation, @Nullable R> getRecipeFromID
+    ) {
+        this(maxQueueLength, $ -> minDelayAfter, maxProcessPerTick, markDirty, () -> { }, getRecipeFromID);
+    }
+
+    public MultiblockProcessor(
+            int maxQueueLength,
+            IntToDoubleFunction minDelayAfter,
+            int maxProcessPerTick,
+            Runnable markDirty,
+            Runnable onQueueChange,
+            BiFunction<Level, ResourceLocation, @Nullable R> getRecipeFromID
+    ) {
+        this.maxQueueLength = maxQueueLength;
+        this.minDelayAfter = minDelayAfter;
+        this.maxProcessPerTick = maxProcessPerTick;
+        this.markDirty = markDirty;
+        this.onQueueChange = onQueueChange;
+        this.getRecipeFromID = getRecipeFromID;
+    }
+
+    public boolean tickServer(CTX ctx, IMultiblockLevel level, boolean canWork) {
+        ctx.getEnergy().updateAverage();
+        if (!canWork) { return false; }
+
+        int i = 0;
+        Iterator<MultiblockProcess<R, CTX>> processIterator = processQueue.iterator();
+        boolean tickedAny = false;
+        while (processIterator.hasNext() && i++ < maxProcessPerTick) {
+            MultiblockProcess<R, CTX> process = processIterator.next();
+            if (process.canProcess(ctx, level.getRawLevel())) {
+                process.doProcessTick(ctx, level);
+                tickedAny = true;
+            }
+            if (process.clearProcess) {
+                processIterator.remove();
+                onQueueChange.run();
+            }
+        }
+        if (tickedAny) { markDirty.run(); }
+        return tickedAny;
+    }
+
+    public Tag toNBT(Provider provider) {
+        ListTag processList = new ListTag();
+        for (final MultiblockProcess<R, CTX> process : processQueue) {
+            CompoundTag tag = new CompoundTag();
+            tag.putString("recipe", process.getRecipeId().toString());
+            tag.putInt("process_processTick", process.processTick);
+            process.writeExtraDataToNBT(tag, provider);
+            processList.add(tag);
+        }
+        return processList;
+    }
+
+    public void fromNBT(Tag nbt, ProcessLoader<R, CTX> loader, Provider provider) {
+        if (!(nbt instanceof ListTag list)) { return; }
+        this.processQueue.clear();
+        for (final Tag tag : list) {
+            if (tag instanceof CompoundTag processTag) {
+                final MultiblockProcess<R, CTX> loadedProcess = loader.fromNBT(getRecipeFromID, processTag, provider);
+                if (loadedProcess != null) { this.processQueue.add(loadedProcess); }
+            }
+        }
+    }
+
+    public BiFunction<Level, ResourceLocation, R> recipeGetter() { return getRecipeFromID; }
+
+    public boolean addProcessToQueue(MultiblockProcess<R, CTX> process, Level level, boolean simulate) { return addProcessToQueue(process, level, simulate, false); }
+
+    @SuppressWarnings("unchecked") public boolean addProcessToQueue(MultiblockProcess<R, CTX> process, Level level, boolean simulate, boolean addToPrevious) {
+        if (addToPrevious && process instanceof MultiblockProcessInWorld) {
+            final MultiblockProcessInWorld<R> newProcess = (MultiblockProcessInWorld<R>)process;
+            for (MultiblockProcess<R, CTX> curr : processQueue) {
+                if (curr instanceof MultiblockProcessInWorld && process.getRecipeId().equals(curr.getRecipeId())) {
+                    boolean canStack = true;
+                    final MultiblockProcessInWorld<R> existingProcess = (MultiblockProcessInWorld<R>)curr;
+                    for (ItemStack old : existingProcess.inputItems) {
+                        for (ItemStack in : newProcess.inputItems) {
+                            if (ItemStack.isSameItemSameComponents(old, in)) {
+                                if (old.getCount() + in.getCount() > old.getMaxStackSize()) {
+                                    canStack = false;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!canStack) { break; }
+                    }
+                    if (canStack) {
+                        if (!simulate) {
+                            for (ItemStack old : existingProcess.inputItems) {
+                                for (ItemStack in : newProcess.inputItems) {
+                                    if (ItemStack.isSameItemSameComponents(old, in)) {
+                                        old.grow(in.getCount());
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        return true;
+                    }
+                }
+            }
+        }
+        if (maxQueueLength < 0 || processQueue.size() < maxQueueLength) {
+            if (!processQueue.isEmpty()) {
+                MultiblockProcess<R, CTX> previousProcess = processQueue.getLast();
+                final int maxTime = previousProcess.getMaxTicks(level);
+                float dist = previousProcess.processTick / (float)maxTime;
+                if (dist < minDelayAfter.applyAsDouble(maxTime)) { return false; }
+            }
+
+            if (!simulate) { processQueue.add(process); }
+            markDirty.run();
+            onQueueChange.run();
+            return true;
+        }
+        return false;
+    }
+
+    public int getMaxQueueSize() { return maxQueueLength; }
+
+    public int getQueueSize() { return processQueue.size(); }
+
+    public float getQueueFill(boolean allowStacking) {
+        if (maxQueueLength <= 0) { return 0; }
+        if (!allowStacking) { return this.getQueueSize() / (float)maxQueueLength; }
+
+        return getQueue().stream().map(process -> {
+            if (process instanceof MultiblockProcessInWorld<? extends ICMultiblockRecipe> inWorld) {
+                float f = 0;
+                for (ItemStack stack : inWorld.inputItems) {
+                    if (!stack.isEmpty()) { f = stack.getCount() / (float)stack.getMaxStackSize(); }
+                }
+                return f / (float)inWorld.inputItems.size();
+            }
+            else { return 1f; }
+        }).reduce(Float::sum).orElse(0f) / (float)maxQueueLength;
+    }
+
+    public List<MultiblockProcess<R, CTX>> getQueue() { return Collections.unmodifiableList(processQueue); }
+
+    public void clear() {
+        this.processQueue.clear();
+        this.markDirty.run();
+        this.onQueueChange.run();
+    }
+
+    public interface ProcessLoader<R extends ICMultiblockRecipe, CTX extends ProcessContext<R>> {
+        MultiblockProcess<R, CTX> fromNBT(BiFunction<Level, ResourceLocation, R> getRecipe, CompoundTag data, Provider provider);
+    }
+
+    public static class InWorldProcessor<R extends ICMultiblockRecipe> extends MultiblockProcessor<R, ProcessContextInWorld<R>> {
+        public InWorldProcessor(int maxQueueLength, IntToDoubleFunction minDelayAfter, int maxProcessPerTick, Runnable markDirty, Runnable onQueueChange, BiFunction<Level, ResourceLocation, @Nullable R> getRecipeFromID) { super(maxQueueLength, minDelayAfter, maxProcessPerTick, markDirty, onQueueChange, getRecipeFromID); }
+    }
+
+    public static class InMachineProcessor<R extends ICMultiblockRecipe> extends MultiblockProcessor<R, ProcessContextInMachine<R>> {
+        public InMachineProcessor(int maxQueueLength, float minDelayAfter, int maxProcessPerTick, Runnable markDirty, BiFunction<Level, ResourceLocation, @Nullable R> getRecipeFromID) { super(maxQueueLength, minDelayAfter, maxProcessPerTick, markDirty, getRecipeFromID); }
+
+        public InMachineProcessor(int maxQueueLength, IntToDoubleFunction minDelayAfter, int maxProcessPerTick, Runnable markDirty, Runnable onQueueChange, BiFunction<Level, ResourceLocation, @Nullable R> getRecipeFromID) { super(maxQueueLength, minDelayAfter, maxProcessPerTick, markDirty, onQueueChange, getRecipeFromID); }
+    }
+
+    public interface InWorldProcessLoader<R extends ICMultiblockRecipe> extends ProcessLoader<R, ProcessContextInWorld<R>> {
+    }
+}
