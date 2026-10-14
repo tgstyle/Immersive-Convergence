@@ -21,7 +21,9 @@
     "ThermoelectricGenAccessor",
     "ClocheAccessor",
     "TurretAccessor",
-    "RefineryStateAccessor"
+    "RefineryStateAccessor",
+    "ICConnectableBlockEntityMixin",
+    "ICConnectorRedstoneBlockEntityMixin"
   ],
   "client": [
     "AbstractSplitModelMixin",
