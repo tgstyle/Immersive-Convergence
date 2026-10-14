@@ -1,12 +1,17 @@
 package com.immersiveconvergence.api.integration.top;
 
+import com.immersiveconvergence.api.block.BlockInterfaces;
+import com.immersiveconvergence.api.block.Enums;
 import com.immersiveconvergence.api.integration.DisplayContexts;
 import com.immersiveconvergence.api.integration.DisplayLines;
 import com.immersiveconvergence.api.multiblock.IDisplayContext;
+import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockBE;
 import com.immersiveconvergence.core.lib.ICLib;
 
 import blusunrize.immersiveengineering.api.Lib;
+import mcjty.theoneprobe.Tools;
 import mcjty.theoneprobe.api.ElementAlignment;
+import mcjty.theoneprobe.api.IBlockDisplayOverride;
 import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.IProbeInfoProvider;
@@ -14,12 +19,18 @@ import mcjty.theoneprobe.api.IProgressStyle;
 import mcjty.theoneprobe.api.ITheOneProbe;
 import mcjty.theoneprobe.api.NumberFormat;
 import mcjty.theoneprobe.api.ProbeMode;
+import mcjty.theoneprobe.api.TextStyleClass;
+import mcjty.theoneprobe.config.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.fml.InterModComms;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -37,6 +48,7 @@ public class ProbeIntegration {
     public static void enqueueIMC() {
         InterModComms.sendTo(MODID, "getTheOneProbe", () -> (Function<ITheOneProbe, Void>) top -> {
             top.registerProvider(new Provider());
+            top.registerBlockDisplayOverride(new MultiblockDisplayOverride());
             return null;
         });
     }
@@ -45,19 +57,38 @@ public class ProbeIntegration {
         @Override public ResourceLocation getID() { return ICLib.rl("display"); }
 
         @Override public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, Player player, Level level, BlockState blockState, IProbeHitData data) {
-            IDisplayContext context = DisplayContexts.of(level.getBlockEntity(data.getPos()));
-            if (context == null) { return; }
-            for (IFluidTank tank : context.getInternalTanks()) { if (tank != null) { addFluidTank(probeInfo, tank); } }
-            for (IEnergyStorage energy : context.getEnergies()) { addEnergy(probeInfo, energy.getEnergyStored(), energy.getMaxEnergyStored()); }
-            DisplayLines lines = new DisplayLines();
-            context.addDisplayLines(level, lines);
-            for (DisplayLines.Line line : lines.lines()) {
-                if (line instanceof DisplayLines.Text(
-                        net.minecraft.network.chat.Component text1
-                )) { probeInfo.text(text1); }
-                else if (line instanceof DisplayLines.Progress progress) { addProgress(probeInfo, progress); }
-            }
+            BlockEntity blockEntity = level.getBlockEntity(data.getPos());
+            IDisplayContext context = DisplayContexts.of(blockEntity);
+            if (context != null) { addContext(probeInfo, level, context); }
+            if (blockEntity instanceof BlockInterfaces.IConfigurableSides sides && data.getSideHit() != null) { addSideConfig(probeInfo, player, sides, data.getSideHit()); }
         }
+    }
+
+    public static class MultiblockDisplayOverride implements IBlockDisplayOverride {
+        @Override public boolean overrideStandardInfo(ProbeMode mode, IProbeInfo probeInfo, Player player, Level level, BlockState blockState, IProbeHitData data) {
+            if (!(level.getBlockEntity(data.getPos()) instanceof IMultiblockBE<?>)) { return false; }
+            ItemStack stack = new ItemStack(blockState.getBlock(), 1);
+            if (Tools.show(mode, Config.getRealConfig().getShowModName())) { probeInfo.horizontal().item(stack).vertical().itemLabel(stack).text(Component.literal(TextStyleClass.MODNAME + Tools.getModName(blockState.getBlock()))); }
+            else { probeInfo.horizontal(probeInfo.defaultLayoutStyle().alignment(ElementAlignment.ALIGN_CENTER)).item(stack).itemLabel(stack); }
+            return true;
+        }
+    }
+
+    private static void addContext(IProbeInfo probeInfo, Level level, IDisplayContext context) {
+        for (IFluidTank tank : context.getInternalTanks()) { if (tank != null) { addFluidTank(probeInfo, tank); } }
+        for (IEnergyStorage energy : context.getEnergies()) { addEnergy(probeInfo, energy.getEnergyStored(), energy.getMaxEnergyStored()); }
+        DisplayLines lines = new DisplayLines();
+        context.addDisplayLines(level, lines);
+        for (DisplayLines.Line line : lines.lines()) {
+            if (line instanceof DisplayLines.Text(Component text)) { probeInfo.text(text); }
+            else if (line instanceof DisplayLines.Progress progress) { addProgress(probeInfo, progress); }
+        }
+    }
+
+    private static void addSideConfig(IProbeInfo probeInfo, Player player, BlockInterfaces.IConfigurableSides sides, Direction sideHit) {
+        boolean flip = player.isShiftKeyDown();
+        Enums.IOSideConfig config = sides.getSideConfig(flip ? sideHit.getOpposite() : sideHit);
+        probeInfo.text(Component.empty().append(Component.translatable(ICLib.DESC_INFO + "blockSide." + (flip ? "opposite" : "facing"))).append(": ").append(config.getTextComponent()));
     }
 
     private static IProbeInfo row(IProbeInfo probeInfo) { return probeInfo.horizontal(probeInfo.defaultLayoutStyle().alignment(ElementAlignment.ALIGN_CENTER).spacing(2)); }

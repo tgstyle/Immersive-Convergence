@@ -1,6 +1,5 @@
 package com.immersiveconvergence.api.util;
 
-import blusunrize.immersiveengineering.api.IEApiDataComponents;
 import blusunrize.immersiveengineering.api.fluid.FluidUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -16,11 +15,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @SuppressWarnings({"unused", "RedundantSuppression"}) public class ICFluidUtils {
-    public static FluidStack copyFluidStackWithAmount(FluidStack stack, int amount, boolean stripPressure) {
+    public static FluidStack copyFluidStackWithAmount(FluidStack stack, int amount) {
         if (stack == null || stack.isEmpty()) { return FluidStack.EMPTY; }
-        FluidStack fs = stack.copyWithAmount(amount);
-        if (stripPressure) { fs.remove(IEApiDataComponents.FLUID_PRESSURIZED); }
-        return fs;
+        return stack.copyWithAmount(amount);
     }
 
     public static Component formatFluidStack(FluidStack fluid) {

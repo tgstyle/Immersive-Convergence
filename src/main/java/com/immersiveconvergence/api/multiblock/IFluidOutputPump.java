@@ -1,12 +1,12 @@
 package com.immersiveconvergence.api.multiblock;
 
-import blusunrize.immersiveengineering.api.IEApiDataComponents;
+import com.immersiveconvergence.api.fluid.IICFluidPipe;
 import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockContext;
 import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockState;
 import com.immersiveconvergence.api.multiblock.blocks.util.RelativeBlockFace;
-import blusunrize.immersiveengineering.common.blocks.metal.FluidPipeBlockEntity;
 import com.immersiveconvergence.api.util.ICFluidUtils;
 import com.immersiveconvergence.api.util.MarkableFluidTank;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -77,19 +77,19 @@ import java.util.List;
                 BlockPos portAbs = ctx.getLevel().toAbsolute(outputPositions.get(i));
                 BlockPos externalAbs = portAbs.relative(outputDir);
                 BlockEntity adjTE = level.getBlockEntity(externalAbs);
-                boolean isPipe = adjTE instanceof FluidPipeBlockEntity;
+                boolean isPipe = IICFluidPipe.isPipe(adjTE);
 
                 int share = baseShare + (idx < remainder ? 1 : 0);
                 if (share <= 0) continue;
 
                 FluidStack fs = tank.getFluid().copy();
-                fs.set(IEApiDataComponents.FLUID_PRESSURIZED.get(), com.mojang.datafixers.util.Unit.INSTANCE);
-                fs = ICFluidUtils.copyFluidStackWithAmount(fs, Math.min(share, fs.getAmount()), false);
-                if (transferSpeed != Integer.MAX_VALUE && !isPipe) fs = ICFluidUtils.copyFluidStackWithAmount(fs, Math.min(transferSpeed, fs.getAmount()), false);
+                IICFluidPipe.markPressurized(fs);
+                fs = ICFluidUtils.copyFluidStackWithAmount(fs, Math.min(share, fs.getAmount()));
+                if (transferSpeed != Integer.MAX_VALUE && !isPipe) fs = ICFluidUtils.copyFluidStackWithAmount(fs, Math.min(transferSpeed, fs.getAmount()));
 
                 int accepted = handler.fill(fs, FluidAction.SIMULATE);
                 if (accepted <= 0) continue;
-                FluidStack toFill = ICFluidUtils.copyFluidStackWithAmount(fs, Math.min(fs.getAmount(), accepted), false);
+                FluidStack toFill = ICFluidUtils.copyFluidStackWithAmount(fs, Math.min(fs.getAmount(), accepted));
                 int drained = handler.fill(toFill, FluidAction.EXECUTE);
                 tank.drain(drained, FluidAction.EXECUTE);
                 dirty = true;

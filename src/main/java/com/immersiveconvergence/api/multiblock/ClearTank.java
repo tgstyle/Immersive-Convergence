@@ -1,8 +1,10 @@
 package com.immersiveconvergence.api.multiblock;
 
+import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.multiblock.blocks.component.IMultiblockComponent;
 import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockContext;
-import blusunrize.immersiveengineering.common.register.IEItems;
+import com.immersiveconvergence.common.ie.IEMultiblockBridge;
+
 import com.google.common.collect.ImmutableList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -31,7 +33,7 @@ import java.util.function.Supplier;
     @Override public ItemInteractionResult click(IMultiblockContext<S> context, BlockPos posInMultiblock, Player player, InteractionHand hand, BlockHitResult absoluteHit, boolean isClient) {
         if (player.isShiftKeyDown() && pois.get().contains(posInMultiblock)) {
             ItemStack held = player.getItemInHand(hand);
-            if (held.getItem() == IEItems.Tools.HAMMER.get() || additionalTool.test(held)) {
+            if ((ICMods.immersiveEngineering() && IEMultiblockBridge.isHammer(held)) || additionalTool.test(held)) {
                 if (!isClient) {
                     S state = context.getState();
                     clearAction.accept(state);

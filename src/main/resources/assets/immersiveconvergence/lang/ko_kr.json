@@ -2,6 +2,7 @@
   "block.immersiveconvergence.heat_creative": "크리에이티브 히터",
   "block.immersiveconvergence.rotor_creative": "크리에이티브 로터",
   "config.jade.plugin_immersiveconvergence.lines": "기계 정보",
+  "config.jade.plugin_immersiveconvergence.multiblock_icon": "멀티블록 아이콘",
   "config.jade.plugin_immersiveconvergence.status": "기계 상태",
   "desc.immersiveconvergence.info.holdShiftForInfo": "§8Shift를 누르면 더 많은 정보를 볼 수 있습니다§r",
   "gui.immersiveconvergence.apply": "적용",

@@ -2,6 +2,7 @@
   "block.immersiveconvergence.heat_creative": "創造模式加熱器",
   "block.immersiveconvergence.rotor_creative": "創造模式轉子",
   "config.jade.plugin_immersiveconvergence.lines": "機器讀數",
+  "config.jade.plugin_immersiveconvergence.multiblock_icon": "多方塊結構圖示",
   "config.jade.plugin_immersiveconvergence.status": "機器狀態",
   "desc.immersiveconvergence.info.holdShiftForInfo": "§8按住 Shift 查看更多資訊§r",
   "gui.immersiveconvergence.apply": "套用",
