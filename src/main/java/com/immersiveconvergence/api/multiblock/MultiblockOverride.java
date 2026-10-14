@@ -1,8 +1,9 @@
 package com.immersiveconvergence.api.multiblock;
 
+import com.immersiveconvergence.api.multiblock.blocks.util.CapabilityPosition;
+import com.immersiveconvergence.api.multiblock.blocks.util.RelativeBlockFace;
 import com.immersiveconvergence.core.lib.ICLib;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.util.CapabilityPosition;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.util.RelativeBlockFace;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;

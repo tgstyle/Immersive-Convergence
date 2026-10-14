@@ -1,8 +1,7 @@
 package com.immersiveconvergence.api.multiblock;
 
-import blusunrize.immersiveengineering.api.multiblocks.BlockMatcher;
-import blusunrize.immersiveengineering.api.multiblocks.ClientMultiblocks;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.MultiblockRegistration;
+import com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistration;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;

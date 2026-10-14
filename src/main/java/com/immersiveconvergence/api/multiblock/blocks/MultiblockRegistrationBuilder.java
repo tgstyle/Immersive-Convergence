@@ -40,7 +40,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import static com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistrationBuilder.RegistrationMethod.fromDeferred;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public abstract class MultiblockRegistrationBuilder<
+@SuppressWarnings({"unused", "UnusedReturnValue", "RedundantSuppression"}) public abstract class MultiblockRegistrationBuilder<
         State extends IMultiblockState,
         Self extends MultiblockRegistrationBuilder<State, Self>
         > {
@@ -90,11 +90,13 @@ import static com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistrat
 
     public Self defaultBEs(DeferredRegister<BlockEntityType<?>> register) { return defaultBEs(fromDeferred(register)); }
 
-    public Self defaultBEs(RegistrationMethod<BlockEntityType<?>> register) {
+    public Self defaultBEs(RegistrationMethod<BlockEntityType<?>> register) { return customBEs(register, MultiblockBlockEntityMaster::new, MultiblockBlockEntityDummy::new); }
+
+    public Self customBEs(RegistrationMethod<BlockEntityType<?>> register, BEConstructor<State, ? extends MultiblockBlockEntityMaster<State>> master, BEConstructor<State, ? extends MultiblockBlockEntityDummy<State>> dummy) {
         Preconditions.checkState(this.masterBE == null);
         Preconditions.checkState(this.dummyBE == null);
-        this.masterBE = register.register(name.getPath() + MASTER_BE_SUFFIX, () -> makeBEType(MultiblockBlockEntityMaster::new));
-        this.dummyBE = register.register(name.getPath() + DUMMY_BE_SUFFIX, () -> makeBEType(MultiblockBlockEntityDummy::new));
+        this.masterBE = register.register(name.getPath() + MASTER_BE_SUFFIX, () -> makeBEType(master));
+        this.dummyBE = register.register(name.getPath() + DUMMY_BE_SUFFIX, () -> makeBEType(dummy));
         return self();
     }
 
@@ -212,7 +214,7 @@ import static com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistrat
         }
     }
 
-    private interface BEConstructor<State extends IMultiblockState, T extends BlockEntity> {
+    public interface BEConstructor<State extends IMultiblockState, T extends BlockEntity> {
         T make(BlockEntityType<?> type, BlockPos pos, BlockState state, MultiblockRegistration<State> multiblock);
     }
 }

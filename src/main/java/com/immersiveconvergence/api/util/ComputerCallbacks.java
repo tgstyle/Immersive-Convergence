@@ -24,13 +24,17 @@ public final class ComputerCallbacks {
 
     public static <S extends IMultiblockState> void registerMultiblock(MultiblockRegistration<S> multiblock, Callback<S> callback, String name, Predicate<BlockPos> attach) { registerMultiblock(multiblock, callback, new Callback<>(), name, attach); }
 
-    public static <S extends IMultiblockState> void registerMultiblock(MultiblockRegistration<S> multiblock, Callback<S> callback, Callback<IMultiblockBEHelper<S>> helperCallback, String name, Predicate<BlockPos> attach) { putMultiblock(multiblock, new MultiblockComputerOwner<>(callback, helperCallback, multiblock, name, attach)); }
+    public static <S extends IMultiblockState> void registerMultiblock(MultiblockRegistration<S> multiblock, Callback<S> callback, Callback<IMultiblockBEHelper<S>> helperCallback, String name, Predicate<BlockPos> attach) { putMultiblock(multiblock.id(), new MultiblockComputerOwner<>(callback, helperCallback, multiblock, name, attach)); }
 
-    public static <S extends IMultiblockState> void extendMultiblock(MultiblockRegistration<S> multiblock, Callback<S> callback, String name, BlockPos... valid) { putMultiblock(multiblock, new MultiblockCallbackWrapper<>(callback, multiblock, name, valid)); }
+    @SuppressWarnings("unused") public static <S extends com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockState> void registerMultiblock(com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistration<S> multiblock, Callback<S> callback, String name, Predicate<BlockPos> attach) { registerMultiblock(multiblock, callback, new Callback<>(), name, attach); }
 
-    private static void putMultiblock(MultiblockRegistration<?> multiblock, CallbackOwner<?> owner) {
-        CALLBACKS.put(multiblock.id().withPath(path -> path + MultiblockRegistrationBuilder.MASTER_BE_SUFFIX), owner);
-        CALLBACKS.put(multiblock.id().withPath(path -> path + MultiblockRegistrationBuilder.DUMMY_BE_SUFFIX), owner);
+    public static <S extends com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockState> void registerMultiblock(com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistration<S> multiblock, Callback<S> callback, Callback<com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockBEHelper<S>> helperCallback, String name, Predicate<BlockPos> attach) { putMultiblock(multiblock.id(), new ICMultiblockComputerOwner<>(callback, helperCallback, multiblock, name, attach)); }
+
+    public static <S extends IMultiblockState> void extendMultiblock(MultiblockRegistration<S> multiblock, Callback<S> callback, String name, BlockPos... valid) { putMultiblock(multiblock.id(), new MultiblockCallbackWrapper<>(callback, multiblock, name, valid)); }
+
+    private static void putMultiblock(ResourceLocation id, CallbackOwner<?> owner) {
+        CALLBACKS.put(id.withPath(path -> path + MultiblockRegistrationBuilder.MASTER_BE_SUFFIX), owner);
+        CALLBACKS.put(id.withPath(path -> path + MultiblockRegistrationBuilder.DUMMY_BE_SUFFIX), owner);
     }
 
     public static void register(ResourceLocation blockEntityType, CallbackOwner<?> owner) { CALLBACKS.put(blockEntityType, owner); }

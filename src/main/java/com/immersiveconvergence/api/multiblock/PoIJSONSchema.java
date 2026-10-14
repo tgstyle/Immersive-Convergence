@@ -1,6 +1,7 @@
 package com.immersiveconvergence.api.multiblock;
 
-import blusunrize.immersiveengineering.api.multiblocks.blocks.util.RelativeBlockFace;
+import com.immersiveconvergence.api.multiblock.blocks.util.RelativeBlockFace;
+
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;

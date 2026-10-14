@@ -1,8 +1,8 @@
 package com.immersiveconvergence.api.integration.jei;
 
+import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockItem;
 import com.immersiveconvergence.core.lib.ICLib;
 
-import blusunrize.immersiveengineering.api.multiblocks.blocks.registry.MultiblockItem;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.IExtraIngredientRegistration;

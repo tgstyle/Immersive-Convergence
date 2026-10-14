@@ -1,12 +1,12 @@
 package com.immersiveconvergence.mixin;
 
 import com.immersiveconvergence.api.multiblock.ClearTankRegistry;
-import com.immersiveconvergence.api.multiblock.IDisassemblingAware;
 import com.immersiveconvergence.api.multiblock.IResettableCache;
 import com.immersiveconvergence.api.multiblock.MultiblockDataLoader;
 import com.immersiveconvergence.api.multiblock.MultiblockOverride;
 import com.immersiveconvergence.api.multiblock.QueueProcessor;
 import com.immersiveconvergence.api.multiblock.ShapeData;
+import com.immersiveconvergence.api.multiblock.blocks.util.RelativeBlockFace;
 
 import blusunrize.immersiveengineering.api.multiblocks.blocks.MultiblockRegistration;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockBEHelper;
@@ -47,7 +47,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 @Mixin(MultiblockBEHelperCommon.class)
-public abstract class MultiblockBEHelperCommonMixin implements IDisassemblingAware {
+public abstract class MultiblockBEHelperCommonMixin {
     @Shadow(remap = false) private boolean beingDisassembled;
 
     @Shadow(remap = false) protected abstract IMultiblockBEHelperMaster<?> getMasterHelperWithChunkloads();
@@ -60,8 +60,6 @@ public abstract class MultiblockBEHelperCommonMixin implements IDisassemblingAwa
     @Unique private BlockPos ic$overrideShapesPos;
     @Shadow(remap = false) @Final private EnumMap<ShapeType, ?> cachedShape;
     @Unique private int ic$shapeGeneration;
-
-    @Override public boolean ic$isDisassembling() { return beingDisassembled; }
 
     @Inject(method = "disassemble", at = @At("HEAD"), cancellable = true, remap = false)
     private void ic$queueDisassembly(CallbackInfo ci) {
@@ -120,8 +118,8 @@ public abstract class MultiblockBEHelperCommonMixin implements IDisassemblingAwa
     private LazyOptional ic$overridePorts(IMultiblockLogic logic, IMultiblockContext ctx, CapabilityPosition position, Capability cap) {
         MultiblockOverride override = MultiblockOverride.get(multiblock.id());
         if (override == null || override.ignores(cap)) { return logic.getCapability(ctx, position, cap); }
-        CapabilityPosition mapped = override.map(cap, position);
-        return mapped == null ? LazyOptional.empty() : logic.getCapability(ctx, mapped, cap);
+        com.immersiveconvergence.api.multiblock.blocks.util.CapabilityPosition mapped = override.map(cap, new com.immersiveconvergence.api.multiblock.blocks.util.CapabilityPosition(position.posInMultiblock(), position.side() == null ? null : RelativeBlockFace.valueOf(position.side().name())));
+        return mapped == null ? LazyOptional.empty() : logic.getCapability(ctx, new CapabilityPosition(mapped.posInMultiblock(), mapped.side() == null ? null : blusunrize.immersiveengineering.api.multiblocks.blocks.util.RelativeBlockFace.valueOf(mapped.side().name())), cap);
     }
 
     @Inject(method = "click", at = @At("HEAD"), cancellable = true, remap = false)
@@ -129,7 +127,11 @@ public abstract class MultiblockBEHelperCommonMixin implements IDisassemblingAwa
         MultiblockBEHelperMaster<?> master = getMasterHelper();
         if (master == null) { return; }
         IMultiblockBEHelper<?> self = (IMultiblockBEHelper<?>) this;
-        InteractionResult result = ClearTankRegistry.handle(self.getMultiblock().id(), self.getPositionInMB(), master.getContext(), player, hand);
+        IMultiblockContext<?> context = master.getContext();
+        InteractionResult result = ClearTankRegistry.handle(self.getMultiblock().id(), self.getPositionInMB(), context.getState(), () -> {
+            context.markMasterDirty();
+            context.requestMasterBESync();
+        }, player, hand);
         if (result != null) { cir.setReturnValue(result); }
     }
 }

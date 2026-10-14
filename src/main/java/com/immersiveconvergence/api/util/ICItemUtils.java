@@ -1,6 +1,7 @@
 package com.immersiveconvergence.api.util;
 
-import blusunrize.immersiveengineering.api.utils.CapabilityReference;
+import com.immersiveconvergence.api.multiblock.util.CapabilityReference;
+
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;

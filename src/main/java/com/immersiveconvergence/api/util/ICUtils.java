@@ -1,7 +1,9 @@
 package com.immersiveconvergence.api.util;
 
+import com.immersiveconvergence.api.multiblock.util.CapabilityReference;
+import com.immersiveconvergence.api.multiblock.util.DirectionalBlockPos;
+
 import blusunrize.immersiveengineering.api.ApiUtils;
-import blusunrize.immersiveengineering.api.utils.CapabilityReference;
 import blusunrize.immersiveengineering.api.utils.SafeChunkUtils;
 import blusunrize.immersiveengineering.common.util.Utils;
 import com.google.gson.JsonObject;
@@ -27,5 +29,5 @@ import java.util.Random;
 
     public static boolean isChunkSafe(LevelAccessor w, BlockPos pos) { return SafeChunkUtils.isChunkSafe(w, pos); }
 
-    public static <T> CapabilityReference<T> forNeighbor(BlockEntity local, Capability<T> cap, @Nonnull Direction side) { return CapabilityReference.forNeighbor(local, cap, side); }
+    public static <T> CapabilityReference<T> forNeighbor(BlockEntity local, Capability<T> cap, @Nonnull Direction side) { return CapabilityReference.forBlockEntityAt(local, () -> new DirectionalBlockPos(local.getBlockPos().relative(side), side.getOpposite()), cap); }
 }

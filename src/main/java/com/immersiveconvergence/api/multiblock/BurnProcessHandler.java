@@ -1,9 +1,10 @@
 package com.immersiveconvergence.api.multiblock;
 
+import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockContext;
+import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockLevel;
+
 import blusunrize.immersiveengineering.api.crafting.IESerializableRecipe;
 import blusunrize.immersiveengineering.api.crafting.IngredientWithSize;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockContext;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockLevel;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.inventory.ContainerData;

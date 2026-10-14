@@ -1,13 +1,13 @@
 package com.immersiveconvergence.api.multiblock;
 
+import com.immersiveconvergence.api.ICMods;
+import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockBEHelperMaster;
+import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockBE;
+import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockPartBlock;
+import com.immersiveconvergence.common.ie.IEMultiblockBridge;
 import com.immersiveconvergence.core.ICCommonConfig;
 import com.immersiveconvergence.core.lib.ICLib;
 
-import blusunrize.immersiveengineering.api.multiblocks.TemplateMultiblock;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockBEHelper;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockBEHelperMaster;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.logic.IMultiblockBE;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.registry.MultiblockPartBlock;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
@@ -94,7 +94,8 @@ public class QueueProcessor {
 
     @SubscribeEvent public static void onBlockBreak(BlockEvent.BreakEvent event) {
         if (event.getLevel().isClientSide() || event.getPlayer() instanceof FakePlayer) { return; }
-        if (!(event.getState().getBlock() instanceof MultiblockPartBlock)) { return; }
+        Block block = event.getState().getBlock();
+        if (!(block instanceof MultiblockPartBlock) && !(ICMods.immersiveEngineering() && IEMultiblockBridge.isPartBlock(block))) { return; }
         currentlyBreakingPos = event.getPos().immutable();
         sneakBreaking = event.getPlayer().isShiftKeyDown();
     }
@@ -112,11 +113,10 @@ public class QueueProcessor {
         ItemStack tool = breakingPlayer != null ? breakingPlayer.getMainHandItem() : ItemStack.EMPTY;
         ItemStack effectiveTool = tool.isEmpty() ? new ItemStack(Items.DIAMOND_PICKAXE) : tool;
         if (!activeDisassemblies.add(masterPos.immutable())) { return true; }
-        BlockEntity masterBE = serverLevel.getBlockEntity(masterPos);
-        if (masterBE instanceof IMultiblockBE<?> mbBE) { markDisassembling(mbBE.getHelper()); }
+        markHelperDisassembling(serverLevel.getBlockEntity(masterPos));
 
         for (StructureBlockInfo info : structure) {
-            BlockPos actualPos = TemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot);
+            BlockPos actualPos = ICTemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot);
             prepareBlockForDisassembly(serverLevel, actualPos);
         }
         List<BlockPos> strays = findStrayParts(serverLevel, structure, origin, mirror, rot, size, partBlock);
@@ -133,7 +133,7 @@ public class QueueProcessor {
             if (hit.getType() == HitResult.Type.BLOCK) {
                 BlockPos hitPos = hit.getBlockPos();
                 for (StructureBlockInfo info : structure) {
-                    BlockPos actual = TemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot);
+                    BlockPos actual = ICTemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot);
                     if (actual.equals(hitPos)) {
                         brokenPos = actual;
                         break;
@@ -144,7 +144,7 @@ public class QueueProcessor {
                 double minDist = Double.MAX_VALUE;
                 BlockPos closest = null;
                 for (StructureBlockInfo info : structure) {
-                    BlockPos actual = TemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot);
+                    BlockPos actual = ICTemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot);
                     double dist = Vec3.atCenterOf(actual).distanceToSqr(eyePos);
                     if (dist < minDist) {
                         minDist = dist;
@@ -165,7 +165,7 @@ public class QueueProcessor {
         if (templateMode) {
             BlockState brokenTemplate = null;
             for (StructureBlockInfo info : structure) {
-                BlockPos actualPos = TemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot);
+                BlockPos actualPos = ICTemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot);
                 BlockState stateAfterMirror = placedState(info, cellState).mirror(mirror);
                 BlockState template = stateAfterMirror.rotate(rot);
                 if (actualPos.equals(brokenPos)) { brokenTemplate = template; }
@@ -191,7 +191,7 @@ public class QueueProcessor {
         else {
             BlockPos harvestedByPlayer = handleTemplateMode ? null : initiatedAt;
             for (StructureBlockInfo info : structure) {
-                BlockPos actualPos = TemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot);
+                BlockPos actualPos = ICTemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot);
                 BlockState stateAfterMirror = placedState(info, cellState).mirror(mirror);
                 BlockState template = stateAfterMirror.rotate(rot);
                 toBreak.add(actualPos);
@@ -230,9 +230,11 @@ public class QueueProcessor {
                 for (int x = 0; x < size.getX(); x++) {
                     BlockPos cell = new BlockPos(x, y, z);
                     if (templateCells.contains(cell)) { continue; }
-                    BlockPos actual = TemplateMultiblock.withSettingsAndOffset(origin, cell, mirror, rot);
+                    BlockPos actual = ICTemplateMultiblock.withSettingsAndOffset(origin, cell, mirror, rot);
                     if (level.getBlockState(actual).getBlock() != partBlock) { continue; }
-                    if (level.getBlockEntity(actual) instanceof IMultiblockBE<?> be && !(be.getHelper() instanceof IMultiblockBEHelperMaster) && cell.equals(be.getHelper().getPositionInMB())) { strays.add(actual); }
+                    BlockEntity part = level.getBlockEntity(actual);
+                    if (part instanceof IMultiblockBE<?> be && !(be.getHelper() instanceof IMultiblockBEHelperMaster) && cell.equals(be.getHelper().getPositionInMB())) { strays.add(actual); }
+                    else if (ICMods.immersiveEngineering() && IEMultiblockBridge.isStrayDummy(part, cell)) { strays.add(actual); }
                 }
             }
         }
@@ -241,15 +243,14 @@ public class QueueProcessor {
 
     public static void prepareBlockForDisassembly(Level world, BlockPos pos) {
         BlockEntity be = world.getBlockEntity(pos);
-        if (be == null) { return; }
-        markDisassembling(be);
-        if (be instanceof IMultiblockBE<?> multiblockBE) { markDisassembling(multiblockBE.getHelper()); }
+        if (be instanceof MachineBlockEntityMaster<?> master) { master.markDisassembling(); }
+        else if (be instanceof MachineBlockEntityDummy<?> dummy) { dummy.markDisassembling(); }
+        markHelperDisassembling(be);
     }
 
-    public static void markDisassembling(Object target) {
-        if (target instanceof IMultiblockBEHelper<?> helper) { helper.markDisassembling(); }
-        else if (target instanceof MachineBlockEntityMaster<?> master) { master.markDisassembling(); }
-        else if (target instanceof MachineBlockEntityDummy<?> dummy) { dummy.markDisassembling(); }
+    private static void markHelperDisassembling(@Nullable BlockEntity be) {
+        if (be instanceof IMultiblockBE<?> multiblockBE) { multiblockBE.getHelper().markDisassembling(); }
+        else if (ICMods.immersiveEngineering()) { IEMultiblockBridge.markDisassembling(be); }
     }
 
     @SubscribeEvent public static void onServerTick(TickEvent.ServerTickEvent event) {

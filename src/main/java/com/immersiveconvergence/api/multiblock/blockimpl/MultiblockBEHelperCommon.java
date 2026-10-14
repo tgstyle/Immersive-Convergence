@@ -1,5 +1,6 @@
 package com.immersiveconvergence.api.multiblock.blockimpl;
 
+import com.immersiveconvergence.api.multiblock.ClearTankRegistry;
 import com.immersiveconvergence.api.multiblock.IDisassemblingAware;
 import com.immersiveconvergence.api.multiblock.MultiblockDataLoader;
 import com.immersiveconvergence.api.multiblock.MultiblockOverride;
@@ -115,13 +116,21 @@ import java.util.function.BiFunction;
             final LazyOptional<T> fromComponent = component.getCapability(position, cap);
             if (fromComponent.isPresent()) { return fromComponent; }
         }
-        return multiblock.logic().getCapability(ctx, position, cap);
+        final MultiblockOverride override = MultiblockOverride.get(multiblock.id());
+        if (override == null || override.ignores(cap)) { return multiblock.logic().getCapability(ctx, position, cap); }
+        final CapabilityPosition mapped = override.map(cap, position);
+        return mapped == null ? LazyOptional.empty() : multiblock.logic().getCapability(ctx, mapped, cap);
     }
 
     @Override public InteractionResult click(Player player, InteractionHand hand, BlockHitResult hit) {
         final MultiblockBEHelperMaster<State> helper = getMasterHelper();
         if (helper == null) { return InteractionResult.FAIL; }
         final MultiblockContext<State> ctx = helper.getContext();
+        final InteractionResult cleared = ClearTankRegistry.handle(multiblock.id(), getPositionInMB(), ctx.getState(), () -> {
+            ctx.markMasterDirty();
+            ctx.requestMasterBESync();
+        }, player, hand);
+        if (cleared != null) { return cleared; }
         for (final ComponentInstance<?> component : helper.getComponentInstances()) {
             final InteractionResult componentResult = component.click(
                     getPositionInMB(), player, hand, hit, player.level().isClientSide

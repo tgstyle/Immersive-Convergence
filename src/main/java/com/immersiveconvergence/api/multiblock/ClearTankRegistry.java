@@ -1,8 +1,8 @@
 package com.immersiveconvergence.api.multiblock;
 
-import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockContext;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.util.CapabilityPosition;
-import blusunrize.immersiveengineering.common.util.Utils;
+import com.immersiveconvergence.api.multiblock.blocks.util.CapabilityPosition;
+import com.immersiveconvergence.api.util.ICUtils;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -35,18 +35,17 @@ import java.util.function.ToIntFunction;
         return mapped == null ? null : mapped.posInMultiblock();
     }
 
-    @Nullable public static InteractionResult handle(ResourceLocation multiblock, BlockPos posInMultiblock, IMultiblockContext<?> context, Player player, InteractionHand hand) {
+    @Nullable public static InteractionResult handle(ResourceLocation multiblock, BlockPos posInMultiblock, Object state, Runnable sync, Player player, InteractionHand hand) {
         Entry entry = ENTRIES.get(multiblock);
         if (entry == null || !player.isShiftKeyDown()) { return null; }
         BlockPos origin = portOrigin(multiblock, posInMultiblock);
         if (origin == null || !entry.inputPositions().contains(origin)) { return null; }
         ItemStack held = player.getItemInHand(hand);
-        if (!Utils.isHammer(held) && !ClearTank.additionalTool.test(held)) { return null; }
+        if (!ICUtils.isHammer(held) && !ClearTank.additionalTool.test(held)) { return null; }
         boolean isClient = player.level().isClientSide;
         if (!isClient) {
-            int cleared = entry.clear().applyAsInt(context.getState());
-            context.markMasterDirty();
-            context.requestMasterBESync();
+            int cleared = entry.clear().applyAsInt(state);
+            sync.run();
             player.displayClientMessage(Component.translatable(cleared > 1 ? KEY_TANKS_CLEARED : KEY_TANK_CLEARED), true);
         }
         return InteractionResult.sidedSuccess(isClient);

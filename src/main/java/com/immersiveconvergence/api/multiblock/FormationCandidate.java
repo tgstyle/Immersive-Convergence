@@ -1,7 +1,8 @@
 package com.immersiveconvergence.api.multiblock;
 
-import blusunrize.immersiveengineering.api.multiblocks.blocks.util.MultiblockOrientation;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.util.RelativeBlockFace;
+import com.immersiveconvergence.api.multiblock.blocks.util.MultiblockOrientation;
+import com.immersiveconvergence.api.multiblock.blocks.util.RelativeBlockFace;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;

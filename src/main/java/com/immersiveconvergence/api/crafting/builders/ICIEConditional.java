@@ -7,6 +7,7 @@ import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.ModLoadedCondition;
 
 import javax.annotation.Nonnull;
@@ -18,7 +19,7 @@ import java.util.function.Consumer;
 
     public static Consumer<FinishedRecipe> wrap(Consumer<FinishedRecipe> out) { return recipe -> out.accept(new Wrapped(recipe)); }
 
-    static void addConditions(JsonObject json) { json.add("conditions", CraftingHelper.serialize(new ModLoadedCondition(ICMods.IMMERSIVE_ENGINEERING))); }
+    static void addConditions(JsonObject json) { json.add("conditions", CraftingHelper.serialize(new ICondition[] {new ModLoadedCondition(ICMods.IMMERSIVE_ENGINEERING)})); }
 
     private record Wrapped(FinishedRecipe recipe) implements FinishedRecipe {
         @Override public void serializeRecipeData(@Nonnull JsonObject json) { recipe.serializeRecipeData(json); }

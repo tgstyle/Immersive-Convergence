@@ -4,6 +4,7 @@ import com.immersiveconvergence.api.network.INetworkMessage;
 import com.immersiveconvergence.api.network.MessageMenuSync;
 import com.immersiveconvergence.api.network.MessageMenuUpdate;
 import com.immersiveconvergence.api.network.MessageMultiblockData;
+import com.immersiveconvergence.api.network.MessageMultiblockTemplates;
 import com.immersiveconvergence.api.network.MessageTileSync;
 import com.immersiveconvergence.core.lib.ICLib;
 
@@ -19,7 +20,7 @@ import java.util.function.Function;
 
 @SuppressWarnings("unused")
 public class PacketHandler {
-    public static final String NET_VERSION = "2";
+    public static final String NET_VERSION = "3";
     public static final SimpleChannel INSTANCE = NetworkRegistry.ChannelBuilder
             .named(ICLib.rl("main"))
             .networkProtocolVersion(() -> NET_VERSION)
@@ -34,6 +35,7 @@ public class PacketHandler {
         registerMessage(MessageMenuUpdate.class, MessageMenuUpdate::new);
         registerMessage(MessageMenuSync.class, MessageMenuSync::new);
         registerMessage(MessageMultiblockData.class, MessageMultiblockData::new);
+        registerMessage(MessageMultiblockTemplates.class, MessageMultiblockTemplates::new);
     }
 
     public static <T extends INetworkMessage> void registerMessage(Class<T> type, Function<FriendlyByteBuf, T> decoder) {

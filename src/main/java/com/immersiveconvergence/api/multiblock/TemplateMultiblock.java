@@ -1,12 +1,11 @@
 package com.immersiveconvergence.api.multiblock;
 
+import com.immersiveconvergence.api.block.ModProperties;
+import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockBlockEntityDummy;
+import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockBlockEntityMaster;
+import com.immersiveconvergence.api.multiblock.util.DirectionUtils;
 import com.immersiveconvergence.core.lib.ICLib;
 
-import blusunrize.immersiveengineering.api.IEProperties;
-import blusunrize.immersiveengineering.api.multiblocks.BlockMatcher;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.registry.MultiblockBlockEntityDummy;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.registry.MultiblockBlockEntityMaster;
-import blusunrize.immersiveengineering.api.utils.DirectionUtils;
 import com.google.common.base.Preconditions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -31,7 +30,7 @@ import static net.minecraft.world.level.block.Mirror.FRONT_BACK;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@SuppressWarnings({"unused", "RedundantSuppression", "rawtypes", "unchecked", "MismatchedQueryAndUpdateOfCollection"}) public abstract class TemplateMultiblock extends blusunrize.immersiveengineering.api.multiblocks.TemplateMultiblock {
+@SuppressWarnings({"unused", "RedundantSuppression", "rawtypes", "unchecked", "MismatchedQueryAndUpdateOfCollection"}) public abstract class TemplateMultiblock extends ICTemplateMultiblock {
     private List<StructureBlockInfo> sortedStructureBlocks;
     private Map<BlockPos, BlockState> triggerStateMap;
     private int cacheGeneration;
@@ -50,7 +49,7 @@ import javax.annotation.Nullable;
 
     protected List<Mirror> getMirrorsToTry() { return canBeMirrored() ? List.of(Mirror.NONE, FRONT_BACK) : List.of(Mirror.NONE); }
 
-    private void ensureCaches(blusunrize.immersiveengineering.api.multiblocks.TemplateMultiblock.TemplateData data) {
+    private void ensureCaches(TemplateData data) {
         int generation = MultiblockDataLoader.generation();
         if (sortedStructureBlocks != null && cacheGeneration == generation) { return; }
         cacheGeneration = generation;
@@ -70,10 +69,10 @@ import javax.annotation.Nullable;
 
     @Override protected void replaceStructureBlock(StructureTemplate.StructureBlockInfo info, Level world, BlockPos actualPos, boolean mirrored, Direction clickDirection, Vec3i offsetFromMaster) {
         BlockState newState = getBlock().defaultBlockState();
-        newState = newState.setValue(IEProperties.MULTIBLOCKSLAVE, !offsetFromMaster.equals(Vec3i.ZERO));
-        if (newState.hasProperty(IEProperties.MIRRORED)) { newState = newState.setValue(IEProperties.MIRRORED, mirrored); }
-        if (newState.hasProperty(IEProperties.FACING_HORIZONTAL)) { newState = newState.setValue(IEProperties.FACING_HORIZONTAL, clickDirection.getOpposite()); }
-        if (newState.hasProperty(IEProperties.ACTIVE)) { newState = newState.setValue(IEProperties.ACTIVE, false); }
+        newState = newState.setValue(ModProperties.MULTIBLOCKSLAVE, !offsetFromMaster.equals(Vec3i.ZERO));
+        if (newState.hasProperty(ModProperties.MIRRORED)) { newState = newState.setValue(ModProperties.MIRRORED, mirrored); }
+        if (newState.hasProperty(ModProperties.FACING_HORIZONTAL)) { newState = newState.setValue(ModProperties.FACING_HORIZONTAL, clickDirection.getOpposite()); }
+        if (newState.hasProperty(ModProperties.ACTIVE)) { newState = newState.setValue(ModProperties.ACTIVE, false); }
         world.setBlock(actualPos, newState, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
         BlockEntity curr = world.getBlockEntity(actualPos);
         if (curr instanceof MultiblockBlockEntityDummy<?> dummy) { dummy.getHelper().setPositionInMB(info.pos()); }
@@ -170,10 +169,10 @@ import javax.annotation.Nullable;
     }
 
 
-    public Vec3i getSize(@Nullable Level world) { return this.size; }
+    @Override public Vec3i getSize(@Nullable Level world) { return this.size; }
 
-    @Nonnull public blusunrize.immersiveengineering.api.multiblocks.TemplateMultiblock.TemplateData getTemplate(@Nonnull Level world) {
-        blusunrize.immersiveengineering.api.multiblocks.TemplateMultiblock.TemplateData result = super.getTemplate(world);
+    @Override @Nonnull public TemplateData getTemplate(@Nonnull Level world) {
+        TemplateData result = super.getTemplate(world);
         Vec3i resultSize = result.template().getSize();
         Preconditions.checkState(resultSize.equals(this.size), "Wrong template size for multiblock %s, template size: %s", this.getTemplateLocation(), resultSize);
         ensureCaches(result);

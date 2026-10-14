@@ -1,8 +1,9 @@
 package com.immersiveconvergence.api.multiblock;
 
-import blusunrize.immersiveengineering.api.multiblocks.blocks.MultiblockRegistration;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.logic.IMultiblockState;
 import com.immersiveconvergence.api.block.ModProperties;
+import com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistration;
+import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockState;
+
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;

@@ -1,11 +1,11 @@
 package com.immersiveconvergence.api.multiblock;
 
 import com.immersiveconvergence.api.client.split.ISubmodelOffsetProvider;
+import com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistration;
+import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockContext;
+import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockState;
+import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockBlockEntityMaster;
 
-import blusunrize.immersiveengineering.api.multiblocks.blocks.MultiblockRegistration;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockContext;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.logic.IMultiblockState;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.registry.MultiblockBlockEntityMaster;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;

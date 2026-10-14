@@ -9,7 +9,6 @@
     "MultiblockBEHelperCommonMixin",
     "CachedValueMixin",
     "MultiblockBEHelperMasterMixin",
-    "MultiblockRegistrationBuilderAccessor",
     "InitializationTrackerMixin",
     "FluidPipeBlockEntityMixin",
     "DirectionalFluidOutputMixin",
@@ -22,9 +21,6 @@
     "ClocheAccessor",
     "TurretAccessor",
     "RefineryStateAccessor"
-  ],
-  "client": [
-    "ClientEventHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -4,6 +4,7 @@ import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.capability.*;
 import com.immersiveconvergence.api.integration.top.ProbeIntegration;
 import com.immersiveconvergence.api.loot.LootEntryTypes;
+import com.immersiveconvergence.api.multiblock.MultiblockRegistry;
 import com.immersiveconvergence.core.compat.IEClearTanks;
 import com.immersiveconvergence.core.compat.IPClearTanks;
 import com.immersiveconvergence.core.ICClientConfig;
@@ -45,6 +46,7 @@ public class ImmersiveConvergence {
         modEventBus.addListener(this::registerCapabilities);
         ICLib.IC_LOGGER.info("Starting Proxy Mod Construction");
         CommonProxy.modConstruction(modEventBus);
+        MultiblockRegistry.init();
         ICBlocks.init(modEventBus);
         ICItems.init(modEventBus);
         ICBlockEntities.init(modEventBus);

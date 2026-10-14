@@ -1,7 +1,8 @@
 package com.immersiveconvergence.api.integration.jade;
 
-import blusunrize.immersiveengineering.api.multiblocks.blocks.registry.MultiblockBlockEntityDummy;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.registry.MultiblockBlockEntityMaster;
+import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockBlockEntityDummy;
+import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockBlockEntityMaster;
+
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import snownee.jade.api.IWailaClientRegistration;

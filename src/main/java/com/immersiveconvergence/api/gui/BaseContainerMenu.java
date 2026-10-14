@@ -1,12 +1,12 @@
 package com.immersiveconvergence.api.gui;
 
 import com.immersiveconvergence.api.block.BaseBlockEntity;
+import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockContext;
+import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockState;
 import com.immersiveconvergence.api.network.MessageMenuSync;
 import com.immersiveconvergence.core.lib.ICLib;
 import com.immersiveconvergence.core.network.PacketHandler;
 
-import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockContext;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.logic.IMultiblockState;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
