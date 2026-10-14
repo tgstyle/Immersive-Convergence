@@ -1,6 +1,5 @@
 package com.immersiveconvergence.core.compat.computer;
 
-import com.immersiveconvergence.api.util.ComputerValues;
 import com.immersiveconvergence.mixin.MetalPressStateAccessor;
 
 import blusunrize.immersiveengineering.api.crafting.MetalPressRecipe;
@@ -35,9 +34,9 @@ import java.util.Map;
             Map<String, Object> entry = new HashMap<>();
             entry.put("progress", process.processTick);
             entry.put("maxProgress", process.getMaxTicks(level));
-            if (process instanceof MultiblockProcessInWorld<MetalPressRecipe> inWorld) { entry.put("input", inWorld.inputItems.stream().map(ComputerValues::item).toList()); }
+            if (process instanceof MultiblockProcessInWorld<MetalPressRecipe> inWorld) { entry.put("input", inWorld.inputItems.stream().map(IEComputerValues::item).toList()); }
             MetalPressRecipe recipe = process.getRecipe(level);
-            if (recipe != null) { entry.put("output", ComputerValues.item(recipe.output.get())); }
+            if (recipe != null) { entry.put("output", IEComputerValues.item(recipe.output.get())); }
             queue.add(entry);
         }
         return queue;

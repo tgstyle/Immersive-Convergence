@@ -1,7 +1,6 @@
 package com.immersiveconvergence.core.compat.computer;
 
 import com.immersiveconvergence.api.util.ComputerValues;
-import com.immersiveconvergence.api.util.TankInfoCallbacks;
 
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.Callback;
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.CallbackEnvironment;
@@ -33,6 +32,6 @@ import java.util.Map;
         Map<String, ItemStack> stacks = new LinkedHashMap<>();
         stacks.put("input", state.inventory.get(inputSlot));
         stacks.put("output", state.inventory.get(outputSlot));
-        return ComputerValues.items(stacks);
+        return IEComputerValues.items(stacks);
     }
 }

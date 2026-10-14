@@ -1,6 +1,5 @@
 package com.immersiveconvergence.core.compat.computer;
 
-import com.immersiveconvergence.api.util.TankInfoCallbacks;
 import com.immersiveconvergence.mixin.GasGeneratorAccessor;
 
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.Callback;

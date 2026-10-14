@@ -1,21 +1,15 @@
 package com.immersiveconvergence.api.util;
 
-import blusunrize.immersiveengineering.api.crafting.MultiblockRecipe;
-import blusunrize.immersiveengineering.common.blocks.multiblocks.process.MultiblockProcess;
-import blusunrize.immersiveengineering.common.util.compat.computers.cctweaked.CCLuaTypeConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -50,23 +44,9 @@ public final class ComputerValues {
         return key == null ? null : key.getPath();
     }
 
-    public static Object item(ItemStack stack) { return CCLuaTypeConverter.INSTANCE.serialize(stack); }
-
-    public static Object fluid(FluidStack stack) { return CCLuaTypeConverter.INSTANCE.serialize(stack); }
-
     public static ItemStack slot(IItemHandler handler, int slot, int slots, String error) {
         if (slot < 0 || slot >= slots) { throw new IllegalArgumentException(error); }
         return handler.getStackInSlot(slot);
-    }
-
-    public static Object[] recipe(ItemStack input, ItemStack itemOutput, FluidStack fluidOutput, int time) { return new Object[] {item(input), item(itemOutput), fluid(fluidOutput), time}; }
-
-    @Nullable public static <R extends MultiblockRecipe> R firstRecipe(List<? extends MultiblockProcess<R, ?>> queue, Level level) { return queue.isEmpty() ? null : queue.get(0).getRecipe(level); }
-
-    public static Map<String, Object> items(Map<String, ItemStack> stacks) {
-        Map<String, Object> result = new LinkedHashMap<>();
-        stacks.forEach((key, stack) -> result.put(key, item(stack)));
-        return result;
     }
 
     private static void putFluid(Map<String, Object> info, FluidStack fluid) {

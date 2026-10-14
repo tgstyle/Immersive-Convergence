@@ -64,7 +64,11 @@ public class MultiblockBlockEntityMaster<State extends IMultiblockState>
 
     @Override public IMultiblockBEHelperMaster<State> getHelper() { return helper; }
 
-    @Override public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) { return helper.getCapability(cap, side); }
+    @Override public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+        final LazyOptional<T> ownCap = helper.getCapability(cap, side);
+        if (ownCap.isPresent()) { return ownCap; }
+        else { return super.getCapability(cap, side); }
+    }
 
     @Override public BlockPos getModelOffset(BlockState state, @javax.annotation.Nullable Vec3i size) { return BlockPos.ZERO; }
 

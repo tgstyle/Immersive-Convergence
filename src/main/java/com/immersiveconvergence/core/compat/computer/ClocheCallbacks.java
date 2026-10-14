@@ -1,6 +1,5 @@
 package com.immersiveconvergence.core.compat.computer;
 
-import com.immersiveconvergence.api.util.TankInfoCallbacks;
 import com.immersiveconvergence.mixin.ClocheAccessor;
 
 import blusunrize.immersiveengineering.common.blocks.metal.ClocheBlockEntity;

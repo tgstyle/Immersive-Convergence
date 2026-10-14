@@ -14,6 +14,6 @@ import net.minecraft.world.item.ItemStack;
     @ComputerCallable public Object[] getRecipe(CallbackEnvironment<State> env, @IndexArgument int slot) {
         ItemStack input = ComputerValues.slot(env.object().getInventory(), slot, 8, "Input slots are 1-8");
         SqueezerRecipe recipe = SqueezerRecipe.findRecipe(env.level(), input);
-        return recipe == null ? new Object[0] : ComputerValues.recipe(input, recipe.itemOutput.get(), recipe.fluidOutput, recipe.getTotalProcessTime());
+        return recipe == null ? new Object[0] : IEComputerValues.recipe(input, recipe.itemOutput.get(), recipe.fluidOutput, recipe.getTotalProcessTime());
     }
 }

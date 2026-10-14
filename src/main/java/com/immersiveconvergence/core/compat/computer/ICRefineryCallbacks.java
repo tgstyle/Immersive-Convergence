@@ -1,6 +1,5 @@
 package com.immersiveconvergence.core.compat.computer;
 
-import com.immersiveconvergence.api.util.ComputerValues;
 import com.immersiveconvergence.mixin.RefineryStateAccessor;
 
 import blusunrize.immersiveengineering.api.crafting.FluidTagInput;
@@ -23,17 +22,17 @@ import java.util.Map;
         Map<String, Object> result = new HashMap<>();
         putInput(result, "input1", recipe.input0);
         putInput(result, "input2", recipe.input1);
-        result.put("output", ComputerValues.fluid(recipe.output));
+        result.put("output", IEComputerValues.fluid(recipe.output));
         return result;
     }
 
     @ComputerCallable public boolean isValidRecipe(CallbackEnvironment<State> env) { return recipe(env) != null; }
 
-    @Nullable private static RefineryRecipe recipe(CallbackEnvironment<State> env) { return ComputerValues.firstRecipe(((RefineryStateAccessor) env.object()).ic$getProcessor().getQueue(), env.level()); }
+    @Nullable private static RefineryRecipe recipe(CallbackEnvironment<State> env) { return IEComputerValues.firstRecipe(((RefineryStateAccessor) env.object()).ic$getProcessor().getQueue(), env.level()); }
 
     private static void putInput(Map<String, Object> result, String key, @Nullable FluidTagInput input) {
         if (input == null) { return; }
         List<FluidStack> matching = input.getMatchingFluidStacks();
-        if (!matching.isEmpty()) { result.put(key, ComputerValues.fluid(matching.get(0))); }
+        if (!matching.isEmpty()) { result.put(key, IEComputerValues.fluid(matching.get(0))); }
     }
 }

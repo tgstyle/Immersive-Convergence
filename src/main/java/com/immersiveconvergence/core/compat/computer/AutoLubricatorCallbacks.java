@@ -1,7 +1,5 @@
 package com.immersiveconvergence.core.compat.computer;
 
-import com.immersiveconvergence.api.util.TankInfoCallbacks;
-
 import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockBEHelperMaster;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.logic.IMultiblockBE;
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.Callback;

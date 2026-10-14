@@ -1,4 +1,4 @@
-package com.immersiveconvergence.api.util;
+package com.immersiveconvergence.core.compat.computer;
 
 import blusunrize.immersiveengineering.api.multiblocks.blocks.component.RedstoneControl.RSState;
 import blusunrize.immersiveengineering.api.utils.ComputerControlState;

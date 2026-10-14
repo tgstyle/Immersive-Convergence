@@ -1,4 +1,4 @@
-package com.immersiveconvergence.api.util;
+package com.immersiveconvergence.core.compat.computer;
 
 import blusunrize.immersiveengineering.api.multiblocks.blocks.MultiblockRegistration;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.MultiblockRegistration.ExtraComponent;
