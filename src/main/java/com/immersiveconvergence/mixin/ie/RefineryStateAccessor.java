@@ -1,4 +1,4 @@
-package com.immersiveconvergence.mixin;
+package com.immersiveconvergence.mixin.ie;
 
 import blusunrize.immersiveengineering.api.crafting.RefineryRecipe;
 import blusunrize.immersiveengineering.common.blocks.multiblocks.logic.RefineryLogic;

@@ -1,8 +1,8 @@
 package com.immersiveconvergence.api.client.mirror;
 
 import com.immersiveconvergence.api.client.IModelCacheKeyProvider;
+import com.immersiveconvergence.api.multiblock.util.DirectionUtils;
 
-import blusunrize.immersiveengineering.api.utils.DirectionUtils;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;

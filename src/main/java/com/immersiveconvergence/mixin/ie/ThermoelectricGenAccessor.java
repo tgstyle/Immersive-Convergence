@@ -1,4 +1,4 @@
-package com.immersiveconvergence.mixin;
+package com.immersiveconvergence.mixin.ie;
 
 import blusunrize.immersiveengineering.common.blocks.metal.ThermoelectricGenBlockEntity;
 import org.spongepowered.asm.mixin.Mixin;

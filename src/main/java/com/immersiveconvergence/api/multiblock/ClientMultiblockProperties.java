@@ -1,6 +1,9 @@
 package com.immersiveconvergence.api.multiblock;
 
+import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.block.ModProperties;
+import com.immersiveconvergence.api.util.ICUtils;
+import com.immersiveconvergence.common.ie.IERenderBridge;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -12,10 +15,9 @@ import net.minecraftforge.client.model.data.ModelData;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import blusunrize.immersiveengineering.client.utils.IERenderTypes;
-import blusunrize.immersiveengineering.api.ApiUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -70,8 +72,8 @@ import javax.annotation.Nullable;
         BlockPos master = this.multiblock.getMasterFromOriginOffset();
         matrix.translate(master.getX(), master.getY(), master.getZ());
         BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(this.multiblock.getBlock().defaultBlockState());
-        VertexConsumer consumer = buffer.getBuffer(IERenderTypes.TRANSLUCENT_FULLBRIGHT);
-        for (BakedQuad quad : model.getQuads(null, null, ApiUtils.RANDOM_SOURCE, ModelData.EMPTY, null)) { consumer.putBulkData(matrix.last(), quad, 1, 1, 1, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY); }
+        VertexConsumer consumer = buffer.getBuffer(ICMods.immersiveEngineering() ? IERenderBridge.translucentFullbright() : RenderType.translucent());
+        for (BakedQuad quad : model.getQuads(null, null, ICUtils.RANDOM_SOURCE, ModelData.EMPTY, null)) { consumer.putBulkData(matrix.last(), quad, 1, 1, 1, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY); }
         matrix.pushPose();
         {
             renderExtras(matrix, buffer);

@@ -1,9 +1,9 @@
 package com.immersiveconvergence.api.client.split;
 
 import com.immersiveconvergence.api.client.IModelCacheKeyProvider;
+import com.immersiveconvergence.api.util.ICUtils;
+import com.immersiveconvergence.api.util.ResettableLazy;
 
-import blusunrize.immersiveengineering.api.ApiUtils;
-import blusunrize.immersiveengineering.api.utils.ResettableLazy;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -52,8 +52,8 @@ public class BakedSplitModel<T extends BakedModel> extends SplitModelWrapper<T> 
         }
         else {
             this.splitModels = new ResettableLazy<>(() -> {
-                List<BakedQuad> quads = new ArrayList<>(base.getQuads(null, null, ApiUtils.RANDOM_SOURCE, ModelData.EMPTY, null));
-                for (Direction side : Direction.values()) { quads.addAll(base.getQuads(null, side, ApiUtils.RANDOM_SOURCE, ModelData.EMPTY, null)); }
+                List<BakedQuad> quads = new ArrayList<>(base.getQuads(null, null, ICUtils.RANDOM_SOURCE, ModelData.EMPTY, null));
+                for (Direction side : Direction.values()) { quads.addAll(base.getQuads(null, side, ICUtils.RANDOM_SOURCE, ModelData.EMPTY, null)); }
                 return split(quads, Objects.requireNonNull(splitData()).parts(), transform);
             });
             this.subModelCache = null;

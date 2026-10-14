@@ -1,6 +1,6 @@
 package com.immersiveconvergence.core.compat.computer;
 
-import com.immersiveconvergence.mixin.ClocheAccessor;
+import com.immersiveconvergence.mixin.ie.ClocheAccessor;
 
 import blusunrize.immersiveengineering.common.blocks.metal.ClocheBlockEntity;
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.Callback;

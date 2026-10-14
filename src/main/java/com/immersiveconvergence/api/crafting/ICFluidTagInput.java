@@ -1,38 +1,114 @@
 package com.immersiveconvergence.api.crafting;
 
-import blusunrize.immersiveengineering.api.crafting.FluidTagInput;
-import blusunrize.immersiveengineering.api.utils.ItemUtils;
+import com.immersiveconvergence.api.util.ICFluidUtils;
+import com.immersiveconvergence.api.util.ICUtils;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Either;
-import io.netty.buffer.Unpooled;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.material.Fluid;
-
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
+import net.minecraftforge.registries.ForgeRegistries;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
-@SuppressWarnings("unused") public class ICFluidTagInput extends FluidTagInput {
-    public ICFluidTagInput(Either<TagKey<Fluid>, List<ResourceLocation>> matching, int amount, @Nullable CompoundTag nbtTag) { super(matching, amount, nbtTag); }
+@SuppressWarnings("unused") public class ICFluidTagInput implements Predicate<FluidStack> {
+    protected final Either<TagKey<Fluid>, List<ResourceLocation>> fluidTag;
+    protected final int amount;
+    @Nullable protected final CompoundTag nbtTag;
 
-    public ICFluidTagInput(ResourceLocation tag, int amount, @Nullable CompoundTag nbtTag) { super(tag, amount, nbtTag); }
+    public ICFluidTagInput(Either<TagKey<Fluid>, List<ResourceLocation>> matching, int amount, @Nullable CompoundTag nbtTag) {
+        this.fluidTag = matching;
+        this.amount = amount;
+        this.nbtTag = nbtTag;
+    }
 
-    public ICFluidTagInput(TagKey<Fluid> tag, int amount) { super(tag, amount); }
+    public ICFluidTagInput(TagKey<Fluid> tag, int amount, @Nullable CompoundTag nbtTag) { this(Either.left(tag), amount, nbtTag); }
+
+    public ICFluidTagInput(ResourceLocation tag, int amount, @Nullable CompoundTag nbtTag) { this(TagKey.create(Registries.FLUID, tag), amount, nbtTag); }
+
+    public ICFluidTagInput(ResourceLocation tag, int amount) { this(tag, amount, null); }
+
+    public ICFluidTagInput(TagKey<Fluid> tag, int amount) { this(tag, amount, null); }
 
     public static ICFluidTagInput deserialize(JsonElement input) {
         if (!(input instanceof JsonObject json)) { throw new IllegalArgumentException("FluidTagWithSize can only be deserialized from a JsonObject"); }
         ResourceLocation tag = ResourceLocation.parse(GsonHelper.getAsString(json, "tag"));
         int amount = GsonHelper.getAsInt(json, "amount");
         if (!GsonHelper.isValidNode(json, "nbt")) { return new ICFluidTagInput(tag, amount, null); }
-        try { return new ICFluidTagInput(tag, amount, ItemUtils.parseNbtFromJson(json.get("nbt"))); }
+        try { return new ICFluidTagInput(tag, amount, ICUtils.parseNbtFromJson(json.get("nbt"))); }
         catch (CommandSyntaxException e) { throw new JsonParseException(e); }
+    }
+
+    @Nonnull public JsonElement serialize() {
+        JsonObject json = new JsonObject();
+        json.addProperty("tag", fluidTag.orThrow().location().toString());
+        json.addProperty("amount", amount);
+        if (nbtTag != null) { json.addProperty("nbt", nbtTag.toString()); }
+        return json;
+    }
+
+    public void write(FriendlyByteBuf out) {
+        List<ResourceLocation> matching = fluidTag.map(tag -> tagFluids(tag).map(fluid -> Objects.requireNonNull(ForgeRegistries.FLUIDS.getKey(fluid))).toList(), list -> list);
+        out.writeVarInt(matching.size());
+        for (ResourceLocation rl : matching) { out.writeResourceLocation(rl); }
+        out.writeInt(amount);
+        out.writeBoolean(nbtTag != null);
+        if (nbtTag != null) { out.writeNbt(nbtTag); }
+    }
+
+    @Override public boolean test(@Nullable FluidStack stack) {
+        if (stack == null) { return false; }
+        return testIgnoringAmount(stack) && stack.getAmount() >= amount;
+    }
+
+    public boolean testIgnoringAmount(@Nullable FluidStack stack) {
+        if (stack == null) { return false; }
+        if (!fluidTag.map(tag -> stack.getFluid().defaultFluidState().is(tag), list -> list.contains(ForgeRegistries.FLUIDS.getKey(stack.getFluid())))) { return false; }
+        if (nbtTag != null) { return stack.hasTag() && nbtTag.equals(stack.getTag()); }
+        return true;
+    }
+
+    @Nonnull public List<FluidStack> getMatchingFluidStacks() {
+        return fluidTag.map(ICFluidTagInput::tagFluids, list -> list.stream().map(ForgeRegistries.FLUIDS::getValue)).map(fluid -> new FluidStack(fluid, amount, nbtTag)).toList();
+    }
+
+    private static Stream<Fluid> tagFluids(TagKey<Fluid> tag) { return Objects.requireNonNull(ForgeRegistries.FLUIDS.tags()).getTag(tag).stream(); }
+
+    public int getAmount() { return amount; }
+
+    public FluidStack getRandomizedExampleStack(int rand) {
+        List<FluidStack> all = getMatchingFluidStacks();
+        return all.get((rand / 20) % all.size());
+    }
+
+    public boolean extractFrom(IFluidHandler handler, FluidAction action) {
+        for (int tank = 0; tank < handler.getTanks(); tank++) {
+            FluidStack inTank = handler.getFluidInTank(tank);
+            if (testIgnoringAmount(inTank)) {
+                FluidStack toExtract = ICFluidUtils.copyFluidStackWithAmount(inTank, amount);
+                if (handler.drain(toExtract, FluidAction.SIMULATE).getAmount() >= amount) {
+                    if (action != FluidAction.SIMULATE) { handler.drain(toExtract, action); }
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public static ICFluidTagInput read(FriendlyByteBuf input) {
@@ -44,15 +120,5 @@ import java.util.List;
         return new ICFluidTagInput(Either.right(matching), amount, nbt);
     }
 
-    @Override public ICFluidTagInput withAmount(int amount) { return new ICFluidTagInput(fluidTag, amount, nbtTag); }
-
-    static ICFluidTagInput copyOf(FluidTagInput input) {
-        if (input instanceof ICFluidTagInput ic) { return ic; }
-        FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
-        try {
-            input.write(buffer);
-            return read(buffer);
-        }
-        finally { buffer.release(); }
-    }
+    public ICFluidTagInput withAmount(int amount) { return new ICFluidTagInput(fluidTag, amount, nbtTag); }
 }

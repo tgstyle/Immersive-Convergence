@@ -1,6 +1,7 @@
 package com.immersiveconvergence.api.block;
 
-import blusunrize.immersiveengineering.api.utils.DirectionUtils;
+import com.immersiveconvergence.api.multiblock.util.DirectionUtils;
+
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Plane;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;

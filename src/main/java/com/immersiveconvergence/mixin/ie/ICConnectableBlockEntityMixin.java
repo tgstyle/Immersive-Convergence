@@ -1,4 +1,4 @@
-package com.immersiveconvergence.mixin;
+package com.immersiveconvergence.mixin.ie;
 
 import com.immersiveconvergence.api.block.BaseBlockEntity;
 import com.immersiveconvergence.api.energy.ICConnectableBlockEntity;

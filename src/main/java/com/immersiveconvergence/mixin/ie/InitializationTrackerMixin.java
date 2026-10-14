@@ -1,4 +1,4 @@
-package com.immersiveconvergence.mixin;
+package com.immersiveconvergence.mixin.ie;
 
 import blusunrize.immersiveengineering.api.utils.SetRestrictedField;
 import org.apache.commons.lang3.tuple.Pair;

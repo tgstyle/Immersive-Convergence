@@ -64,7 +64,7 @@ public class ImmersiveConvergence {
     private void commonSetup(final FMLCommonSetupEvent event) {
         ICLib.IC_LOGGER.info("HELLO FROM COMMON SETUP");
         event.enqueueWork(PacketHandler::initialize);
-        IEClearTanks.register();
+        if (ICMods.immersiveEngineering()) { IEClearTanks.register(); }
         if (ICMods.immersivePetroleum()) { IPClearTanks.register(); }
     }
 

@@ -1,6 +1,6 @@
 package com.immersiveconvergence.core.compat.computer;
 
-import com.immersiveconvergence.mixin.FluidPumpAccessor;
+import com.immersiveconvergence.mixin.ie.FluidPumpAccessor;
 
 import blusunrize.immersiveengineering.common.blocks.metal.FluidPumpBlockEntity;
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.Callback;

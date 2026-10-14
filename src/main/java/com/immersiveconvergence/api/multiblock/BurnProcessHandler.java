@@ -1,10 +1,10 @@
 package com.immersiveconvergence.api.multiblock;
 
+import com.immersiveconvergence.api.crafting.ICIngredientWithSize;
+import com.immersiveconvergence.api.crafting.ICSerializableRecipe;
 import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockContext;
 import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockLevel;
 
-import blusunrize.immersiveengineering.api.crafting.IESerializableRecipe;
-import blusunrize.immersiveengineering.api.crafting.IngredientWithSize;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.inventory.ContainerData;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class BurnProcessHandler<R extends IESerializableRecipe> {
+@SuppressWarnings({"unused", "RedundantSuppression"}) public class BurnProcessHandler<R extends ICSerializableRecipe> {
     private double process = 0;
     private double processMax = 0;
     private double burnTime = 0;
@@ -113,7 +113,7 @@ import java.util.function.ToIntFunction;
         if (recipe == null) return;
         final IItemHandlerModifiable inv = env.getInventory();
         for (InputSlot<R> slot : inputs) {
-            int reqSize = inputs.stream().map(matchSlot -> matchSlot.get(recipe)).filter(ingredient -> ingredient.test(inv.getStackInSlot(slot.slotIndex))).mapToInt(IngredientWithSize::getCount).findFirst().orElse(0);
+            int reqSize = inputs.stream().map(matchSlot -> matchSlot.get(recipe)).filter(ingredient -> ingredient.test(inv.getStackInSlot(slot.slotIndex))).mapToInt(ICIngredientWithSize::getCount).findFirst().orElse(0);
             inv.getStackInSlot(slot.slotIndex).shrink(reqSize);
         }
         for (OutputSlot<R> slot : outputs) {
@@ -127,7 +127,7 @@ import java.util.function.ToIntFunction;
 
     private int getProcessTime(R recipe) { return getProcessingTime.applyAsInt(recipe); }
 
-    public interface IFurnaceEnvironment<R extends IESerializableRecipe> {
+    public interface IFurnaceEnvironment<R extends ICSerializableRecipe> {
         IItemHandlerModifiable getInventory();
 
         @Nullable R getRecipeForInput(Level level);
@@ -177,8 +177,8 @@ import java.util.function.ToIntFunction;
         @Override public int getCount() { return NUM_SLOTS; }
     }
 
-    public record InputSlot<R>(Function<R, IngredientWithSize> getFromRecipe, int slotIndex) {
-        public IngredientWithSize get(R recipe) { return getFromRecipe.apply(recipe);}
+    public record InputSlot<R>(Function<R, ICIngredientWithSize> getFromRecipe, int slotIndex) {
+        public ICIngredientWithSize get(R recipe) { return getFromRecipe.apply(recipe);}
     }
 
     public record OutputSlot<R>(Function<R, Lazy<ItemStack>> getFromRecipe, int slotIndex) {

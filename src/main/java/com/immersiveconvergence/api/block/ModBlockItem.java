@@ -1,8 +1,8 @@
 package com.immersiveconvergence.api.block;
 
 import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockPartBlock;
+import com.immersiveconvergence.api.util.ICTextUtils;
 
-import blusunrize.immersiveengineering.api.client.TextUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
@@ -39,14 +39,14 @@ import javax.annotation.Nullable;
     @Override public void appendHoverText(@Nonnull ItemStack stack, @Nullable Level world, @Nonnull List<Component> tooltip, @Nonnull TooltipFlag advanced) {
         if (getBlock() instanceof IBlock ieBlock && ieBlock.hasFlavour()) {
             String flavourKey = BlockToolGates.descFlavour + ieBlock.getNameForFlavour();
-            tooltip.add(TextUtils.applyFormat(Component.translatable(flavourKey), ChatFormatting.GRAY));
+            tooltip.add(ICTextUtils.applyFormat(Component.translatable(flavourKey), ChatFormatting.GRAY));
         }
         super.appendHoverText(stack, world, tooltip, advanced);
         CompoundTag tag = stack.getTag();
-        if (tag != null && tag.contains(ENERGY_KEY)) { tooltip.add(TextUtils.applyFormat(Component.translatable(BlockToolGates.descInfo + "energyStored", tag.getInt(ENERGY_KEY)), ChatFormatting.GRAY)); }
+        if (tag != null && tag.contains(ENERGY_KEY)) { tooltip.add(ICTextUtils.applyFormat(Component.translatable(BlockToolGates.descInfo + "energyStored", tag.getInt(ENERGY_KEY)), ChatFormatting.GRAY)); }
         if (tag != null && tag.contains("tank")) {
             FluidStack fs = FluidStack.loadFluidStackFromNBT(tag.getCompound("tank"));
-            if (!fs.isEmpty()) { tooltip.add(TextUtils.applyFormat(Component.translatable(BlockToolGates.descInfo + "fluidStored", fs.getDisplayName(), fs.getAmount()), ChatFormatting.GRAY)); }
+            if (!fs.isEmpty()) { tooltip.add(ICTextUtils.applyFormat(Component.translatable(BlockToolGates.descInfo + "fluidStored", fs.getDisplayName(), fs.getAmount()), ChatFormatting.GRAY)); }
         }
     }
 

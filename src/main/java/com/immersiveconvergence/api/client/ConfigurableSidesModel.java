@@ -1,6 +1,11 @@
 package com.immersiveconvergence.api.client;
 
-import blusunrize.immersiveengineering.api.utils.DirectionUtils;
+import com.immersiveconvergence.api.block.BlockInterfaces;
+import com.immersiveconvergence.api.block.IStateSideConfig;
+import com.immersiveconvergence.api.block.Enums;
+import com.immersiveconvergence.api.block.ModProperties;
+import com.immersiveconvergence.api.multiblock.util.DirectionUtils;
+
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -9,10 +14,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.immersiveconvergence.api.block.BlockInterfaces;
-import com.immersiveconvergence.api.block.IStateSideConfig;
-import com.immersiveconvergence.api.block.Enums;
-import com.immersiveconvergence.api.block.ModProperties;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;

@@ -17,6 +17,15 @@ public class ICLanguage extends LanguageProvider {
         add("gui.immersiveconvergence.rotor_creative.rpm", "RPM");
         add("gui.immersiveconvergence.apply", "Apply");
         add("desc.immersiveconvergence.info.holdShiftForInfo", "§8Hold Shift for more info§r");
+        add("desc.immersiveconvergence.info.blockSide.facing", "Facing Side");
+        add("desc.immersiveconvergence.info.blockSide.opposite", "Opposite Side");
+        add("desc.immersiveconvergence.info.blockSide.io.none", "No Connection");
+        add("desc.immersiveconvergence.info.blockSide.io.input", "Input");
+        add("desc.immersiveconvergence.info.blockSide.io.output", "Output");
+        add("desc.immersiveconvergence.info.holdShift", "§6Hold Shift§r");
+        add("desc.immersiveconvergence.info.multiblocksAllowed", "Allowed Multiblocks:");
+        add("desc.immersiveconvergence.info.multiblockForbidden", "Forbidden Multiblocks:");
+        add("desc.immersiveconvergence.info.redstoneChannel.send", "Channel Sending: %1$s");
         add("gui.immersiveconvergence.empty", "Empty");
         add("gui.immersiveconvergence.energy_stored", "%s/%s IF");
         add("gui.immersiveconvergence.fluid_amount", "%s mB");

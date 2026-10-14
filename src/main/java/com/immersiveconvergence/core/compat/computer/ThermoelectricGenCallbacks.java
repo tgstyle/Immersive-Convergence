@@ -1,6 +1,6 @@
 package com.immersiveconvergence.core.compat.computer;
 
-import com.immersiveconvergence.mixin.ThermoelectricGenAccessor;
+import com.immersiveconvergence.mixin.ie.ThermoelectricGenAccessor;
 
 import blusunrize.immersiveengineering.common.blocks.metal.ThermoelectricGenBlockEntity;
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.Callback;

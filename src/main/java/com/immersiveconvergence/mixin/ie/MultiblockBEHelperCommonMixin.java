@@ -1,4 +1,4 @@
-package com.immersiveconvergence.mixin;
+package com.immersiveconvergence.mixin.ie;
 
 import com.immersiveconvergence.api.multiblock.ClearTankRegistry;
 import com.immersiveconvergence.api.multiblock.IResettableCache;

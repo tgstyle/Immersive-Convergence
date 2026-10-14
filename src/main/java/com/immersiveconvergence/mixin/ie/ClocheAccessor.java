@@ -1,4 +1,4 @@
-package com.immersiveconvergence.mixin;
+package com.immersiveconvergence.mixin.ie;
 
 import blusunrize.immersiveengineering.common.blocks.metal.ClocheBlockEntity;
 import net.minecraft.core.NonNullList;
