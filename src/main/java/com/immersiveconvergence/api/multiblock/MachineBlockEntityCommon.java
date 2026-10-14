@@ -2,13 +2,13 @@ package com.immersiveconvergence.api.multiblock;
 
 import com.immersiveconvergence.api.client.split.ISubmodelOffsetProvider;
 import com.immersiveconvergence.api.client.split.SplitModelProperties;
+import com.immersiveconvergence.api.block.ModProperties;
+import com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistration;
+import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockBEHelper;
+import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockContext;
+import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockState;
+import com.immersiveconvergence.api.multiblock.blockimpl.ComponentInstance;
 
-import blusunrize.immersiveengineering.api.IEProperties;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.MultiblockRegistration;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockBEHelper;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockContext;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.logic.IMultiblockState;
-import blusunrize.immersiveengineering.common.blocks.multiblocks.blockimpl.ComponentInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -68,7 +68,7 @@ import java.util.stream.Stream;
         BlockPos posInMB = helperSupplier.get().getPositionInMB();
         BlockPos masterOffset = multiblock.masterPosInMB();
         BlockPos offset = posInMB;
-        if (state != null && state.hasProperty(IEProperties.MIRRORED) && state.getValue(IEProperties.MIRRORED)) {
+        if (state != null && state.hasProperty(ModProperties.MIRRORED) && state.getValue(ModProperties.MIRRORED)) {
             Level level = levelSupplier.get();
             if (level != null) {
                 Vec3i realSize = multiblock.size(level);

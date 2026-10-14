@@ -1,8 +1,8 @@
 package com.immersiveconvergence.api.multiblock;
 
 import com.immersiveconvergence.api.integration.DisplayLines;
+import com.immersiveconvergence.api.multiblock.process.ProcessContext;
 
-import blusunrize.immersiveengineering.common.blocks.multiblocks.process.ProcessContext;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;

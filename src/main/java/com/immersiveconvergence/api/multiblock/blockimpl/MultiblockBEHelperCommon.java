@@ -1,5 +1,6 @@
 package com.immersiveconvergence.api.multiblock.blockimpl;
 
+import com.immersiveconvergence.api.multiblock.ClearTankRegistry;
 import com.immersiveconvergence.api.multiblock.IDisassemblingAware;
 import com.immersiveconvergence.api.multiblock.MultiblockDataLoader;
 import com.immersiveconvergence.api.multiblock.MultiblockOverride;
@@ -113,6 +114,11 @@ import java.util.function.Function;
         final MultiblockBEHelperMaster<State> helper = getMasterHelper();
         if (helper == null) { return ItemInteractionResult.FAIL; }
         final MultiblockContext<State> ctx = helper.getContext();
+        final ItemInteractionResult cleared = ClearTankRegistry.handle(multiblock.id(), getPositionInMB(), ctx.getState(), () -> {
+            ctx.markMasterDirty();
+            ctx.requestMasterBESync();
+        }, player, hand);
+        if (cleared != null) { return cleared; }
         for (final ComponentInstance<?> component : helper.getComponentInstances()) {
             final ItemInteractionResult componentResult = component.click(
                     getPositionInMB(), player, hand, hit, player.level().isClientSide

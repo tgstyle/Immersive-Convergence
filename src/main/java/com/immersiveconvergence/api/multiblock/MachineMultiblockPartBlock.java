@@ -3,10 +3,10 @@ package com.immersiveconvergence.api.multiblock;
 import com.immersiveconvergence.api.block.BlockInterfaces;
 import com.immersiveconvergence.api.util.IItemDropProvider;
 
-import blusunrize.immersiveengineering.api.multiblocks.blocks.MultiblockRegistration;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.logic.IMultiblockBE;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.logic.IMultiblockState;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.registry.MultiblockPartBlock;
+import com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistration;
+import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockBE;
+import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockState;
+import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockPartBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
@@ -15,7 +15,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -36,10 +35,6 @@ import javax.annotation.Nullable;
     private final MultiblockRegistration<S> multiblockRef;
 
     public MachineMultiblockPartBlock(Properties properties, MultiblockRegistration<S> multiblock) { super(properties, multiblock); this.multiblockRef = multiblock; }
-
-    @Override public int getLightBlock(@Nonnull BlockState state, @Nonnull BlockGetter level, @Nonnull BlockPos pos) { return 0; }
-
-    @Override public boolean propagatesSkylightDown(@Nonnull BlockState state, @Nonnull BlockGetter level, @Nonnull BlockPos pos) { return true; }
 
     @Override public boolean isLadder(@Nonnull BlockState state, @Nonnull LevelReader level, @Nonnull BlockPos pos, @Nullable LivingEntity entity) {
         if (level.getBlockEntity(pos) instanceof IMultiblockBE<?> be && multiblockRef.logic() instanceof BlockInterfaces.ILadderPositionProvider ladderLogic) {

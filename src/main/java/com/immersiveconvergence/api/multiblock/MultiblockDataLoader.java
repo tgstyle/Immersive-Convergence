@@ -2,7 +2,7 @@ package com.immersiveconvergence.api.multiblock;
 
 import com.immersiveconvergence.core.lib.ICLib;
 
-import blusunrize.immersiveengineering.api.multiblocks.blocks.util.RelativeBlockFace;
+import com.immersiveconvergence.api.multiblock.blocks.util.RelativeBlockFace;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import net.minecraft.resources.ResourceLocation;

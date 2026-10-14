@@ -3,6 +3,7 @@ package com.immersiveconvergence;
 import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.integration.top.ProbeIntegration;
 import com.immersiveconvergence.api.loot.LootEntryTypes;
+import com.immersiveconvergence.api.multiblock.MultiblockRegistry;
 import com.immersiveconvergence.core.compat.IEClearTanks;
 import com.immersiveconvergence.core.compat.IPClearTanks;
 import com.immersiveconvergence.core.ICClientConfig;
@@ -58,6 +59,7 @@ public class ImmersiveConvergence {
         modEventBus.addListener(this::enqueueIMC);
         modEventBus.addListener(ICBlockEntities::registerCapabilities);
         CommonProxy.modConstruction(modEventBus);
+        MultiblockRegistry.init(modEventBus);
         ICBlocks.init(modEventBus);
         ICItems.init(modEventBus);
         ICBlockEntities.init(modEventBus);

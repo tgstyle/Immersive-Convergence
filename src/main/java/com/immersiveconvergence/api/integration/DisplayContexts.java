@@ -2,8 +2,8 @@ package com.immersiveconvergence.api.integration;
 
 import com.immersiveconvergence.api.multiblock.IDisplayContext;
 
-import blusunrize.immersiveengineering.api.multiblocks.blocks.logic.IMultiblockBE;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.logic.IMultiblockState;
+import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockBE;
+import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 import javax.annotation.Nullable;

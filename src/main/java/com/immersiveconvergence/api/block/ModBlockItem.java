@@ -2,7 +2,7 @@ package com.immersiveconvergence.api.block;
 
 
 import blusunrize.immersiveengineering.api.client.TextUtils;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.registry.MultiblockPartBlock;
+import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockPartBlock;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;

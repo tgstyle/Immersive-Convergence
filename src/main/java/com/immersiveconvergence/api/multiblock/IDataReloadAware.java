@@ -1,6 +1,6 @@
 package com.immersiveconvergence.api.multiblock;
 
-import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IInitialMultiblockContext;
+import com.immersiveconvergence.api.multiblock.blocks.env.IInitialMultiblockContext;
 
 public interface IDataReloadAware {
     void onDataReload(IInitialMultiblockContext<?> context);

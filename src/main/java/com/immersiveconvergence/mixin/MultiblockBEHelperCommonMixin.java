@@ -127,7 +127,11 @@ public abstract class MultiblockBEHelperCommonMixin implements IDisassemblingAwa
         MultiblockBEHelperMaster<?> master = getMasterHelper();
         if (master == null) { return; }
         IMultiblockBEHelper<?> self = (IMultiblockBEHelper<?>) this;
-        ItemInteractionResult result = ClearTankRegistry.handle(self.getMultiblock().id(), self.getPositionInMB(), master.getContext(), player, hand);
+        IMultiblockContext<?> context = master.getContext();
+        ItemInteractionResult result = ClearTankRegistry.handle(self.getMultiblock().id(), self.getPositionInMB(), context.getState(), () -> {
+            context.markMasterDirty();
+            context.requestMasterBESync();
+        }, player, hand);
         if (result != null) { cir.setReturnValue(result); }
     }
 }

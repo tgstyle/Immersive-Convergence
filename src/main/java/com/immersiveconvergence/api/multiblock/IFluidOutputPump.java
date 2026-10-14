@@ -1,9 +1,9 @@
 package com.immersiveconvergence.api.multiblock;
 
 import blusunrize.immersiveengineering.api.IEApiDataComponents;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockContext;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.logic.IMultiblockState;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.util.RelativeBlockFace;
+import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockContext;
+import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockState;
+import com.immersiveconvergence.api.multiblock.blocks.util.RelativeBlockFace;
 import blusunrize.immersiveengineering.common.blocks.metal.FluidPipeBlockEntity;
 import com.immersiveconvergence.api.util.ICFluidUtils;
 import com.immersiveconvergence.api.util.MarkableFluidTank;

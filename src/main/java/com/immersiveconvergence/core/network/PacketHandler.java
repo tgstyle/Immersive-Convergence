@@ -3,6 +3,7 @@ package com.immersiveconvergence.core.network;
 import com.immersiveconvergence.api.network.MessageMenuSync;
 import com.immersiveconvergence.api.network.MessageMenuUpdate;
 import com.immersiveconvergence.api.network.MessageMultiblockData;
+import com.immersiveconvergence.api.network.MessageMultiblockTemplates;
 import com.immersiveconvergence.api.network.MessageTileSync;
 import com.immersiveconvergence.core.lib.ICLib;
 
@@ -18,7 +19,7 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 @SuppressWarnings("unused")
 @EventBusSubscriber(modid = ICLib.MODID)
 public class PacketHandler {
-    private static final String PROTOCOL_VERSION = "2";
+    private static final String PROTOCOL_VERSION = "3";
 
     @SubscribeEvent public static void register(final RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar(PROTOCOL_VERSION);
@@ -26,6 +27,7 @@ public class PacketHandler {
         registrar.playToServer(MessageMenuUpdate.TYPE, MessageMenuUpdate.STREAM_CODEC, MessageMenuUpdate::handle);
         registrar.playToClient(MessageMenuSync.TYPE, MessageMenuSync.STREAM_CODEC, MessageMenuSync::handle);
         registrar.playToClient(MessageMultiblockData.TYPE, MessageMultiblockData.STREAM_CODEC, MessageMultiblockData::handle);
+        registrar.playToClient(MessageMultiblockTemplates.TYPE, MessageMultiblockTemplates.STREAM_CODEC, MessageMultiblockTemplates::handle);
     }
 
     public static void sendToServer(CustomPacketPayload message) { if (message != null) { PacketDistributor.sendToServer(message); } }

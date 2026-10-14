@@ -1,7 +1,7 @@
 package com.immersiveconvergence.api.multiblock;
 
-import blusunrize.immersiveengineering.api.multiblocks.blocks.component.IMultiblockComponent;
-import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockContext;
+import com.immersiveconvergence.api.multiblock.blocks.component.IMultiblockComponent;
+import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockContext;
 import blusunrize.immersiveengineering.common.register.IEItems;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.core.BlockPos;

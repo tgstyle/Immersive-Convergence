@@ -8,7 +8,6 @@
     "MultiblockBEHelperCommonMixin",
     "CachedValueMixin",
     "MultiblockBEHelperMasterMixin",
-    "MultiblockRegistrationBuilderAccessor",
     "MultiblockRegistrationBuilderMixin",
     "FluidPipeBlockEntityMixin",
     "DirectionalFluidOutputMixin",
@@ -27,8 +26,7 @@
     "AbstractSplitModelMixin",
     "BakedBasicSplitModelMixin",
     "BakedDynamicSplitModelMixin",
-    "PolygonUtilsMixin",
-    "BlockOverlayUtilsMixin"
+    "PolygonUtilsMixin"
   ],
   "injectors": {
     "defaultRequire": 1

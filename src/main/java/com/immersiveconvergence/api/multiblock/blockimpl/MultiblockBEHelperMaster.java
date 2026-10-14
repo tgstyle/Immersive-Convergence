@@ -1,5 +1,6 @@
 package com.immersiveconvergence.api.multiblock.blockimpl;
 
+import com.immersiveconvergence.api.multiblock.IDataReloadAware;
 import com.immersiveconvergence.api.multiblock.MultiblockDataLoader;
 import com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistration.ExtraComponent;
 import com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistration;
@@ -137,6 +138,7 @@ import java.util.function.BiConsumer;
         dataGeneration = generation;
         invalidateAllCaps();
         for (BlockPos pos : List.copyOf(currentComparatorOutputs.keySet())) { context.setComparatorOutputFor(pos, 0); }
+        if (state instanceof IDataReloadAware aware) { aware.onDataReload(new InitialMultiblockContext<>(be, orientation, multiblock.masterPosInMB())); }
         for (StructureBlockInfo info : multiblock.getStructure().apply(level)) {
             final BlockPos pos = context.getLevel().toAbsolute(info.pos());
             if (neighborhoodSafe(level, pos)) {

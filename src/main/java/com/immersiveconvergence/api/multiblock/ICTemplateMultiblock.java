@@ -4,7 +4,6 @@ import com.immersiveconvergence.api.multiblock.BlockMatcher.MatcherPredicate;
 import com.immersiveconvergence.api.multiblock.BlockMatcher.Result;
 import com.immersiveconvergence.api.multiblock.MultiblockHandler.IMultiblock;
 import com.immersiveconvergence.api.multiblock.util.DirectionUtils;
-import com.immersiveconvergence.api.multiblock.util.SetRestrictedField;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -16,7 +15,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -27,17 +25,15 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.Palette;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
+import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.data.loading.DatagenModLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.function.Function;
 
 @SuppressWarnings({"unused", "RedundantSuppression"}) public abstract class ICTemplateMultiblock implements IMultiblock {
-    private static final SetRestrictedField<Function<BlockState, ItemStack>> PICK_BLOCK = SetRestrictedField.common();
-    private static final SetRestrictedField<Function<StructureTemplate, List<Palette>>> GET_PALETTES = SetRestrictedField.common();
     public static final Map<ResourceLocation, StructureTemplate> SYNCED_CLIENT_TEMPLATES = new HashMap<>();
     private static final Logger LOGGER = LogManager.getLogger();
     private final ResourceLocation loc;
@@ -155,7 +151,7 @@ import java.util.function.Function;
 
     @Override public List<StructureBlockInfo> getStructure(@Nonnull Level world) { return getTemplate(world).blocksWithoutAir(); }
 
-    private static List<StructureBlockInfo> getStructureFromTemplate(StructureTemplate template) { return GET_PALETTES.get().apply(template).getFirst().blocks(); }
+    private static List<StructureBlockInfo> getStructureFromTemplate(StructureTemplate template) { return Objects.requireNonNull(ObfuscationReflectionHelper.<List<Palette>, StructureTemplate>getPrivateValue(StructureTemplate.class, template, "palettes")).getFirst().blocks(); }
 
     @Override public Vec3i getSize(@Nonnull Level world) { return getTemplate(world).template().getSize(); }
 
@@ -190,11 +186,6 @@ import java.util.function.Function;
     @Override public BlockPos getTriggerOffset() { return triggerFromOrigin; }
 
     public boolean canBeMirrored() { return true; }
-
-    public static void setCallbacks(Function<BlockState, ItemStack> pickBlock, Function<StructureTemplate, List<Palette>> getPalettes) {
-        PICK_BLOCK.setValue(pickBlock);
-        GET_PALETTES.setValue(getPalettes);
-    }
 
     public record TemplateData(
             StructureTemplate template,

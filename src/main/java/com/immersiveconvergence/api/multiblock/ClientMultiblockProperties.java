@@ -1,14 +1,13 @@
 package com.immersiveconvergence.api.multiblock;
 
+import com.immersiveconvergence.api.block.ModProperties;
 
-import blusunrize.immersiveengineering.api.IEProperties;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import blusunrize.immersiveengineering.api.multiblocks.ClientMultiblocks;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -41,7 +40,7 @@ import javax.annotation.Nullable;
             List<StructureTemplate.StructureBlockInfo> structure = this.multiblock.getStructure(Minecraft.getInstance().level);
             this.materials = NonNullList.create();
             for (StructureTemplate.StructureBlockInfo info : structure) {
-                if (info.state().hasProperty(IEProperties.MULTIBLOCKSLAVE) && info.state().getValue(IEProperties.MULTIBLOCKSLAVE)) continue;
+                if (info.state().hasProperty(ModProperties.MULTIBLOCKSLAVE) && info.state().getValue(ModProperties.MULTIBLOCKSLAVE)) continue;
                 ItemStack picked = getPickBlock(info.state());
                 boolean added = false;
                 for (ItemStack existing : this.materials)
