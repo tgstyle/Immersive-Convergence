@@ -23,5 +23,5 @@ import net.minecraft.world.item.crafting.Ingredient;
 
     @Override public ICIngredientWithSize withSize(int size) { return new ICIngredientWithSize(getBaseIngredient(), size); }
 
-    static ICIngredientWithSize copyOf(IngredientWithSize ingredient) { return new ICIngredientWithSize(ingredient.getBaseIngredient(), ingredient.getCount()); }
+    static ICIngredientWithSize copyOf(IngredientWithSize ingredient) { return ingredient instanceof ICIngredientWithSize ic ? ic : new ICIngredientWithSize(ingredient.getBaseIngredient(), ingredient.getCount()); }
 }

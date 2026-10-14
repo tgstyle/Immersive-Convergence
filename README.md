@@ -438,3 +438,4 @@ Immersive Convergence is licensed under the GNU GENERAL PUBLIC LICENSE Version 3
 
 # Credits
 Parts of Immersive Convergence's recipe and multiblock code are ported from [Immersive Engineering](https://github.com/BluSunrize/ImmersiveEngineering) by BluSunrize, which is licensed under Blu's License of Common Sense. Credit for that code goes to BluSunrize and the Immersive Engineering contributors; its source stays visible in this repository.<br/>
+The multiblock runtime under `com.immersiveconvergence.api.multiblock` (the block, block entity and helper classes, components, logic and process classes) is ported from Immersive Engineering's multiblock API, `blockimpl` and `process` packages.<br/>

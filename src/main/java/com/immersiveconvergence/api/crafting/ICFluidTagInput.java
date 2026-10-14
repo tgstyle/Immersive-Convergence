@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Either;
+import io.netty.buffer.Unpooled;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -44,4 +45,14 @@ import java.util.List;
     }
 
     @Override public ICFluidTagInput withAmount(int amount) { return new ICFluidTagInput(fluidTag, amount, nbtTag); }
+
+    static ICFluidTagInput copyOf(FluidTagInput input) {
+        if (input instanceof ICFluidTagInput ic) { return ic; }
+        FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
+        try {
+            input.write(buffer);
+            return read(buffer);
+        }
+        finally { buffer.release(); }
+    }
 }
