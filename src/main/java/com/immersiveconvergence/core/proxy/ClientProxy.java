@@ -2,6 +2,8 @@ package com.immersiveconvergence.core.proxy;
 
 import com.immersiveconvergence.api.block.BlockInterfaces;
 import com.immersiveconvergence.api.client.StandaloneModel;
+import com.immersiveconvergence.api.manual.ICManual;
+import com.immersiveconvergence.api.manual.ICManualCategory;
 import com.immersiveconvergence.api.multiblock.MultiblockDataLoader;
 import com.immersiveconvergence.client.gui.RotorCreativeScreen;
 import com.immersiveconvergence.client.models.ICRotorModels;
@@ -11,19 +13,12 @@ import com.immersiveconvergence.core.lib.ICLib;
 import com.immersiveconvergence.core.registration.ICBlockEntities;
 import com.immersiveconvergence.core.registration.ICMenuTypes;
 
-import blusunrize.immersiveengineering.ImmersiveEngineering;
-import blusunrize.immersiveengineering.api.IEApi;
-import blusunrize.immersiveengineering.api.ManualHelper;
-import blusunrize.lib.manual.ManualEntry;
-import blusunrize.lib.manual.ManualInstance;
-import blusunrize.lib.manual.Tree.InnerNode;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -63,14 +58,9 @@ public class ClientProxy extends CommonProxy {
     @SubscribeEvent public static void onClientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
             MenuScreens.register(ICMenuTypes.ROTOR_CREATIVE.getType(), (RotorCreativeMenu menu, Inventory inv, Component title) -> new RotorCreativeScreen(menu, inv));
-            ManualInstance manual = ManualHelper.getManual();
-            InnerNode<ResourceLocation, ManualEntry> construction = manual.getRoot().getOrCreateSubnode(IEApi.ieLoc(ManualHelper.CAT_CONSTRUCTION), 0);
-            for (String name : MANUAL_ENTRIES) {
-                ManualEntry.ManualEntryBuilder builder = new ManualEntry.ManualEntryBuilder(manual);
-                builder.readFromFile(ICLib.rl(name));
-                manual.addEntry(construction, builder.create());
-            }
-            MultiblockDataLoader.onReload(() -> Minecraft.getInstance().execute(ImmersiveEngineering.proxy::resetManual));
+            ICManualCategory construction = ICManual.ieCategory(ICManual.CAT_CONSTRUCTION, 0);
+            for (String name : MANUAL_ENTRIES) { ICManual.addEntry(construction, ICLib.rl(name)); }
+            MultiblockDataLoader.onReload(() -> Minecraft.getInstance().execute(ICManual::reload));
         });
     }
 

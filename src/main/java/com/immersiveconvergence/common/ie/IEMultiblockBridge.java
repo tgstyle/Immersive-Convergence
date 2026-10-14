@@ -3,7 +3,6 @@ package com.immersiveconvergence.common.ie;
 import com.immersiveconvergence.api.multiblock.ClientMultiblocks;
 import com.immersiveconvergence.api.multiblock.MultiblockHandler.IMultiblock;
 
-import blusunrize.immersiveengineering.api.ManualHelper;
 import blusunrize.immersiveengineering.api.multiblocks.ClientMultiblocks.MultiblockManualData;
 import blusunrize.immersiveengineering.api.multiblocks.MultiblockHandler;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockBEHelperMaster;
@@ -12,7 +11,6 @@ import blusunrize.immersiveengineering.api.multiblocks.blocks.registry.Multibloc
 import blusunrize.immersiveengineering.common.register.IEItems;
 import blusunrize.immersiveengineering.common.util.Utils;
 import blusunrize.immersiveengineering.common.util.advancements.IEAdvancements;
-import blusunrize.lib.manual.ManualInstance;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
@@ -50,11 +48,6 @@ public final class IEMultiblockBridge {
 
     public static void markDisassembling(@Nullable BlockEntity be) {
         if (be instanceof IMultiblockBE<?> multiblockBE) { multiblockBE.getHelper().markDisassembling(); }
-    }
-
-    public static void resetManual() {
-        ManualInstance manual = ManualHelper.getManual();
-        if (manual != null) { manual.reset(); }
     }
 
     @Nullable public static Component displayName(ResourceLocation name) {

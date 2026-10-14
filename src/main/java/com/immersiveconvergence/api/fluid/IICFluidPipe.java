@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
     int AMOUNT_UNPRESSURIZED = FluidType.BUCKET_VOLUME / 20;
     String NBT_PRESSURIZED = "pressurized";
 
-    static int getTransferableAmount(boolean pressurized) { return pressurized ? AMOUNT_PRESSURIZED : AMOUNT_UNPRESSURIZED; }
+    static int getTransferableAmount(boolean pressurized) { return ICPipes.getTransferableAmount(pressurized); }
 
     static boolean isPipe(@Nullable BlockEntity tile) { return ICMods.immersiveEngineering() && IEFluidPipeBridge.isPipe(tile); }
 

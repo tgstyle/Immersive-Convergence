@@ -23,7 +23,12 @@
     "TurretAccessor",
     "RefineryStateAccessor",
     "ICConnectableBlockEntityMixin",
-    "ICConnectorRedstoneBlockEntityMixin"
+    "ICConnectorRedstoneBlockEntityMixin",
+    "CapacitorBlockEntityMixin",
+    "MixerLogicMixin",
+    "MixerLogicStateMixin",
+    "MixerRecipeMixin",
+    "PipeFluidHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
