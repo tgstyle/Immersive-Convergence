@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(TileEntityDistillationTower.class)
 public abstract class MixinIPTowerInput {
-    @Redirect(method = "update", at = @At(value = "INVOKE", target = "Lblusunrize/immersiveengineering/common/util/Utils;drainFluidContainer(Lnet/minecraftforge/fluids/capability/IFluidHandler;Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/player/EntityPlayer;)Lnet/minecraft/item/ItemStack;", remap = false))
+    @Redirect(method = "update", at = @At(value = "INVOKE", target = "Lblusunrize/immersiveengineering/common/util/Utils;drainFluidContainer(Lnet/minecraftforge/fluids/capability/IFluidHandler;Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/player/EntityPlayer;)Lnet/minecraft/item/ItemStack;", remap = false), require = 0, expect = 0)
     private ItemStack redirectBucketDrain(IFluidHandler handler, ItemStack containerIn, ItemStack containerOut, EntityPlayer player) {
         FluidStack contained = FluidUtil.getFluidContained(containerIn);
         if (contained == null) { return Utils.drainFluidContainer(handler, containerIn, containerOut, player); }

@@ -13,7 +13,7 @@ public abstract class MixinIPGasGenerator {
     @Unique private long immersiveconvergence$lastSync = Long.MIN_VALUE;
     @Unique private boolean immersiveconvergence$hadFuel;
 
-    @Redirect(method = "update", at = @At(value = "INVOKE", ordinal = 0, target = "Lflaxbeard/immersivepetroleum/common/blocks/metal/TileEntityGasGenerator;markContainingBlockForUpdate(Lnet/minecraft/block/state/IBlockState;)V", remap = false))
+    @Redirect(method = "update", at = @At(value = "INVOKE", ordinal = 0, target = "Lflaxbeard/immersivepetroleum/common/blocks/metal/TileEntityGasGenerator;markContainingBlockForUpdate(Lnet/minecraft/block/state/IBlockState;)V", remap = false), require = 0, expect = 0)
     private void redirectThrottleFuelSync(TileEntityGasGenerator generator, IBlockState state) {
         boolean hasFuel = generator.tank.getFluid() != null;
         long now = generator.getWorld().getTotalWorldTime();
@@ -23,7 +23,7 @@ public abstract class MixinIPGasGenerator {
         generator.markContainingBlockForUpdate(state);
     }
 
-    @Redirect(method = "update", at = @At(value = "INVOKE", target = "Lblusunrize/immersiveengineering/api/energy/immersiveflux/FluxStorage;receiveEnergy(IZ)I", remap = false))
+    @Redirect(method = "update", at = @At(value = "INVOKE", target = "Lblusunrize/immersiveengineering/api/energy/immersiveflux/FluxStorage;receiveEnergy(IZ)I", remap = false), require = 0, expect = 0)
     private int redirectBurnOnlyForFullCredit(FluxStorage storage, int energy, boolean simulate) {
         if (storage.receiveEnergy(energy, true) < energy) { return 0; }
         return storage.receiveEnergy(energy, simulate);

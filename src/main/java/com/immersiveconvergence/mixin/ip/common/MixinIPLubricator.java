@@ -8,6 +8,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(TileEntityAutoLubricator.class)
 public abstract class MixinIPLubricator {
-    @Redirect(method = "update", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lflaxbeard/immersivepetroleum/common/blocks/metal/TileEntityAutoLubricator;predictablyDraining:Z", remap = false))
+    @Redirect(method = "update", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lflaxbeard/immersivepetroleum/common/blocks/metal/TileEntityAutoLubricator;predictablyDraining:Z", remap = false), require = 0, expect = 0)
     private boolean redirectNeverPredictDrain(TileEntityAutoLubricator lubricator) { return false; }
 }
