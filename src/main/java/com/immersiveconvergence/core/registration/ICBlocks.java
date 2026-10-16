@@ -26,7 +26,8 @@ public class ICBlocks {
             .mapColor(MapColor.METAL)
             .sound(SoundType.METAL)
             .strength(3.0F, 15.0F)
-            .noOcclusion();
+            .noOcclusion()
+            .dynamicShape();
 
     public static final ICBlockEntry<RotorCreativeBlock> ROTOR_CREATIVE = new ICBlockEntry<>(
             "rotor_creative",
