@@ -1,15 +1,16 @@
 package com.immersiveconvergence.api.block;
 
+import com.immersiveconvergence.api.multiblock.util.DirectionUtils;
+
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Plane;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.neoforged.neoforge.client.model.data.ModelProperty;
-
 import java.util.Map;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class ModProperties {
+public class ModProperties {
     public static final DirectionProperty FACING_ALL;
     public static final DirectionProperty FACING_HORIZONTAL;
     public static final DirectionProperty FACING_TOP_DOWN;
@@ -19,7 +20,7 @@ import java.util.Map;
     public static final IntegerProperty INT_16;
     public static final IntegerProperty INT_32;
     static {
-        FACING_ALL = DirectionProperty.create("facing", Direction.values());
+        FACING_ALL = DirectionProperty.create("facing", DirectionUtils.VALUES);
         FACING_HORIZONTAL = DirectionProperty.create("facing", Plane.HORIZONTAL);
         FACING_TOP_DOWN = DirectionProperty.create("facing", Direction.UP, Direction.DOWN);
         MULTIBLOCKSLAVE = BooleanProperty.create("multiblockslave");

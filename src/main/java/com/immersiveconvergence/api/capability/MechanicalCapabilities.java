@@ -1,11 +1,11 @@
 package com.immersiveconvergence.api.capability;
 
 import com.immersiveconvergence.core.ICCommonConfig;
+
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 
-@SuppressWarnings("unused")
 public class MechanicalCapabilities {
     public static int maxRpm() { return ICCommonConfig.maxRpm; }
 

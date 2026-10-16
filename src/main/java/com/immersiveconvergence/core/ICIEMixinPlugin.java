@@ -11,21 +11,21 @@ import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.spongepowered.asm.service.MixinService;
+import java.util.function.Predicate;
 
 public class ICIEMixinPlugin extends ICMixinPlugin {
     private static final Logger LOGGER = LogManager.getLogger("ImmersiveConvergence/Mixin");
 
     public ICIEMixinPlugin() { super(ICMods.IMMERSIVE_ENGINEERING); }
 
-    @Override
-    public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+    @Override public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         if (!super.shouldApplyMixin(targetClassName, mixinClassName)) { return false; }
         String mixin = mixinClassName.substring(mixinClassName.lastIndexOf('.') + 1);
         boolean apply = switch (mixin) {
-            case "AbstractSplitModelMixin" -> lacksMethod(targetClassName, "useAmbientOcclusion");
-            case "BakedBasicSplitModelMixin" -> lacksMethod(targetClassName, "applyTransform");
-            case "BakedDynamicSplitModelMixin" -> dynamicSplitModelUnfixed(targetClassName);
-            case "PolygonUtilsMixin" -> polygonUtilsUnfixed(targetClassName);
+            case "AbstractSplitModelMixin" -> withNode(targetClassName, node -> lacksMethod(node, "useAmbientOcclusion"));
+            case "BakedBasicSplitModelMixin" -> withNode(targetClassName, node -> lacksMethod(node, "applyTransform"));
+            case "BakedDynamicSplitModelMixin" -> withNode(targetClassName, ICIEMixinPlugin::dynamicSplitModelUnfixed);
+            case "PolygonUtilsMixin" -> withNode(targetClassName, ICIEMixinPlugin::polygonUtilsUnfixed);
             default -> true;
         };
         if (!apply) { LOGGER.info("Skipping {}: Immersive Engineering already carries this split model fix (IE PR #6427)", mixin); }
@@ -40,15 +40,14 @@ public class ICIEMixinPlugin extends ICMixinPlugin {
         }
     }
 
-    private static boolean lacksMethod(String targetClassName, String name) {
+    private static boolean withNode(String targetClassName, Predicate<ClassNode> check) {
         ClassNode node = load(targetClassName);
-        if (node == null) { return false; }
-        return node.methods.stream().noneMatch(m -> m.name.equals(name));
+        return node != null && check.test(node);
     }
 
-    private static boolean dynamicSplitModelUnfixed(String targetClassName) {
-        ClassNode node = load(targetClassName);
-        if (node == null) { return false; }
+    private static boolean lacksMethod(ClassNode node, String name) { return node.methods.stream().noneMatch(m -> m.name.equals(name)); }
+
+    private static boolean dynamicSplitModelUnfixed(ClassNode node) {
         MethodNode ctor = node.methods.stream().filter(m -> m.name.equals("<init>")).findFirst().orElse(null);
         if (ctor == null) { return false; }
         boolean sawMaximumSize = false;
@@ -63,9 +62,7 @@ public class ICIEMixinPlugin extends ICMixinPlugin {
         return sawMaximumSize && sawExpireAfterAccess;
     }
 
-    private static boolean polygonUtilsUnfixed(String targetClassName) {
-        ClassNode node = load(targetClassName);
-        if (node == null) { return false; }
+    private static boolean polygonUtilsUnfixed(ClassNode node) {
         if (node.methods.stream().anyMatch(m -> m.name.equals("bakeSplitLighting"))) { return false; }
         MethodNode method = node.methods.stream()
                 .filter(m -> m.name.equals("toBakedQuad") && m.desc.startsWith("(Lmalte0811/modelsplitter/model/Polygon;"))
@@ -73,9 +70,7 @@ public class ICIEMixinPlugin extends ICMixinPlugin {
         if (method == null) { return false; }
         AbstractInsnNode lastReal = null;
         for (AbstractInsnNode insn : method.instructions) {
-            if (insn instanceof MethodInsnNode call && call.getOpcode() == Opcodes.INVOKESTATIC && call.name.equals("toBakedQuad") && call.desc.contains("ZZ)")) {
-                return lastReal != null && lastReal.getOpcode() == Opcodes.ICONST_1;
-            }
+            if (insn instanceof MethodInsnNode call && call.getOpcode() == Opcodes.INVOKESTATIC && call.name.equals("toBakedQuad") && call.desc.contains("ZZ)")) { return lastReal != null && lastReal.getOpcode() == Opcodes.ICONST_1; }
             if (insn.getOpcode() >= 0) { lastReal = insn; }
         }
         return false;

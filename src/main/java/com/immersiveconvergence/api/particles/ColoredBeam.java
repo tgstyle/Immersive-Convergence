@@ -15,7 +15,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
-@SuppressWarnings("unused") public class ColoredBeam {
+public class ColoredBeam {
     private static final RenderStateShard.ShaderStateShard BEACON_BEAM_SHADER = RenderStateShard.RENDERTYPE_BEACON_BEAM_SHADER;
     private static final RenderStateShard.TransparencyStateShard TRANSLUCENT_TRANSPARENCY = RenderStateShard.TRANSLUCENT_TRANSPARENCY;
     private static final RenderStateShard.TransparencyStateShard NO_TRANSPARENCY = RenderStateShard.NO_TRANSPARENCY;

@@ -1,10 +1,11 @@
 package com.immersiveconvergence.core;
 
+import com.immersiveconvergence.api.ICMods;
+
 import net.neoforged.fml.loading.LoadingModList;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
-
 import java.util.List;
 import java.util.Set;
 
@@ -14,7 +15,7 @@ public abstract class ICMixinPlugin implements IMixinConfigPlugin {
 
     protected ICMixinPlugin(String modId) { this.modId = modId; }
 
-    @Override public void onLoad(String mixinPackage) { present = LoadingModList.get().getModFileById(modId) != null; }
+    @Override public void onLoad(String mixinPackage) { present = LoadingModList.get().getModFileById(modId) != null && !ICMods.disableImmersiveEngineering(); }
 
     @Override public String getRefMapperConfig() { return null; }
 

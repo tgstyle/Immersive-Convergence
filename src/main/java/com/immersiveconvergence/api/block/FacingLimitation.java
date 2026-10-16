@@ -7,7 +7,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.phys.Vec3;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public enum FacingLimitation {
+public enum FacingLimitation {
     SIDE_CLICKED((side, placer, hitPos) -> side),
     PISTON_LIKE((side, placer, hitPos) -> Direction.orderedByNearest(placer)[0]),
     PISTON_INVERTED((side, placer, hitPos) -> Direction.orderedByNearest(placer)[0].getOpposite()),
@@ -18,17 +18,13 @@ import net.minecraft.world.phys.Vec3;
         return f != Direction.SOUTH && f != Direction.WEST ? f : f.getOpposite();
     }),
     HORIZONTAL_QUADRANT((side, placer, hitPos) -> {
-        if (side.getAxis() != Axis.Y) {
-            return side.getOpposite();
-        } else {
+        if (side.getAxis() != Axis.Y) { return side.getOpposite(); }
+        else {
             double xFromMid = hitPos.x - (double)0.5F;
             double zFromMid = hitPos.z - (double)0.5F;
             double max = Math.max(Math.abs(xFromMid), Math.abs(zFromMid));
-            if (max == Math.abs(xFromMid)) {
-                return xFromMid < (double)0.0F ? Direction.WEST : Direction.EAST;
-            } else {
-                return zFromMid < (double)0.0F ? Direction.NORTH : Direction.SOUTH;
-            }
+            if (max == Math.abs(xFromMid)) { return xFromMid < (double)0.0F ? Direction.WEST : Direction.EAST; }
+            else { return zFromMid < (double)0.0F ? Direction.NORTH : Direction.SOUTH; }
         }
     }),
     HORIZONTAL_PREFER_SIDE((side, placer, hitPos) -> side.getAxis() != Axis.Y ? side.getOpposite() : placer.getDirection()),

@@ -7,10 +7,9 @@ import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
-
 import javax.annotation.Nonnull;
 
-@SuppressWarnings("unused") public abstract class ICSerializableRecipe implements Recipe<RecipeInput> {
+public abstract class ICSerializableRecipe implements Recipe<RecipeInput> {
     protected final ICTagOutput outputDummy;
     protected final RecipeType<?> type;
 

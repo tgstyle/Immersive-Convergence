@@ -8,10 +8,9 @@ import blusunrize.immersiveengineering.common.util.compat.computers.generic.Call
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.ComputerCallable;
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.impl.SingleItemCallback;
 import net.minecraft.world.inventory.ContainerData;
-
 import java.util.function.Function;
 
-@SuppressWarnings("unused") public class FurnaceCallbacks<S extends IMultiblockState & IFurnaceEnvironment<?>> extends Callback<S> {
+public class FurnaceCallbacks<S extends IMultiblockState & IFurnaceEnvironment<?>> extends Callback<S> {
     private final Function<S, ContainerData> view;
 
     public FurnaceCallbacks(Function<S, ContainerData> view, int fuelSlot, int outputSlot) {

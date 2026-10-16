@@ -17,7 +17,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
@@ -31,11 +30,9 @@ import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
-
 import java.util.List;
 
-@EventBusSubscriber(modid = ICLib.MODID, value = Dist.CLIENT)
-public class ClientProxy extends CommonProxy {
+@EventBusSubscriber(modid = ICLib.MODID, value = Dist.CLIENT) public class ClientProxy extends CommonProxy {
 
     private static final List<String> MANUAL_ENTRIES = List.of("multiblock_disassembly", "clearing_tanks");
 
@@ -90,6 +87,4 @@ public class ClientProxy extends CommonProxy {
         }
         pose.popPose();
     }
-
-    @Override public Player getClientPlayer() { return Minecraft.getInstance().player; }
 }

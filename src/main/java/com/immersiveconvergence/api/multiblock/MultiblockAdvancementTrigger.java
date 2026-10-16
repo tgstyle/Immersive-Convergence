@@ -8,7 +8,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.CriterionTrigger;
 import net.minecraft.advancements.CriterionTriggerInstance;
 import net.minecraft.advancements.critereon.CriterionValidator;
@@ -25,9 +24,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class MultiblockAdvancementTrigger implements CriterionTrigger<MultiblockAdvancementTrigger.Instance> {
+public class MultiblockAdvancementTrigger implements CriterionTrigger<MultiblockAdvancementTrigger.Instance> {
     public static final DeferredRegister<CriterionTrigger<?>> REGISTER = DeferredRegister.create(BuiltInRegistries.TRIGGER_TYPES, ICMods.IMMERSIVE_ENGINEERING);
-    public static Supplier<MultiblockAdvancementTrigger> INSTANCE = REGISTER.register("multiblock_formed", MultiblockAdvancementTrigger::new);
+    public static final Supplier<MultiblockAdvancementTrigger> INSTANCE = REGISTER.register("multiblock_formed", MultiblockAdvancementTrigger::new);
     private final Map<PlayerAdvancements, Listeners> listeners = Maps.newHashMap();
 
     @Override public void addPlayerListener(@Nonnull PlayerAdvancements playerAdvancements, @Nonnull CriterionTrigger.Listener<MultiblockAdvancementTrigger.Instance> listener) {
@@ -55,8 +54,6 @@ import java.util.function.Supplier;
         MultiblockAdvancementTrigger.Listeners listeners = this.listeners.get(player.getAdvancements());
         if (listeners != null) { listeners.trigger(multiblock, hammer); }
     }
-
-    public static Criterion<?> create(ResourceLocation multiblock, ItemPredicate hammer) { return INSTANCE.get().createCriterion(new Instance(multiblock, hammer)); }
 
     public record Instance(ResourceLocation multiblock, ItemPredicate hammer) implements CriterionTriggerInstance {
         public static final Codec<Instance> CODEC = RecordCodecBuilder.create(inst -> inst.group(

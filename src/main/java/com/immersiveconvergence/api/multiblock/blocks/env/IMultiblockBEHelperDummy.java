@@ -8,7 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) @NonExtendable public interface IMultiblockBEHelperDummy<State extends IMultiblockState> extends IMultiblockBEHelper<State> {
+@NonExtendable public interface IMultiblockBEHelperDummy<State extends IMultiblockState> extends IMultiblockBEHelper<State> {
     SetRestrictedField<Factory> MAKE_HELPER = SetRestrictedField.common();
 
     void setPositionInMB(BlockPos pos);

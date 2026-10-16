@@ -16,9 +16,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
-@SuppressWarnings("unused")
-@EventBusSubscriber(modid = ICLib.MODID)
-public class PacketHandler {
+@EventBusSubscriber(modid = ICLib.MODID) public class PacketHandler {
     private static final String PROTOCOL_VERSION = "3";
 
     @SubscribeEvent public static void register(final RegisterPayloadHandlersEvent event) {

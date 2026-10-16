@@ -2,14 +2,12 @@ package com.immersiveconvergence.api.multiblock;
 
 import com.immersiveconvergence.api.block.BlockInterfaces;
 import com.immersiveconvergence.api.util.IItemDropProvider;
-
 import com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistration;
 import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockBE;
 import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockState;
 import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockPartBlock;
+
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -21,17 +19,15 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.util.Mth;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class MachineMultiblockPartBlock<S extends IMultiblockState> extends MultiblockPartBlock<S> {
+public class MachineMultiblockPartBlock<S extends IMultiblockState> extends MultiblockPartBlock<S> {
     private final MultiblockRegistration<S> multiblockRef;
 
     public MachineMultiblockPartBlock(Properties properties, MultiblockRegistration<S> multiblock) { super(properties, multiblock); this.multiblockRef = multiblock; }
@@ -47,18 +43,6 @@ import javax.annotation.Nullable;
     @Override public void entityInside(@Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos pos, @Nonnull Entity entity) {
         super.entityInside(state, level, pos, entity);
         if (entity instanceof LivingEntity && isLadder(state, level, pos, (LivingEntity) entity)) { applyLadderLogic(entity); }
-    }
-
-    @Nonnull @Override
-    public ItemInteractionResult useItemOn(@Nonnull ItemStack stack, @Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos pos, @Nonnull Player player, @Nonnull InteractionHand hand, @Nonnull BlockHitResult hit) {
-        BlockEntity te = level.getBlockEntity(pos);
-        if (te instanceof BlockInterfaces.IPlayerInteraction be) {
-            Vec3 hitVec = hit.getLocation().subtract(pos.getX(), pos.getY(), pos.getZ());
-            if (be.interact(hit.getDirection(), player, hand, stack, (float) hitVec.x, (float) hitVec.y, (float) hitVec.z)) {
-                return ItemInteractionResult.sidedSuccess(level.isClientSide);
-            }
-        }
-        return super.useItemOn(stack, state, level, pos, player, hand, hit);
     }
 
     @Override @Nonnull public BlockState playerWillDestroy(@Nonnull Level level, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull Player player) {
@@ -107,9 +91,7 @@ import javax.annotation.Nullable;
     public List<ItemStack> getDrops(@Nonnull BlockState state, @Nonnull LootParams.Builder builder) {
         List<ItemStack> drops = new ArrayList<>(super.getDrops(state, builder));
         BlockEntity te = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
-        if (te instanceof IItemDropProvider dropInv) {
-            dropInv.getDroppedItems().forEach(drops::add);
-        }
+        if (te instanceof IItemDropProvider dropInv) { dropInv.getDroppedItems().forEach(drops::add); }
         return drops;
     }
 

@@ -33,6 +33,9 @@ versionRange="[${version_ie_min},)"
 ordering="AFTER"
 side="BOTH"
 
+[[accessTransformers]]
+file="META-INF/accesstransformer.cfg"
+
 [[mixins]]
 config="mixins.immersiveconvergence.json"
 

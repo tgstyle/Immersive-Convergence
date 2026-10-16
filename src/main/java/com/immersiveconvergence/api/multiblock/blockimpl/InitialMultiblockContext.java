@@ -10,23 +10,16 @@ import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import org.jetbrains.annotations.Nullable;
 import java.util.function.Supplier;
 
-public record InitialMultiblockContext<State extends IMultiblockState>(
-        BlockEntity masterBE,
-        MultiblockOrientation orientation,
-        BlockPos masterOffset
-) implements IInitialMultiblockContext<State> {
+public record InitialMultiblockContext<State extends IMultiblockState>(BlockEntity masterBE, MultiblockOrientation orientation, BlockPos masterOffset) implements IInitialMultiblockContext<State> {
     @Override public <T, C>
     Supplier<T> getCapabilityAt(BlockCapability<T, C> capability, BlockPos posRelativeToMB, C context) { return getCapabilityAt(masterBE, orientation, masterOffset, capability, posRelativeToMB, context); }
 
-    @Override public <T> Supplier<T> getCapabilityAt(
-            BlockCapability<T, Direction> capability, BlockPos posRelativeToMB, RelativeBlockFace face
-    ) { return getCapabilityAt(capability, posRelativeToMB, face.forFront(orientation)); }
+    @Override public <T> Supplier<T> getCapabilityAt(BlockCapability<T, Direction> capability, BlockPos posRelativeToMB, RelativeBlockFace face) { return getCapabilityAt(capability, posRelativeToMB, face.forFront(orientation)); }
 
     @Override public Supplier<@Nullable Level> levelSupplier() { return masterBE::getLevel; }
 
@@ -34,20 +27,7 @@ public record InitialMultiblockContext<State extends IMultiblockState>(
 
     @Override public Runnable getSyncRunnable() { return () -> MultiblockContext.requestBESync(masterBE); }
 
-    @Override public Runnable getBlockUpdateRunnable() {
-        return () ->{
-            Level level = masterBE.getLevel();
-            if (level == null) { return; }
-            BlockState state = masterBE.getBlockState();
-            level.sendBlockUpdated(masterBE.getBlockPos(), state, state, 3);
-            level.updateNeighborsAt(masterBE.getBlockPos(), state.getBlock());
-        };
-    }
-
-    public static <T, C> Supplier<@Nullable T> getCapabilityAt(
-            BlockEntity masterBE, MultiblockOrientation orientation, BlockPos masterOffset,
-            BlockCapability<T, C> capability, BlockPos posRelativeToMB, C context
-    ) {
+    public static <T, C> Supplier<@Nullable T> getCapabilityAt(BlockEntity masterBE, MultiblockOrientation orientation, BlockPos masterOffset, BlockCapability<T, C> capability, BlockPos posRelativeToMB, C context) {
         return new Supplier<>() {
             private BlockCapabilityCache<T, C> cache;
 

@@ -7,19 +7,14 @@ import malte0811.dualcodecs.DualCodec;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-@SuppressWarnings("unused") public class ICIngredientWithSize implements Predicate<ItemStack> {
+public class ICIngredientWithSize implements Predicate<ItemStack> {
     private static final Codec<ICIngredientWithSize> COUNT_CODEC = RecordCodecBuilder.create(inst -> inst.group(
             Ingredient.CODEC.fieldOf("basePredicate").forGetter(ICIngredientWithSize::getBaseIngredient),
             Codec.INT.fieldOf("count").forGetter(ICIngredientWithSize::getCount)
@@ -45,10 +40,6 @@ import java.util.function.Predicate;
 
     public ICIngredientWithSize(Ingredient basePredicate) { this(basePredicate, 1); }
 
-    public ICIngredientWithSize(TagKey<Item> basePredicate, int count) { this(Ingredient.of(basePredicate), count); }
-
-    public ICIngredientWithSize(TagKey<Item> basePredicate) { this(basePredicate, 1); }
-
     @Override public boolean test(@Nullable ItemStack stack) {
         if (stack == null) { return false; }
         return basePredicate.test(stack) && stack.getCount() >= count;
@@ -63,20 +54,9 @@ import java.util.function.Predicate;
         return ret;
     }
 
-    @Nonnull public List<ItemStack> getMatchingStackList() { return Arrays.asList(getMatchingStacks()); }
-
     public boolean hasNoMatchingItems() { return basePredicate.isEmpty(); }
 
     public int getCount() { return count; }
 
     public Ingredient getBaseIngredient() { return basePredicate; }
-
-    public ICIngredientWithSize withSize(int size) { return new ICIngredientWithSize(basePredicate, size); }
-
-    public static ICIngredientWithSize of(ItemStack stack) { return new ICIngredientWithSize(Ingredient.of(stack), stack.getCount()); }
-
-    public ItemStack getRandomizedExampleStack(int rand) {
-        ItemStack[] all = getMatchingStacks();
-        return all.length == 0 ? ItemStack.EMPTY : all[(rand / 20) % all.length];
-    }
 }

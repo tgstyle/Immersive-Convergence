@@ -10,10 +10,9 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import org.joml.Vector3f;
 import java.util.function.Supplier;
-
 import javax.annotation.Nonnull;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public record ColoredSmoke(Vector3f color, boolean collideHorizontal,
+public record ColoredSmoke(Vector3f color, boolean collideHorizontal,
                            boolean collideVertical) implements ParticleOptions {
     public static final MapCodec<ColoredSmoke> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
             Codec.FLOAT.fieldOf("r").forGetter(d -> d.color.x()),
@@ -34,17 +33,9 @@ import javax.annotation.Nonnull;
 
     public static Supplier<ParticleType<?>> typeSupplier;
 
-    public ColoredSmoke(float r, float g, float b) {
-        this(r, g, b, false, false);
-    }
+    public ColoredSmoke(float r, float g, float b) { this(r, g, b, false, false); }
 
-    public ColoredSmoke(float r, float g, float b, boolean collideHorizontal, boolean collideVertical) {
-        this(new Vector3f(r, g, b), collideHorizontal, collideVertical);
-    }
+    public ColoredSmoke(float r, float g, float b, boolean collideHorizontal, boolean collideVertical) { this(new Vector3f(r, g, b), collideHorizontal, collideVertical); }
 
-    @Override
-    @Nonnull
-    public ParticleType<?> getType() {
-        return typeSupplier.get();
-    }
+    @Override @Nonnull public ParticleType<?> getType() { return typeSupplier.get(); }
 }

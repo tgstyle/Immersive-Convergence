@@ -13,13 +13,12 @@ import blusunrize.immersiveengineering.common.util.compat.computers.generic.Comp
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.impl.MBEnergyCallbacks;
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.impl.SingleItemCallback;
 import net.minecraft.world.level.Level;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("unused") public class MetalPressCallbacks extends Callback<State> {
+public class MetalPressCallbacks extends Callback<State> {
     public MetalPressCallbacks() {
         addAdditional(MBEnergyCallbacks.INSTANCE, State::getEnergy);
         addAdditional(new SingleItemCallback<>(state -> state.mold, "mold"));

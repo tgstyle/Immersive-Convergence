@@ -15,10 +15,9 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
-
 import java.util.List;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public interface IFluidOutputPump<State extends IMultiblockState> {
+public interface IFluidOutputPump<State extends IMultiblockState> {
     List<BlockPos> getOutputPositions();
     Direction getOutputDirection(IMultiblockContext<State> ctx);
     List<MarkableFluidTank> getOutputTanks(State state);
@@ -31,7 +30,7 @@ import java.util.List;
 
     default boolean pumpOutputs(IMultiblockContext<State> ctx) {
         State state = ctx.getState();
-        if (!shouldPumpOutputs(ctx)) return false;
+        if (!shouldPumpOutputs(ctx)) { return false; }
         boolean dirty = false;
         Level level = ctx.getLevel().getRawLevel();
         List<BlockPos> outputPositions = getOutputPositions();
@@ -44,7 +43,7 @@ import java.util.List;
 
         for (java.util.Map.Entry<MarkableFluidTank, List<Integer>> entry : byTank.entrySet()) {
             MarkableFluidTank tank = entry.getKey();
-            if (tank.getFluidAmount() == 0) continue;
+            if (tank.getFluidAmount() == 0) { continue; }
             List<Integer> indices = entry.getValue();
 
             List<Integer> connected = new java.util.ArrayList<>();
@@ -53,16 +52,16 @@ import java.util.List;
             for (int i : indices) {
                 BlockPos portAbs = ctx.getLevel().toAbsolute(outputPositions.get(i));
                 Direction outputDir = singleOutputDir;
-                if (facings != null && !facings.isEmpty()) outputDir = ctx.getLevel().toAbsolute(facings.get(i));
+                if (facings != null && !facings.isEmpty()) { outputDir = ctx.getLevel().toAbsolute(facings.get(i)); }
                 assert outputDir != null;
                 BlockPos externalAbs = portAbs.relative(outputDir);
                 IFluidHandler handler = level.getCapability(Capabilities.FluidHandler.BLOCK, externalAbs, outputDir.getOpposite());
-                if (handler == null) continue;
+                if (handler == null) { continue; }
                 connected.add(i);
                 handlers.add(handler);
                 dirs.add(outputDir);
             }
-            if (connected.isEmpty()) continue;
+            if (connected.isEmpty()) { continue; }
 
             int totalAvailable = tank.getFluidAmount();
             int transferSpeed = getTransferSpeed();
@@ -80,22 +79,22 @@ import java.util.List;
                 boolean isPipe = IICFluidPipe.isPipe(adjTE);
 
                 int share = baseShare + (idx < remainder ? 1 : 0);
-                if (share <= 0) continue;
+                if (share <= 0) { continue; }
 
                 FluidStack fs = tank.getFluid().copy();
                 IICFluidPipe.markPressurized(fs);
                 fs = ICFluidUtils.copyFluidStackWithAmount(fs, Math.min(share, fs.getAmount()));
-                if (transferSpeed != Integer.MAX_VALUE && !isPipe) fs = ICFluidUtils.copyFluidStackWithAmount(fs, Math.min(transferSpeed, fs.getAmount()));
+                if (transferSpeed != Integer.MAX_VALUE && !isPipe) { fs = ICFluidUtils.copyFluidStackWithAmount(fs, Math.min(transferSpeed, fs.getAmount())); }
 
                 int accepted = handler.fill(fs, FluidAction.SIMULATE);
-                if (accepted <= 0) continue;
+                if (accepted <= 0) { continue; }
                 FluidStack toFill = ICFluidUtils.copyFluidStackWithAmount(fs, Math.min(fs.getAmount(), accepted));
                 int drained = handler.fill(toFill, FluidAction.EXECUTE);
                 tank.drain(drained, FluidAction.EXECUTE);
                 dirty = true;
             }
         }
-        if (dirty) ctx.markMasterDirty();
+        if (dirty) { ctx.markMasterDirty(); }
         return dirty;
     }
 
@@ -105,7 +104,7 @@ import java.util.List;
         List<RelativeBlockFace> facings = getOutputFacings();
         BlockPos portAbs = ctx.getLevel().toAbsolute(outputPositions.get(index));
         Direction outputDir = getOutputDirection(ctx);
-        if (facings != null && !facings.isEmpty()) outputDir = ctx.getLevel().toAbsolute(facings.get(index));
+        if (facings != null && !facings.isEmpty()) { outputDir = ctx.getLevel().toAbsolute(facings.get(index)); }
         assert outputDir != null;
         BlockPos externalAbs = portAbs.relative(outputDir);
         IFluidHandler handler = ctx.getLevel().getRawLevel().getCapability(Capabilities.FluidHandler.BLOCK, externalAbs, outputDir.getOpposite());

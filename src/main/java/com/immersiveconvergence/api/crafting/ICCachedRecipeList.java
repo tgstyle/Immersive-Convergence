@@ -14,13 +14,13 @@ import net.neoforged.neoforge.client.event.RecipesUpdatedEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("unused") @EventBusSubscriber(modid = ICLib.MODID) public class ICCachedRecipeList<R extends Recipe<?>> {
+@EventBusSubscriber(modid = ICLib.MODID) public class ICCachedRecipeList<R extends Recipe<?>> {
     private static final int INVALID_RELOAD_COUNT = -1;
     private static int reloadCount = 0;
     private final ICRecipeType<R> type;
@@ -35,16 +35,23 @@ import java.util.stream.Collectors;
 
     @SubscribeEvent(priority = EventPriority.HIGH) public static void onRecipeUpdatedClient(RecipesUpdatedEvent ev) { ++reloadCount; }
 
-    public static int reloadCount() { return reloadCount; }
-
     public List<RecipeHolder<R>> getRecipes(@Nonnull Level level) {
         updateCache(level.getRecipeManager(), level.isClientSide());
         return Objects.requireNonNull(recipeHolders);
     }
 
-    public Collection<ResourceLocation> getRecipeNames(@Nonnull Level level) {
-        updateCache(level.getRecipeManager(), level.isClientSide());
-        return Objects.requireNonNull(recipes).keySet();
+    @Nullable public RecipeHolder<R> findHolder(@Nonnull Level level, Predicate<R> matches, @Nullable RecipeHolder<R> hint) {
+        if (hint != null && matches.test(hint.value())) { return hint; }
+        for (RecipeHolder<R> holder : getRecipes(level)) {
+            if (matches.test(holder.value())) { return holder; }
+        }
+        return null;
+    }
+
+    @Nullable public R find(@Nonnull Level level, Predicate<R> matches, @Nullable R hint) {
+        if (hint != null && matches.test(hint)) { return hint; }
+        RecipeHolder<R> holder = findHolder(level, matches, null);
+        return holder != null ? holder.value() : null;
     }
 
     @Nullable public R getById(@Nonnull Level level, ResourceLocation name) {
@@ -52,7 +59,7 @@ import java.util.stream.Collectors;
         return holder != null ? holder.value() : null;
     }
 
-    @Nullable public RecipeHolder<R> holderById(@Nonnull Level level, ResourceLocation name) {
+    @Nullable private RecipeHolder<R> holderById(@Nonnull Level level, ResourceLocation name) {
         updateCache(level.getRecipeManager(), level.isClientSide());
         return recipes.get(name);
     }

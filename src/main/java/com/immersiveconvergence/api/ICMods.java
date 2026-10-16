@@ -6,6 +6,7 @@ import com.electronwill.nightconfig.core.Config;
 import com.electronwill.nightconfig.core.file.FileNotFoundAction;
 import com.electronwill.nightconfig.core.io.ParsingException;
 import com.electronwill.nightconfig.toml.TomlFormat;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLPaths;
 
@@ -29,7 +30,7 @@ public final class ICMods {
         initialized = true;
     }
 
-    private static boolean disableImmersiveEngineering() {
+    public static boolean disableImmersiveEngineering() {
         try {
             Config config = TomlFormat.instance().createParser().parse(FMLPaths.CONFIGDIR.get().resolve(ICLib.MODID + "-common.toml"), FileNotFoundAction.READ_NOTHING);
             return config.getOrElse(DISABLE_IMMERSIVE_ENGINEERING, false);
@@ -44,4 +45,6 @@ public final class ICMods {
     public static boolean immersivePetroleum() { ensureInitialized(); return immersivePetroleum; }
 
     public static boolean computerCraft() { return ModList.get().isLoaded(COMPUTERCRAFT); }
+
+    public static ResourceLocation ie(String path) { return ResourceLocation.fromNamespaceAndPath(IMMERSIVE_ENGINEERING, path); }
 }

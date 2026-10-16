@@ -32,6 +32,6 @@ public class ICBlockEntities {
 
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
         event.registerBlockEntity(MechanicalCapabilities.MECHANICAL_PROVIDER, ROTOR_CREATIVE.get(), RotorCreativeBlockEntity::getMechanicalProvider);
-        event.registerBlockEntity(HeatCapabilities.HEAT_PROVIDER, HEAT_CREATIVE.get(), HeatCreativeBlockEntity::getHeatProvider);
+        event.registerBlockEntity(HeatCapabilities.HEAT_PROVIDER, HEAT_CREATIVE.get(), (be, side) -> be.getHeatProvider());
     }
 }

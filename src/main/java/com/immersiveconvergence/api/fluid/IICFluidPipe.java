@@ -7,15 +7,11 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
-
 import javax.annotation.Nullable;
 
-@SuppressWarnings("unused") public interface IICFluidPipe {
+public interface IICFluidPipe {
     int AMOUNT_PRESSURIZED = FluidType.BUCKET_VOLUME;
     int AMOUNT_UNPRESSURIZED = FluidType.BUCKET_VOLUME / 20;
-    String NBT_PRESSURIZED = "pressurized";
-
-    static int getTransferableAmount(boolean pressurized) { return ICPipes.getTransferableAmount(pressurized); }
 
     static boolean isPipe(@Nullable BlockEntity tile) { return ICMods.immersiveEngineering() && IEFluidPipeBridge.isPipe(tile); }
 
@@ -23,7 +19,5 @@ import javax.annotation.Nullable;
 
     static void markPressurized(FluidStack stack) { if (ICMods.immersiveEngineering()) { IEFluidPipeBridge.markPressurized(stack); } }
 
-    default boolean stripPressureTag() { return false; }
-
-    default boolean canOutputPressurized(boolean consumePower) { return false; }
+    default boolean canOutputPressurized() { return false; }
 }

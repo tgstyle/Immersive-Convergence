@@ -7,7 +7,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-
 import javax.annotation.Nonnull;
 
 public abstract class ICRecipeSerializer<R extends Recipe<?>> implements RecipeSerializer<R> {

@@ -10,7 +10,7 @@ import blusunrize.immersiveengineering.common.util.compat.computers.generic.impl
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.impl.MBEnergyCallbacks;
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.impl.SingleItemCallback;
 
-@SuppressWarnings("unused") public class ClocheCallbacks extends Callback<ClocheBlockEntity> {
+public class ClocheCallbacks extends Callback<ClocheBlockEntity> {
     public ClocheCallbacks() {
         addAdditional(MBEnergyCallbacks.INSTANCE, cloche -> cloche.energyStorage);
         addAdditional(new TankInfoCallbacks<>(cloche -> cloche.tank, ""));

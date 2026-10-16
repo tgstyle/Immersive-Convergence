@@ -10,13 +10,12 @@ import blusunrize.immersiveengineering.common.util.compat.computers.generic.Comp
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.IndexArgument;
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.owners.AssemblerCallbacks;
 import net.minecraft.world.item.ItemStack;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("unused") public class ICAssemblerCallbacks extends AssemblerCallbacks {
+public class ICAssemblerCallbacks extends AssemblerCallbacks {
     @ComputerCallable public boolean hasIngredients(CallbackEnvironment<State> env, @IndexArgument int recipe) {
         CrafterPatternInventory pattern = pattern(env.object(), recipe);
         if (pattern.inv.get(9).isEmpty()) { throw new IllegalArgumentException("The requested recipe is invalid"); }

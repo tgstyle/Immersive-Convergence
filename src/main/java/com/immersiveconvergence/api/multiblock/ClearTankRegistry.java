@@ -1,8 +1,7 @@
 package com.immersiveconvergence.api.multiblock;
 
-import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.multiblock.blocks.util.CapabilityPosition;
-import com.immersiveconvergence.common.ie.IEMultiblockBridge;
+import com.immersiveconvergence.api.util.ICUtils;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -12,7 +11,6 @@ import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities;
-
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,7 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.ToIntFunction;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class ClearTankRegistry {
+public class ClearTankRegistry {
     public static final String KEY_TANK_CLEARED = "gui.immersiveconvergence.input_tank_cleared";
     public static final String KEY_TANKS_CLEARED = "gui.immersiveconvergence.input_tanks_cleared";
     private static final Map<ResourceLocation, Entry> ENTRIES = new HashMap<>();
@@ -42,7 +40,7 @@ import java.util.function.ToIntFunction;
         BlockPos origin = portOrigin(multiblock, posInMultiblock);
         if (origin == null || !entry.inputPositions().contains(origin)) { return null; }
         ItemStack held = player.getItemInHand(hand);
-        if (!(ICMods.immersiveEngineering() && IEMultiblockBridge.isHammer(held)) && !ClearTank.additionalTool.test(held)) { return null; }
+        if (!ICUtils.isHammer(held) && !ClearTank.additionalTool.test(held)) { return null; }
         boolean isClient = player.level().isClientSide;
         if (!isClient) {
             int cleared = entry.clear().applyAsInt(state);

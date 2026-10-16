@@ -3,10 +3,9 @@ package com.immersiveconvergence.api.particles;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.TextureSheetParticle;
-
 import javax.annotation.Nonnull;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public final class CampfireSmoke extends TextureSheetParticle {
+public final class CampfireSmoke extends TextureSheetParticle {
     public CampfireSmoke(ClientLevel level, double x, double y, double z, double velX, double velY, double velZ) {
         super(level, x, y, z);
         this.scale(3.0F);

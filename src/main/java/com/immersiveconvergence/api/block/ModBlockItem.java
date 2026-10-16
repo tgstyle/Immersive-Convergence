@@ -1,7 +1,6 @@
 package com.immersiveconvergence.api.block;
 
 import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockPartBlock;
-import com.immersiveconvergence.api.util.ICTextUtils;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -28,11 +27,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.FluidStack;
 import java.util.List;
 import java.util.Optional;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class ModBlockItem extends BlockItem {
+public class ModBlockItem extends BlockItem {
     public static final String ENERGY_KEY = "energy";
 
     public ModBlockItem(Block b, Item.Properties props) { super(b, props); }
@@ -41,27 +39,22 @@ import javax.annotation.Nullable;
 
     @Override @Nonnull public String getDescriptionId(@Nonnull ItemStack stack) { return getBlock().getDescriptionId(); }
 
-    @Override
-    public void appendHoverText(@Nonnull ItemStack stack, @Nonnull Item.TooltipContext context, @Nonnull List<Component> tooltipComponents, @Nonnull TooltipFlag tooltipFlag) {
+    @Override public void appendHoverText(@Nonnull ItemStack stack, @Nonnull Item.TooltipContext context, @Nonnull List<Component> tooltipComponents, @Nonnull TooltipFlag tooltipFlag) {
         if (getBlock() instanceof IBlock ieBlock && ieBlock.hasFlavour()) {
             String flavourKey = BlockToolGates.descFlavour + ieBlock.getNameForFlavour();
-            tooltipComponents.add(ICTextUtils.applyFormat(Component.translatable(flavourKey), ChatFormatting.GRAY));
+            tooltipComponents.add(Component.translatable(flavourKey).withStyle(ChatFormatting.GRAY));
         }
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
 
         CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
         CompoundTag tag = customData.copyTag();
 
-        if (tag.contains(ENERGY_KEY)) {
-            tooltipComponents.add(ICTextUtils.applyFormat(Component.translatable(BlockToolGates.descInfo + "energyStored", tag.getInt(ENERGY_KEY)), ChatFormatting.GRAY));
-        }
+        if (tag.contains(ENERGY_KEY)) { tooltipComponents.add(Component.translatable(BlockToolGates.descInfo + "energyStored", tag.getInt(ENERGY_KEY)).withStyle(ChatFormatting.GRAY)); }
         if (tag.contains("tank")) {
             CompoundTag tankTag = tag.getCompound("tank");
             Level level = context.level();
             FluidStack fs = level != null ? FluidStack.parseOptional(level.registryAccess(), tankTag) : FluidStack.EMPTY;
-            if (!fs.isEmpty()) {
-                tooltipComponents.add(ICTextUtils.applyFormat(Component.translatable(BlockToolGates.descInfo + "fluidStored", fs.getHoverName(), fs.getAmount()), ChatFormatting.GRAY));
-            }
+            if (!fs.isEmpty()) { tooltipComponents.add(Component.translatable(BlockToolGates.descInfo + "fluidStored", fs.getHoverName(), fs.getAmount()).withStyle(ChatFormatting.GRAY)); }
         }
     }
 
@@ -69,16 +62,17 @@ import javax.annotation.Nullable;
         if (getBlock() instanceof MultiblockPartBlock) { return false; }
         Block b = newState.getBlock();
         if (b instanceof BaseBlock ieBlock) {
-            if (!ieBlock.canIEBlockBePlaced(newState, context)) return false;
+            if (!ieBlock.canIEBlockBePlaced()) { return false; }
             boolean ret = super.placeBlock(context, newState);
-            if (ret) ieBlock.onIEBlockPlacedBy(context, newState);
+            if (ret) { ieBlock.onIEBlockPlacedBy(context, newState); }
             return ret;
-        } else return super.placeBlock(context, newState);
+        }
+        else { return super.placeBlock(context, newState); }
     }
 
     @Override protected boolean updateCustomBlockEntityTag(@Nonnull BlockPos pos, @Nonnull Level worldIn, @Nullable Player player, @Nonnull ItemStack stack, BlockState state) {
-        if (!state.hasProperty(ModProperties.MULTIBLOCKSLAVE)) return super.updateCustomBlockEntityTag(pos, worldIn, player, stack, state);
-        else return false;
+        if (!state.hasProperty(ModProperties.MULTIBLOCKSLAVE)) { return super.updateCustomBlockEntityTag(pos, worldIn, player, stack, state); }
+        else { return false; }
     }
 
     @Override @Nonnull public Optional<TooltipComponent> getTooltipImage(@Nonnull ItemStack stack) {
@@ -92,7 +86,7 @@ import javax.annotation.Nullable;
                     ItemStack s = ItemStack.CODEC.parse(NbtOps.INSTANCE, ct)
                             .result()
                             .orElse(ItemStack.EMPTY);
-                    if (!s.isEmpty()) items.add(s);
+                    if (!s.isEmpty()) { items.add(s); }
                 }
             }
             BundleContents contents = new BundleContents(items);

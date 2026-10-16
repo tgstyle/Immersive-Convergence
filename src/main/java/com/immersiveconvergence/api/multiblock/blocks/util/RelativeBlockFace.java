@@ -7,15 +7,13 @@ import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Contract;
 import javax.annotation.Nullable;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public enum RelativeBlockFace {
+public enum RelativeBlockFace {
     FRONT,
     LEFT,
     BACK,
     RIGHT,
     UP,
     DOWN;
-
-    public static final RelativeBlockFace[] HORIZONTAL = {FRONT, LEFT, BACK, RIGHT};
 
     public Direction forFront(MultiblockOrientation orientation) {
         final Direction front = orientation.front();

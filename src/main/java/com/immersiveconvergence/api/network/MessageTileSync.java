@@ -12,10 +12,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-
 import javax.annotation.Nonnull;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public record MessageTileSync(BlockPos pos, CompoundTag nbt) implements CustomPacketPayload {
+public record MessageTileSync(BlockPos pos, CompoundTag nbt) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<MessageTileSync> TYPE = new CustomPacketPayload.Type<>(ICLib.rl("tilesync"));
 
     public static final StreamCodec<ByteBuf, MessageTileSync> STREAM_CODEC = StreamCodec.composite(
@@ -26,9 +25,7 @@ import javax.annotation.Nonnull;
             MessageTileSync::new
     );
 
-    @Override public @Nonnull CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
-        return TYPE;
-    }
+    @Override public @Nonnull CustomPacketPayload.Type<? extends CustomPacketPayload> type() { return TYPE; }
 
     public static void handle(MessageTileSync message, IPayloadContext context) {
         ServerPlayer player = (ServerPlayer) context.player();

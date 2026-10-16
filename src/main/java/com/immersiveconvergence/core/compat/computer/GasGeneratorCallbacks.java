@@ -8,7 +8,7 @@ import blusunrize.immersiveengineering.common.util.compat.computers.generic.Comp
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.impl.MBEnergyCallbacks;
 import flaxbeard.immersivepetroleum.common.blocks.tileentities.GasGeneratorTileEntity;
 
-@SuppressWarnings("unused") public class GasGeneratorCallbacks extends Callback<GasGeneratorTileEntity> {
+public class GasGeneratorCallbacks extends Callback<GasGeneratorTileEntity> {
     public GasGeneratorCallbacks() {
         addAdditional(MBEnergyCallbacks.INSTANCE, generator -> ((GasGeneratorAccessor) generator).ic$getEnergyStorage());
         addAdditional(new TankInfoCallbacks<>(generator -> ((GasGeneratorAccessor) generator).ic$getTank(), ""));

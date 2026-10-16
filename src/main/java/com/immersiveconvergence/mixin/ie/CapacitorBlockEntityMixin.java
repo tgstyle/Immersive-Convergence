@@ -10,11 +10,9 @@ import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
-
 import javax.annotation.Nonnull;
 
-@Mixin(CapacitorBlockEntity.class)
-public abstract class CapacitorBlockEntityMixin implements IEBlockInterfaces.IPlayerInteraction {
+@Mixin(CapacitorBlockEntity.class) public abstract class CapacitorBlockEntityMixin implements IEBlockInterfaces.IPlayerInteraction {
     @Override @Nonnull public ItemInteractionResult interact(@Nonnull Direction side, @Nonnull Player player, @Nonnull InteractionHand hand, @Nonnull ItemStack heldItem, float hitX, float hitY, float hitZ) {
         if (ICUtils.isHammer(heldItem)) {
             Direction activeSide = player.isShiftKeyDown() ? side.getOpposite() : side;

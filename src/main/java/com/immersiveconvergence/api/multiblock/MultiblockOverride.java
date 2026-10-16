@@ -89,13 +89,17 @@ public final class MultiblockOverride {
         return null;
     }
 
+    @Nullable public static CapabilityPosition resolve(ResourceLocation id, BlockCapability<?, ?> capability, CapabilityPosition position) {
+        MultiblockOverride override = get(id);
+        if (override == null || override.ignores(capability)) { return position; }
+        return override.map(capability, position);
+    }
+
     public static <State> CapabilityRegistrar<State> wrap(ResourceLocation id, CapabilityRegistrar<State> inner) {
         return new CapabilityRegistrar<>() {
             @Override public <T> void register(BlockCapability<T, Direction> capability, CapabilityGetter<T, State> getter) {
                 inner.register(capability, (state, position) -> {
-                    MultiblockOverride override = get(id);
-                    if (override == null || override.ignores(capability)) { return getter.getCapability(state, position); }
-                    CapabilityPosition mapped = override.map(capability, position);
+                    CapabilityPosition mapped = resolve(id, capability, position);
                     return mapped == null ? null : getter.getCapability(state, mapped);
                 });
             }

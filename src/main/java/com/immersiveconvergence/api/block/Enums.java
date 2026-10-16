@@ -4,11 +4,10 @@ import com.immersiveconvergence.core.lib.ICLib;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringRepresentable;
-
 import javax.annotation.Nonnull;
 import java.util.Locale;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class Enums {
+public class Enums {
     public enum IOSideConfig implements StringRepresentable {
         NONE("none"),
         INPUT("in"),

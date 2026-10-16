@@ -9,8 +9,7 @@ import com.immersiveconvergence.api.multiblock.blocks.component.IMultiblockCompo
 import com.immersiveconvergence.api.multiblock.blocks.component.IServerTickableComponent;
 import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockBEHelperMaster;
 import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockState;
-import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockBlockEntityMaster;
-import com.immersiveconvergence.api.multiblock.blocks.util.MultiblockOrientation;
+import com.immersiveconvergence.api.multiblock.util.DirectionUtils;
 import com.immersiveconvergence.api.multiblock.util.SafeChunkUtils;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -21,32 +20,26 @@ import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class MultiblockBEHelperMaster<State extends IMultiblockState>
+public class MultiblockBEHelperMaster<State extends IMultiblockState>
         extends MultiblockBEHelperCommon<State>
         implements IMultiblockBEHelperMaster<State> {
     private final State state;
     private final MultiblockContext<State> context;
     private final List<ComponentInstance<?>> componentInstances;
     private final Object2IntMap<BlockPos> currentComparatorOutputs = new Object2IntOpenHashMap<>();
-    private final CachedValue<BlockPos, MultiblockOrientation, AABB> renderBox;
     private int dataGeneration = MultiblockDataLoader.generation();
 
-    public MultiblockBEHelperMaster(MultiblockBlockEntityMaster<State> be, MultiblockRegistration<State> multiblock) {
+    public MultiblockBEHelperMaster(BlockEntity be, MultiblockRegistration<State> multiblock) {
         super(be, multiblock, be.getBlockState());
         this.state = multiblock.logic().createInitialState(new InitialMultiblockContext<>(
                 be, orientation, multiblock.masterPosInMB()
@@ -58,12 +51,6 @@ import java.util.function.BiConsumer;
         this.context = new MultiblockContext<>(this, multiblock, level);
         this.componentInstances = new ArrayList<>();
         for (ExtraComponent<State, ?> c : multiblock.extraComponents()) { this.componentInstances.add(ComponentInstance.make(c, this.state, this.context)); }
-        this.renderBox = new CachedValue<>((origin, orientation) -> {
-            final BlockPos maxBlock = new BlockPos(multiblock.size(level.getRawLevel()));
-            final Vec3 max = Vec3.atLowerCornerOf(maxBlock).add(1, 1, 1);
-            final Vec3 absoluteOffset = orientation.getAbsoluteOffset(max);
-            return new AABB(Vec3.ZERO, absoluteOffset).move(origin);
-        });
     }
 
     @Nonnull @Override public State getState() { return state; }
@@ -110,17 +97,9 @@ import java.util.function.BiConsumer;
         return result;
     }
 
-    @Override public Packet<ClientGamePacketListener> getUpdatePacket() { return ClientboundBlockEntityDataPacket.create(getMasterBE()); }
-
     @Override public void handleUpdateTag(CompoundTag tag, Provider provider) { load(tag, (iMultiblockState, nbt) -> iMultiblockState.readSyncNBT(nbt, provider)); }
 
-    @Override public void onDataPacket(CompoundTag tag, Provider provider) { load(tag, (iMultiblockState, nbt) -> iMultiblockState.readSyncNBT(nbt, provider)); }
-
-    @Override public MultiblockRegistration<State> getMultiblock() { return multiblock; }
-
     @Override public BlockPos getPositionInMB() { return multiblock.masterPosInMB(); }
-
-    @Override public AABB getRenderBoundingBox() { return renderBox.get(context.getLevel().getAbsoluteOrigin(), orientation); }
 
     @Override public void tickServer() {
         if (SafeChunkUtils.isChunkUnsafe(be.getLevel(), be.getBlockPos())) { return; }
@@ -150,7 +129,7 @@ import java.util.function.BiConsumer;
 
     private static boolean neighborhoodSafe(Level level, BlockPos pos) {
         if (SafeChunkUtils.isChunkUnsafe(level, pos)) { return false; }
-        for (Direction dir : Direction.values()) {
+        for (Direction dir : DirectionUtils.VALUES) {
             if (SafeChunkUtils.isChunkUnsafe(level, pos.relative(dir))) { return false; }
         }
         return true;
@@ -163,8 +142,6 @@ import java.util.function.BiConsumer;
         for (final ComponentInstance<?> component : componentInstances) { component.tickClient(); }
     }
 
-    @Override public void onRemoved() { multiblock.logic().onRemoved(getContext()); }
-
     @Override public void invalidateAllCaps() {
         Level level = be.getLevel();
         if (level == null) { return; }
@@ -174,11 +151,9 @@ import java.util.function.BiConsumer;
         }
     }
 
-    public BlockEntity getMasterBE() { return be; }
+    BlockEntity getMasterBE() { return be; }
 
-    public MultiblockOrientation getOrientation() { return orientation; }
+    Object2IntMap<BlockPos> getCurrentComparatorOutputs() { return currentComparatorOutputs; }
 
-    public Object2IntMap<BlockPos> getCurrentComparatorOutputs() { return currentComparatorOutputs; }
-
-    public List<ComponentInstance<?>> getComponentInstances() { return componentInstances; }
+    List<ComponentInstance<?>> getComponentInstances() { return componentInstances; }
 }

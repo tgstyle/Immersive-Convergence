@@ -1,6 +1,8 @@
 {
   "block.immersiveconvergence.heat_creative": "Creative Heater",
   "block.immersiveconvergence.rotor_creative": "Creative Rotor",
+  "chat.immersiveconvergence.info.rsControl.invertedOff": "Redstone control: Not inverted",
+  "chat.immersiveconvergence.info.rsControl.invertedOn": "Redstone control: Inverted",
   "config.jade.plugin_immersiveconvergence.lines": "Machine Readouts",
   "config.jade.plugin_immersiveconvergence.multiblock_icon": "Multiblock Icons",
   "config.jade.plugin_immersiveconvergence.status": "Machine Status",

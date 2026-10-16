@@ -42,14 +42,18 @@ import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
 import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
 import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
 import org.joml.Vector3f;
-import java.util.*;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class ConfigurableSidesModel extends BaseBakedModel {
+public class ConfigurableSidesModel extends BaseBakedModel {
     private static final HashMap<String, ITextureNamer> TYPES = new HashMap<>();
     private static final Map<Direction, Enums.IOSideConfig> DEFAULT_KEY = normalizeConfig(null);
     private final LoadingCache<Map<Direction, Enums.IOSideConfig>, Map<Direction, BakedQuad>> modelCache;
@@ -86,9 +90,7 @@ import javax.annotation.Nullable;
 
     private static Map<Direction, Enums.IOSideConfig> normalizeConfig(Map<Direction, Enums.IOSideConfig> cfg) {
         EnumMap<Direction, Enums.IOSideConfig> normalized = new EnumMap<>(Direction.class);
-        for (Direction d : DirectionUtils.VALUES) {
-            normalized.put(d, cfg != null ? cfg.getOrDefault(d, Enums.IOSideConfig.NONE) : Enums.IOSideConfig.NONE);
-        }
+        for (Direction d : DirectionUtils.VALUES) { normalized.put(d, cfg != null ? cfg.getOrDefault(d, Enums.IOSideConfig.NONE) : Enums.IOSideConfig.NONE); }
         return ImmutableMap.copyOf(normalized);
     }
 

@@ -9,10 +9,9 @@ import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-
 import java.util.function.Supplier;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class LootEntryTypes {
+public class LootEntryTypes {
     private static final DeferredRegister<LootPoolEntryType> REGISTER = DeferredRegister.create(BuiltInRegistries.LOOT_POOL_ENTRY_TYPE.key(), ICLib.MODID);
     public static final DeferredHolder<LootPoolEntryType, LootPoolEntryType> DROP_INVENTORY = register("drop_inv", () -> InventoryDropLootEntry.CODEC);
     public static final DeferredHolder<LootPoolEntryType, LootPoolEntryType> BLOCK_ENTITY_DROP = register("tile_drop", () -> BlockEntityDropLootEntry.CODEC);

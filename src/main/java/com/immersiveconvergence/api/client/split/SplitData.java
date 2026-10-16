@@ -1,6 +1,6 @@
 package com.immersiveconvergence.api.client.split;
 
-import com.immersiveconvergence.api.multiblock.ICTemplateMultiblock;
+import com.immersiveconvergence.api.multiblock.TemplateMultiblock;
 import com.immersiveconvergence.api.multiblock.MultiblockHandler;
 import com.immersiveconvergence.core.lib.ICLib;
 
@@ -11,7 +11,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
-
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,11 +27,11 @@ public record SplitData(Set<Vec3i> parts, Vec3i size) {
     @Nullable public static SplitData fromMultiblock(ResourceLocation name, boolean mirrored) {
         Level level = Minecraft.getInstance().level;
         if (level == null) { return null; }
-        if (!(MultiblockHandler.getByUniqueName(name) instanceof ICTemplateMultiblock template)) {
+        if (!(MultiblockHandler.getByUniqueName(name) instanceof TemplateMultiblock template)) {
             if (REPORTED_MISSING.add(name)) { ICLib.IC_LOGGER.error("Split model references \"{}\", which is not a registered template multiblock", name); }
             return null;
         }
-        ICTemplateMultiblock.TemplateData templateData;
+        TemplateMultiblock.TemplateData templateData;
         try { templateData = template.getTemplate(level); }
         catch (RuntimeException e) { return null; }
         Vec3i templateSize = templateData.template().getSize();

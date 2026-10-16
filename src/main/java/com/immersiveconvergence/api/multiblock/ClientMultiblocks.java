@@ -12,7 +12,7 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class ClientMultiblocks {
+public class ClientMultiblocks {
     private static final Map<IMultiblock, MultiblockManualData> CACHED_PROPERTIES = new IdentityHashMap<>();
 
     public static MultiblockManualData get(IMultiblock multiblock) {

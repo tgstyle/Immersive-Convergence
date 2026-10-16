@@ -9,7 +9,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.phys.Vec3;
 
-@SuppressWarnings("unused")
 public class BakedQuadUtils {
 
     public static BakedQuad createBakedQuad(Vec3[] vertices, Direction facing, TextureAtlasSprite sprite, double[] uvs, float[] colour, boolean invert) {
@@ -84,8 +83,6 @@ public class BakedQuadUtils {
             ++nextVertex;
         }
 
-        public BakedQuad bake(int tint, Direction side, TextureAtlasSprite texture, boolean shade) {
-            return new BakedQuad(data, tint, side, texture, shade);
-        }
+        public BakedQuad bake(int tint, Direction side, TextureAtlasSprite texture, boolean shade) { return new BakedQuad(data, tint, side, texture, shade); }
     }
 }

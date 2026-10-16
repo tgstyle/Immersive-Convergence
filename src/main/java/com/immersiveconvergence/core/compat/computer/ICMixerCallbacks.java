@@ -5,6 +5,6 @@ import blusunrize.immersiveengineering.common.util.compat.computers.generic.Call
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.ComputerCallable;
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.owners.MixerCallbacks;
 
-@SuppressWarnings("unused") public class ICMixerCallbacks extends MixerCallbacks {
+public class ICMixerCallbacks extends MixerCallbacks {
     @ComputerCallable public boolean isValidRecipe(CallbackEnvironment<State> env) { return IEComputerValues.firstRecipe(env.object().processor.getQueue(), env.level()) != null; }
 }

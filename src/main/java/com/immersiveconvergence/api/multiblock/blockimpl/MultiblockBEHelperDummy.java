@@ -13,14 +13,11 @@ import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import javax.annotation.Nullable;
 import java.util.function.Function;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class MultiblockBEHelperDummy<State extends IMultiblockState>
+public class MultiblockBEHelperDummy<State extends IMultiblockState>
         extends MultiblockBEHelperCommon<State>
         implements IMultiblockBEHelperDummy<State> {
     private final MultiblockLevel level;
@@ -42,8 +39,11 @@ import java.util.function.Function;
     @Nullable @Override protected IMultiblockBEHelperMaster<State> getMasterHelperWithChunkloads() { return getMasterHelper(level.forciblyGetBlockEntity(multiblock.masterPosInMB())); }
 
     @Override public void load(CompoundTag tag, Provider provider) {
-        final String key = tag.contains("posInMultiblock", Tag.TAG_COMPOUND) ? "posInMultiblock" : "posInMB";
-        this.positionInMB = NbtUtils.readBlockPos(tag, key).orElseThrow();
+        if (tag.contains("posInMultiblock", Tag.TAG_COMPOUND)) {
+            final CompoundTag legacyPos = tag.getCompound("posInMultiblock");
+            this.positionInMB = new BlockPos(legacyPos.getInt("X"), legacyPos.getInt("Y"), legacyPos.getInt("Z"));
+        }
+        else { this.positionInMB = NbtUtils.readBlockPos(tag, "posInMB").orElseThrow(); }
     }
 
     @Override public void saveAdditional(CompoundTag tag, Provider provider) { tag.put("posInMB", NbtUtils.writeBlockPos(this.positionInMB)); }
@@ -55,12 +55,6 @@ import java.util.function.Function;
     }
 
     @Override public void handleUpdateTag(CompoundTag tag, Provider provider) { load(tag, provider); }
-
-    @Override public Packet<ClientGamePacketListener> getUpdatePacket() { return ClientboundBlockEntityDataPacket.create(this.be); }
-
-    @Override public void onDataPacket(CompoundTag tag, Provider provider) { load(tag, provider); }
-
-    @Override public MultiblockRegistration<State> getMultiblock() { return multiblock; }
 
     @Nullable private <T> T getOnMaster(Function<IMultiblockBEHelperMaster<State>, T> get) {
         final IMultiblockBEHelperMaster<State> master = getIMasterHelper();

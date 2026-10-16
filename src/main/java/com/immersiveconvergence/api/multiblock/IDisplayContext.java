@@ -9,10 +9,9 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
-
 import java.util.List;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public interface IDisplayContext {
+public interface IDisplayContext {
     default boolean isActive() { return false; }
 
     default IEnergyStorage getEnergyStorage() { return null; }

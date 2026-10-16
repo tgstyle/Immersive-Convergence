@@ -12,11 +12,10 @@ import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
-
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class BlockRotationUtil {
+public class BlockRotationUtil {
     public static final List<IRotationBlacklistEntry> blacklist = new ArrayList<>();
 
     public static boolean rotateBlock(Level world, BlockPos pos, boolean inverse) { return rotateBlock(world, pos, inverse ? Rotation.COUNTERCLOCKWISE_90 : Rotation.CLOCKWISE_90); }

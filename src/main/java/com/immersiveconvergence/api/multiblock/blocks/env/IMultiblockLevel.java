@@ -8,15 +8,12 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
 import javax.annotation.Nullable;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) @NonExtendable public interface IMultiblockLevel {
+@NonExtendable public interface IMultiblockLevel {
     BlockState getBlockState(BlockPos relativePosition);
-
-    void setBlock(BlockPos relativePosition, BlockState state);
 
     @Nullable BlockEntity getBlockEntity(BlockPos relativePosition);
 
@@ -32,19 +29,7 @@ import javax.annotation.Nullable;
 
     @Nullable Direction toAbsolute(@Nullable RelativeBlockFace relative);
 
-    AABB toAbsolute(AABB relative);
-
     Vec3 toAbsolute(Vec3 relative);
-
-    BlockPos toRelative(BlockPos absolute);
-
-    RelativeBlockFace toRelative(Direction absolute);
-
-    boolean isThundering();
-
-    boolean isRaining();
-
-    int getMaxBuildHeight();
 
     Level getRawLevel();
 

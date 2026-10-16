@@ -3,14 +3,10 @@ package com.immersiveconvergence.api.multiblock.util;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.world.level.block.Rotation;
-
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.Comparator;
 
 public final class DirectionUtils {
     public static final Direction[] VALUES = Direction.values();
-    public static final Direction[] BY_HORIZONTAL_INDEX = Arrays.stream(VALUES).filter(direction -> direction.getAxis().isHorizontal()).sorted(Comparator.comparingInt(Direction::get2DDataValue)).toArray(Direction[]::new);
 
     private DirectionUtils() {}
 

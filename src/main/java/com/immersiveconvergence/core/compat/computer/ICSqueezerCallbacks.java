@@ -11,7 +11,7 @@ import blusunrize.immersiveengineering.common.util.compat.computers.generic.owne
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 
-@SuppressWarnings("unused") public class ICSqueezerCallbacks extends SqueezerCallbacks {
+public class ICSqueezerCallbacks extends SqueezerCallbacks {
     @ComputerCallable public Object[] getRecipe(CallbackEnvironment<State> env, @IndexArgument int slot) {
         ItemStack input = ComputerValues.slot(env.object().getInventory(), slot, 8, "Input slots are 1-8");
         RecipeHolder<SqueezerRecipe> holder = SqueezerRecipe.findRecipe(env.level(), input);

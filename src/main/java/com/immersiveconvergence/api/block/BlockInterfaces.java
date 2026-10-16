@@ -20,22 +20,16 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class BlockInterfaces {
-    public BlockInterfaces() { }
+public class BlockInterfaces {
+    public BlockInterfaces() {}
 
     public interface IGeneralMultiblock extends BlockInterfaces.IBlockStateProvider {
         @Nullable IGeneralMultiblock master();
-
-        default boolean isDummy() {
-            BlockState state = getState();
-            return !state.hasProperty(ModProperties.MULTIBLOCKSLAVE) || state.getValue(ModProperties.MULTIBLOCKSLAVE);
-        }
     }
 
     public interface IHasDummyBlocks extends IGeneralMultiblock {
@@ -132,13 +126,13 @@ import java.util.function.Consumer;
 
         default Direction getFacingForPlacement(BlockPlaceContext ctx) {
             Direction f = getFacingLimitation().getDirectionForPlacement(ctx);
-            if (mirrorFacingOnPlacement(ctx.getPlayer())) { return f.getOpposite(); }
+            if (mirrorFacingOnPlacement()) { return f.getOpposite(); }
             else { return f; }
         }
 
-        default boolean mirrorFacingOnPlacement(LivingEntity placer) { return false; }
+        default boolean mirrorFacingOnPlacement() { return false; }
 
-        default boolean canHammerRotate(Direction side, Vec3 hit, LivingEntity entity) { return true; }
+        default boolean canHammerRotate() { return true; }
 
         default void afterRotation() { }
     }

@@ -3,15 +3,15 @@ package com.immersiveconvergence.api.multiblock;
 import com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistration;
 import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockState;
 import com.immersiveconvergence.api.block.ModProperties;
+
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.Property;
-
 import javax.annotation.Nonnull;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class MultiblockPartBlockWithMirrorActive<S extends IMultiblockState> extends MultiblockPartBlockWithMirror<S> {
+public class MultiblockPartBlockWithMirrorActive<S extends IMultiblockState> extends MultiblockPartBlockWithMirror<S> {
     public static final Property<Boolean> ACTIVE = ModProperties.ACTIVE;
 
     public MultiblockPartBlockWithMirrorActive(BlockBehaviour.Properties properties, MultiblockRegistration<S> multiblock) {

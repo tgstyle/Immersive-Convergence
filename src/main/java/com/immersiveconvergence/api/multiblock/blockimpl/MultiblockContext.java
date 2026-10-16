@@ -14,11 +14,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import java.util.function.BooleanSupplier;
 
-public record MultiblockContext<State extends IMultiblockState>(
-        MultiblockBEHelperMaster<State> masterHelper,
-        MultiblockRegistration<State> multiblock,
-        MultiblockLevel level
-) implements IMultiblockContext<State> {
+public record MultiblockContext<State extends IMultiblockState>(MultiblockBEHelperMaster<State> masterHelper, MultiblockRegistration<State> multiblock, MultiblockLevel level) implements IMultiblockContext<State> {
     @Override public State getState() { return masterHelper.getState(); }
 
     @Override public void markMasterDirty() { masterHelper.getMasterBE().setChanged(); }
@@ -41,12 +37,6 @@ public record MultiblockContext<State extends IMultiblockState>(
         Preconditions.checkState(masterHelper.multiblock.hasComparatorOutput());
         final int oldValue = masterHelper.getCurrentComparatorOutputs().put(posInMultiblock, newValue);
         if (oldValue != newValue) { level.updateNeighbourForOutputSignal(posInMultiblock); }
-    }
-
-    @Override public int getRedstoneInputValue(BlockPos posInMultiblock, RelativeBlockFace side, int fallback) {
-        Preconditions.checkState(masterHelper.multiblock.redstoneInputAware());
-        if (level.getBlockEntity(posInMultiblock) instanceof IMultiblockBE<?> beAtPos) { return beAtPos.getHelper().getRedstoneInput(side); }
-        else { return fallback; }
     }
 
     @Override public int getRedstoneInputValue(BlockPos posInMultiblock, int fallback) {

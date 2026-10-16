@@ -15,12 +15,11 @@ import net.minecraft.util.RandomSource;
 import net.neoforged.neoforge.client.model.ExtendedBlockModelDeserializer;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class MirrorModelLoader implements IGeometryLoader<MirrorGeometry> {
+public class MirrorModelLoader implements IGeometryLoader<MirrorGeometry> {
     public static final MirrorModelLoader INSTANCE = new MirrorModelLoader();
     public static final String INNER_MODEL = "inner_model";
 

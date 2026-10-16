@@ -2,7 +2,6 @@ package com.immersiveconvergence.api.compat;
 
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-
 import javax.annotation.Nullable;
 import java.util.LinkedHashMap;
 import java.util.List;

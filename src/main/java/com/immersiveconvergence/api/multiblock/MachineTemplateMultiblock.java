@@ -6,13 +6,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
-
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public abstract class MachineTemplateMultiblock extends TemplateMultiblock {
+public abstract class MachineTemplateMultiblock extends TemplateMultiblock {
     private MultiblockRegistration<?> multiblockRegistration;
     private final float manualScale;
     @Nullable private Supplier<ShapeData> shape;

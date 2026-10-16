@@ -14,7 +14,6 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -25,7 +24,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
 import javax.annotation.Nullable;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) @NonExtendable public interface IMultiblockBEHelper<State extends IMultiblockState> {
+@NonExtendable public interface IMultiblockBEHelper<State extends IMultiblockState> {
     @Nullable State getState();
 
     @Nullable IMultiblockContext<State> getContext();
@@ -40,8 +39,6 @@ import javax.annotation.Nullable;
 
     Packet<ClientGamePacketListener> getUpdatePacket();
 
-    void onDataPacket(CompoundTag tag, Provider provider);
-
     MultiblockRegistration<State> getMultiblock();
 
     VoxelShape getShape(@Nullable CollisionContext ctx, ShapeType type);
@@ -54,8 +51,6 @@ import javax.annotation.Nullable;
 
     ItemInteractionResult click(Player player, InteractionHand hand, BlockHitResult hit);
 
-    void onEntityCollided(Entity collided);
-
     int getComparatorValue();
 
     void onNeighborChanged(BlockPos fromPos);
@@ -65,11 +60,6 @@ import javax.annotation.Nullable;
     BlockState getOriginalBlock(Level level);
 
     ItemStack getPickBlock();
-
-    @SuppressWarnings("unchecked") @Nullable default <OtherState extends IMultiblockState> IMultiblockBEHelper<OtherState> asType(MultiblockRegistration<OtherState> targetType) {
-        if (targetType == getMultiblock()) { return (IMultiblockBEHelper<OtherState>)this; }
-        else { return null; }
-    }
 
     CapabilityPosition getCapabilityPosition(@Nullable Direction side);
 }

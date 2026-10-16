@@ -136,6 +136,8 @@ tasks.register('copyModsTomlForIntelliJ', Copy) {
     dependsOn processResources
 }
 
+minecraft.accessTransformers.file rootProject.file('src/main/resources/META-INF/accesstransformer.cfg')
+
 runs {
     configureEach { run ->
         run.jvmArguments.add '-Xmx4G'

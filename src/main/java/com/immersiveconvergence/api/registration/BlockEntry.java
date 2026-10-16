@@ -7,12 +7,11 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
-
 import javax.annotation.Nonnull;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class BlockEntry<T extends Block> implements Supplier<T>, ItemLike {
+public class BlockEntry<T extends Block> implements Supplier<T>, ItemLike {
     private final DeferredBlock<T> regObject;
     private final Supplier<BlockBehaviour.Properties> properties;
 

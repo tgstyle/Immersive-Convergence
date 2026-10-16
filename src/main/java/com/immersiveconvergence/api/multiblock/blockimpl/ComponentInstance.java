@@ -9,28 +9,19 @@ import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.BlockHitResult;
-import java.util.function.Consumer;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public record ComponentInstance<S>(IMultiblockComponent<S> component, IMultiblockContext<S> wrappedContext) {
+public record ComponentInstance<S>(IMultiblockComponent<S> component, IMultiblockContext<S> wrappedContext) {
     @SuppressWarnings("unchecked") public static <S, O> ComponentInstance<S> make(ExtraComponent<O, S> c, O state, IMultiblockContext<?> ctx) {
         final S wrappedState = c.makeWrapper().wrapState(state);
         IMultiblockContext<S> wrapped;
         if (wrappedState == state) { wrapped = (IMultiblockContext<S>)ctx; }
-        else { wrapped = new WrappingMultiblockContext<>(ctx, c.makeWrapper().wrapState(state)); }
+        else { wrapped = new WrappingMultiblockContext<>(ctx, wrappedState); }
         return new ComponentInstance<>(c.component(), wrapped);
     }
 
-    public void onEntityCollision(BlockPos positionInMB, Entity collided) { component.onEntityCollision(wrappedContext, positionInMB, collided); }
-
-    public ItemInteractionResult click(
-            BlockPos positionInMB, Player player, InteractionHand hand, BlockHitResult hit, boolean isClientSide
-    ) { return component.click(wrappedContext, positionInMB, player, hand, hit, isClientSide); }
-
-    public void dropExtraItems(Consumer<ItemStack> drop) { component.dropExtraItems(wrappedContext().getState(), drop); }
+    public ItemInteractionResult click(BlockPos positionInMB, Player player, InteractionHand hand, BlockHitResult hit, boolean isClientSide) { return component.click(wrappedContext, positionInMB, player, hand, hit, isClientSide); }
 
     public void tickServer() {
         if (component instanceof IServerTickableComponent<S> serverTickable) { serverTickable.tickServer(wrappedContext); }

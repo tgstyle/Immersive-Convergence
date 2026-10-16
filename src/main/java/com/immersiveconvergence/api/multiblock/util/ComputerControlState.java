@@ -2,7 +2,7 @@ package com.immersiveconvergence.api.multiblock.util;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class ComputerControlState {
+public class ComputerControlState {
     private final AtomicInteger refCount = new AtomicInteger(0);
     private boolean isEnabled = true;
 
@@ -20,8 +20,6 @@ import java.util.concurrent.atomic.AtomicInteger;
         refCount.set(0);
         isEnabled = true;
     }
-
-    public void setOneRef() { refCount.set(1); }
 
     public boolean isEnabled() { return isEnabled; }
 }

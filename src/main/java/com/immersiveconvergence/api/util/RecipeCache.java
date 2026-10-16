@@ -2,7 +2,7 @@ package com.immersiveconvergence.api.util;
 
 import java.util.function.BiFunction;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class RecipeCache {
+public class RecipeCache {
     @FunctionalInterface public interface HintedGetter2<K1, K2, R> { R get(K1 k1, K2 k2, R hint); }
 
     @FunctionalInterface public interface HintedGetter3<K1, K2, K3, R> { R get(K1 k1, K2 k2, K3 k3, R hint); }

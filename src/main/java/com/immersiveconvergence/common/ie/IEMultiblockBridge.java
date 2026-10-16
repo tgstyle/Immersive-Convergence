@@ -14,7 +14,6 @@ import blusunrize.immersiveengineering.api.multiblocks.blocks.logic.IMultiblockB
 import blusunrize.immersiveengineering.api.multiblocks.blocks.registry.MultiblockPartBlock;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.util.CapabilityPosition;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.util.RelativeBlockFace;
-import blusunrize.immersiveengineering.common.register.IEItems;
 import blusunrize.immersiveengineering.common.util.Utils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -44,8 +43,6 @@ public final class IEMultiblockBridge {
 
     public static void register(IMultiblock multiblock) { MultiblockHandler.registerMultiblock(new Adapter(multiblock)); }
 
-    public static boolean isHammer(ItemStack stack) { return stack.is(IEItems.Tools.HAMMER.asItem()); }
-
     public static ItemStack pickBlock(BlockState state) { return Utils.getPickBlock(state); }
 
     public static boolean isPartBlock(Block block) { return block instanceof MultiblockPartBlock<?>; }
@@ -60,14 +57,20 @@ public final class IEMultiblockBridge {
         return new CapabilityRegistrar<>() {
             @Override public <T> void register(BlockCapability<T, Direction> capability, CapabilityGetter<T, State> getter) {
                 inner.register(capability, (state, position) -> {
-                    MultiblockOverride override = MultiblockOverride.get(id);
-                    if (override == null || override.ignores(capability)) { return getter.getCapability(state, position); }
-                    com.immersiveconvergence.api.multiblock.blocks.util.CapabilityPosition mapped = override.map(capability, new com.immersiveconvergence.api.multiblock.blocks.util.CapabilityPosition(position.posInMultiblock(), position.side() == null ? null : com.immersiveconvergence.api.multiblock.blocks.util.RelativeBlockFace.valueOf(position.side().name())));
-                    return mapped == null ? null : getter.getCapability(state, new CapabilityPosition(mapped.posInMultiblock(), mapped.side() == null ? null : RelativeBlockFace.valueOf(mapped.side().name())));
+                    com.immersiveconvergence.api.multiblock.blocks.util.CapabilityPosition mapped = MultiblockOverride.resolve(id, capability, toIC(position));
+                    return mapped == null ? null : getter.getCapability(state, toIE(mapped));
                 });
             }
         };
     }
+
+    public static com.immersiveconvergence.api.multiblock.blocks.util.CapabilityPosition toIC(CapabilityPosition position) { return new com.immersiveconvergence.api.multiblock.blocks.util.CapabilityPosition(position.posInMultiblock(), toIC(position.side())); }
+
+    @Nullable public static com.immersiveconvergence.api.multiblock.blocks.util.RelativeBlockFace toIC(@Nullable RelativeBlockFace face) { return face == null ? null : com.immersiveconvergence.api.multiblock.blocks.util.RelativeBlockFace.valueOf(face.name()); }
+
+    public static CapabilityPosition toIE(com.immersiveconvergence.api.multiblock.blocks.util.CapabilityPosition position) { return new CapabilityPosition(position.posInMultiblock(), toIE(position.side())); }
+
+    @Nullable public static RelativeBlockFace toIE(@Nullable com.immersiveconvergence.api.multiblock.blocks.util.RelativeBlockFace face) { return face == null ? null : RelativeBlockFace.valueOf(face.name()); }
 
     @Nullable public static Component displayName(ResourceLocation name) {
         MultiblockHandler.IMultiblock multiblock = MultiblockHandler.getByUniqueName(name);

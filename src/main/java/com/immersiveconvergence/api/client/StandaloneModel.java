@@ -11,11 +11,10 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ModelEvent;
-
 import java.util.ArrayList;
 import java.util.List;
 
-@EventBusSubscriber(modid = ICLib.MODID, value = Dist.CLIENT) @SuppressWarnings({"unused", "RedundantSuppression"}) public class StandaloneModel {
+@EventBusSubscriber(modid = ICLib.MODID, value = Dist.CLIENT) public class StandaloneModel {
     private static final List<ModelResourceLocation> MODELS = new ArrayList<>();
     private final ModelResourceLocation name;
 

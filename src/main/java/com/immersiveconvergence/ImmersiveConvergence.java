@@ -17,6 +17,7 @@ import com.immersiveconvergence.core.registration.ICItems;
 import com.immersiveconvergence.core.registration.ICMenuTypes;
 import com.immersiveconvergence.core.registry.ICRegistryAliases;
 import com.immersiveconvergence.core.proxy.CommonProxy;
+
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -25,42 +26,16 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
-import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
-@SuppressWarnings("unused")
-@Mod(ICLib.MODID)
-public class ImmersiveConvergence {
-
-    private static CommonProxy proxy;
-
-    public static CommonProxy getProxy() {
-        if (proxy == null) {
-            proxy = FMLEnvironment.dist.isClient()
-                    ? loadClientProxy()
-                    : new CommonProxy();
-        }
-        return proxy;
-    }
-
-    private static CommonProxy loadClientProxy() {
-        try {
-            return (CommonProxy) Class.forName(
-                    "com.immersiveconvergence.core.proxy.ClientProxySupplier"
-            ).getMethod("get").invoke(null);
-        } catch (Exception e) {
-            ICLib.IC_LOGGER.error("Failed to load client proxy", e);
-            return new CommonProxy();
-        }
-    }
-
+@Mod(ICLib.MODID) public class ImmersiveConvergence {
     public ImmersiveConvergence(IEventBus modEventBus, ModContainer container) {
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::enqueueIMC);
         modEventBus.addListener(ICBlockEntities::registerCapabilities);
         if (ICMods.computerCraft()) { ICComputerCraft.init(modEventBus); }
-        CommonProxy.modConstruction(modEventBus);
+        CommonProxy.modConstruction();
         MultiblockRegistry.init(modEventBus);
         ICBlocks.init(modEventBus);
         ICItems.init(modEventBus);
@@ -83,6 +58,5 @@ public class ImmersiveConvergence {
         if (ModList.get().isLoaded(ProbeIntegration.MODID)) { ProbeIntegration.enqueueIMC(); }
     }
 
-    @SubscribeEvent
-    public static void onServerStarting(ServerStartingEvent event) {}
+    @SubscribeEvent public static void onServerStarting(ServerStartingEvent event) {}
 }

@@ -6,10 +6,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
-
 import javax.annotation.Nonnull;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class BaseItem extends Item {
+public class BaseItem extends Item {
 
     public BaseItem(Properties props) { super(props); }
 
@@ -19,10 +18,7 @@ import javax.annotation.Nonnull;
 
     @Override public boolean isBookEnchantable(@Nonnull ItemStack stack, @Nonnull ItemStack book) { return false; }
 
-    @Override
-    public boolean canEquip(@Nonnull ItemStack stack, @Nonnull EquipmentSlot armorType, LivingEntity entity) {
-        return entity.getEquipmentSlotForItem(stack) == armorType || getEquipmentSlot(stack) == armorType;
-    }
+    @Override public boolean canEquip(@Nonnull ItemStack stack, @Nonnull EquipmentSlot armorType, LivingEntity entity) { return entity.getEquipmentSlotForItem(stack) == armorType || getEquipmentSlot(stack) == armorType; }
 
     @Override public int getBarColor(@Nonnull ItemStack pStack) { return Mth.hsvToRgb(Math.max(0.0F, getBarWidth(pStack) / (float) MAX_BAR_WIDTH) / 3.0F, 1.0F, 1.0F); }
 }

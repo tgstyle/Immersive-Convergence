@@ -23,12 +23,10 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
-
 import javax.annotation.Nullable;
 import java.util.List;
 
-@EventBusSubscriber(modid = ICLib.MODID, value = Dist.CLIENT)
-public final class MultiblockOverlayHandler {
+@EventBusSubscriber(modid = ICLib.MODID, value = Dist.CLIENT) public final class MultiblockOverlayHandler {
     private MultiblockOverlayHandler() {}
 
     @SubscribeEvent public static void register(RegisterGuiLayersEvent event) { event.registerBelow(VanillaGuiLayers.DEBUG_OVERLAY, ICLib.rl("multiblock_overlay"), MultiblockOverlayHandler::render); }
@@ -38,13 +36,13 @@ public final class MultiblockOverlayHandler {
         LocalPlayer player = mc.player;
         if (player == null || !(mc.hitResult instanceof BlockHitResult hit) || !(player.level().getBlockEntity(hit.getBlockPos()) instanceof IMultiblockBE<?> be)) { return; }
         ItemStack held = player.getItemInHand(InteractionHand.MAIN_HAND);
-        List<Component> text = overlayText(be.getHelper(), hit, player, !held.isEmpty() && ICUtils.isHammer(held));
+        List<Component> text = overlayText(be.getHelper(), player, !held.isEmpty() && ICUtils.isHammer(held));
         if (text != null && !text.isEmpty()) { draw(graphics, text, mc.getWindow().getGuiScaledWidth(), mc.getWindow().getGuiScaledHeight(), mc.font, mc.renderBuffers().bufferSource()); }
     }
 
-    @SuppressWarnings("unchecked") @Nullable private static <S> List<Component> overlayText(IMultiblockBEHelper<?> helper, BlockHitResult hit, LocalPlayer player, boolean hammer) {
+    @SuppressWarnings("unchecked") @Nullable private static <S> List<Component> overlayText(IMultiblockBEHelper<?> helper, LocalPlayer player, boolean hammer) {
         if (!(helper.getMultiblock().logic() instanceof IMBOverlayText<?> handler)) { return null; }
-        return ((IMBOverlayText<S>) handler).getOverlayText((S) helper.getState(), helper.getPositionInMB(), hit, player, hammer);
+        return ((IMBOverlayText<S>) handler).getOverlayText((S) helper.getState(), player, hammer);
     }
 
     private static void draw(GuiGraphics graphics, List<Component> text, int scaledWidth, int scaledHeight, Font font, MultiBufferSource.BufferSource buffer) {

@@ -10,11 +10,10 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public abstract class BaseRecipeCategory<T> implements IRecipeCategory<T> {
+public abstract class BaseRecipeCategory<T> implements IRecipeCategory<T> {
     protected final IGuiHelper guiHelper;
     private final RecipeType<T> type;
     public MutableComponent title;

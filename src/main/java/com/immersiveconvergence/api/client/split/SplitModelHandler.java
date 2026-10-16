@@ -14,23 +14,18 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ModelEvent;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
-@SuppressWarnings("unused")
-@EventBusSubscriber(modid = ICLib.MODID, value = Dist.CLIENT)
-public class SplitModelHandler {
+@EventBusSubscriber(modid = ICLib.MODID, value = Dist.CLIENT) public class SplitModelHandler {
     private static final Map<ResourceLocation, Machine> MACHINES = new HashMap<>();
 
     public static void register(Block block, ResourceLocation multiblock) { register(block, multiblock, Direction.NORTH); }
 
-    public static void register(Block block, ResourceLocation multiblock, Direction unrotated) {
-        put(block, unrotated, mirrored -> () -> SplitData.fromMultiblock(multiblock, mirrored));
-    }
+    public static void register(Block block, ResourceLocation multiblock, Direction unrotated) { put(block, unrotated, mirrored -> () -> SplitData.fromMultiblock(multiblock, mirrored)); }
 
     public static void register(Block block, List<Vec3i> parts, Direction unrotated) {
         SplitData data = SplitData.fromParts(parts);

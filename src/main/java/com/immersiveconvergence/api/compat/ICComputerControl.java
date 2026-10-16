@@ -10,7 +10,6 @@ import com.immersiveconvergence.api.multiblock.util.ComputerControlState;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
-
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
@@ -18,9 +17,9 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public final class ICComputerControl {
-    public static final String GET_ENABLED = "getEnabled";
-    public static final String SET_ENABLED = "setEnabled";
-    public static final String ENABLE_COMPUTER_CONTROL = "enableComputerControl";
+    private static final String GET_ENABLED = "getEnabled";
+    private static final String SET_ENABLED = "setEnabled";
+    private static final String ENABLE_COMPUTER_CONTROL = "enableComputerControl";
 
     private ICComputerControl() {}
 
@@ -54,24 +53,26 @@ public final class ICComputerControl {
             return null;
         });
         table.call(ENABLE_COMPUTER_CONTROL, (state, args) -> {
-            boolean enable = ICComputerArgs.checkBoolean(args, 0);
-            ComputerControlState computer = state(control, state);
-            if (!enable) {
-                computer.clear();
-                return null;
-            }
-            if (!computer.isAttached()) { computer.addReference(); }
-            computer.setEnabled(true);
+            enableComputerControl(state(control, state), ICComputerArgs.checkBoolean(args, 0));
             return null;
         });
         return table.connection(state -> state(control, state).addReference(), state -> state(control, state).removeReference());
+    }
+
+    public static void enableComputerControl(ComputerControlState computer, boolean enable) {
+        if (!enable) {
+            computer.clear();
+            return;
+        }
+        if (!computer.isAttached()) { computer.addReference(); }
+        computer.setEnabled(true);
     }
 
     private static <S> ComputerControlState state(RedstoneControl<S> control, S state) { return control.wrapState(state).getComputerControlState(); }
 
     @SuppressWarnings("unchecked") @Nullable private static <S extends IMultiblockState> RedstoneControl<S> control(MultiblockRegistration<S> registration) {
         for (ExtraComponent<S, ?> component : registration.extraComponents()) {
-            if (component.makeWrapper() instanceof RedstoneControl<?> control && control.allowComputerControl()) { return (RedstoneControl<S>) control; }
+            if (component.makeWrapper() instanceof RedstoneControl<?> control) { return (RedstoneControl<S>) control; }
         }
         return null;
     }

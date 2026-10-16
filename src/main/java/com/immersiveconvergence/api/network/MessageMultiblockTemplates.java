@@ -1,7 +1,7 @@
 package com.immersiveconvergence.api.network;
 
 import com.immersiveconvergence.api.manual.ICManual;
-import com.immersiveconvergence.api.multiblock.ICTemplateMultiblock;
+import com.immersiveconvergence.api.multiblock.TemplateMultiblock;
 import com.immersiveconvergence.core.lib.ICLib;
 
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -13,7 +13,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-
 import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +28,7 @@ public record MessageMultiblockTemplates(Map<ResourceLocation, CompoundTag> temp
             for (Map.Entry<ResourceLocation, CompoundTag> entry : message.templates.entrySet()) {
                 StructureTemplate template = new StructureTemplate();
                 template.load(BuiltInRegistries.BLOCK.asLookup(), entry.getValue());
-                ICTemplateMultiblock.SYNCED_CLIENT_TEMPLATES.put(entry.getKey(), template);
+                TemplateMultiblock.SYNCED_CLIENT_TEMPLATES.put(entry.getKey(), template);
             }
             ICManual.reset();
         });

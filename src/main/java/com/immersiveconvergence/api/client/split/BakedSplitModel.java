@@ -1,6 +1,7 @@
 package com.immersiveconvergence.api.client.split;
 
 import com.immersiveconvergence.api.client.IModelCacheKeyProvider;
+import com.immersiveconvergence.api.multiblock.util.DirectionUtils;
 import com.immersiveconvergence.api.util.ICUtils;
 import com.immersiveconvergence.api.util.ResettableLazy;
 
@@ -18,7 +19,6 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.data.ModelData;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -28,7 +28,6 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-@SuppressWarnings("unused")
 public class BakedSplitModel<T extends BakedModel> extends SplitModelWrapper<T> {
     private final boolean dynamic;
     private final ResettableLazy<Map<Vec3i, List<BakedQuad>>> splitModels;
@@ -39,9 +38,7 @@ public class BakedSplitModel<T extends BakedModel> extends SplitModelWrapper<T> 
         super(base, splitData);
         this.dynamic = dynamic;
         if (dynamic) {
-            if (!(base instanceof IModelCacheKeyProvider)) {
-                throw new RuntimeException("Dynamic split model requires the inner model to implement IModelCacheKeyProvider");
-            }
+            if (!(base instanceof IModelCacheKeyProvider)) { throw new RuntimeException("Dynamic split model requires the inner model to implement IModelCacheKeyProvider"); }
             @SuppressWarnings("unchecked") IModelCacheKeyProvider<Object> kp = (IModelCacheKeyProvider<Object>) base;
             this.keyProvider = kp;
             this.subModelCache = CacheBuilder.newBuilder().maximumSize(1024).expireAfterAccess(10, TimeUnit.MINUTES).build(CacheLoader.from(key -> {
@@ -53,7 +50,7 @@ public class BakedSplitModel<T extends BakedModel> extends SplitModelWrapper<T> 
         else {
             this.splitModels = new ResettableLazy<>(() -> {
                 List<BakedQuad> quads = new ArrayList<>(base.getQuads(null, null, ICUtils.RANDOM_SOURCE, ModelData.EMPTY, null));
-                for (Direction side : Direction.values()) { quads.addAll(base.getQuads(null, side, ICUtils.RANDOM_SOURCE, ModelData.EMPTY, null)); }
+                for (Direction side : DirectionUtils.VALUES) { quads.addAll(base.getQuads(null, side, ICUtils.RANDOM_SOURCE, ModelData.EMPTY, null)); }
                 return split(quads, Objects.requireNonNull(splitData()).parts(), transform);
             });
             this.subModelCache = null;

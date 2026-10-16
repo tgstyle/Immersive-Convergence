@@ -1,7 +1,6 @@
 package com.immersiveconvergence.mixin.ie;
 
 import com.immersiveconvergence.api.multiblock.ClearTankRegistry;
-import com.immersiveconvergence.api.multiblock.IDisassemblingAware;
 import com.immersiveconvergence.api.multiblock.IResettableCache;
 import com.immersiveconvergence.api.multiblock.MultiblockDataLoader;
 import com.immersiveconvergence.api.multiblock.MultiblockOverride;
@@ -46,8 +45,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.Function;
 
-@Mixin(MultiblockBEHelperCommon.class)
-public abstract class MultiblockBEHelperCommonMixin implements IDisassemblingAware {
+@Mixin(MultiblockBEHelperCommon.class) public abstract class MultiblockBEHelperCommonMixin {
     @Shadow(remap = false) private boolean beingDisassembled;
 
     @Shadow(remap = false) protected abstract IMultiblockBEHelperMaster<?> getMasterHelperWithChunkloads();
@@ -61,10 +59,7 @@ public abstract class MultiblockBEHelperCommonMixin implements IDisassemblingAwa
     @Shadow(remap = false) @Final private EnumMap<ShapeType, ?> cachedShape;
     @Unique private int ic$shapeGeneration;
 
-    @Override public boolean ic$isDisassembling() { return beingDisassembled; }
-
-    @Inject(method = "disassemble", at = @At("HEAD"), cancellable = true, remap = false)
-    private void ic$queueDisassembly(CallbackInfo ci) {
+    @Inject(method = "disassemble", at = @At("HEAD"), cancellable = true, remap = false) private void ic$queueDisassembly(CallbackInfo ci) {
         if (beingDisassembled) { return; }
         IMultiblockBEHelper<?> self = (IMultiblockBEHelper<?>) this;
         MultiblockRegistration<?> registration = self.getMultiblock();
@@ -88,16 +83,13 @@ public abstract class MultiblockBEHelperCommonMixin implements IDisassemblingAwa
         }
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    @Unique private static @Nullable Function<BlockPos, BlockState> ic$memorizedStates(IMultiblockBEHelperMaster<?> master, MultiblockRegistration<?> registration) {
+    @SuppressWarnings({"rawtypes", "unchecked"}) @Unique private static @Nullable Function<BlockPos, BlockState> ic$memorizedStates(IMultiblockBEHelperMaster<?> master, MultiblockRegistration<?> registration) {
         IMultiblockState state = master.getState();
         if (registration.logic() instanceof MBMemorizeStructure memo) { return pos -> memo.getMemorizedBlockState(state, pos); }
         return null;
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    @Inject(method = "getShape", at = @At("HEAD"), cancellable = true, remap = false)
-    private void ic$overrideShape(CollisionContext ctx, ShapeType type, CallbackInfoReturnable<VoxelShape> cir) {
+    @SuppressWarnings({"rawtypes", "unchecked"}) @Inject(method = "getShape", at = @At("HEAD"), cancellable = true, remap = false) private void ic$overrideShape(CollisionContext ctx, ShapeType type, CallbackInfoReturnable<VoxelShape> cir) {
         int generation = MultiblockDataLoader.generation();
         if (ic$shapeGeneration != generation) {
             ic$shapeGeneration = generation;
@@ -122,8 +114,7 @@ public abstract class MultiblockBEHelperCommonMixin implements IDisassemblingAwa
         cir.setReturnValue(absolute);
     }
 
-    @Inject(method = "click", at = @At("HEAD"), cancellable = true, remap = false)
-    private void ic$clearTank(Player player, InteractionHand hand, BlockHitResult hit, CallbackInfoReturnable<ItemInteractionResult> cir) {
+    @Inject(method = "click", at = @At("HEAD"), cancellable = true, remap = false) private void ic$clearTank(Player player, InteractionHand hand, BlockHitResult hit, CallbackInfoReturnable<ItemInteractionResult> cir) {
         MultiblockBEHelperMaster<?> master = getMasterHelper();
         if (master == null) { return; }
         IMultiblockBEHelper<?> self = (IMultiblockBEHelper<?>) this;

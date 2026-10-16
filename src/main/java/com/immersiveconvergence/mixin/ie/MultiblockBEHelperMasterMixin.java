@@ -1,6 +1,7 @@
 package com.immersiveconvergence.mixin.ie;
 
 import com.immersiveconvergence.api.multiblock.MultiblockDataLoader;
+import com.immersiveconvergence.api.multiblock.util.DirectionUtils;
 
 import blusunrize.immersiveengineering.api.multiblocks.blocks.MultiblockRegistration;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockLevel;
@@ -34,8 +35,7 @@ import java.util.List;
 
     @Shadow(remap = false) public abstract void invalidateAllCaps();
 
-    @Inject(method = "tickServer", at = @At("HEAD"), remap = false)
-    private void ic$followDataReload(CallbackInfo ci) {
+    @Inject(method = "tickServer", at = @At("HEAD"), remap = false) private void ic$followDataReload(CallbackInfo ci) {
         int generation = MultiblockDataLoader.generation();
         if (ic$dataGeneration == generation) { return; }
         BlockEntity be = getMasterBE();
@@ -56,7 +56,7 @@ import java.util.List;
 
     @Unique private static boolean ic$neighborhoodSafe(Level level, BlockPos pos) {
         if (!SafeChunkUtils.isChunkSafe(level, pos)) { return false; }
-        for (Direction dir : Direction.values()) {
+        for (Direction dir : DirectionUtils.VALUES) {
             if (!SafeChunkUtils.isChunkSafe(level, pos.relative(dir))) { return false; }
         }
         return true;

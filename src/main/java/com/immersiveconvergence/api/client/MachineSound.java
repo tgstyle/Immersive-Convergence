@@ -7,26 +7,17 @@ import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.phys.Vec3;
-
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class MachineSound extends AbstractTickableSoundInstance {
+public class MachineSound extends AbstractTickableSoundInstance {
     private final BooleanSupplier active;
     private final BooleanSupplier valid;
     private final Supplier<Float> volumeSupplier;
     private final Supplier<Float> pitchSupplier;
     private int inactiveTicks;
 
-    private MachineSound(
-            BooleanSupplier active,
-            BooleanSupplier valid,
-            Vec3 pos,
-            SoundEvent sound,
-            boolean loop,
-            Supplier<Float> volumeSupplier,
-            Supplier<Float> pitchSupplier
-    ) {
+    private MachineSound(BooleanSupplier active, BooleanSupplier valid, Vec3 pos, SoundEvent sound, boolean loop, Supplier<Float> volumeSupplier, Supplier<Float> pitchSupplier) {
         super(sound, SoundSource.BLOCKS, SoundInstance.createUnseededRandom());
         this.active = active;
         this.valid = valid;
@@ -41,24 +32,9 @@ import java.util.function.Supplier;
         this.inactiveTicks = 0;
     }
 
-    public static BooleanSupplier startSound(
-            BooleanSupplier active,
-            BooleanSupplier valid,
-            Vec3 pos,
-            Supplier<SoundEvent> sound,
-            Supplier<Float> volumeSupplier,
-            Supplier<Float> pitchSupplier
-    ) { return startSound(active, valid, pos, sound, true, volumeSupplier, pitchSupplier); }
+    public static BooleanSupplier startSound(BooleanSupplier active, BooleanSupplier valid, Vec3 pos, Supplier<SoundEvent> sound, Supplier<Float> volumeSupplier, Supplier<Float> pitchSupplier) { return startSound(active, valid, pos, sound, true, volumeSupplier, pitchSupplier); }
 
-    public static BooleanSupplier startSound(
-            BooleanSupplier active,
-            BooleanSupplier valid,
-            Vec3 pos,
-            Supplier<SoundEvent> sound,
-            boolean loop,
-            Supplier<Float> volumeSupplier,
-            Supplier<Float> pitchSupplier
-    ) {
+    public static BooleanSupplier startSound(BooleanSupplier active, BooleanSupplier valid, Vec3 pos, Supplier<SoundEvent> sound, boolean loop, Supplier<Float> volumeSupplier, Supplier<Float> pitchSupplier) {
         MachineSound instance = new MachineSound(active, valid, pos, sound.get(), loop, volumeSupplier, pitchSupplier);
         SoundManager soundManager = Minecraft.getInstance().getSoundManager();
         soundManager.play(instance);

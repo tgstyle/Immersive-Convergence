@@ -10,13 +10,12 @@ import flaxbeard.immersivepetroleum.common.blocks.multiblocks.logic.distillation
 import flaxbeard.immersivepetroleum.common.blocks.multiblocks.logic.distillation_tower.DistillationTowerLogic.State;
 import flaxbeard.immersivepetroleum.common.util.inventory.MultiFluidTankFiltered;
 import net.minecraft.world.item.ItemStack;
-
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
-@SuppressWarnings("unused") public class DistillationTowerCallbacks extends Callback<State> {
+public class DistillationTowerCallbacks extends Callback<State> {
     public DistillationTowerCallbacks() {
         addAdditional(MBEnergyCallbacks.INSTANCE, state -> state.energy);
         addAdditional(new TankInfoCallbacks<>(state -> state.tanks.input(), "input"));

@@ -16,7 +16,7 @@ import flaxbeard.immersivepetroleum.common.blocks.tileentities.WellPipeTileEntit
 import flaxbeard.immersivepetroleum.common.blocks.tileentities.WellTileEntity;
 import net.minecraft.server.level.ColumnPos;
 
-@SuppressWarnings("unused") public class ReservoirCallbacks extends Callback<IMultiblockBEHelper<State>> {
+public class ReservoirCallbacks extends Callback<IMultiblockBEHelper<State>> {
     @ComputerCallable public String getReservoirFluid(CallbackEnvironment<IMultiblockBEHelper<State>> env) {
         Reservoir reservoir = reservoir(env);
         return reservoir == null ? null : ComputerValues.fluidName(reservoir.getFluid());

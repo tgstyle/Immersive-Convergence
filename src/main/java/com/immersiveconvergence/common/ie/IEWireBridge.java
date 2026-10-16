@@ -15,16 +15,18 @@ import blusunrize.immersiveengineering.common.items.WireCoilItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.function.IntSupplier;
 
 public final class IEWireBridge {
     private IEWireBridge() {}
 
-    @Nonnull public static ICWireType of(@Nonnull WireType wire) {
-        ICWireType mirror = wire instanceof IEnergyWire energy ? new ICWireType(wire.getUniqueName(), wire.getCategory(), wire::getRenderDiameter, energy::getTransferRate) : new ICWireType(wire.getUniqueName(), wire.getCategory(), wire::getRenderDiameter, () -> Integer.MAX_VALUE);
-        return ICWireType.register(mirror);
+    @Nonnull public static ICWireType of(@Nonnull WireType wire) { return ICWireType.registerIfAbsent(wire.getUniqueName(), () -> mirror(wire)); }
+
+    @Nonnull private static ICWireType mirror(@Nonnull WireType wire) {
+        IntSupplier transferRate = wire instanceof IEnergyWire energy ? energy::getTransferRate : () -> Integer.MAX_VALUE;
+        return new ICWireType(wire.getUniqueName(), wire.getCategory(), wire::getRenderDiameter, transferRate);
     }
 
     @Nullable public static ICWireType ofNullable(@Nullable WireType wire) { return wire == null ? null : of(wire); }
@@ -35,13 +37,13 @@ public final class IEWireBridge {
 
     @Nullable public static ConnectionPoint toIE(@Nullable ICConnectionPoint cp) { return cp == null ? null : new ConnectionPoint(cp.position(), cp.index()); }
 
-    @Nonnull public static ICTargetingInfo targeting(@Nonnull TargetingInfo target) { return new ICTargetingInfo(target.side, target.hitX, target.hitY, target.hitZ); }
+    @Nonnull public static ICTargetingInfo targeting(@Nonnull TargetingInfo target) { return new ICTargetingInfo(target.hitX, target.hitY, target.hitZ); }
 
     public static boolean isWireCoil(ItemStack stack) { return stack.getItem() instanceof WireCoilItem; }
 
-    public static boolean hasExternalConnections(Level level, ICConnectionPoint cp) {
+    public static boolean hasNoExternalConnections(Level level, ICConnectionPoint cp) {
         ConnectionPoint point = new ConnectionPoint(cp.position(), cp.index());
-        return !GlobalWireNetwork.getNetwork(level).getLocalNet(point).getConnections(point).stream().allMatch(Connection::isInternal);
+        return GlobalWireNetwork.getNetwork(level).getLocalNet(point).getConnections(point).stream().allMatch(Connection::isInternal);
     }
 
     public static int redstoneValue(Level level, BlockPos pos, int channel) {

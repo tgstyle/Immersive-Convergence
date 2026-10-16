@@ -11,9 +11,7 @@ import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockBEHelper;
 import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockBEHelperMaster;
 import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockContext;
 import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockLevel;
-import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockLogic;
 import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockState;
-import com.immersiveconvergence.api.multiblock.blocks.logic.MBMemorizeStructure;
 import com.immersiveconvergence.api.multiblock.blocks.util.CapabilityPosition;
 import com.immersiveconvergence.api.multiblock.blocks.util.MultiblockOrientation;
 import com.immersiveconvergence.api.multiblock.blocks.util.RelativeBlockFace;
@@ -24,10 +22,12 @@ import com.immersiveconvergence.api.multiblock.util.MultiblockItemUtils;
 import com.google.common.base.Preconditions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -45,9 +45,8 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public abstract class MultiblockBEHelperCommon<State extends IMultiblockState> implements IMultiblockBEHelper<State>, IDisassemblingAware {
+public abstract class MultiblockBEHelperCommon<State extends IMultiblockState> implements IMultiblockBEHelper<State>, IDisassemblingAware {
     protected final BlockEntity be;
     private boolean beingDisassembled = false;
     private final Map<ShapeType, VoxelShape> overrideShapes = new EnumMap<>(ShapeType.class);
@@ -56,7 +55,6 @@ import java.util.function.Function;
     private final Map<RelativeBlockFace, Integer> cachedRedstoneValues = new EnumMap<>(RelativeBlockFace.class);
     protected final MultiblockRegistration<State> multiblock;
     protected final MultiblockOrientation orientation;
-    private IMultiblockBEHelperMaster<State> masterHelperDuringDisassembly;
     private final EnumMap<ShapeType, CachedValue<BlockPos, MultiblockOrientation, VoxelShape>> cachedShape;
 
     protected MultiblockBEHelperCommon(BlockEntity be, MultiblockRegistration<State> multiblock, BlockState state) {
@@ -76,7 +74,6 @@ import java.util.function.Function;
 
     @Override public VoxelShape getShape(@Nullable CollisionContext ctx, ShapeType type) {
         final BlockPos posInMB = getPositionInMB();
-        final IMultiblockLogic<State> logic = multiblock.logic();
         final int generation = MultiblockDataLoader.generation();
         if (shapeGeneration != generation) {
             shapeGeneration = generation;
@@ -84,13 +81,12 @@ import java.util.function.Function;
             overrideShapesPos = null;
         }
         final VoxelShape overridden = getOverrideShape(posInMB, type);
-        final VoxelShape absoluteShape = overridden != null ? overridden : cachedShape.get(type).get(posInMB, orientation);
-        if (ctx != null && multiblock.postProcessesShape()) {
-            final IMultiblockContext<State> multiblockCtx = getContext();
-            if (multiblockCtx != null) { return logic.postProcessAbsoluteShape(multiblockCtx, absoluteShape, ctx, posInMB, type); }
-        }
-        return absoluteShape;
+        return overridden != null ? overridden : cachedShape.get(type).get(posInMB, orientation);
     }
+
+    @Override public Packet<ClientGamePacketListener> getUpdatePacket() { return ClientboundBlockEntityDataPacket.create(be); }
+
+    @Override public MultiblockRegistration<State> getMultiblock() { return multiblock; }
 
     @Nullable private VoxelShape getOverrideShape(BlockPos posInMB, ShapeType type) {
         final MultiblockOverride override = MultiblockOverride.get(multiblock.id());
@@ -114,10 +110,7 @@ import java.util.function.Function;
         final MultiblockBEHelperMaster<State> helper = getMasterHelper();
         if (helper == null) { return ItemInteractionResult.FAIL; }
         final MultiblockContext<State> ctx = helper.getContext();
-        final ItemInteractionResult cleared = ClearTankRegistry.handle(multiblock.id(), getPositionInMB(), ctx.getState(), () -> {
-            ctx.markMasterDirty();
-            ctx.requestMasterBESync();
-        }, player, hand);
+        final ItemInteractionResult cleared = ClearTankRegistry.handle(multiblock.id(), getPositionInMB(), ctx.getState(), ctx::markDirtyAndSync, player, hand);
         if (cleared != null) { return cleared; }
         for (final ComponentInstance<?> component : helper.getComponentInstances()) {
             final ItemInteractionResult componentResult = component.click(
@@ -130,9 +123,9 @@ import java.util.function.Function;
 
     @Override public void disassemble() {
         if (beingDisassembled || queueDisassembly()) { return; }
-        this.masterHelperDuringDisassembly = getMasterHelperWithChunkloads();
-        if (masterHelperDuringDisassembly == null) { return; }
-        final IMultiblockContext<State> ctx = masterHelperDuringDisassembly.getContext();
+        final IMultiblockBEHelperMaster<State> masterHelper = getMasterHelperWithChunkloads();
+        if (masterHelper == null) { return; }
+        final IMultiblockContext<State> ctx = masterHelper.getContext();
         final IMultiblockLevel levelWrapper = ctx.getLevel();
         final BlockPos absolutePos = levelWrapper.toAbsolute(getPositionInMB());
         final Level levelRaw = levelWrapper.getRawLevel();
@@ -153,25 +146,12 @@ import java.util.function.Function;
         if (rot == null) { return false; }
         final Mirror mirror = mbOrientation.mirrored() ? Mirror.FRONT_BACK : Mirror.NONE;
         final BlockPos masterPos = mbLevel.toAbsolute(multiblock.masterPosInMB());
-        if (!QueueProcessor.disassemble(serverLevel, multiblock.getStructure().apply(serverLevel), mbLevel.getAbsoluteOrigin(), mirror, rot, masterPos, multiblock.size(serverLevel), multiblock.block().get(), false, getMemorizedStates(master))) { return false; }
+        if (!QueueProcessor.disassemble(serverLevel, multiblock.getStructure().apply(serverLevel), mbLevel.getAbsoluteOrigin(), mirror, rot, masterPos, multiblock.size(serverLevel), multiblock.block().get(), false, null)) { return false; }
         beingDisassembled = true;
         final BlockPos brokenPos = mbLevel.toAbsolute(getPositionInMB());
         serverLevel.removeBlock(brokenPos, false);
         QueueProcessor.refreshLight(serverLevel, brokenPos);
         return true;
-    }
-
-    @Nullable private Function<BlockPos, BlockState> getMemorizedStates(IMultiblockBEHelperMaster<State> master) {
-        final State state = master.getState();
-        if (multiblock.logic() instanceof MBMemorizeStructure<State> memo) { return pos -> memo.getMemorizedBlockState(state, pos); }
-        return null;
-    }
-
-    @Override public void onEntityCollided(Entity collided) {
-        final MultiblockBEHelperMaster<State> helper = getMasterHelper();
-        if (helper == null) { return; }
-        getMultiblock().logic().onEntityCollision(helper.getContext(), getPositionInMB(), collided);
-        for (final ComponentInstance<?> component : helper.getComponentInstances()) { component.onEntityCollision(getPositionInMB(), collided); }
     }
 
     @Nullable protected abstract IMultiblockBEHelperMaster<State> getMasterHelperWithChunkloads();
@@ -204,13 +184,6 @@ import java.util.function.Function;
     }
 
     @Override public BlockState getOriginalBlock(Level level) {
-        IMultiblockLogic<State> logic = getMultiblock().logic();
-        State state = getState();
-        if (state == null && this.masterHelperDuringDisassembly != null) { state = this.masterHelperDuringDisassembly.getState(); }
-        if (logic instanceof MBMemorizeStructure<State> memo && state != null) {
-            BlockState memorized = memo.getMemorizedBlockState(state, getPositionInMB());
-            if (memorized != null) { return memorized; }
-        }
         for (StructureBlockInfo block : multiblock.getStructure().apply(level)) {
             if (block.pos().equals(getPositionInMB())) { return block.state(); }
         }
@@ -221,11 +194,6 @@ import java.util.function.Function;
         final Level level = be.getLevel();
         if (level == null) { return ItemStack.EMPTY; }
         return MultiblockItemUtils.getPickBlock(getOriginalBlock(level));
-    }
-
-    @Nullable public IMultiblockBEHelperMaster<State> getMasterHelperDuringDisassembly() {
-        if (masterHelperDuringDisassembly != null) { return masterHelperDuringDisassembly; }
-        else { return getMasterHelperWithChunkloads(); }
     }
 
     private int updateRedstoneValue(Direction sideAbsolute, BlockPos neighborPos) {

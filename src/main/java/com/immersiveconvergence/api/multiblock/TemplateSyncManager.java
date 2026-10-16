@@ -12,19 +12,17 @@ import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@EventBusSubscriber(modid = ICLib.MODID)
-public final class TemplateSyncManager {
+@EventBusSubscriber(modid = ICLib.MODID) public final class TemplateSyncManager {
     private TemplateSyncManager() {}
 
     @SubscribeEvent public static void onLogin(PlayerLoggedInEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player) || !(player.level() instanceof ServerLevel level)) { return; }
         Map<ResourceLocation, CompoundTag> templates = new LinkedHashMap<>();
         for (IMultiblock multiblock : MultiblockHandler.getMultiblocks()) {
-            if (multiblock instanceof ICTemplateMultiblock template) { templates.put(template.getTemplateLocation(), template.getTemplate(level).template().save(new CompoundTag())); }
+            if (multiblock instanceof TemplateMultiblock template) { templates.put(template.getTemplateLocation(), template.getTemplate(level).template().save(new CompoundTag())); }
         }
         if (!templates.isEmpty()) { PacketHandler.sendToPlayer(player, new MessageMultiblockTemplates(templates)); }
     }

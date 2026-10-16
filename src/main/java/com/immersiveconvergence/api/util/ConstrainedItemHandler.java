@@ -1,6 +1,5 @@
 package com.immersiveconvergence.api.util;
 
-
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
@@ -9,10 +8,9 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
-
 import javax.annotation.Nonnull;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class ConstrainedItemHandler implements IItemHandlerModifiable, Iterable<ItemStack> {
+public class ConstrainedItemHandler implements IItemHandlerModifiable, Iterable<ItemStack> {
     private final ItemStackHandler rawHandler;
     private final List<IOConstraint> slotConstraints;
 
@@ -31,13 +29,11 @@ import javax.annotation.Nonnull;
     @Override @Nonnull public ItemStack getStackInSlot(int slot) { return rawHandler.getStackInSlot(slot); }
 
     @Override @Nonnull public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-        if (slot >= this.slotConstraints.size()) return stack;
+        if (slot >= this.slotConstraints.size()) { return stack; }
         boolean allowInsert = this.slotConstraints.get(slot).allowInsert.test(stack);
-        if (!allowInsert) return stack;
+        if (!allowInsert) { return stack; }
         ItemStack current = getStackInSlot(slot);
-        if (!current.isEmpty()) {
-            if (!ItemStack.isSameItemSameComponents(current, stack)) return stack;
-        }
+        if (!current.isEmpty()) { if (!ItemStack.isSameItemSameComponents(current, stack)) { return stack; } }
         ItemStack result = rawHandler.insertItem(slot, stack, simulate);
         if (!simulate) {
             ItemStack after = getStackInSlot(slot);
@@ -50,14 +46,14 @@ import javax.annotation.Nonnull;
     }
 
     @Override @Nonnull public ItemStack extractItem(int slot, int amount, boolean simulate) {
-        if (slot >= this.slotConstraints.size() || !this.slotConstraints.get(slot).allowExtract()) return ItemStack.EMPTY;
+        if (slot >= this.slotConstraints.size() || !this.slotConstraints.get(slot).allowExtract()) { return ItemStack.EMPTY; }
         return rawHandler.extractItem(slot, amount, simulate);
     }
 
     @Override public int getSlotLimit(int slot) { return rawHandler.getSlotLimit(slot); }
 
     @Override public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-        if (slot >= this.slotConstraints.size()) return false;
+        if (slot >= this.slotConstraints.size()) { return false; }
         return this.slotConstraints.get(slot).allowInsert.test(stack);
     }
 

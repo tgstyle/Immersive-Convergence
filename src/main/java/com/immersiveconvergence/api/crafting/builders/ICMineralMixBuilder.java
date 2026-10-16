@@ -7,7 +7,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 
-@SuppressWarnings("unused") public class ICMineralMixBuilder extends ICIERecipeBuilder {
+public class ICMineralMixBuilder extends ICIERecipeBuilder<ICMineralMixBuilder> {
     private ICMineralMixBuilder() { super("mineral_mix"); }
 
     public static ICMineralMixBuilder builder() { return new ICMineralMixBuilder(); }

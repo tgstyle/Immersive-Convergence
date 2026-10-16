@@ -2,10 +2,12 @@ package com.immersiveconvergence.api.energy;
 
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.Tag;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-@SuppressWarnings("unused") public class ICEnergyStorageAveraging extends ICEnergyStorage {
+public class ICEnergyStorageAveraging extends ICEnergyStorage {
     private static final double AVERAGE_DECAY_FACTOR = .5;
     private int averageInsertion = 0;
     private int averageExtraction = 0;
@@ -13,6 +15,8 @@ import javax.annotation.Nonnull;
     private int tickExtract = 0;
 
     public ICEnergyStorageAveraging(int capacity) { super(capacity); }
+
+    public ICEnergyStorageAveraging(int capacity, int maxIO) { super(capacity, maxIO); }
 
     public void updateAverage() {
         averageInsertion = (int)Math.round(averageInsertion * AVERAGE_DECAY_FACTOR + tickInsert * (1 - AVERAGE_DECAY_FACTOR));
@@ -22,13 +26,13 @@ import javax.annotation.Nonnull;
 
     @Override public int receiveEnergy(int energy, boolean simulate) {
         int received = super.receiveEnergy(energy, simulate);
-        if (!simulate) { tickInsert += energy; }
+        if (!simulate) { tickInsert += received; }
         return received;
     }
 
     @Override public int extractEnergy(int energy, boolean simulate) {
         int extracted = super.extractEnergy(energy, simulate);
-        if (!simulate) { tickExtract += energy; }
+        if (!simulate) { tickExtract += extracted; }
         return extracted;
     }
 
@@ -36,7 +40,17 @@ import javax.annotation.Nonnull;
 
     public int getAverageExtraction() { return averageExtraction; }
 
-    @Override @Nonnull public Tag serializeNBT(@Nonnull Provider provider) {
+    public void save(CompoundTag tag, String key) { tag.put(key, toTag()); }
+
+    public void saveStored(CompoundTag tag, String key) { tag.putInt(key, energy); }
+
+    public void load(CompoundTag tag, String key) { fromTag(tag.get(key)); }
+
+    @Override @Nonnull public Tag serializeNBT(@Nonnull Provider provider) { return toTag(); }
+
+    @Override public void deserializeNBT(@Nonnull Provider provider, @Nonnull Tag nbt) { fromTag(nbt); }
+
+    private CompoundTag toTag() {
         CompoundTag compound = new CompoundTag();
         compound.putInt("energy", energy);
         compound.putInt("averageInsertion", averageInsertion);
@@ -44,10 +58,12 @@ import javax.annotation.Nonnull;
         return compound;
     }
 
-    @Override public void deserializeNBT(@Nonnull Provider provider, @Nonnull Tag nbt) {
-        if (!(nbt instanceof CompoundTag compound)) { return; }
-        this.energy = compound.getInt("energy");
-        this.averageInsertion = compound.getInt("averageInsertion");
-        this.averageExtraction = compound.getInt("averageExtraction");
+    private void fromTag(@Nullable Tag nbt) {
+        if (nbt instanceof CompoundTag compound) {
+            super.setStoredEnergy(compound.getInt("energy"));
+            this.averageInsertion = compound.getInt("averageInsertion");
+            this.averageExtraction = compound.getInt("averageExtraction");
+        }
+        else if (nbt instanceof NumericTag stored) { super.setStoredEnergy(stored.getAsInt()); }
     }
 }

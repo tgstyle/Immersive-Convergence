@@ -26,10 +26,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.Vec3;
 import java.util.List;
-
 import javax.annotation.Nullable;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class ClientMultiblockProperties implements ClientMultiblocks.MultiblockManualData {
+public class ClientMultiblockProperties implements ClientMultiblocks.MultiblockManualData {
     private final MachineTemplateMultiblock multiblock;
     @Nullable private NonNullList<ItemStack> materials;
     public ClientMultiblockProperties(MachineTemplateMultiblock multiblock) { this.multiblock = multiblock; }
@@ -42,7 +41,7 @@ import javax.annotation.Nullable;
             List<StructureTemplate.StructureBlockInfo> structure = this.multiblock.getStructure(Minecraft.getInstance().level);
             this.materials = NonNullList.create();
             for (StructureTemplate.StructureBlockInfo info : structure) {
-                if (info.state().hasProperty(ModProperties.MULTIBLOCKSLAVE) && info.state().getValue(ModProperties.MULTIBLOCKSLAVE)) continue;
+                if (info.state().hasProperty(ModProperties.MULTIBLOCKSLAVE) && info.state().getValue(ModProperties.MULTIBLOCKSLAVE)) { continue; }
                 ItemStack picked = getPickBlock(info.state());
                 boolean added = false;
                 for (ItemStack existing : this.materials)
@@ -51,7 +50,7 @@ import javax.annotation.Nullable;
                         added = true;
                         break;
                     }
-                if (!added) this.materials.add(picked.copy());
+                if (!added) { this.materials.add(picked.copy()); }
             }
         }
         return this.materials;
@@ -59,13 +58,13 @@ import javax.annotation.Nullable;
 
     @Override public boolean canRenderFormedStructure() { return true; }
 
-    public void renderExtras(PoseStack matrix, MultiBufferSource buffer) {}
+    public void renderExtras() {}
 
-    public void renderCustomFormedStructure(PoseStack matrix, MultiBufferSource buffer) {}
+    public void renderCustomFormedStructure() {}
 
     @Override public final void renderFormedStructure(PoseStack matrix, MultiBufferSource buffer) {
         if (usingCustomRendering()) {
-            renderCustomFormedStructure(matrix, buffer);
+            renderCustomFormedStructure();
             return;
         }
 
@@ -75,9 +74,7 @@ import javax.annotation.Nullable;
         VertexConsumer consumer = buffer.getBuffer(ICMods.immersiveEngineering() ? IERenderBridge.translucentFullbright() : RenderType.translucent());
         for (BakedQuad quad : model.getQuads(null, null, ICUtils.RANDOM_SOURCE, ModelData.EMPTY, null)) { consumer.putBulkData(matrix.last(), quad, 1, 1, 1, 1, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY); }
         matrix.pushPose();
-        {
-            renderExtras(matrix, buffer);
-        }
+        { renderExtras(); }
         matrix.popPose();
     }
 

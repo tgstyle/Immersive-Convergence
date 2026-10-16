@@ -11,7 +11,7 @@ import blusunrize.immersiveengineering.common.util.compat.computers.generic.owne
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 
-@SuppressWarnings("unused") public class ICFermenterCallbacks extends FermenterCallbacks {
+public class ICFermenterCallbacks extends FermenterCallbacks {
     @ComputerCallable public Object[] getRecipe(CallbackEnvironment<State> env, @IndexArgument int slot) {
         ItemStack input = ComputerValues.slot(env.object().getInventory(), slot, 8, "Input slots are 1-8");
         RecipeHolder<FermenterRecipe> holder = FermenterRecipe.findRecipe(env.level(), input);

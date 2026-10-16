@@ -1,13 +1,13 @@
 package com.immersiveconvergence.api.block;
 
+import com.immersiveconvergence.api.multiblock.util.DirectionUtils;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.function.BiFunction;
 import com.google.common.collect.ImmutableList;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -27,14 +27,12 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@SuppressWarnings({"RedundantSuppression", "deprecation", "unused"}) public class ModEntityBlock<T extends BlockEntity> extends BaseBlock implements EntityBlock {
+@SuppressWarnings("deprecation") public class ModEntityBlock<T extends BlockEntity> extends BaseBlock implements EntityBlock {
     private final BiFunction<BlockPos, BlockState, T> makeEntity;
     private BEClassInspectedData classData;
 
@@ -138,11 +136,11 @@ import javax.annotation.Nullable;
         float hitZ = (float) hit.getLocation().z - pos.getZ();
         ItemStack heldItem = player.getMainHandItem();
         BlockEntity tile = world.getBlockEntity(pos);
-        if (tile instanceof BlockInterfaces.IDirectionalBE && BlockToolGates.isFormationTool.test(heldItem) && ((BlockInterfaces.IDirectionalBE) tile).canHammerRotate(side, hit.getLocation().subtract(Vec3.atLowerCornerOf(pos)), player) && !world.isClientSide) {
+        if (tile instanceof BlockInterfaces.IDirectionalBE && BlockToolGates.isFormationTool.test(heldItem) && ((BlockInterfaces.IDirectionalBE) tile).canHammerRotate() &&!world.isClientSide) {
             Direction f = ((BlockInterfaces.IDirectionalBE) tile).getFacing();
             FacingLimitation limit = ((BlockInterfaces.IDirectionalBE) tile).getFacingLimitation();
             f = switch (limit) {
-                case SIDE_CLICKED -> Direction.values()[Math.floorMod(f.ordinal() + (player.isShiftKeyDown() ? -1 : 1), 6)];
+                case SIDE_CLICKED -> DirectionUtils.VALUES[Math.floorMod(f.ordinal() + (player.isShiftKeyDown() ? -1 : 1), 6)];
                 case PISTON_LIKE -> {
                     Direction.Axis axis = side.getAxis();
                     Direction rotated = rotateAround(f, axis);
@@ -239,15 +237,7 @@ import javax.annotation.Nullable;
 
     @Override public void entityInside(@Nonnull BlockState state, Level world, @Nonnull BlockPos pos, @Nonnull Entity entity) {
         BlockEntity te = world.getBlockEntity(pos);
-        if (te instanceof BaseBlockEntity) { ((BaseBlockEntity) te).onEntityCollision(world, entity); }
-    }
-
-    @Override
-    @SuppressWarnings("unused")
-    public Component[] getOverlayText(BlockState state, Level level, BlockPos pos, Player player, HitResult rayTrace, boolean hammer) {
-        BlockEntity te = level.getBlockEntity(pos);
-        if (te instanceof BlockInterfaces.IBlockOverlayText overlay) { return overlay.getOverlayText(player, rayTrace, hammer); }
-        return null;
+        if (te instanceof BaseBlockEntity) { ((BaseBlockEntity) te).onEntityCollision(); }
     }
 
     private BEClassInspectedData getClassData() {

@@ -13,12 +13,11 @@ import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.function.Consumer;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class InventoryDropLootEntry extends LootPoolSingletonContainer {
+public class InventoryDropLootEntry extends LootPoolSingletonContainer {
     public static final MapCodec<InventoryDropLootEntry> CODEC = RecordCodecBuilder.mapCodec(instance -> LootPoolSingletonContainer.singletonFields(instance).apply(instance, InventoryDropLootEntry::new));
 
     protected InventoryDropLootEntry(int weightIn, int qualityIn, List<LootItemCondition> conditionsIn, List<LootItemFunction> functionsIn) { super(weightIn, qualityIn, conditionsIn, functionsIn); }

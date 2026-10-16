@@ -5,12 +5,11 @@ import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-@SuppressWarnings("unused") public final class ICJsonRecipes {
+public final class ICJsonRecipes {
     private final Map<ResourceLocation, JsonObject> recipes = new LinkedHashMap<>();
 
     void accept(ResourceLocation id, JsonObject json) { if (recipes.putIfAbsent(id, json) != null) { throw new IllegalStateException("Duplicate recipe " + id); } }

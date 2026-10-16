@@ -1,12 +1,12 @@
 package com.immersiveconvergence.api.multiblock.blocks.component;
 
-import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.block.BlockToolGates;
 import com.immersiveconvergence.api.multiblock.blocks.component.IMultiblockComponent.StateWrapper;
 import com.immersiveconvergence.api.multiblock.blocks.component.RedstoneControl.RSState;
 import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockContext;
 import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockState;
 import com.immersiveconvergence.api.multiblock.util.ComputerControlState;
+import com.immersiveconvergence.core.lib.ICLib;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup.Provider;
@@ -20,38 +20,25 @@ import net.minecraft.world.phys.BlockHitResult;
 import java.util.Arrays;
 import java.util.List;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class RedstoneControl<S> implements IMultiblockComponent<RSState>, StateWrapper<S, RSState> {
-    private static final String CHAT_INFO = "chat." + ICMods.IMMERSIVE_ENGINEERING + ".info.";
+public class RedstoneControl<S> implements IMultiblockComponent<RSState>, StateWrapper<S, RSState> {
+    private static final String CHAT_INFO = "chat." + ICLib.MODID + ".info.";
     private final StateWrapper<S, RSState> getState;
     private final List<BlockPos> positions;
-    private final boolean allowComputerControl;
 
-    public RedstoneControl(StateWrapper<S, RSState> getState, BlockPos... positions) { this(getState, true, positions); }
-
-    public RedstoneControl(StateWrapper<S, RSState> getState, boolean allowComputerControl, BlockPos... positions) {
+    public RedstoneControl(StateWrapper<S, RSState> getState, BlockPos... positions) {
         this.positions = Arrays.asList(positions);
         this.getState = s -> {
             final RSState rsState = getState.wrapState(s);
             rsState.positions = this.positions;
             return rsState;
         };
-        this.allowComputerControl = allowComputerControl;
     }
-
-    public boolean allowComputerControl() { return allowComputerControl; }
 
     @Override public RSState wrapState(S outer) { return getState.wrapState(outer); }
 
-    @Override public ItemInteractionResult click(
-            IMultiblockContext<RSState> ctx,
-            BlockPos posInMultiblock,
-            Player player,
-            InteractionHand hand,
-            BlockHitResult absoluteHit,
-            boolean isClient
-    ) {
+    @Override public ItemInteractionResult click(IMultiblockContext<RSState> ctx, BlockPos posInMultiblock, Player player, InteractionHand hand, BlockHitResult absoluteHit, boolean isClient) {
         final ItemStack held = player.getItemInHand(hand);
-        if (!BlockToolGates.isScrewdriver.test(held) ||!positions.contains(posInMultiblock)) { return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION; }
+        if (!BlockToolGates.isScrewdriver.test(held) || !positions.contains(posInMultiblock)) { return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION; }
         if (!isClient) {
             final boolean inverted = !ctx.getState().rsEnablesMachine;
             ctx.getState().rsEnablesMachine = inverted;
@@ -69,8 +56,6 @@ import java.util.List;
         private final ComputerControlState computerControlState = new ComputerControlState();
 
         public static RSState enabledByDefault() { return new RSState(false); }
-
-        public static RSState disabledByDefault() { return new RSState(true); }
 
         private RSState(boolean rsEnablesMachine) { this.rsEnablesMachine = rsEnablesMachine; }
 

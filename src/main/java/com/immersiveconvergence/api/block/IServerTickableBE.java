@@ -3,7 +3,7 @@ package com.immersiveconvergence.api.block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public interface IServerTickableBE extends ITickableBase
+public interface IServerTickableBE extends ITickableBase
 {
     void tickServer();
 

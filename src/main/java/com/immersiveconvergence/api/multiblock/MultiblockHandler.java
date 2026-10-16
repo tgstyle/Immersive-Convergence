@@ -8,15 +8,11 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
-import net.neoforged.bus.api.ICancellableEvent;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -25,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class MultiblockHandler {
+public class MultiblockHandler {
     static List<IMultiblock> multiblocks = new ArrayList<>();
     static Map<ResourceLocation, IMultiblock> byUniqueName = new HashMap<>();
 
@@ -59,33 +55,6 @@ import java.util.function.Consumer;
 
         Component getDisplayName();
 
-        default Block getBlock() {
-            return Blocks.AIR;
-        }
-    }
-
-    public static MultiblockFormEvent postMultiblockFormationEvent(Player player, IMultiblock multiblock, BlockPos clickedBlock, ItemStack hammer) {
-        MultiblockFormEvent event = new MultiblockFormEvent(player, multiblock, clickedBlock, hammer);
-        NeoForge.EVENT_BUS.post(event);
-        return event;
-    }
-
-    public static class MultiblockFormEvent extends PlayerEvent implements ICancellableEvent {
-        private final IMultiblock multiblock;
-        private final BlockPos clickedBlock;
-        private final ItemStack hammer;
-
-        public MultiblockFormEvent(Player player, IMultiblock multiblock, BlockPos clickedBlock, ItemStack hammer) {
-            super(player);
-            this.multiblock = multiblock;
-            this.clickedBlock = clickedBlock;
-            this.hammer = hammer;
-        }
-
-        public IMultiblock getMultiblock() { return multiblock; }
-
-        public BlockPos getClickedBlock() { return clickedBlock; }
-
-        public ItemStack getHammer() { return hammer; }
+        default Block getBlock() { return Blocks.AIR; }
     }
 }

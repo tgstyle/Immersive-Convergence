@@ -9,11 +9,9 @@ import blusunrize.immersiveengineering.api.wires.redstone.IRedstoneConnector;
 import blusunrize.immersiveengineering.api.wires.redstone.RedstoneNetworkHandler;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-
 import javax.annotation.Nonnull;
 
-@Mixin(value = ICConnectorRedstoneBlockEntity.class, remap = false)
-public abstract class ICConnectorRedstoneBlockEntityMixin implements IRedstoneConnector {
+@Mixin(value = ICConnectorRedstoneBlockEntity.class, remap = false) public abstract class ICConnectorRedstoneBlockEntityMixin implements IRedstoneConnector {
     @Shadow(remap = false) public abstract void redstoneInput(byte[] signals, @Nonnull ICConnectionPoint cp);
     @Shadow(remap = false) public abstract void redstoneChanged();
 

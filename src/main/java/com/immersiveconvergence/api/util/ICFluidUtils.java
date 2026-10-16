@@ -12,11 +12,10 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class ICFluidUtils {
+public class ICFluidUtils {
     public static FluidStack copyFluidStackWithAmount(FluidStack stack, int amount) {
         if (stack == null || stack.isEmpty()) { return FluidStack.EMPTY; }
         return stack.copyWithAmount(amount);

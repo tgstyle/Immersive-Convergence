@@ -7,7 +7,7 @@ import blusunrize.immersiveengineering.common.util.compat.computers.generic.Call
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.ComputerCallable;
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.impl.SingleItemCallback;
 
-@SuppressWarnings("unused") public class CokeOvenCallbacks extends Callback<State> {
+public class CokeOvenCallbacks extends Callback<State> {
     public CokeOvenCallbacks() {
         addAdditional(new TankInfoCallbacks<>(State::getTank, ""));
         addAdditional(SingleItemCallback.fromHandler(State::getInventory, CokeOvenLogic.INPUT_SLOT, "input stack"));

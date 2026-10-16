@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-@SuppressWarnings("unused")
 public final class ShapeData {
     public final Function<BlockPos, VoxelShape> getter;
     public final int width, height, length;

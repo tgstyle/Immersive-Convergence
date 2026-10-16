@@ -3,7 +3,6 @@ package com.immersiveconvergence.api.gui;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -12,7 +11,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class MenuSyncSerializers {
+public class MenuSyncSerializers {
     private static final List<DataSerializer<?>> SERIALIZERS = new ArrayList<>();
     public static final DataSerializer<Integer> INT32 = register(RegistryFriendlyByteBuf::readVarInt, RegistryFriendlyByteBuf::writeVarInt);
     public static final DataSerializer<FluidStack> FLUID_STACK = register(

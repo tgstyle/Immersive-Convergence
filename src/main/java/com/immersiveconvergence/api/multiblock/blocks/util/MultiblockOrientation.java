@@ -1,7 +1,7 @@
 package com.immersiveconvergence.api.multiblock.blocks.util;
 
 import com.immersiveconvergence.api.block.ModProperties;
-import com.immersiveconvergence.api.multiblock.ICTemplateMultiblock;
+import com.immersiveconvergence.api.multiblock.TemplateMultiblock;
 import com.immersiveconvergence.api.multiblock.util.DirectionUtils;
 import com.immersiveconvergence.api.multiblock.util.MultiblockShapeUtils;
 
@@ -30,7 +30,7 @@ public record MultiblockOrientation(Direction front, boolean mirrored) {
         );
     }
 
-    public BlockPos getAbsoluteOffset(BlockPos offsetInMB) { return ICTemplateMultiblock.getAbsoluteOffset(offsetInMB, mirrored, front); }
+    public BlockPos getAbsoluteOffset(BlockPos offsetInMB) { return TemplateMultiblock.getAbsoluteOffset(offsetInMB, mirrored, front); }
 
     public Vec3 getAbsoluteOffset(Vec3 relative) {
         Rotation rot = DirectionUtils.getRotationBetweenFacings(Direction.NORTH, front);
@@ -38,15 +38,6 @@ public record MultiblockOrientation(Direction front, boolean mirrored) {
                 .setMirror(mirrored ? Mirror.FRONT_BACK : Mirror.NONE)
                 .setRotation(Objects.requireNonNull(rot));
         return StructureTemplate.transformedVec3d(settings, relative);
-    }
-
-    public BlockPos getPosInMB(BlockPos absoluteOffset) {
-        Rotation rot = DirectionUtils.getRotationBetweenFacings(front, Direction.NORTH);
-        if (rot == null) { return BlockPos.ZERO; }
-        final BlockPos withoutRotation = ICTemplateMultiblock.getAbsoluteOffset(absoluteOffset, Mirror.NONE, rot);
-        return ICTemplateMultiblock.getAbsoluteOffset(
-                withoutRotation, mirrored ? Mirror.FRONT_BACK : Mirror.NONE, Rotation.NONE
-        );
     }
 
     public VoxelShape transformRelativeShape(VoxelShape relative) {

@@ -12,12 +12,11 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public record MessageMenuSync(List<Pair<Integer, DataPair<?>>> synced) implements CustomPacketPayload {
+public record MessageMenuSync(List<Pair<Integer, DataPair<?>>> synced) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<MessageMenuSync> TYPE = new CustomPacketPayload.Type<>(ICLib.rl("menusync"));
     public static final StreamCodec<RegistryFriendlyByteBuf, MessageMenuSync> STREAM_CODEC = StreamCodec.of((buf, data) -> data.toBytes(buf), MessageMenuSync::new);
 

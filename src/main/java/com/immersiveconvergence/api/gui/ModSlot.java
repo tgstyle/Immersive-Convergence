@@ -9,11 +9,10 @@ import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
-
 import javax.annotation.Nonnull;
 import java.util.Optional;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public abstract class ModSlot extends Slot {
+public abstract class ModSlot extends Slot {
     final AbstractContainerMenu containerMenu;
 
     public ModSlot(AbstractContainerMenu containerMenu, Container inv, int id, int x, int y) {

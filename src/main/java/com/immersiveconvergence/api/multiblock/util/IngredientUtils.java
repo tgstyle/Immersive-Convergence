@@ -4,7 +4,6 @@ import com.immersiveconvergence.api.crafting.ICIngredientWithSize;
 
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
