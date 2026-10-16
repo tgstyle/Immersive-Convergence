@@ -7,6 +7,7 @@ import com.immersiveconvergence.api.capability.IHeatProvider;
 import com.immersiveconvergence.api.capability.IMechanicalEnergyConsumer;
 import com.immersiveconvergence.api.capability.IMechanicalEnergyProvider;
 import com.immersiveconvergence.api.capability.MechanicalCapabilities;
+import com.immersiveconvergence.api.crafting.conditions.ICIEEnabledCondition;
 import com.immersiveconvergence.api.integration.top.ProbeIntegration;
 import com.immersiveconvergence.api.loot.LootEntryTypes;
 import com.immersiveconvergence.api.multiblock.MultiblockRegistry;
@@ -30,6 +31,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
+import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -46,6 +48,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
     public ImmersiveConvergence(FMLJavaModLoadingContext context) {
         IEventBus modEventBus = context.getModEventBus();
+        CraftingHelper.register(ICIEEnabledCondition.Serializer.INSTANCE);
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::enqueueIMC);
         modEventBus.addListener(this::registerCapabilities);

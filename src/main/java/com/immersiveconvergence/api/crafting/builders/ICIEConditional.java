@@ -1,6 +1,6 @@
 package com.immersiveconvergence.api.crafting.builders;
 
-import com.immersiveconvergence.api.ICMods;
+import com.immersiveconvergence.api.crafting.conditions.ICIEEnabledCondition;
 
 import com.google.gson.JsonObject;
 import net.minecraft.data.recipes.FinishedRecipe;
@@ -8,7 +8,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.common.crafting.conditions.ModLoadedCondition;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
@@ -18,7 +17,7 @@ public final class ICIEConditional {
 
     public static Consumer<FinishedRecipe> wrap(Consumer<FinishedRecipe> out) { return recipe -> out.accept(new Wrapped(recipe)); }
 
-    static void addConditions(JsonObject json) { json.add("conditions", CraftingHelper.serialize(new ICondition[] {new ModLoadedCondition(ICMods.IMMERSIVE_ENGINEERING)})); }
+    static void addConditions(JsonObject json) { json.add("conditions", CraftingHelper.serialize(new ICondition[] {ICIEEnabledCondition.INSTANCE})); }
 
     private record Wrapped(FinishedRecipe recipe) implements FinishedRecipe {
         @Override public void serializeRecipeData(@Nonnull JsonObject json) { recipe.serializeRecipeData(json); }
