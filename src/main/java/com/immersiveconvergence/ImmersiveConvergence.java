@@ -1,6 +1,7 @@
 package com.immersiveconvergence;
 
 import com.immersiveconvergence.api.ICMods;
+import com.immersiveconvergence.api.crafting.conditions.ICIEEnabledCondition;
 import com.immersiveconvergence.api.integration.top.ProbeIntegration;
 import com.immersiveconvergence.api.loot.LootEntryTypes;
 import com.immersiveconvergence.api.multiblock.MultiblockRegistry;
@@ -43,6 +44,7 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
         ICMenuTypes.init(modEventBus);
         ICCreativeTab.init(modEventBus);
         LootEntryTypes.init(modEventBus);
+        ICIEEnabledCondition.init(modEventBus);
         container.registerConfig(ModConfig.Type.COMMON, ICCommonConfig.SPEC);
         container.registerConfig(ModConfig.Type.CLIENT, ICClientConfig.SPEC);
         NeoForge.EVENT_BUS.register(ImmersiveConvergence.class);
