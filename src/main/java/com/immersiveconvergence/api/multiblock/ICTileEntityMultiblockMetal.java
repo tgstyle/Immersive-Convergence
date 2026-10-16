@@ -38,9 +38,7 @@ import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -110,7 +108,6 @@ public abstract class ICTileEntityMultiblockMetal<T extends ICTileEntityMultiblo
     @Nullable protected MultiblockProcess<R> loadProcessFromNBT(NBTTagCompound tag) {
         R recipe = readRecipeFromNBT(tag);
         if (recipe == null) { return null; }
-        if (isInWorldProcessingMachine()) { return new MultiblockProcessInWorld<>(recipe, tag.getFloat("process_transformationPoint"), ICUtils.loadItemStacksFromNBT(tag.getTag("process_inputItem"))); }
         MultiblockProcessInMachine<R> process = new MultiblockProcessInMachine<>(recipe, tag.getIntArray("process_inputSlots")).setInputTanks(tag.getIntArray("process_inputTanks"));
         return tag.hasKey("process_inputAmounts") ? process.setInputAmounts(tag.getIntArray("process_inputAmounts")) : process;
     }
@@ -305,8 +302,6 @@ public abstract class ICTileEntityMultiblockMetal<T extends ICTileEntityMultiblo
 
     public abstract IFluidTank[] getInternalTanks();
 
-    public abstract R findRecipeForInsertion(ItemStack inserting);
-
     public abstract int[] getOutputSlots();
 
     public abstract int[] getOutputTanks();
@@ -325,43 +320,7 @@ public abstract class ICTileEntityMultiblockMetal<T extends ICTileEntityMultiblo
 
     public abstract float getMinProcessDistance(MultiblockProcess<R> process);
 
-    public abstract boolean isInWorldProcessingMachine();
-
-    public boolean addProcessToQueue(MultiblockProcess<R> process, boolean simulate) { return addProcessToQueue(process, simulate, false); }
-
-    public boolean addProcessToQueue(MultiblockProcess<R> process, boolean simulate, boolean addToPrevious) {
-        if (addToPrevious && process instanceof MultiblockProcessInWorld) {
-            for (MultiblockProcess<R> curr : processQueue) {
-                if (curr instanceof MultiblockProcessInWorld && process.recipe.equals(curr.recipe)) {
-                    MultiblockProcessInWorld<R> p = (MultiblockProcessInWorld<R>)curr;
-                    boolean canStack = true;
-                    for (ItemStack old : p.inputItems) {
-                        for (ItemStack in : ((MultiblockProcessInWorld<R>)process).inputItems) {
-                            if (OreDictionary.itemMatches(old, in, true) && ICUtils.compareItemNBT(old, in)) {
-                                if (old.getCount() + in.getCount() > old.getMaxStackSize()) {
-                                    canStack = false;
-                                    break;
-                                }
-                            }
-                        }
-                        if (!canStack) { break; }
-                    }
-                    if (canStack) {
-                        if (!simulate) {
-                            for (ItemStack old : p.inputItems) {
-                                for (ItemStack in : ((MultiblockProcessInWorld<R>)process).inputItems) {
-                                    if (OreDictionary.itemMatches(old, in, true) && ICUtils.compareItemNBT(old, in)) {
-                                        old.grow(in.getCount());
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                        return true;
-                    }
-                }
-            }
-        }
+    public boolean addProcessToQueue(MultiblockProcess<R> process, boolean simulate) {
         if (getProcessQueueMaxLength() < 0 || processQueue.size() < getProcessQueueMaxLength()) {
             float dist = 1;
             MultiblockProcess<R> p = null;
@@ -667,88 +626,4 @@ public abstract class ICTileEntityMultiblockMetal<T extends ICTileEntityMultiblo
         }
     }
 
-    public static class MultiblockProcessInWorld<R extends ICRecipe> extends MultiblockProcess<R> {
-        public List<ItemStack> inputItems;
-        protected float transformationPoint;
-
-        public MultiblockProcessInWorld(R recipe, float transformationPoint, NonNullList<ItemStack> inputItem) {
-            super(recipe);
-            this.inputItems = new ArrayList<>(inputItem);
-            this.transformationPoint = transformationPoint;
-        }
-
-        public List<ItemStack> getDisplayItem() {
-            if (processTick / (float)maxTicks > transformationPoint) {
-                List<ItemStack> list = this.recipe.getItemOutputs();
-                if (!list.isEmpty()) { return list; }
-            }
-            return inputItems;
-        }
-
-        @Override protected void writeExtraDataToNBT(NBTTagCompound nbt) {
-            nbt.setTag("process_inputItem", ICUtils.writeInventory(inputItems));
-            nbt.setFloat("process_transformationPoint", transformationPoint);
-        }
-
-        @Override protected void processFinish(ICTileEntityMultiblockMetal<?, ?> multiblock) {
-            super.processFinish(multiblock);
-            int size = -1;
-            for (ItemStack inputItem : this.inputItems) {
-                for (ICIngredient s : recipe.getItemInputs()) {
-                    if (s.matchesItemStackIgnoringSize(inputItem)) {
-                        size = s.inputSize;
-                        break;
-                    }
-                }
-                if (size > 0 && inputItem.getCount() > size) {
-                    inputItem.splitStack(size);
-                    processTick = 0;
-                    clearProcess = false;
-                }
-            }
-        }
-    }
-
-    public static class MultiblockInventoryHandler_DirectProcessing implements IItemHandlerModifiable {
-        ICTileEntityMultiblockMetal<?, ?> multiblock;
-        float transformationPoint = .5f;
-        boolean doProcessStacking = false;
-
-        public MultiblockInventoryHandler_DirectProcessing(ICTileEntityMultiblockMetal<?, ?> multiblock) { this.multiblock = multiblock; }
-
-        public MultiblockInventoryHandler_DirectProcessing setTransformationPoint(float point) {
-            this.transformationPoint = point;
-            return this;
-        }
-
-        public MultiblockInventoryHandler_DirectProcessing setProcessStacking(boolean stacking) {
-            this.doProcessStacking = stacking;
-            return this;
-        }
-
-        @Override public int getSlots() { return 1; }
-
-        @Override @Nonnull public ItemStack getStackInSlot(int slot) { return ItemStack.EMPTY; }
-
-        @SuppressWarnings({"unchecked", "rawtypes"})
-        @Override @Nonnull public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            stack = stack.copy();
-            ICRecipe recipe = this.multiblock.findRecipeForInsertion(stack);
-            if (recipe == null) { return stack; }
-            ItemStack displayStack = recipe.getDisplayStack(stack);
-            if (multiblock.addProcessToQueue(new MultiblockProcessInWorld(recipe, transformationPoint, ICUtils.createNonNullItemStackListFromItemStack(displayStack)), simulate, doProcessStacking)) {
-                multiblock.markDirty();
-                multiblock.markContainingBlockForUpdate(null);
-                stack.shrink(displayStack.getCount());
-                if (stack.getCount() <= 0) { stack = ItemStack.EMPTY; }
-            }
-            return stack;
-        }
-
-        @Override @Nonnull public ItemStack extractItem(int slot, int amount, boolean simulate) { return ItemStack.EMPTY; }
-
-        @Override public int getSlotLimit(int slot) { return 64; }
-
-        @Override public void setStackInSlot(int slot, @Nonnull ItemStack stack) {}
-    }
 }

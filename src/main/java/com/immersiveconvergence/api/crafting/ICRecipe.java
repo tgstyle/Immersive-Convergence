@@ -24,17 +24,6 @@ public interface ICRecipe {
 
     default List<FluidStack> getActualFluidOutputs(TileEntity tile) { return getFluidOutputs(); }
 
-    default ItemStack getDisplayStack(ItemStack input) {
-        for (ICIngredient ingredient : getItemInputs()) {
-            if (ingredient.matchesItemStack(input)) {
-                ItemStack copy = input.copy();
-                copy.setCount(ingredient.inputSize);
-                return copy;
-            }
-        }
-        return ItemStack.EMPTY;
-    }
-
     int getTotalProcessTime();
 
     int getTotalProcessEnergy();

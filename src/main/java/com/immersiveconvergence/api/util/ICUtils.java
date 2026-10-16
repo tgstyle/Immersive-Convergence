@@ -17,7 +17,6 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -90,34 +89,6 @@ public class ICUtils {
             if (slot < size) { inv.set(slot, new ItemStack(itemTag)); }
         }
         return inv;
-    }
-
-    public static NonNullList<ItemStack> loadItemStacksFromNBT(NBTBase nbt) {
-        NonNullList<ItemStack> itemStacks = NonNullList.create();
-        if (nbt instanceof NBTTagCompound) {
-            itemStacks.add(new ItemStack((NBTTagCompound)nbt));
-            return itemStacks;
-        }
-        if (nbt instanceof NBTTagList) {
-            NBTTagList list = (NBTTagList)nbt;
-            return readInventory(list, list.tagCount());
-        }
-        return itemStacks;
-    }
-
-    public static NonNullList<ItemStack> createNonNullItemStackListFromItemStack(ItemStack stack) {
-        NonNullList<ItemStack> list = NonNullList.withSize(1, ItemStack.EMPTY);
-        list.set(0, stack);
-        return list;
-    }
-
-    public static boolean compareItemNBT(ItemStack stack1, ItemStack stack2) {
-        if (stack1.isEmpty() != stack2.isEmpty()) { return false; }
-        boolean empty1 = stack1.getTagCompound() == null || stack1.getTagCompound().isEmpty();
-        boolean empty2 = stack2.getTagCompound() == null || stack2.getTagCompound().isEmpty();
-        if (empty1 != empty2) { return false; }
-        if (!empty1 && !stack1.getTagCompound().equals(stack2.getTagCompound())) { return false; }
-        return stack1.areCapsCompatible(stack2);
     }
 
     public static int calcRedstoneFromInventory(IICInventory inv) {

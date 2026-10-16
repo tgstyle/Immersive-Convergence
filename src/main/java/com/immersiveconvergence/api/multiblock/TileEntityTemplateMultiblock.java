@@ -396,8 +396,6 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
 
     @Override public void doGraphicalUpdates(int slot) { this.markDirty(); this.markContainingBlockForUpdate(null); }
 
-    @Override @Nonnull public R findRecipeForInsertion(@Nonnull ItemStack inserting) { throw new UnsupportedOperationException(); }
-
     @Override @Nonnull public int[] getEnergyPos() {
         M master = master();
         if (master == null) { return new int[0]; }
@@ -427,8 +425,6 @@ public abstract class TileEntityTemplateMultiblock<T extends TileEntityTemplateM
     @Override public int getProcessQueueMaxLength() { return 0; }
 
     @Override public float getMinProcessDistance(@Nonnull MultiblockProcess<R> process) { return 0f; }
-
-    @Override public boolean isInWorldProcessingMachine() { return false; }
 
     @Override @Nonnull protected IFluidTank[] getAccessibleFluidTanks(EnumFacing side) {
         M master = master();
