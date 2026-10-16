@@ -9,10 +9,9 @@ import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
-
 import java.util.function.Function;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class RenderTypes extends RenderStateShard {
+public class RenderTypes extends RenderStateShard {
     public static final RenderType TRANSLUCENT_POSITION_COLOR;
     protected static final RenderStateShard.TransparencyStateShard TRANSLUCENT_TRANSPARENCY = new RenderStateShard.TransparencyStateShard("translucent_transparency", () -> {
         RenderSystem.enableBlend();

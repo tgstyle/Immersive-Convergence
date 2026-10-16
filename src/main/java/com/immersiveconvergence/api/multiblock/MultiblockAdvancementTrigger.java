@@ -8,7 +8,12 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
 import net.minecraft.advancements.CriterionTrigger;
-import net.minecraft.advancements.critereon.*;
+import net.minecraft.advancements.critereon.AbstractCriterionTriggerInstance;
+import net.minecraft.advancements.critereon.ContextAwarePredicate;
+import net.minecraft.advancements.critereon.DeserializationContext;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.advancements.critereon.SerializationContext;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.PlayerAdvancements;
 import net.minecraft.server.level.ServerPlayer;
@@ -19,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class MultiblockAdvancementTrigger implements CriterionTrigger<MultiblockAdvancementTrigger.Instance> {
+public class MultiblockAdvancementTrigger implements CriterionTrigger<MultiblockAdvancementTrigger.Instance> {
     private static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(ICMods.IMMERSIVE_ENGINEERING, "multiblock_formed");
     private final Map<PlayerAdvancements, Listeners> listeners = Maps.newHashMap();
 
@@ -53,8 +58,6 @@ import java.util.Set;
         MultiblockAdvancementTrigger.Listeners listeners = this.listeners.get(player.getAdvancements());
         if (listeners != null) { listeners.trigger(multiblock, hammer); }
     }
-
-    public static Instance create(ResourceLocation multiblock, ItemPredicate hammer) { return new Instance(multiblock, hammer, ContextAwarePredicate.ANY); }
 
     public static class Instance extends AbstractCriterionTriggerInstance {
         private final ResourceLocation multiblock;

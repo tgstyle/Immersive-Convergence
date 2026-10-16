@@ -2,23 +2,22 @@ package com.immersiveconvergence.api.util;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
-
 import javax.annotation.Nonnull;
 import java.util.List;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public record SlotRangeItemHandler(IItemHandler wrapped, boolean allowInsert, boolean allowExtract, List<SlotRangeItemHandler.IntRange> allowedRanges) implements IItemHandler {
+public record SlotRangeItemHandler(IItemHandler wrapped, boolean allowInsert, boolean allowExtract, List<SlotRangeItemHandler.IntRange> allowedRanges) implements IItemHandler {
 
     @Override public int getSlots() { return wrapped.getSlots(); }
 
     @Override @Nonnull public ItemStack getStackInSlot(int slot) { return wrapped.getStackInSlot(slot); }
 
     @Override @Nonnull public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-        if (!allowInsert || !isAccessible(slot)) return stack;
+        if (!allowInsert || !isAccessible(slot)) { return stack; }
         return wrapped.insertItem(slot, stack, simulate);
     }
 
     @Override @Nonnull public ItemStack extractItem(int slot, int amount, boolean simulate) {
-        if (!allowExtract || !isAccessible(slot)) return ItemStack.EMPTY;
+        if (!allowExtract || !isAccessible(slot)) { return ItemStack.EMPTY; }
         return wrapped.extractItem(slot, amount, simulate);
     }
 
@@ -27,7 +26,7 @@ import java.util.List;
     @Override public boolean isItemValid(int slot, @Nonnull ItemStack stack) { return isAccessible(slot) && wrapped.isItemValid(slot, stack); }
 
     private boolean isAccessible(int slot) {
-        for (final SlotRangeItemHandler.IntRange range : allowedRanges) if (range.contains(slot)) return true;
+        for (final SlotRangeItemHandler.IntRange range : allowedRanges) { if (range.contains(slot)) { return true; } }
         return false;
     }
 

@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -27,11 +26,10 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.ticks.ScheduledTick;
 import net.minecraftforge.registries.ForgeRegistries;
 import java.util.Objects;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@SuppressWarnings({"RedundantSuppression", "deprecation", "unused"}) public class BaseBlock extends Block implements IBlock, SimpleWaterloggedBlock {
+@SuppressWarnings("deprecation") public class BaseBlock extends Block implements IBlock, SimpleWaterloggedBlock {
     protected final boolean notNormalBlock;
     private final boolean fitsIntoContainer;
     boolean hasFlavour;
@@ -47,17 +45,11 @@ import javax.annotation.Nullable;
 
     public boolean hasFlavour() { return this.hasFlavour; }
 
-    @Override public int getLightBlock(@Nonnull BlockState state, @Nonnull BlockGetter worldIn, @Nonnull BlockPos pos) {
-        return this.notNormalBlock ? 0 : super.getLightBlock(state, worldIn, pos);
-    }
+    @Override public int getLightBlock(@Nonnull BlockState state, @Nonnull BlockGetter worldIn, @Nonnull BlockPos pos) { return this.notNormalBlock ? 0 : super.getLightBlock(state, worldIn, pos); }
 
-    @Override public float getShadeBrightness(@Nonnull BlockState state, @Nonnull BlockGetter world, @Nonnull BlockPos pos) {
-        return this.notNormalBlock ? 1.0F : super.getShadeBrightness(state, world, pos);
-    }
+    @Override public float getShadeBrightness(@Nonnull BlockState state, @Nonnull BlockGetter world, @Nonnull BlockPos pos) { return this.notNormalBlock ? 1.0F : super.getShadeBrightness(state, world, pos); }
 
-    @Override public boolean propagatesSkylightDown(@Nonnull BlockState state, @Nonnull BlockGetter reader, @Nonnull BlockPos pos) {
-        return this.notNormalBlock || super.propagatesSkylightDown(state, reader, pos);
-    }
+    @Override public boolean propagatesSkylightDown(@Nonnull BlockState state, @Nonnull BlockGetter reader, @Nonnull BlockPos pos) { return this.notNormalBlock || super.propagatesSkylightDown(state, reader, pos); }
 
     protected BlockState getInitDefaultState() {
         BlockState state = this.stateDefinition.any();
@@ -65,15 +57,9 @@ import javax.annotation.Nullable;
         return state;
     }
 
-    @SuppressWarnings("unused")
     public void onIEBlockPlacedBy(BlockPlaceContext context, BlockState state) {}
 
-    @SuppressWarnings("unused")
-    public boolean canIEBlockBePlaced(BlockState newState, BlockPlaceContext context) { return true; }
-
-    @Override public void setPlacedBy(@Nonnull Level worldIn, @Nonnull BlockPos pos, @Nonnull BlockState state, LivingEntity placer, @Nonnull ItemStack stack) {
-        super.setPlacedBy(worldIn, pos, state, placer, stack);
-    }
+    public boolean canIEBlockBePlaced() { return true; }
 
     @Override public boolean triggerEvent(@Nonnull BlockState state, Level worldIn, @Nonnull BlockPos pos, int eventID, int eventParam) {
         if (worldIn.isClientSide && eventID == 255) { worldIn.sendBlockUpdated(pos, state, state, 3); return true; }
@@ -87,22 +73,14 @@ import javax.annotation.Nullable;
         else { return super.use(state, world, pos, player, hand, hit); }
     }
 
-    public InteractionResult hammerUseSide(Direction side, Player player, InteractionHand hand, Level w, BlockPos pos, BlockHitResult hit) {
-        return InteractionResult.PASS;
-    }
+    public InteractionResult hammerUseSide(Direction side, Player player, InteractionHand hand, Level w, BlockPos pos, BlockHitResult hit) { return InteractionResult.PASS; }
 
-    public InteractionResult screwdriverUseSide(Direction side, Player player, InteractionHand hand, Level w, BlockPos pos, BlockHitResult hit) {
-        return InteractionResult.PASS;
-    }
+    public InteractionResult screwdriverUseSide(Direction side, Player player, InteractionHand hand, Level w, BlockPos pos, BlockHitResult hit) { return InteractionResult.PASS; }
 
-    @Override public boolean isPathfindable(@Nonnull BlockState state, @Nonnull BlockGetter worldIn, @Nonnull BlockPos pos, @Nonnull PathComputationType type) {
-        return false;
-    }
+    @Override public boolean isPathfindable(@Nonnull BlockState state, @Nonnull BlockGetter worldIn, @Nonnull BlockPos pos, @Nonnull PathComputationType type) { return false; }
 
     public static BlockState applyLocationalWaterlogging(BlockState state, Level world, BlockPos pos) {
-        if (state.hasProperty(BlockStateProperties.WATERLOGGED)) {
-            state = state.setValue(BlockStateProperties.WATERLOGGED, world.getFluidState(pos).getType() == Fluids.WATER);
-        }
+        if (state.hasProperty(BlockStateProperties.WATERLOGGED)) { state = state.setValue(BlockStateProperties.WATERLOGGED, world.getFluidState(pos).getType() == Fluids.WATER); }
         return state;
     }
 
@@ -113,9 +91,7 @@ import javax.annotation.Nullable;
     }
 
     @Override @Nonnull public BlockState updateShape(BlockState stateIn, @Nonnull Direction facing, @Nonnull BlockState facingState, @Nonnull LevelAccessor worldIn, @Nonnull BlockPos currentPos, @Nonnull BlockPos facingPos) {
-        if (stateIn.hasProperty(BlockStateProperties.WATERLOGGED) && stateIn.getValue(BlockStateProperties.WATERLOGGED)) {
-            worldIn.getFluidTicks().schedule(new ScheduledTick<>(Fluids.WATER, currentPos, Fluids.WATER.getTickDelay(worldIn), 0L));
-        }
+        if (stateIn.hasProperty(BlockStateProperties.WATERLOGGED) && stateIn.getValue(BlockStateProperties.WATERLOGGED)) { worldIn.getFluidTicks().schedule(new ScheduledTick<>(Fluids.WATER, currentPos, Fluids.WATER.getTickDelay(worldIn), 0L)); }
         return super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
     }
 
@@ -124,17 +100,11 @@ import javax.annotation.Nullable;
                 Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 
-    @Override public boolean canPlaceLiquid(@Nonnull BlockGetter worldIn, @Nonnull BlockPos pos, BlockState state, @Nonnull Fluid fluidIn) {
-        return state.hasProperty(BlockStateProperties.WATERLOGGED) && SimpleWaterloggedBlock.super.canPlaceLiquid(worldIn, pos, state, fluidIn);
-    }
+    @Override public boolean canPlaceLiquid(@Nonnull BlockGetter worldIn, @Nonnull BlockPos pos, BlockState state, @Nonnull Fluid fluidIn) { return state.hasProperty(BlockStateProperties.WATERLOGGED) && SimpleWaterloggedBlock.super.canPlaceLiquid(worldIn, pos, state, fluidIn); }
 
-    @Override public boolean placeLiquid(@Nonnull LevelAccessor worldIn, @Nonnull BlockPos pos, BlockState state, @Nonnull FluidState fluidStateIn) {
-        return state.hasProperty(BlockStateProperties.WATERLOGGED) && SimpleWaterloggedBlock.super.placeLiquid(worldIn, pos, state, fluidStateIn);
-    }
+    @Override public boolean placeLiquid(@Nonnull LevelAccessor worldIn, @Nonnull BlockPos pos, BlockState state, @Nonnull FluidState fluidStateIn) { return state.hasProperty(BlockStateProperties.WATERLOGGED) && SimpleWaterloggedBlock.super.placeLiquid(worldIn, pos, state, fluidStateIn); }
 
-    @Override @Nonnull public ItemStack pickupBlock(@Nonnull LevelAccessor level, @Nonnull BlockPos pos, BlockState state) {
-        return state.hasProperty(BlockStateProperties.WATERLOGGED) ? SimpleWaterloggedBlock.super.pickupBlock(level, pos, state) : ItemStack.EMPTY;
-    }
+    @Override @Nonnull public ItemStack pickupBlock(@Nonnull LevelAccessor level, @Nonnull BlockPos pos, BlockState state) { return state.hasProperty(BlockStateProperties.WATERLOGGED) ? SimpleWaterloggedBlock.super.pickupBlock(level, pos, state) : ItemStack.EMPTY; }
 
     public boolean fitsIntoContainer() { return this.fitsIntoContainer; }
 
@@ -169,7 +139,5 @@ import javax.annotation.Nullable;
         else { return state.hasProperty(ModProperties.FACING_HORIZONTAL) ? ModProperties.FACING_HORIZONTAL : null; }
     }
 
-    protected boolean canRotate() {
-        return !this.getStateDefinition().getProperties().contains(ModProperties.MULTIBLOCKSLAVE);
-    }
+    protected boolean canRotate() { return !this.getStateDefinition().getProperties().contains(ModProperties.MULTIBLOCKSLAVE); }
 }

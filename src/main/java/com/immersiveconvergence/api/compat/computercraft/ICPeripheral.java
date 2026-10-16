@@ -12,7 +12,6 @@ import dan200.computercraft.api.peripheral.IPeripheral;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
@@ -43,7 +42,7 @@ public class ICPeripheral<T> implements IDynamicPeripheral {
         T object = table.locate(blockEntity);
         if (object == null) { throw new LuaException("Machine is not formed"); }
         try { return ICLuaConvert.toLua(table.invoke(object, name, args)); }
-        catch (RuntimeException e) { throw new LuaException(e.getMessage()); }
+        catch (IllegalArgumentException | IllegalStateException e) { throw new LuaException(e.getMessage()); }
     }
 
     @Override public void attach(@Nonnull IComputerAccess computer) { onMainThread(table::attach); }

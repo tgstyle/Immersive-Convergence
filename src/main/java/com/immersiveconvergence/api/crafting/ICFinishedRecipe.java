@@ -4,7 +4,6 @@ import com.immersiveconvergence.api.util.ICUtils;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.resources.ResourceLocation;
@@ -26,16 +25,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-@SuppressWarnings({"unused", "unchecked"}) public class ICFinishedRecipe<R extends ICFinishedRecipe<R>> implements FinishedRecipe {
+@SuppressWarnings("unchecked") public class ICFinishedRecipe<R extends ICFinishedRecipe<R>> implements FinishedRecipe {
     private final ICRecipeSerializer<?> serializer;
     private final List<Consumer<JsonObject>> writerFunctions = new ArrayList<>();
     private ResourceLocation id;
-    protected JsonArray inputArray = null;
     protected int inputCount = 0;
     protected int maxInputCount = 1;
-    protected JsonArray resultArray = null;
-    protected int resultCount = 0;
-    protected int maxResultCount = 1;
     protected JsonArray conditions = null;
 
     protected ICFinishedRecipe(ICRecipeSerializer<?> serializer) { this.serializer = serializer; }
@@ -67,48 +62,6 @@ import java.util.function.Consumer;
 
     public R setEnergy(int energy) { return addWriter(json -> json.addProperty("energy", energy)); }
 
-    public R setMultipleResults(int maxResultCount) {
-        resultArray = new JsonArray();
-        this.maxResultCount = maxResultCount;
-        return addWriter(json -> json.add("results", resultArray));
-    }
-
-    public R addMultiResult(JsonElement obj) {
-        Preconditions.checkArgument(maxResultCount > 1, "This recipe does not support multiple results");
-        Preconditions.checkArgument(resultCount < maxResultCount, "Recipe can only have " + maxResultCount + " results");
-        resultArray.add(obj);
-        resultCount++;
-        return (R)this;
-    }
-
-    public R addResult(ItemLike itemProvider) { return addResult(new ItemStack(itemProvider)); }
-
-    public R addResult(ItemStack itemStack) { return resultArray != null ? addMultiResult(serializeItemStack(itemStack)) : addItem("result", itemStack); }
-
-    public R addResult(Ingredient ingredient) { return resultArray != null ? addMultiResult(ingredient.toJson()) : addWriter(json -> json.add("result", ingredient.toJson())); }
-
-    public R addResult(ICIngredientWithSize ingredient) { return resultArray != null ? addMultiResult(ingredient.serialize()) : addWriter(json -> json.add("result", ingredient.serialize())); }
-
-    public R setUseInputArray(int maxInputCount, String key) {
-        inputArray = new JsonArray();
-        this.maxInputCount = maxInputCount;
-        return addWriter(json -> json.add(key, inputArray));
-    }
-
-    public R setUseInputArray(int maxInputCount) { return setUseInputArray(maxInputCount, "inputs"); }
-
-    public R addMultiInput(JsonElement obj) {
-        Preconditions.checkArgument(maxInputCount > 1, "This recipe does not support multiple inputs");
-        Preconditions.checkArgument(inputCount < maxInputCount, "Recipe can only have " + maxInputCount + " inputs");
-        inputArray.add(obj);
-        inputCount++;
-        return (R)this;
-    }
-
-    public R addMultiInput(Ingredient ingredient) { return addMultiInput(ingredient.toJson()); }
-
-    public R addMultiInput(ICIngredientWithSize ingredient) { return addMultiInput(ingredient.serialize()); }
-
     protected String generateSafeInputKey() {
         Preconditions.checkArgument(inputCount < maxInputCount, "Recipe can only have " + maxInputCount + " inputs");
         String key = maxInputCount == 1 ? "input" : "input" + inputCount;
@@ -116,15 +69,15 @@ import java.util.function.Consumer;
         return key;
     }
 
-    public R addInput(ItemLike... itemProviders) { return inputArray != null ? addMultiInput(Ingredient.of(itemProviders)) : addIngredient(generateSafeInputKey(), itemProviders); }
+    public R addInput(ItemLike... itemProviders) { return addIngredient(generateSafeInputKey(), itemProviders); }
 
-    public R addInput(ItemStack... itemStacks) { return inputArray != null ? addMultiInput(Ingredient.of(itemStacks)) : addIngredient(generateSafeInputKey(), itemStacks); }
+    public R addInput(ItemStack... itemStacks) { return addIngredient(generateSafeInputKey(), itemStacks); }
 
-    public R addInput(TagKey<Item> tag) { return inputArray != null ? addMultiInput(Ingredient.of(tag)) : addIngredient(generateSafeInputKey(), tag); }
+    public R addInput(TagKey<Item> tag) { return addIngredient(generateSafeInputKey(), tag); }
 
-    public R addInput(Ingredient input) { return inputArray != null ? addMultiInput(input) : addIngredient(generateSafeInputKey(), input); }
+    public R addInput(Ingredient input) { return addIngredient(generateSafeInputKey(), input); }
 
-    public R addInput(ICIngredientWithSize input) { return inputArray != null ? addMultiInput(input) : addIngredient(generateSafeInputKey(), input); }
+    public R addInput(ICIngredientWithSize input) { return addIngredient(generateSafeInputKey(), input); }
 
     public JsonObject serializeItemStack(ItemStack stack) {
         JsonObject obj = new JsonObject();
@@ -133,8 +86,6 @@ import java.util.function.Consumer;
         if (stack.hasTag()) { obj.addProperty("nbt", String.valueOf(stack.getTag())); }
         return obj;
     }
-
-    protected R addSimpleItem(String key, ItemLike item) { return addWriter(json -> json.addProperty(key, Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(item.asItem())).toString())); }
 
     public R addItem(String key, ItemLike item) { return addItem(key, new ItemStack(item)); }
 
@@ -176,16 +127,4 @@ import java.util.function.Consumer;
     @Nullable @Override public JsonObject serializeAdvancement() { return null; }
 
     @Nullable @Override public ResourceLocation getAdvancementId() { return null; }
-
-    protected static JsonObject serializeStackWithChance(ICIngredientWithSize ingredient, float chance, ICondition... conditions) {
-        JsonObject json = new JsonObject();
-        json.addProperty("chance", chance);
-        json.add("output", ingredient.serialize());
-        if (conditions.length > 0) {
-            JsonArray conditionArray = new JsonArray();
-            for (ICondition condition : conditions) { conditionArray.add(CraftingHelper.serialize(condition)); }
-            json.add("conditions", conditionArray);
-        }
-        return json;
-    }
 }

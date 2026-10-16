@@ -11,19 +11,14 @@ import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
-
 import java.util.ArrayList;
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = ICLib.MODID, bus = Bus.MOD, value = Dist.CLIENT)
-@SuppressWarnings({"unused", "RedundantSuppression"}) public record StandaloneModel(ResourceLocation name) {
+@Mod.EventBusSubscriber(modid = ICLib.MODID, bus = Bus.MOD, value = Dist.CLIENT) public record StandaloneModel(ResourceLocation name) {
     private static final List<ResourceLocation> MODELS = new ArrayList<>();
 
-    @SubscribeEvent
-    public static void registerModels(ModelEvent.RegisterAdditional ev) {
-        for (ResourceLocation model : MODELS) {
-            ev.register(model);
-        }
+    @SubscribeEvent public static void registerModels(ModelEvent.RegisterAdditional ev) {
+        for (ResourceLocation model : MODELS) { ev.register(model); }
     }
 
     public StandaloneModel(ResourceLocation name) {

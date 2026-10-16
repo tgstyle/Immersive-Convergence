@@ -12,11 +12,9 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import java.lang.reflect.Field;
 
-@Mixin(MixerLogic.class)
-public abstract class MixerLogicMixin {
+@Mixin(MixerLogic.class) public abstract class MixerLogicMixin {
     @Unique private static final int IC$STABLE_TICKS = 60;
     @Unique private static final Object IC$NOP;
 
@@ -29,15 +27,14 @@ public abstract class MixerLogicMixin {
         catch (ReflectiveOperationException e) { throw new RuntimeException("Failed to access MixerLogic.RecipeEnqueueState.NOP", e); }
     }
 
-    @Inject(method = "enqueueNewRecipes(Lblusunrize/immersiveengineering/common/blocks/multiblocks/logic/mixer/MixerLogic$State;Lnet/minecraft/world/level/Level;)Lblusunrize/immersiveengineering/common/blocks/multiblocks/logic/mixer/MixerLogic$RecipeEnqueueState;", at = @At("HEAD"), cancellable = true, remap = false)
-    private void ic$smartDebounce(State state, Level rawLevel, CallbackInfoReturnable<Object> cir) {
+    @Inject(method = "enqueueNewRecipes(Lblusunrize/immersiveengineering/common/blocks/multiblocks/logic/mixer/MixerLogic$State;Lnet/minecraft/world/level/Level;)Lblusunrize/immersiveengineering/common/blocks/multiblocks/logic/mixer/MixerLogic$RecipeEnqueueState;", at = @At("HEAD"), cancellable = true, remap = false) private void ic$smartDebounce(State state, Level rawLevel, CallbackInfoReturnable<Object> cir) {
         IMixerStateDebounce debounce = (IMixerStateDebounce) state;
         NonNullList<ItemStack> last = debounce.ic$getLastComponents();
         boolean playerChange = false;
         for (int i = 0; i < MixerLogic.NUM_SLOTS && !playerChange; ++i) {
             ItemStack current = state.inventory.getStackInSlot(i);
             ItemStack previous = last.get(i);
-            playerChange = !ItemStack.isSameItemSameTags(current, previous) || current.getCount() > previous.getCount();
+            playerChange = !ItemStack.isSameItemSameTags(current, previous);
         }
         debounce.ic$setStableTicks(playerChange ? 0 : debounce.ic$getStableTicks() + 1);
         for (int i = 0; i < MixerLogic.NUM_SLOTS; ++i) {

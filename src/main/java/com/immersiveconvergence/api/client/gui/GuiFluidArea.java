@@ -2,7 +2,6 @@ package com.immersiveconvergence.api.client.gui;
 
 import com.immersiveconvergence.api.client.FluidRender;
 import com.immersiveconvergence.api.client.RenderTypes;
-import com.immersiveconvergence.api.util.ICTextUtils;
 
 import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.ChatFormatting;
@@ -17,12 +16,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.registries.ForgeRegistries;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class GuiFluidArea extends GuiInfoArea {
+public class GuiFluidArea extends GuiInfoArea {
     public static final String KEY_EMPTY = "gui.immersiveconvergence.empty";
     public static final String KEY_HOLD_SHIFT = "desc.immersiveconvergence.info.holdShiftForInfo";
     public static final String KEY_FLUID_REGISTRY = "gui.immersiveconvergence.fluid_registry";
@@ -60,15 +58,15 @@ import java.util.function.Consumer;
         if (Minecraft.getInstance().options.advancedItemTooltips && !fluid.isEmpty()) {
             if (!Screen.hasShiftDown()) { tooltip.accept(Component.translatable(KEY_HOLD_SHIFT)); }
             else {
-                tooltip.accept(ICTextUtils.applyFormat(Component.translatable(KEY_FLUID_REGISTRY, ForgeRegistries.FLUIDS.getKey(fluid.getFluid())), ChatFormatting.DARK_GRAY));
-                tooltip.accept(ICTextUtils.applyFormat(Component.translatable(KEY_FLUID_DENSITY, fluid.getFluid().getFluidType().getDensity(fluid)), ChatFormatting.DARK_GRAY));
-                tooltip.accept(ICTextUtils.applyFormat(Component.translatable(KEY_FLUID_TEMPERATURE, fluid.getFluid().getFluidType().getTemperature(fluid)), ChatFormatting.DARK_GRAY));
-                tooltip.accept(ICTextUtils.applyFormat(Component.translatable(KEY_FLUID_VISCOSITY, fluid.getFluid().getFluidType().getViscosity(fluid)), ChatFormatting.DARK_GRAY));
-                tooltip.accept(ICTextUtils.applyFormat(Component.translatable(KEY_FLUID_NBT, fluid.getTag()), ChatFormatting.DARK_GRAY));
+                tooltip.accept(Component.translatable(KEY_FLUID_REGISTRY, ForgeRegistries.FLUIDS.getKey(fluid.getFluid())).withStyle(ChatFormatting.DARK_GRAY));
+                tooltip.accept(Component.translatable(KEY_FLUID_DENSITY, fluid.getFluid().getFluidType().getDensity(fluid)).withStyle(ChatFormatting.DARK_GRAY));
+                tooltip.accept(Component.translatable(KEY_FLUID_TEMPERATURE, fluid.getFluid().getFluidType().getTemperature(fluid)).withStyle(ChatFormatting.DARK_GRAY));
+                tooltip.accept(Component.translatable(KEY_FLUID_VISCOSITY, fluid.getFluid().getFluidType().getViscosity(fluid)).withStyle(ChatFormatting.DARK_GRAY));
+                tooltip.accept(Component.translatable(KEY_FLUID_NBT, fluid.getTag()).withStyle(ChatFormatting.DARK_GRAY));
             }
         }
-        if (tankCapacity > 0) { tooltip.accept(ICTextUtils.applyFormat(Component.translatable(KEY_FLUID_CAPACITY, fluid.getAmount(), tankCapacity), ChatFormatting.GRAY)); }
-        else if (tankCapacity == 0) { tooltip.accept(ICTextUtils.applyFormat(Component.translatable(KEY_FLUID_AMOUNT, fluid.getAmount()), ChatFormatting.GRAY)); }
+        if (tankCapacity > 0) { tooltip.accept(Component.translatable(KEY_FLUID_CAPACITY, fluid.getAmount(), tankCapacity).withStyle(ChatFormatting.GRAY)); }
+        else if (tankCapacity == 0) { tooltip.accept(Component.translatable(KEY_FLUID_AMOUNT, fluid.getAmount()).withStyle(ChatFormatting.GRAY)); }
     }
 
     @Override public void draw(GuiGraphics graphics) {

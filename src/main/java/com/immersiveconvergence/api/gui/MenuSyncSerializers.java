@@ -4,7 +4,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.extensions.IForgeFriendlyByteBuf;
 import net.minecraftforge.fluids.FluidStack;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -13,7 +12,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class MenuSyncSerializers {
+public class MenuSyncSerializers {
     private static final List<DataSerializer<?>> SERIALIZERS = new ArrayList<>();
     public static final DataSerializer<Integer> INT32 = register(FriendlyByteBuf::readVarInt, FriendlyByteBuf::writeVarInt);
     public static final DataSerializer<FluidStack> FLUID_STACK = register(IForgeFriendlyByteBuf::readFluidStack, IForgeFriendlyByteBuf::writeFluidStack, FluidStack::copy, FluidStack::isFluidStackIdentical);

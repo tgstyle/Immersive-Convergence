@@ -9,12 +9,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.network.NetworkEvent;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public record MessageMenuSync(List<Pair<Integer, DataPair<?>>> synced) implements INetworkMessage {
+public record MessageMenuSync(List<Pair<Integer, DataPair<?>>> synced) implements INetworkMessage {
     public MessageMenuSync(FriendlyByteBuf buf) { this(readSynced(buf)); }
 
     private static List<Pair<Integer, DataPair<?>>> readSynced(FriendlyByteBuf buf) {

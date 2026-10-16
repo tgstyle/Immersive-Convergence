@@ -1,7 +1,6 @@
 package com.immersiveconvergence.api.block;
 
 import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockPartBlock;
-import com.immersiveconvergence.api.util.ICTextUtils;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -23,11 +22,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.fluids.FluidStack;
 import java.util.List;
 import java.util.Optional;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class ModBlockItem extends BlockItem {
+public class ModBlockItem extends BlockItem {
     public static final String ENERGY_KEY = "energy";
 
     public ModBlockItem(Block b, Item.Properties props) { super(b, props); }
@@ -39,14 +37,14 @@ import javax.annotation.Nullable;
     @Override public void appendHoverText(@Nonnull ItemStack stack, @Nullable Level world, @Nonnull List<Component> tooltip, @Nonnull TooltipFlag advanced) {
         if (getBlock() instanceof IBlock ieBlock && ieBlock.hasFlavour()) {
             String flavourKey = BlockToolGates.descFlavour + ieBlock.getNameForFlavour();
-            tooltip.add(ICTextUtils.applyFormat(Component.translatable(flavourKey), ChatFormatting.GRAY));
+            tooltip.add(Component.translatable(flavourKey).withStyle(ChatFormatting.GRAY));
         }
         super.appendHoverText(stack, world, tooltip, advanced);
         CompoundTag tag = stack.getTag();
-        if (tag != null && tag.contains(ENERGY_KEY)) { tooltip.add(ICTextUtils.applyFormat(Component.translatable(BlockToolGates.descInfo + "energyStored", tag.getInt(ENERGY_KEY)), ChatFormatting.GRAY)); }
+        if (tag != null && tag.contains(ENERGY_KEY)) { tooltip.add(Component.translatable(BlockToolGates.descInfo + "energyStored", tag.getInt(ENERGY_KEY)).withStyle(ChatFormatting.GRAY)); }
         if (tag != null && tag.contains("tank")) {
             FluidStack fs = FluidStack.loadFluidStackFromNBT(tag.getCompound("tank"));
-            if (!fs.isEmpty()) { tooltip.add(ICTextUtils.applyFormat(Component.translatable(BlockToolGates.descInfo + "fluidStored", fs.getDisplayName(), fs.getAmount()), ChatFormatting.GRAY)); }
+            if (!fs.isEmpty()) { tooltip.add(Component.translatable(BlockToolGates.descInfo + "fluidStored", fs.getDisplayName(), fs.getAmount()).withStyle(ChatFormatting.GRAY)); }
         }
     }
 
@@ -54,16 +52,17 @@ import javax.annotation.Nullable;
         if (getBlock() instanceof MultiblockPartBlock) { return false; }
         Block b = newState.getBlock();
         if (b instanceof BaseBlock ieBlock) {
-            if (!ieBlock.canIEBlockBePlaced(newState, context)) return false;
+            if (!ieBlock.canIEBlockBePlaced()) { return false; }
             boolean ret = super.placeBlock(context, newState);
-            if (ret) ieBlock.onIEBlockPlacedBy(context, newState);
+            if (ret) { ieBlock.onIEBlockPlacedBy(context, newState); }
             return ret;
-        } else return super.placeBlock(context, newState);
+        }
+        else { return super.placeBlock(context, newState); }
     }
 
     @Override protected boolean updateCustomBlockEntityTag(@Nonnull BlockPos pos, @Nonnull Level worldIn, @Nullable Player player, @Nonnull ItemStack stack, BlockState state) {
-        if (!state.hasProperty(ModProperties.MULTIBLOCKSLAVE)) return super.updateCustomBlockEntityTag(pos, worldIn, player, stack, state);
-        else return false;
+        if (!state.hasProperty(ModProperties.MULTIBLOCKSLAVE)) { return super.updateCustomBlockEntityTag(pos, worldIn, player, stack, state); }
+        else { return false; }
     }
 
     @Override @Nonnull public Optional<TooltipComponent> getTooltipImage(@Nonnull ItemStack stack) {
@@ -74,7 +73,7 @@ import javax.annotation.Nullable;
                 NonNullList<ItemStack> items = NonNullList.create();
                 list.forEach(e -> {
                     ItemStack s = ItemStack.of((CompoundTag) e);
-                    if (!s.isEmpty()) items.add(s);
+                    if (!s.isEmpty()) { items.add(s); }
                 });
                 return Optional.of(new BundleTooltip(items, 0));
             }

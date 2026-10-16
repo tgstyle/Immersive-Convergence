@@ -26,28 +26,25 @@ import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 
-@Mixin(value = ICConnectableBlockEntity.class, remap = false)
-public abstract class ICConnectableBlockEntityMixin extends BaseBlockEntity implements IImmersiveConnectable, EnergyConnector {
+@Mixin(value = ICConnectableBlockEntity.class, remap = false) public abstract class ICConnectableBlockEntityMixin extends BaseBlockEntity implements IImmersiveConnectable, EnergyConnector {
     protected ICConnectableBlockEntityMixin(BlockEntityType<?> type, BlockPos pos, BlockState state) { super(type, pos, state); }
 
     @Shadow(remap = false) public abstract boolean canConnect();
-    @Shadow(remap = false) @Nonnull public abstract BlockPos connectionMaster(@Nullable ICWireType cable, @Nonnull ICTargetingInfo target);
     @Shadow(remap = false) public abstract boolean acceptsCable(@Nonnull ICWireType cable, @Nonnull ICConnectionPoint target, @Nonnull Vec3i offset);
     @Shadow(remap = false) public abstract void cableConnected(@Nonnull ICWireType cable, @Nonnull ICConnectionPoint target);
     @Shadow(remap = false) @Nullable public abstract ICConnectionPoint targetedPoint(@Nonnull ICTargetingInfo target, @Nonnull Vec3i offset);
     @Shadow(remap = false) public abstract void cableRemoved(@Nullable ICWireType cable, @Nonnull ICConnectionPoint attachedPoint);
-    @Shadow(remap = false) @Nonnull public abstract Vec3 connectionOffset(@Nonnull ICConnectionPoint here, @Nonnull ICConnectionPoint other, @Nonnull ICWireType cable);
+    @Shadow(remap = false) @Nonnull public abstract Vec3 connectionOffset(@Nonnull ICConnectionPoint here, @Nonnull ICWireType cable);
     @Shadow(remap = false) @Nonnull public abstract Collection<ICConnectionPoint> connectionPoints();
 
     @Unique @Nullable private IICEnergyConnector immersiveconvergence$energy() { return (Object) this instanceof IICEnergyConnector energy ? energy : null; }
 
-    @Override public BlockPos getConnectionMaster(@Nullable WireType cableType, TargetingInfo target) { return connectionMaster(IEWireBridge.ofNullable(cableType), IEWireBridge.targeting(target)); }
+    @Override public BlockPos getConnectionMaster(@Nullable WireType cableType, TargetingInfo target) { return getBlockPos(); }
 
     @Override public boolean canConnectCable(WireType cableType, ConnectionPoint target, Vec3i offset) { return acceptsCable(IEWireBridge.of(cableType), IEWireBridge.point(target), offset); }
 
@@ -57,7 +54,7 @@ public abstract class ICConnectableBlockEntityMixin extends BaseBlockEntity impl
 
     @Override public void removeCable(@Nullable Connection connection, ConnectionPoint attachedPoint) { cableRemoved(connection == null ? null : IEWireBridge.of(connection.type), IEWireBridge.point(attachedPoint)); }
 
-    @Override public Vec3 getConnectionOffset(ConnectionPoint here, ConnectionPoint other, WireType type) { return connectionOffset(IEWireBridge.point(here), IEWireBridge.point(other), IEWireBridge.of(type)); }
+    @Override public Vec3 getConnectionOffset(ConnectionPoint here, ConnectionPoint other, WireType type) { return connectionOffset(IEWireBridge.point(here), IEWireBridge.of(type)); }
 
     @Override public Collection<ConnectionPoint> getConnectionPoints() { return connectionPoints().stream().map(cp -> new ConnectionPoint(cp.position(), cp.index())).toList(); }
 

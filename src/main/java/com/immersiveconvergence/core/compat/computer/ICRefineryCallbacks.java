@@ -9,13 +9,12 @@ import blusunrize.immersiveengineering.common.util.compat.computers.generic.Call
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.ComputerCallable;
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.owners.RefineryCallbacks;
 import net.minecraftforge.fluids.FluidStack;
-
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("unused") public class ICRefineryCallbacks extends RefineryCallbacks {
+public class ICRefineryCallbacks extends RefineryCallbacks {
     @ComputerCallable public Map<String, Object> getRecipe(CallbackEnvironment<State> env) {
         RefineryRecipe recipe = recipe(env);
         if (recipe == null) { throw new IllegalArgumentException("The recipe of the refinery is invalid"); }

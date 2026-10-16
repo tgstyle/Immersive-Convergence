@@ -23,12 +23,10 @@ import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-
 import javax.annotation.Nullable;
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = ICLib.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
-public final class MultiblockOverlayHandler {
+@Mod.EventBusSubscriber(modid = ICLib.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD) public final class MultiblockOverlayHandler {
     private MultiblockOverlayHandler() {}
 
     @SubscribeEvent public static void register(RegisterGuiOverlaysEvent event) { event.registerBelow(VanillaGuiOverlay.DEBUG_TEXT.id(), "multiblock_overlay", MultiblockOverlayHandler::render); }

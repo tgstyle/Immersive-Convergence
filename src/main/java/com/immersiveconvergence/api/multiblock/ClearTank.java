@@ -1,9 +1,8 @@
 package com.immersiveconvergence.api.multiblock;
 
-import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.multiblock.blocks.component.IMultiblockComponent;
 import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockContext;
-import com.immersiveconvergence.common.ie.IEMultiblockBridge;
+import com.immersiveconvergence.api.util.ICUtils;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.core.BlockPos;
@@ -13,14 +12,13 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.BlockHitResult;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public record ClearTank<S>(Supplier<? extends Collection<BlockPos>> pois, Consumer<S> clearAction, Component message) implements IMultiblockComponent<S> {
+public record ClearTank<S>(Supplier<? extends Collection<BlockPos>> pois, Consumer<S> clearAction, Component message) implements IMultiblockComponent<S> {
     public static Predicate<ItemStack> additionalTool = stack -> false;
 
     public ClearTank(List<BlockPos> pois, Consumer<S> clearAction, Component message) { this(constant(pois), clearAction, message); }
@@ -33,12 +31,11 @@ import java.util.function.Supplier;
     @Override public InteractionResult click(IMultiblockContext<S> context, BlockPos posInMultiblock, Player player, InteractionHand hand, BlockHitResult absoluteHit, boolean isClient) {
         if (player.isShiftKeyDown() && pois.get().contains(posInMultiblock)) {
             ItemStack held = player.getItemInHand(hand);
-            if ((ICMods.immersiveEngineering() && IEMultiblockBridge.isHammer(held)) || additionalTool.test(held)) {
+            if (ICUtils.isHammer(held) || additionalTool.test(held)) {
                 if (!isClient) {
                     S state = context.getState();
                     clearAction.accept(state);
-                    context.markMasterDirty();
-                    context.requestMasterBESync();
+                    context.markDirtyAndSync();
                     player.displayClientMessage(message, true);
                 }
                 return InteractionResult.sidedSuccess(isClient);

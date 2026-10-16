@@ -11,7 +11,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
-
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashMap;
@@ -19,7 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.ToIntFunction;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class ClearTankRegistry {
+public class ClearTankRegistry {
     public static final String KEY_TANK_CLEARED = "gui.immersiveconvergence.input_tank_cleared";
     public static final String KEY_TANKS_CLEARED = "gui.immersiveconvergence.input_tanks_cleared";
     private static final Map<ResourceLocation, Entry> ENTRIES = new HashMap<>();

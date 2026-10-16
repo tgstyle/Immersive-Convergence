@@ -6,7 +6,7 @@ import com.immersiveconvergence.api.multiblock.MultiblockDataLoader;
 import com.immersiveconvergence.api.multiblock.MultiblockOverride;
 import com.immersiveconvergence.api.multiblock.QueueProcessor;
 import com.immersiveconvergence.api.multiblock.ShapeData;
-import com.immersiveconvergence.api.multiblock.blocks.util.RelativeBlockFace;
+import com.immersiveconvergence.common.ie.IEMultiblockBridge;
 
 import blusunrize.immersiveengineering.api.multiblocks.blocks.MultiblockRegistration;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockBEHelper;
@@ -46,8 +46,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.EnumMap;
 import java.util.Map;
 
-@Mixin(MultiblockBEHelperCommon.class)
-public abstract class MultiblockBEHelperCommonMixin {
+@Mixin(MultiblockBEHelperCommon.class) public abstract class MultiblockBEHelperCommonMixin {
     @Shadow(remap = false) private boolean beingDisassembled;
 
     @Shadow(remap = false) protected abstract IMultiblockBEHelperMaster<?> getMasterHelperWithChunkloads();
@@ -61,8 +60,7 @@ public abstract class MultiblockBEHelperCommonMixin {
     @Shadow(remap = false) @Final private EnumMap<ShapeType, ?> cachedShape;
     @Unique private int ic$shapeGeneration;
 
-    @Inject(method = "disassemble", at = @At("HEAD"), cancellable = true, remap = false)
-    private void ic$queueDisassembly(CallbackInfo ci) {
+    @Inject(method = "disassemble", at = @At("HEAD"), cancellable = true, remap = false) private void ic$queueDisassembly(CallbackInfo ci) {
         if (beingDisassembled) { return; }
         IMultiblockBEHelper<?> self = (IMultiblockBEHelper<?>) this;
         MultiblockRegistration<?> registration = self.getMultiblock();
@@ -86,9 +84,7 @@ public abstract class MultiblockBEHelperCommonMixin {
         }
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    @Inject(method = "getShape", at = @At("HEAD"), cancellable = true, remap = false)
-    private void ic$overrideShape(CollisionContext ctx, ShapeType type, CallbackInfoReturnable<VoxelShape> cir) {
+    @SuppressWarnings({"rawtypes", "unchecked"}) @Inject(method = "getShape", at = @At("HEAD"), cancellable = true, remap = false) private void ic$overrideShape(CollisionContext ctx, ShapeType type, CallbackInfoReturnable<VoxelShape> cir) {
         int generation = MultiblockDataLoader.generation();
         if (ic$shapeGeneration != generation) {
             ic$shapeGeneration = generation;
@@ -113,17 +109,12 @@ public abstract class MultiblockBEHelperCommonMixin {
         cir.setReturnValue(absolute);
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    @Redirect(method = "getCapability", at = @At(value = "INVOKE", target = "Lblusunrize/immersiveengineering/api/multiblocks/blocks/logic/IMultiblockLogic;getCapability(Lblusunrize/immersiveengineering/api/multiblocks/blocks/env/IMultiblockContext;Lblusunrize/immersiveengineering/api/multiblocks/blocks/util/CapabilityPosition;Lnet/minecraftforge/common/capabilities/Capability;)Lnet/minecraftforge/common/util/LazyOptional;"), remap = false)
-    private LazyOptional ic$overridePorts(IMultiblockLogic logic, IMultiblockContext ctx, CapabilityPosition position, Capability cap) {
-        MultiblockOverride override = MultiblockOverride.get(multiblock.id());
-        if (override == null || override.ignores(cap)) { return logic.getCapability(ctx, position, cap); }
-        com.immersiveconvergence.api.multiblock.blocks.util.CapabilityPosition mapped = override.map(cap, new com.immersiveconvergence.api.multiblock.blocks.util.CapabilityPosition(position.posInMultiblock(), position.side() == null ? null : RelativeBlockFace.valueOf(position.side().name())));
-        return mapped == null ? LazyOptional.empty() : logic.getCapability(ctx, new CapabilityPosition(mapped.posInMultiblock(), mapped.side() == null ? null : blusunrize.immersiveengineering.api.multiblocks.blocks.util.RelativeBlockFace.valueOf(mapped.side().name())), cap);
+    @SuppressWarnings({"rawtypes", "unchecked"}) @Redirect(method = "getCapability", at = @At(value = "INVOKE", target = "Lblusunrize/immersiveengineering/api/multiblocks/blocks/logic/IMultiblockLogic;getCapability(Lblusunrize/immersiveengineering/api/multiblocks/blocks/env/IMultiblockContext;Lblusunrize/immersiveengineering/api/multiblocks/blocks/util/CapabilityPosition;Lnet/minecraftforge/common/capabilities/Capability;)Lnet/minecraftforge/common/util/LazyOptional;"), remap = false) private LazyOptional ic$overridePorts(IMultiblockLogic logic, IMultiblockContext ctx, CapabilityPosition position, Capability cap) {
+        com.immersiveconvergence.api.multiblock.blocks.util.CapabilityPosition mapped = MultiblockOverride.resolve(multiblock.id(), cap, IEMultiblockBridge.toIC(position));
+        return mapped == null ? LazyOptional.empty() : logic.getCapability(ctx, IEMultiblockBridge.toIE(mapped), cap);
     }
 
-    @Inject(method = "click", at = @At("HEAD"), cancellable = true, remap = false)
-    private void ic$clearTank(Player player, InteractionHand hand, BlockHitResult hit, CallbackInfoReturnable<InteractionResult> cir) {
+    @Inject(method = "click", at = @At("HEAD"), cancellable = true, remap = false) private void ic$clearTank(Player player, InteractionHand hand, BlockHitResult hit, CallbackInfoReturnable<InteractionResult> cir) {
         MultiblockBEHelperMaster<?> master = getMasterHelper();
         if (master == null) { return; }
         IMultiblockBEHelper<?> self = (IMultiblockBEHelper<?>) this;

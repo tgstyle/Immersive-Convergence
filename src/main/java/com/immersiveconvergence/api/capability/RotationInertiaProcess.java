@@ -1,6 +1,6 @@
 package com.immersiveconvergence.api.capability;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class RotationInertiaProcess {
+public class RotationInertiaProcess {
     private final int speedUpRate;
     private final int speedDownRate;
     private final double inertia;
@@ -26,6 +26,4 @@ package com.immersiveconvergence.api.capability;
         double netTorque = torque * ratio - opposing;
         return netTorque / inertia;
     }
-
-    public int getDelta(float ratio, int currentSpeed) { return (int) Math.round(getAlpha(ratio, currentSpeed)); }
 }

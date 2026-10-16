@@ -1,34 +1,22 @@
 package com.immersiveconvergence.api.multiblock;
 
 import com.immersiveconvergence.api.client.split.ISubmodelOffsetProvider;
-import com.immersiveconvergence.api.client.split.SplitModelProperties;
-
 import com.immersiveconvergence.api.block.ModProperties;
-import com.immersiveconvergence.api.multiblock.blockimpl.ComponentInstance;
 import com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistration;
 import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockBEHelper;
-import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockContext;
 import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockState;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.model.data.ModelData;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class MachineBlockEntityCommon<State extends IMultiblockState> implements ISubmodelOffsetProvider {
+public class MachineBlockEntityCommon<State extends IMultiblockState> implements ISubmodelOffsetProvider {
     private final MultiblockRegistration<State> multiblock;
     private final Supplier<IMultiblockBEHelper<State>> helperSupplier;
     private final Supplier<Level> levelSupplier;
@@ -37,25 +25,6 @@ import java.util.stream.Stream;
         this.multiblock = multiblock;
         this.helperSupplier = helperSupplier;
         this.levelSupplier = levelSupplier;
-    }
-
-    public boolean interact(Direction side, Player player, InteractionHand hand, ItemStack heldItem, float hitX, float hitY, float hitZ) {
-        IMultiblockContext<State> ctx = helperSupplier.get().getContext();
-        if (ctx == null) { return false; }
-        BlockPos posInMultiblock = helperSupplier.get().getPositionInMB();
-        Vec3 hitVec = new Vec3(hitX, hitY, hitZ);
-        BlockHitResult absoluteHit = new BlockHitResult(hitVec, side, BlockPos.ZERO, false);
-        boolean isClient = levelSupplier.get().isClientSide;
-        InteractionResult result = InteractionResult.PASS;
-        for (MultiblockRegistration.ExtraComponent<State, ?> extra : multiblock.extraComponents()) {
-            ComponentInstance<?> component = ComponentInstance.make(extra, ctx.getState(), ctx);
-            InteractionResult componentResult = component.click(posInMultiblock, player, hand, absoluteHit, isClient);
-            if (componentResult.consumesAction()) {
-                result = componentResult;
-                break;
-            }
-        }
-        return result.consumesAction();
     }
 
     public Stream<ItemStack> getDroppedItems() {
@@ -72,7 +41,7 @@ import java.util.stream.Stream;
         if (state != null && state.hasProperty(ModProperties.MIRRORED) && state.getValue(ModProperties.MIRRORED)) {
             Level level = levelSupplier.get();
             if (level != null) {
-                Vec3i realSize = helperSupplier.get().getSize(level);
+                Vec3i realSize = multiblock.size(level);
                 if (realSize != null) {
                     int x = realSize.getX() - 1 - posInMB.getX();
                     offset = new BlockPos(x, posInMB.getY(), posInMB.getZ());
@@ -81,11 +50,5 @@ import java.util.stream.Stream;
         }
         offset = offset.subtract(masterOffset);
         return offset;
-    }
-
-    public ModelData getModelData() {
-        BlockPos offset = getModelOffset(null, Vec3i.ZERO);
-        if (offset != null) { return ModelData.builder().with(SplitModelProperties.SUBMODEL_OFFSET, offset).build(); }
-        return ModelData.EMPTY;
     }
 }

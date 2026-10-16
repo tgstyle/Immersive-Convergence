@@ -2,7 +2,7 @@ package com.immersiveconvergence.api.network;
 
 import com.immersiveconvergence.ImmersiveConvergence;
 import com.immersiveconvergence.api.manual.ICManual;
-import com.immersiveconvergence.api.multiblock.ICTemplateMultiblock;
+import com.immersiveconvergence.api.multiblock.TemplateMultiblock;
 
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
@@ -13,7 +13,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraftforge.network.NetworkEvent;
-
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -35,7 +34,7 @@ public final class MessageMultiblockTemplates implements INetworkMessage {
             for (Map.Entry<ResourceLocation, CompoundTag> entry : templates.entrySet()) {
                 StructureTemplate template = new StructureTemplate();
                 template.load(blocks, entry.getValue());
-                ICTemplateMultiblock.SYNCED_CLIENT_TEMPLATES.put(entry.getKey(), template);
+                TemplateMultiblock.SYNCED_CLIENT_TEMPLATES.put(entry.getKey(), template);
             }
             ICManual.reset();
         });

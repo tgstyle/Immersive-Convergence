@@ -12,7 +12,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import javax.annotation.Nullable;
 import java.util.List;
 
-@SuppressWarnings("unused") public record ICCokeOvenRecipe(ResourceLocation id, ICIngredientWithSize input, Lazy<ItemStack> output, int time, int creosoteOutput) {
+public record ICCokeOvenRecipe(ResourceLocation id, ICIngredientWithSize input, Lazy<ItemStack> output, int time, int creosoteOutput) {
     public boolean matches(ItemStack stack) { return input.test(stack); }
 
     @Nullable public static ICCokeOvenRecipe findRecipe(Level level, ItemStack stack) {
@@ -23,9 +23,11 @@ import java.util.List;
         return null;
     }
 
+    @Nullable public static ICCokeOvenRecipe getById(Level level, ResourceLocation id) { return ICMods.immersiveEngineering() ? IECokeOvenBridge.getById(level, id) : null; }
+
     public static List<ICCokeOvenRecipe> getRecipes(Level level) { return ICMods.immersiveEngineering() ? IECokeOvenBridge.recipes(level) : List.of(); }
 
-    public static Fluid creosote() { return ForgeRegistries.FLUIDS.getValue(ResourceLocation.fromNamespaceAndPath(ICMods.IMMERSIVE_ENGINEERING, "creosote")); }
+    public static Fluid creosote() { return ForgeRegistries.FLUIDS.getValue(ICMods.ie("creosote")); }
 
     @Nullable public static ICRecipeType<?> recipeType() { return ICMods.immersiveEngineering() ? IECokeOvenBridge.recipeType() : null; }
 }

@@ -6,11 +6,10 @@ import blusunrize.immersiveengineering.common.util.compat.computers.generic.Call
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.CallbackEnvironment;
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.ComputerCallable;
 import net.minecraftforge.fluids.IFluidTank;
-
 import java.util.Map;
 import java.util.function.Function;
 
-@SuppressWarnings("unused") public class TankInfoCallbacks<T> extends Callback<T> {
+public class TankInfoCallbacks<T> extends Callback<T> {
     private final Function<T, IFluidTank> tank;
     private final String desc;
 

@@ -10,10 +10,9 @@ import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
-
 import javax.annotation.Nonnull;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public abstract class ModSlot extends Slot {
+public abstract class ModSlot extends Slot {
     final AbstractContainerMenu containerMenu;
 
     public ModSlot(AbstractContainerMenu containerMenu, Container inv, int id, int x, int y) {

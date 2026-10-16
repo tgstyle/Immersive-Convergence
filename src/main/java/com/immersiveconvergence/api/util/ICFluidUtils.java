@@ -15,7 +15,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class ICFluidUtils {
+public class ICFluidUtils {
     public static FluidStack copyFluidStackWithAmount(FluidStack stack, int amount) {
         if (stack.isEmpty()) { return FluidStack.EMPTY; }
         return new FluidStack(stack, amount);

@@ -1,9 +1,9 @@
 package com.immersiveconvergence.api.capability;
 
 import com.immersiveconvergence.core.ICCommonConfig;
+
 import net.minecraftforge.common.capabilities.Capability;
 
-@SuppressWarnings("unused")
 public class MechanicalCapabilities {
     public static int maxRpm() { return ICCommonConfig.maxRpm; }
 

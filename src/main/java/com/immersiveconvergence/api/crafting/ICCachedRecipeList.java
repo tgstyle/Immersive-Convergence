@@ -11,13 +11,15 @@ import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("unused") @EventBusSubscriber(modid = ICLib.MODID) public class ICCachedRecipeList<R extends Recipe<?>> {
+@EventBusSubscriber(modid = ICLib.MODID) public class ICCachedRecipeList<R extends Recipe<?>> {
     private static final int INVALID_RELOAD_COUNT = -1;
     private static int reloadCount = 0;
     private final ICRecipeType<R> type;
@@ -31,16 +33,17 @@ import java.util.stream.Collectors;
 
     @SubscribeEvent public static void onRecipeUpdatedClient(RecipesUpdatedEvent ev) { ++reloadCount; }
 
-    public static int reloadCount() { return reloadCount; }
-
     public Collection<R> getRecipes(@Nonnull Level level) {
         updateCache(level.getRecipeManager(), level.isClientSide());
         return Objects.requireNonNull(recipes).values();
     }
 
-    public Collection<ResourceLocation> getRecipeNames(@Nonnull Level level) {
-        updateCache(level.getRecipeManager(), level.isClientSide());
-        return Objects.requireNonNull(recipes).keySet();
+    @Nullable public R find(@Nonnull Level level, Predicate<R> matches, @Nullable R hint) {
+        if (hint != null && matches.test(hint)) { return hint; }
+        for (R recipe : getRecipes(level)) {
+            if (matches.test(recipe)) { return recipe; }
+        }
+        return null;
     }
 
     public R getById(@Nonnull Level level, ResourceLocation name) {

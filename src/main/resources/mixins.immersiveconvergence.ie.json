@@ -28,7 +28,8 @@
     "MixerLogicMixin",
     "MixerLogicStateMixin",
     "MixerRecipeMixin",
-    "PipeFluidHandlerMixin"
+    "PipeFluidHandlerMixin",
+    "FluidPumpBlockEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

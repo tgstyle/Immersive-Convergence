@@ -1,10 +1,11 @@
 package com.immersiveconvergence.api.compat.computercraft;
 
+import com.immersiveconvergence.api.util.ComputerValues;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
-
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -31,21 +32,20 @@ public final class ICLuaConvert {
         return value;
     }
 
-    private static Map<String, Object> item(ItemStack stack) {
+    public static Map<String, Object> item(ItemStack stack) {
         Map<String, Object> table = new HashMap<>();
-        table.put("name", name(ForgeRegistries.ITEMS.getKey(stack.getItem())));
+        ResourceLocation key = ForgeRegistries.ITEMS.getKey(stack.getItem());
+        table.put("name", key == null ? null : key.toString());
         table.put("count", stack.getCount());
         table.put("damage", stack.getDamageValue());
         table.put("maxDamage", stack.getMaxDamage());
         return table;
     }
 
-    private static Map<String, Object> fluid(FluidStack stack) {
+    public static Map<String, Object> fluid(FluidStack stack) {
         Map<String, Object> table = new HashMap<>();
-        table.put("name", name(ForgeRegistries.FLUIDS.getKey(stack.getFluid())));
+        table.put("name", ComputerValues.fluidName(stack.getFluid()));
         table.put("amount", stack.getAmount());
         return table;
     }
-
-    @Nullable private static String name(@Nullable ResourceLocation key) { return key == null ? null : key.toString(); }
 }

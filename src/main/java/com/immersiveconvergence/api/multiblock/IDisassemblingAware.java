@@ -1,6 +1,5 @@
 package com.immersiveconvergence.api.multiblock;
 
-@SuppressWarnings("unused")
 public interface IDisassemblingAware {
     boolean ic$isDisassembling();
 

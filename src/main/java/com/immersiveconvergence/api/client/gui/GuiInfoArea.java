@@ -3,10 +3,9 @@ package com.immersiveconvergence.api.client.gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
-
 import java.util.List;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public abstract class GuiInfoArea {
+public abstract class GuiInfoArea {
     protected final Rect2i area;
 
     protected GuiInfoArea(Rect2i area) { this.area = area; }

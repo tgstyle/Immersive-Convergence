@@ -10,9 +10,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import java.util.function.BooleanSupplier;
 
-public record WrappingMultiblockContext<State>(
-        IMultiblockContext<?> inner, State ownState
-) implements IMultiblockContext<State> {
+public record WrappingMultiblockContext<State>(IMultiblockContext<?> inner, State ownState) implements IMultiblockContext<State> {
     @Override public <T> CapabilityReference<T> getCapabilityAt(Capability<T> capability, BlockPos posRelativeToMB, RelativeBlockFace face) { return inner.getCapabilityAt(capability, posRelativeToMB, face); }
 
     @Override public void markMasterDirty() { inner.markMasterDirty(); }
@@ -28,8 +26,6 @@ public record WrappingMultiblockContext<State>(
     @Override public void requestMasterBESync() { inner.requestMasterBESync(); }
 
     @Override public void setComparatorOutputFor(BlockPos posInMultiblock, int newValue) { inner.setComparatorOutputFor(posInMultiblock, newValue); }
-
-    @Override public int getRedstoneInputValue(BlockPos posInMultiblock, RelativeBlockFace side, int fallback) { return inner.getRedstoneInputValue(posInMultiblock, side, fallback); }
 
     @Override public int getRedstoneInputValue(BlockPos posInMultiblock, int fallback) { return inner.getRedstoneInputValue(posInMultiblock, fallback); }
 }

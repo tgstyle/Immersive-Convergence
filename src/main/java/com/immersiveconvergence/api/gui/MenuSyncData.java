@@ -5,12 +5,11 @@ import com.immersiveconvergence.api.energy.IICEnergyStorage;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
-
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class MenuSyncData<T> {
+public class MenuSyncData<T> {
     private final MenuSyncSerializers.DataSerializer<T> serializer;
     private final Supplier<T> get;
     private final Consumer<T> set;
@@ -40,8 +39,6 @@ import java.util.function.Supplier;
 
     public static MenuSyncData<ItemStack> itemStack(Supplier<ItemStack> get, Consumer<ItemStack> set) { return new MenuSyncData<>(MenuSyncSerializers.ITEM_STACK, get, set); }
 
-    public static MenuSyncData<Float> float32(Supplier<Float> get, Consumer<Float> set) { return new MenuSyncData<>(MenuSyncSerializers.FLOAT, get, set); }
-
     public boolean needsUpdate() {
         T newValue = this.get.get();
         if (newValue == null && this.current == null) { return false; }
@@ -49,8 +46,7 @@ import java.util.function.Supplier;
         else { this.current = this.serializer.copy().apply(newValue); return true; }
     }
 
-    @SuppressWarnings("unchecked")
-    public void processSync(Object receivedData) { this.set.accept(this.serializer.copy().apply((T) receivedData)); }
+    @SuppressWarnings("unchecked") public void processSync(Object receivedData) { this.set.accept(this.serializer.copy().apply((T) receivedData)); }
 
     public MenuSyncSerializers.DataPair<T> dataPair() { return new MenuSyncSerializers.DataPair<>(this.serializer, this.current); }
 }

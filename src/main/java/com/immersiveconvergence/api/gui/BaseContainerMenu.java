@@ -9,7 +9,6 @@ import com.immersiveconvergence.core.network.PacketHandler;
 
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -25,15 +24,12 @@ import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.items.ItemHandlerHelper;
-
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-@SuppressWarnings({"unused", "RedundantSuppression"})
-@Mod.EventBusSubscriber(modid = ICLib.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public abstract class BaseContainerMenu extends AbstractContainerMenu {
+@Mod.EventBusSubscriber(modid = ICLib.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE) public abstract class BaseContainerMenu extends AbstractContainerMenu {
     protected final List<MenuSyncData<?>> genericData = new ArrayList<>();
     protected final List<ServerPlayer> usingPlayers = new ArrayList<>();
     private final Runnable setChanged;
@@ -131,7 +127,7 @@ public abstract class BaseContainerMenu extends AbstractContainerMenu {
         return inAllowedRange && move.moveItemStackTo(pStack, allowedStart, pEndIndex, false);
     }
 
-    public void receiveMessageFromScreen(CompoundTag nbt) {}
+    public void receiveMessageFromScreen() {}
 
     @Override public void removed(@Nonnull Player player) { super.removed(player); setChanged.run(); }
 

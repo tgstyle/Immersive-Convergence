@@ -16,7 +16,7 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
-@SuppressWarnings("unused") public class ColoredBeam {
+public class ColoredBeam {
     private static final RenderStateShard.ShaderStateShard BEACON_BEAM_SHADER = RenderStateShard.RENDERTYPE_BEACON_BEAM_SHADER;
     private static final RenderStateShard.TransparencyStateShard TRANSLUCENT_TRANSPARENCY = RenderStateShard.TRANSLUCENT_TRANSPARENCY;
     private static final RenderStateShard.TransparencyStateShard NO_TRANSPARENCY = RenderStateShard.NO_TRANSPARENCY;
@@ -103,7 +103,5 @@ import org.joml.Matrix4f;
         addVertex(pose, normal, consumer, gTop, a, yTop, x1, z1, u1, vTop);
     }
 
-    private static void addVertex(Matrix4f pose, Matrix3f normal, VertexConsumer consumer, float g, float a, float y, float x, float z, float u, float v) {
-        consumer.vertex(pose, x, y, z).color(1.0F, g, 0.0F, a).uv(u, v).uv2(15728880).normal(normal, 0.0F, 1.0F, 0.0F).endVertex();
-    }
+    private static void addVertex(Matrix4f pose, Matrix3f normal, VertexConsumer consumer, float g, float a, float y, float x, float z, float u, float v) { consumer.vertex(pose, x, y, z).color(1.0F, g, 0.0F, a).uv(u, v).uv2(15728880).normal(normal, 0.0F, 1.0F, 0.0F).endVertex(); }
 }

@@ -38,12 +38,11 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.fluids.FluidType;
-
 import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.function.Function;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class BaseFluid extends FlowingFluid {
+public class BaseFluid extends FlowingFluid {
     private static FluidEntry entryStatic;
     protected final FluidEntry entry;
 
@@ -69,9 +68,7 @@ import java.util.function.Function;
 
     @Nonnull @Override public Item getBucket() { return entry.getBucket(); }
 
-    @Override protected boolean canBeReplacedWith(@Nonnull FluidState fluidState, @Nonnull BlockGetter blockReader, @Nonnull BlockPos pos, @Nonnull Fluid fluidIn, @Nonnull Direction direction) {
-        return (isGaseous() ? direction == Direction.UP : direction == Direction.DOWN) && !isSame(fluidIn);
-    }
+    @Override protected boolean canBeReplacedWith(@Nonnull FluidState fluidState, @Nonnull BlockGetter blockReader, @Nonnull BlockPos pos, @Nonnull Fluid fluidIn, @Nonnull Direction direction) { return (isGaseous() ? direction == Direction.UP : direction == Direction.DOWN) && !isSame(fluidIn); }
 
     @Override public boolean isSame(@Nonnull Fluid fluidIn) { return fluidIn == entry.getStill() || fluidIn == entry.getFlowing(); }
 
@@ -147,9 +144,7 @@ import java.util.function.Function;
                 FluidState fluidstate = entry.getValue();
                 BlockPos blockpos = pPos.relative(direction);
                 BlockState blockstate = pLevel.getBlockState(blockpos);
-                if (this.myCanPassThrough(pLevel, fluidstate.getType(), pPos, pBlockState, direction, blockpos, blockstate, pLevel.getFluidState(blockpos))) {
-                    this.spreadTo(pLevel, blockpos, blockstate, direction, fluidstate);
-                }
+                if (this.myCanPassThrough(pLevel, fluidstate.getType(), pPos, pBlockState, direction, blockpos, blockstate, pLevel.getFluidState(blockpos))) { this.spreadTo(pLevel, blockpos, blockstate, direction, fluidstate); }
             }
         }
     }
@@ -210,7 +205,8 @@ import java.util.function.Function;
                             if (f > 0.0F) { f1 = pFluidState.getOwnHeight() - (f - 0.8888889F); }
                         }
                     }
-                } else if (f > 0.0F) { f1 = pFluidState.getOwnHeight() - f; }
+                }
+                else if (f > 0.0F) { f1 = pFluidState.getOwnHeight() - f; }
                 if (f1 != 0.0F) {
                     d0 += (float)direction.getStepX() * f1;
                     d1 += (float)direction.getStepZ() * f1;
@@ -265,15 +261,15 @@ import java.util.function.Function;
                     isSolid = aabb.getSize() >= 0.7291666666666666D || aabb.getYsize() >= 1.0D;
                 }
                 return pState.is(Blocks.COBWEB) || pState.is(Blocks.BAMBOO_SAPLING) || !isSolid;
-            } else { return false; }
-        } else { return false; }
+            }
+            else { return false; }
+        }
+        else { return false; }
     }
 
     private boolean myIsSourceBlockOfThisType(FluidState pState) { return pState.getType().isSame(this) && pState.isSource(); }
 
-    private boolean myCanPassThrough(BlockGetter pLevel, Fluid pFluid, BlockPos pPos, BlockState pState, Direction pDirection, BlockPos pTargetPos, BlockState pTargetState, FluidState pTargetFluid) {
-        return !this.myIsSourceBlockOfThisType(pTargetFluid) && this.myCanPassThroughWall(pDirection, pLevel, pPos, pState, pTargetPos, pTargetState) && this.myCanHoldFluid(pLevel, pTargetPos, pTargetState, pFluid);
-    }
+    private boolean myCanPassThrough(BlockGetter pLevel, Fluid pFluid, BlockPos pPos, BlockState pState, Direction pDirection, BlockPos pTargetPos, BlockState pTargetState, FluidState pTargetFluid) { return !this.myIsSourceBlockOfThisType(pTargetFluid) && this.myCanPassThroughWall(pDirection, pLevel, pPos, pState, pTargetPos, pTargetState) && this.myCanHoldFluid(pLevel, pTargetPos, pTargetState, pFluid); }
 
     private int myGetSlopeDistance(LevelReader pLevel, BlockPos pPos, int pDist, Direction pOppositeDir, BlockState pState, BlockPos pOrigin, Short2ObjectMap<Pair<BlockState, FluidState>> pStateCache, Short2BooleanMap pHoleCache) {
         int i = 1000;

@@ -14,7 +14,6 @@ import com.google.common.base.Preconditions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -26,6 +25,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
+import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -33,7 +33,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@SuppressWarnings({"deprecation", "RedundantSuppression"}) public class MultiblockPartBlock<State extends IMultiblockState> extends Block implements EntityBlock {
+@SuppressWarnings("deprecation") public class MultiblockPartBlock<State extends IMultiblockState> extends Block implements EntityBlock {
     private final MultiblockRegistration<State> multiblock;
     private final boolean needsServerTicker;
     private final boolean needsClientTicker;
@@ -43,19 +43,11 @@ import javax.annotation.Nullable;
         this.multiblock = multiblock;
         final boolean hasMirrorProperty = getStateDefinition().getProperties().contains(ModProperties.MIRRORED);
         Preconditions.checkState(this.multiblock.mirrorable() == hasMirrorProperty);
-        if (multiblock.logic() instanceof IServerTickableComponent<?>) { needsServerTicker = true; }
-        else {
-            needsServerTicker = multiblock.extraComponents().stream()
-                    .map(ExtraComponent::component)
-                    .anyMatch(c -> c instanceof IServerTickableComponent<?>);
-        }
-        if (multiblock.logic() instanceof IClientTickableComponent<?>) { needsClientTicker = true; }
-        else {
-            needsClientTicker = multiblock.extraComponents().stream()
-                    .map(ExtraComponent::component)
-                    .anyMatch(c -> c instanceof IClientTickableComponent<?>);
-        }
+        this.needsServerTicker = anyComponent(multiblock, IServerTickableComponent.class);
+        this.needsClientTicker = anyComponent(multiblock, IClientTickableComponent.class);
     }
+
+    private static boolean anyComponent(MultiblockRegistration<?> multiblock, Class<?> type) { return type.isInstance(multiblock.logic()) || multiblock.extraComponents().stream().map(ExtraComponent::component).anyMatch(type::isInstance); }
 
     @Override protected void createBlockStateDefinition(@Nonnull Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
@@ -68,9 +60,7 @@ import javax.annotation.Nullable;
         else { return multiblock.masterBE().get().create(pos, state); }
     }
 
-    @Nullable @Override public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
-            @Nonnull Level level, @Nonnull BlockState state, @Nonnull BlockEntityType<T> actual
-    ) {
+    @Nullable @Override public <T extends BlockEntity> BlockEntityTicker<T> getTicker(@Nonnull Level level, @Nonnull BlockState state, @Nonnull BlockEntityType<T> actual) {
         if (state.getValue(ModProperties.MULTIBLOCKSLAVE)) { return null; }
         if (level.isClientSide && needsClientTicker) { return createTickerHelper(actual, ($1, $2, $3, blockEntity) -> blockEntity.getHelper().tickClient()); }
         if (!level.isClientSide && needsServerTicker) { return createTickerHelper(actual, ($1, $2, $3, blockEntity) -> blockEntity.getHelper().tickServer()); }
@@ -85,23 +75,16 @@ import javax.annotation.Nullable;
 
     @Override @Nonnull public VoxelShape getBlockSupportShape(@Nonnull BlockState state, @Nonnull BlockGetter level, @Nonnull BlockPos pos) { return getShape(level, pos, null, ShapeType.BLOCK_SUPPORT); }
 
-    @Nonnull private VoxelShape getShape(
-            @Nonnull BlockGetter level,
-            @Nonnull BlockPos pos,
-            @Nullable CollisionContext context,
-            @Nonnull ShapeType type
-    ) {
+    @Nonnull private VoxelShape getShape(@Nonnull BlockGetter level, @Nonnull BlockPos pos, @Nullable CollisionContext context, @Nonnull ShapeType type) {
         final BlockEntity bEntity = level.getBlockEntity(pos);
         if (bEntity instanceof IMultiblockBE<?> multiblockBE) { return multiblockBE.getHelper().getShape(context, type); }
         else { return Shapes.block(); }
     }
 
     @Override public void onRemove(BlockState state, @Nonnull Level level, @Nonnull BlockPos pos, BlockState newState, boolean isMoving) {
-        if (state.getBlock() != newState.getBlock() && level.getBlockEntity(pos) instanceof IMultiblockBE<?> multiblockBE) {
-            super.onRemove(state, level, pos, newState, isMoving);
-            multiblockBE.getHelper().disassemble();
-        }
-        else { super.onRemove(state, level, pos, newState, isMoving); }
+        final IMultiblockBE<?> multiblockBE = state.getBlock() != newState.getBlock() && level.getBlockEntity(pos) instanceof IMultiblockBE<?> be ? be : null;
+        super.onRemove(state, level, pos, newState, isMoving);
+        if (multiblockBE != null) { multiblockBE.getHelper().disassemble(); }
         QueueProcessor.currentlyBreakingPos = null;
         QueueProcessor.sneakBreaking = false;
     }
@@ -110,22 +93,12 @@ import javax.annotation.Nullable;
 
     @Override public boolean propagatesSkylightDown(@Nonnull BlockState state, @Nonnull BlockGetter level, @Nonnull BlockPos pos) { return true; }
 
-    @Nonnull @Override public InteractionResult use(
-            @Nonnull BlockState state,
-            @Nonnull Level level,
-            @Nonnull BlockPos pos,
-            @Nonnull Player player,
-            @Nonnull InteractionHand hand,
-            @Nonnull BlockHitResult hit
-    ) {
+    @Override public boolean isPathfindable(@Nonnull BlockState state, @Nonnull BlockGetter level, @Nonnull BlockPos pos, @Nonnull PathComputationType type) { return false; }
+
+    @Nonnull @Override public InteractionResult use(@Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos pos, @Nonnull Player player, @Nonnull InteractionHand hand, @Nonnull BlockHitResult hit) {
         final BlockEntity bEntity = level.getBlockEntity(pos);
         if (bEntity instanceof IMultiblockBE<?> multiblockBE) { return multiblockBE.getHelper().click(player, hand, hit); }
         else { return InteractionResult.PASS; }
-    }
-
-    @Override public void entityInside(@Nonnull BlockState state, Level level, @Nonnull BlockPos pos, @Nonnull Entity entity) {
-        final BlockEntity bEntity = level.getBlockEntity(pos);
-        if (bEntity instanceof IMultiblockBE<?> multiblockBE) { multiblockBE.getHelper().onEntityCollided(entity); }
     }
 
     @Override public boolean hasAnalogOutputSignal(@Nonnull BlockState state) { return multiblock.hasComparatorOutput(); }
@@ -135,14 +108,7 @@ import javax.annotation.Nullable;
         return super.getAnalogOutputSignal(state, level, pos);
     }
 
-    @Override public void neighborChanged(
-            @Nonnull BlockState state,
-            @Nonnull Level level,
-            @Nonnull BlockPos pos,
-            @Nonnull Block block,
-            @Nonnull BlockPos fromPos,
-            boolean isMoving
-    ) {
+    @Override public void neighborChanged(@Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos pos, @Nonnull Block block, @Nonnull BlockPos fromPos, boolean isMoving) {
         super.neighborChanged(state, level, pos, block, fromPos, isMoving);
         if (multiblock.redstoneInputAware() && level.getBlockEntity(pos) instanceof IMultiblockBE<?> multiblockBE) { multiblockBE.getHelper().onNeighborChanged(fromPos); }
     }
@@ -150,14 +116,5 @@ import javax.annotation.Nullable;
     @Override @Nonnull public ItemStack getCloneItemStack(@Nonnull BlockGetter level, @Nonnull BlockPos pos, @Nonnull BlockState state) {
         if (level.getBlockEntity(pos) instanceof IMultiblockBE<?> multiblockBE) { return multiblockBE.getHelper().getPickBlock(); }
         else { return ItemStack.EMPTY; }
-    }
-
-    public static class WithMirrorState<State extends IMultiblockState> extends MultiblockPartBlock<State> {
-        public WithMirrorState(Properties properties, MultiblockRegistration<State> multiblock) { super(properties, multiblock); }
-
-        @Override protected void createBlockStateDefinition(@Nonnull Builder<Block, BlockState> builder) {
-            super.createBlockStateDefinition(builder);
-            builder.add(ModProperties.MIRRORED);
-        }
     }
 }

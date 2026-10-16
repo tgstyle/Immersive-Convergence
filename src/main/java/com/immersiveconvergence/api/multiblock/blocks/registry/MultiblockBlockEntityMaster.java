@@ -1,76 +1,18 @@
 package com.immersiveconvergence.api.multiblock.blocks.registry;
 
-import com.immersiveconvergence.api.client.split.ISubmodelOffsetProvider;
 import com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistration;
 import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockBEHelperMaster;
-import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockBE;
 import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockState;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.Vec3i;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import javax.annotation.Nonnull;
 
-public class MultiblockBlockEntityMaster<State extends IMultiblockState>
-        extends BlockEntity
-        implements ISubmodelOffsetProvider, IMultiblockBE<State> {
-    private final IMultiblockBEHelperMaster<State> helper;
-
-    public MultiblockBlockEntityMaster(
-            BlockEntityType<?> type,
-            BlockPos worldPosition,
-            BlockState blockState,
-            MultiblockRegistration<State> multiblock
-    ) {
-        super(type, worldPosition, blockState);
-        this.helper = IMultiblockBEHelperMaster.MAKE_HELPER.getValue().makeFor(this, multiblock);
-    }
-
-    @Override public void load(@Nonnull CompoundTag tag) {
-        super.load(tag);
-        helper.load(tag);
-    }
-
-    @Override protected void saveAdditional(@Nonnull CompoundTag tag) {
-        super.saveAdditional(tag);
-        helper.saveAdditional(tag);
-    }
-
-    @Nullable @Override public Packet<ClientGamePacketListener> getUpdatePacket() { return helper.getUpdatePacket(); }
-
-    @Nonnull @Override public CompoundTag getUpdateTag() { return helper.getUpdateTag(); }
-
-    @Override public void handleUpdateTag(CompoundTag tag) { helper.handleUpdateTag(tag); }
-
-    @Override public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) { helper.onDataPacket(pkt.getTag()); }
+public class MultiblockBlockEntityMaster<State extends IMultiblockState> extends MultiblockBlockEntityBase<State, IMultiblockBEHelperMaster<State>> {
+    public MultiblockBlockEntityMaster(BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState, MultiblockRegistration<State> multiblock) { super(type, worldPosition, blockState, be -> IMultiblockBEHelperMaster.MAKE_HELPER.getValue().makeFor(be, multiblock)); }
 
     @Override public void invalidateCaps() {
         super.invalidateCaps();
-        helper.invalidateCaps();
+        getHelper().invalidateCaps();
     }
-
-    @Override public IMultiblockBEHelperMaster<State> getHelper() { return helper; }
-
-    @Override public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        final LazyOptional<T> ownCap = helper.getCapability(cap, side);
-        if (ownCap.isPresent()) { return ownCap; }
-        else { return super.getCapability(cap, side); }
-    }
-
-    @Override public BlockPos getModelOffset(BlockState state, @javax.annotation.Nullable Vec3i size) { return BlockPos.ZERO; }
-
-    @Override public AABB getRenderBoundingBox() { return helper.getRenderBoundingBox(); }
 }

@@ -1,6 +1,6 @@
 package com.immersiveconvergence.api.fluid;
 
-@SuppressWarnings("unused") public final class ICPipes {
+public final class ICPipes {
     private static volatile int amountUnpressurized = IICFluidPipe.AMOUNT_UNPRESSURIZED;
     private static volatile int amountPressurized = IICFluidPipe.AMOUNT_PRESSURIZED;
 

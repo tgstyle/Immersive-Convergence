@@ -6,11 +6,10 @@ import com.immersiveconvergence.api.multiblock.blocks.util.RelativeBlockFace;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.core.BlockPos;
-
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public final class MultiblockPOIHelper {
+public final class MultiblockPOIHelper {
     private MultiblockPOIHelper() { }
 
     public static List<BlockPos> getPosList(List<PoIJSONSchema> rawPois, String name) { return rawPois.stream().filter(poi -> poi.name.equals(name)).map(poi -> new BlockPos(poi.pos[0], poi.pos[1], poi.pos[2])).collect(ImmutableList.toImmutableList()); }

@@ -7,7 +7,7 @@ import org.jetbrains.annotations.ApiStatus.NonExtendable;
 import org.jetbrains.annotations.Nullable;
 import java.util.function.Supplier;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) @NonExtendable public interface IInitialMultiblockContext<State extends IMultiblockState> extends ICommonMultiblockContext {
+@NonExtendable public interface IInitialMultiblockContext<State extends IMultiblockState> extends ICommonMultiblockContext {
     Supplier<@Nullable Level> levelSupplier();
 
     Runnable getMarkDirtyRunnable();

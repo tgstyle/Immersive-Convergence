@@ -1,7 +1,6 @@
 package com.immersiveconvergence.api.multiblock;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -11,15 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class BlockMatcher {
+public class BlockMatcher {
     private final static List<MatcherPredicate> GLOBAL_MATCHERS = new ArrayList<>();
     private final static List<Preprocessor> PREPROCESSING = new ArrayList<>();
 
     public static void addPredicate(MatcherPredicate newPredicate) { GLOBAL_MATCHERS.add(newPredicate); }
 
     public static void addPreprocessor(Preprocessor preprocessor) { PREPROCESSING.add(preprocessor); }
-
-    public static Result matches(BlockState expected, BlockState found, Level world, BlockPos pos) { return matches(expected, found, world, pos, ImmutableList.of()); }
 
     public static Result matches(BlockState expected, BlockState found, Level world, BlockPos pos,
                                  List<MatcherPredicate> additional) {
@@ -50,10 +47,6 @@ import java.util.stream.Stream;
         }
 
         public boolean isAllow() { return type == Event.Result.ALLOW; }
-
-        public boolean isDefault() { return type == Event.Result.DEFAULT; }
-
-        public boolean isDeny() { return type == Event.Result.DENY; }
 
         public static Result combine(Result a, Result b) {
             if (Math.abs(a.strength) > Math.abs(b.strength)) { return a; }

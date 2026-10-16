@@ -17,7 +17,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.BakedModelWrapper;
 import net.minecraftforge.client.model.data.ModelData;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.EnumMap;
@@ -25,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class MirrorBakedModel<T extends BakedModel> extends BakedModelWrapper<T> {
+public class MirrorBakedModel<T extends BakedModel> extends BakedModelWrapper<T> {
     private final boolean isDynamic;
     private final List<BakedQuad> unculledQuads;
     private final Map<Direction, List<BakedQuad>> culledQuads;

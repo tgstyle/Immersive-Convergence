@@ -7,10 +7,9 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.network.NetworkEvent;
-
 import java.util.function.Supplier;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class MessageMenuUpdate implements INetworkMessage {
+public class MessageMenuUpdate implements INetworkMessage {
     private final int windowId;
     private final CompoundTag nbt;
 
@@ -32,7 +31,7 @@ import java.util.function.Supplier;
                 player.resetLastActionTime();
                 if (player.containerMenu.containerId == this.windowId) {
                     AbstractContainerMenu menu = player.containerMenu;
-                    if (menu instanceof BaseContainerMenu container) { container.receiveMessageFromScreen(this.nbt); }
+                    if (menu instanceof BaseContainerMenu container) { container.receiveMessageFromScreen(); }
                 }
             });
         }

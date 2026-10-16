@@ -10,15 +10,13 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
-
 import javax.annotation.Nonnull;
 
-@SuppressWarnings("unused")
 public class RotorCreativeMenu extends AbstractContainerMenu {
     public RotorCreativeBlockEntity tile;
     private int rpm;
 
-    public RotorCreativeMenu(MenuType<?> type, int id, Inventory inv, RotorCreativeBlockEntity tile) {
+    public RotorCreativeMenu(MenuType<?> type, int id, RotorCreativeBlockEntity tile) {
         super(type, id);
         this.tile = tile;
         addDataSlot(new DataSlot() {
@@ -37,7 +35,7 @@ public class RotorCreativeMenu extends AbstractContainerMenu {
         });
     }
 
-    public static RotorCreativeMenu makeServer(MenuType<RotorCreativeMenu> type, int id, Inventory inv, RotorCreativeBlockEntity tile) { return new RotorCreativeMenu(type, id, inv, tile); }
+    public static RotorCreativeMenu makeServer(MenuType<RotorCreativeMenu> type, int id, Inventory inv, RotorCreativeBlockEntity tile) { return new RotorCreativeMenu(type, id, tile); }
 
     public static RotorCreativeMenu makeClient(MenuType<RotorCreativeMenu> type, int id, Inventory inv, FriendlyByteBuf buffer) { return new RotorCreativeMenu(type, id, inv, buffer); }
 

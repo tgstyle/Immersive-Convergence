@@ -9,8 +9,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
+import java.util.function.Supplier;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public final class ICWireType {
+public final class ICWireType {
     public static final String LV_CATEGORY = "LV";
     public static final String MV_CATEGORY = "MV";
     public static final String HV_CATEGORY = "HV";
@@ -28,7 +29,10 @@ import java.util.function.IntSupplier;
         this.transferRate = transferRate;
     }
 
-    @Nonnull public static ICWireType register(@Nonnull ICWireType type) { return REGISTRY.computeIfAbsent(type.uniqueName, name -> type); }
+    @Nonnull public static ICWireType registerIfAbsent(@Nonnull String uniqueName, @Nonnull Supplier<ICWireType> factory) {
+        ICWireType known = REGISTRY.get(uniqueName);
+        return known != null ? known : REGISTRY.computeIfAbsent(uniqueName, name -> factory.get());
+    }
 
     @Nullable public static ICWireType byName(@Nullable String name) {
         if (name == null) { return null; }
@@ -42,6 +46,8 @@ import java.util.function.IntSupplier;
     public String getCategory() { return category; }
 
     public double getRenderDiameter() { return renderDiameter.getAsDouble(); }
+
+    public double getRenderRadius() { return getRenderDiameter() / 2; }
 
     public int getTransferRate() { return transferRate.getAsInt(); }
 

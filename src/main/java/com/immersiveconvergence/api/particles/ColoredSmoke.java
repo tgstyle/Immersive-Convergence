@@ -12,11 +12,9 @@ import org.joml.Vector3f;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Supplier;
-
 import javax.annotation.Nonnull;
 
-@SuppressWarnings({"deprecation", "unused", "RedundantSuppression"}) public record ColoredSmoke(Vector3f color, boolean collideHorizontal,
-                           boolean collideVertical) implements ParticleOptions {
+@SuppressWarnings("deprecation") public record ColoredSmoke(Vector3f color, boolean collideHorizontal, boolean collideVertical) implements ParticleOptions {
     public static final Codec<ColoredSmoke> CODEC = RecordCodecBuilder.create(inst -> inst.group(
             Codec.FLOAT.fieldOf("r").forGetter(d -> d.color.x()),
             Codec.FLOAT.fieldOf("g").forGetter(d -> d.color.y()),
@@ -26,8 +24,7 @@ import javax.annotation.Nonnull;
     ).apply(inst, ColoredSmoke::new));
 
     public static final Deserializer<ColoredSmoke> DESERIALIZER = new Deserializer<>() {
-        @Nonnull
-        public ColoredSmoke fromCommand(@Nonnull ParticleType<ColoredSmoke> type, StringReader reader) throws CommandSyntaxException {
+        @Nonnull public ColoredSmoke fromCommand(@Nonnull ParticleType<ColoredSmoke> type, StringReader reader) throws CommandSyntaxException {
             reader.expect(' ');
             float r = reader.readFloat();
             reader.expect(' ');
@@ -47,30 +44,18 @@ import javax.annotation.Nonnull;
             return new ColoredSmoke(r, g, b, collideHorizontal, collideVertical);
         }
 
-        @Nonnull
-        public ColoredSmoke fromNetwork(@Nonnull ParticleType<ColoredSmoke> type, FriendlyByteBuf buf) {
-            return new ColoredSmoke(buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readBoolean(), buf.readBoolean());
-        }
+        @Nonnull public ColoredSmoke fromNetwork(@Nonnull ParticleType<ColoredSmoke> type, FriendlyByteBuf buf) { return new ColoredSmoke(buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readBoolean(), buf.readBoolean()); }
     };
 
     public static Supplier<ParticleType<?>> typeSupplier;
 
-    public ColoredSmoke(float r, float g, float b) {
-        this(r, g, b, false, false);
-    }
+    public ColoredSmoke(float r, float g, float b) { this(r, g, b, false, false); }
 
-    public ColoredSmoke(float r, float g, float b, boolean collideHorizontal, boolean collideVertical) {
-        this(new Vector3f(r, g, b), collideHorizontal, collideVertical);
-    }
+    public ColoredSmoke(float r, float g, float b, boolean collideHorizontal, boolean collideVertical) { this(new Vector3f(r, g, b), collideHorizontal, collideVertical); }
 
-    @Override
-    @Nonnull
-    public ParticleType<?> getType() {
-        return typeSupplier.get();
-    }
+    @Override @Nonnull public ParticleType<?> getType() { return typeSupplier.get(); }
 
-    @Override
-    public void writeToNetwork(FriendlyByteBuf buf) {
+    @Override public void writeToNetwork(FriendlyByteBuf buf) {
         buf.writeFloat(color.x());
         buf.writeFloat(color.y());
         buf.writeFloat(color.z());
@@ -78,9 +63,5 @@ import javax.annotation.Nonnull;
         buf.writeBoolean(collideVertical);
     }
 
-    @Override
-    @Nonnull
-    public String writeToString() {
-        return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %b %b", Objects.requireNonNull(ForgeRegistries.PARTICLE_TYPES.getKey(this.getType())), this.color.x(), this.color.y(), this.color.z(), this.collideHorizontal, this.collideVertical);
-    }
+    @Override @Nonnull public String writeToString() { return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %b %b", Objects.requireNonNull(ForgeRegistries.PARTICLE_TYPES.getKey(this.getType())), this.color.x(), this.color.y(), this.color.z(), this.collideHorizontal, this.collideVertical); }
 }

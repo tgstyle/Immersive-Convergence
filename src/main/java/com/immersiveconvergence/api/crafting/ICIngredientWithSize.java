@@ -11,11 +11,9 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.List;
 import java.util.function.Predicate;
 
-@SuppressWarnings("unused") public class ICIngredientWithSize implements Predicate<ItemStack> {
+public class ICIngredientWithSize implements Predicate<ItemStack> {
     private static final String COUNT_KEY = "count";
     private static final String BASE_KEY = "base_ingredient";
     protected final Ingredient basePredicate;
@@ -66,20 +64,7 @@ import java.util.function.Predicate;
         return ret;
     }
 
-    @Nonnull public List<ItemStack> getMatchingStackList() { return Arrays.asList(getMatchingStacks()); }
-
     public boolean hasNoMatchingItems() { return basePredicate.isEmpty(); }
 
     public int getCount() { return count; }
-
-    public Ingredient getBaseIngredient() { return basePredicate; }
-
-    public ICIngredientWithSize withSize(int size) { return new ICIngredientWithSize(basePredicate, size); }
-
-    public static ICIngredientWithSize of(ItemStack stack) { return new ICIngredientWithSize(Ingredient.of(stack), stack.getCount()); }
-
-    public ItemStack getRandomizedExampleStack(int rand) {
-        ItemStack[] all = getMatchingStacks();
-        return all.length == 0 ? ItemStack.EMPTY : all[(rand / 20) % all.length];
-    }
 }

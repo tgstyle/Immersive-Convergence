@@ -11,9 +11,7 @@ import snownee.jade.api.IWailaCommonRegistration;
 import snownee.jade.api.IWailaPlugin;
 import snownee.jade.api.WailaPlugin;
 
-@SuppressWarnings("unused")
-@WailaPlugin
-public class ICJadePlugin implements IWailaPlugin {
+@WailaPlugin public class ICJadePlugin implements IWailaPlugin {
     @Override public void registerClient(IWailaClientRegistration registration) {
         registration.registerBlockComponent(JadeStatusProvider.INSTANCE, Block.class);
         registration.registerBlockComponent(JadeLinesProvider.INSTANCE, Block.class);

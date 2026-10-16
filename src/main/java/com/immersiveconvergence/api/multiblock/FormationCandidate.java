@@ -12,12 +12,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraftforge.common.capabilities.Capability;
-
 import java.util.List;
-
 import javax.annotation.Nullable;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public record FormationCandidate(BlockPos origin, Rotation rotation, Mirror mirror) {
+public record FormationCandidate(BlockPos origin, Rotation rotation, Mirror mirror) {
     public static FormationCandidate atTrigger(BlockPos triggerWorldPos, BlockPos triggerCell, Rotation rotation, Mirror mirror) {
         StructurePlaceSettings settings = new StructurePlaceSettings().setMirror(mirror).setRotation(rotation);
         return new FormationCandidate(triggerWorldPos.subtract(StructureTemplate.calculateRelativePosition(settings, triggerCell)), rotation, mirror);

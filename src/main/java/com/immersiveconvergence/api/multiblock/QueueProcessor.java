@@ -42,7 +42,6 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-
 import javax.annotation.Nullable;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -54,9 +53,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 
-@SuppressWarnings("unused")
-@Mod.EventBusSubscriber(modid = ICLib.MODID)
-public class QueueProcessor {
+@Mod.EventBusSubscriber(modid = ICLib.MODID) public class QueueProcessor {
     public static final int DISASSEMBLE_QUEUE_SIZE = 8;
     public static final List<QueueProcessor> pendingQueues = new ArrayList<>();
     public static final Set<BlockPos> activeDisassemblies = new HashSet<>();
@@ -116,7 +113,7 @@ public class QueueProcessor {
         markHelperDisassembling(serverLevel.getBlockEntity(masterPos));
 
         for (StructureBlockInfo info : structure) {
-            BlockPos actualPos = ICTemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot);
+            BlockPos actualPos = TemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot);
             prepareBlockForDisassembly(serverLevel, actualPos);
         }
         List<BlockPos> strays = findStrayParts(serverLevel, structure, origin, mirror, rot, size, partBlock);
@@ -133,7 +130,7 @@ public class QueueProcessor {
             if (hit.getType() == HitResult.Type.BLOCK) {
                 BlockPos hitPos = hit.getBlockPos();
                 for (StructureBlockInfo info : structure) {
-                    BlockPos actual = ICTemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot);
+                    BlockPos actual = TemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot);
                     if (actual.equals(hitPos)) {
                         brokenPos = actual;
                         break;
@@ -144,7 +141,7 @@ public class QueueProcessor {
                 double minDist = Double.MAX_VALUE;
                 BlockPos closest = null;
                 for (StructureBlockInfo info : structure) {
-                    BlockPos actual = ICTemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot);
+                    BlockPos actual = TemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot);
                     double dist = Vec3.atCenterOf(actual).distanceToSqr(eyePos);
                     if (dist < minDist) {
                         minDist = dist;
@@ -165,7 +162,7 @@ public class QueueProcessor {
         if (templateMode) {
             BlockState brokenTemplate = null;
             for (StructureBlockInfo info : structure) {
-                BlockPos actualPos = ICTemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot);
+                BlockPos actualPos = TemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot);
                 BlockState stateAfterMirror = placedState(info, cellState).mirror(mirror);
                 BlockState template = stateAfterMirror.rotate(rot);
                 if (actualPos.equals(brokenPos)) { brokenTemplate = template; }
@@ -191,7 +188,7 @@ public class QueueProcessor {
         else {
             BlockPos harvestedByPlayer = handleTemplateMode ? null : initiatedAt;
             for (StructureBlockInfo info : structure) {
-                BlockPos actualPos = ICTemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot);
+                BlockPos actualPos = TemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot);
                 BlockState stateAfterMirror = placedState(info, cellState).mirror(mirror);
                 BlockState template = stateAfterMirror.rotate(rot);
                 toBreak.add(actualPos);
@@ -230,7 +227,7 @@ public class QueueProcessor {
                 for (int x = 0; x < size.getX(); x++) {
                     BlockPos cell = new BlockPos(x, y, z);
                     if (templateCells.contains(cell)) { continue; }
-                    BlockPos actual = ICTemplateMultiblock.withSettingsAndOffset(origin, cell, mirror, rot);
+                    BlockPos actual = TemplateMultiblock.withSettingsAndOffset(origin, cell, mirror, rot);
                     if (level.getBlockState(actual).getBlock() != partBlock) { continue; }
                     BlockEntity part = level.getBlockEntity(actual);
                     if (part instanceof IMultiblockBE<?> be && !(be.getHelper() instanceof IMultiblockBEHelperMaster) && cell.equals(be.getHelper().getPositionInMB())) { strays.add(actual); }

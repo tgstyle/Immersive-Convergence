@@ -12,12 +12,11 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class ArgContainer<T, C extends AbstractContainerMenu> {
+public class ArgContainer<T, C extends AbstractContainerMenu> {
     private final Supplier<MenuType<C>> type;
     private final IArgContainerConstructor<T, C> factory;
 

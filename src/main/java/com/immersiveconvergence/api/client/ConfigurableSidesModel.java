@@ -42,14 +42,18 @@ import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
 import net.minecraftforge.client.model.geometry.IGeometryLoader;
 import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
 import org.joml.Vector3f;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class ConfigurableSidesModel extends BaseBakedModel {
+public class ConfigurableSidesModel extends BaseBakedModel {
     private static final HashMap<String, ITextureNamer> TYPES = new HashMap<>();
     private static final Map<Direction, Enums.IOSideConfig> DEFAULT_KEY = defaultConfig();
     private final LoadingCache<Map<Direction, Enums.IOSideConfig>, Map<Direction, BakedQuad>> modelCache;
@@ -118,9 +122,7 @@ import java.util.function.Function;
         return quads;
     }
 
-    private static void addQuad(Map<Direction, BakedQuad> out, Map<Direction, TextureAtlasSprite> sprites, Direction side, Vec3[] vertices, double[] uv) {
-        out.put(side, BakedQuadUtils.createBakedQuad(vertices, side, sprites.get(side), uv, new float[]{1.0F, 1.0F, 1.0F, 1.0F}, side.getAxisDirection() == Direction.AxisDirection.NEGATIVE));
-    }
+    private static void addQuad(Map<Direction, BakedQuad> out, Map<Direction, TextureAtlasSprite> sprites, Direction side, Vec3[] vertices, double[] uv) { out.put(side, BakedQuadUtils.createBakedQuad(vertices, side, sprites.get(side), uv, new float[]{1.0F, 1.0F, 1.0F, 1.0F}, side.getAxisDirection() == Direction.AxisDirection.NEGATIVE)); }
 
     @Override @Nonnull public TextureAtlasSprite getParticleIcon(@Nonnull ModelData data) { return this.textures.get(Direction.DOWN).get(Enums.IOSideConfig.NONE); }
 

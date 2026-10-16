@@ -5,11 +5,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class DisplayLines {
+public class DisplayLines {
     public static final String KEY_FUEL_EMPTY = "gui.immersiveconvergence.fuel_empty";
     public static final int DEFAULT_COLOR = 0;
     private final List<Line> lines = new ArrayList<>();

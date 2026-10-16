@@ -44,5 +44,7 @@ public class ICLanguage extends LanguageProvider {
         add("config.jade.plugin_immersiveconvergence.status", "Machine Status");
         add("config.jade.plugin_immersiveconvergence.lines", "Machine Readouts");
         add("config.jade.plugin_immersiveconvergence.multiblock_icon", "Multiblock Icons");
+        add("chat.immersiveconvergence.info.rsControl.invertedOn", "Redstone control: Inverted");
+        add("chat.immersiveconvergence.info.rsControl.invertedOff", "Redstone control: Not inverted");
     }
 }

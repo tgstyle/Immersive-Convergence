@@ -1,10 +1,8 @@
 package com.immersiveconvergence.api.client.gui;
 
-import com.immersiveconvergence.api.util.ICTextUtils;
 import com.immersiveconvergence.api.util.ResettableLazy;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -12,7 +10,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +17,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public abstract class BaseContainerScreen<C extends AbstractContainerMenu> extends AbstractContainerScreen<C> {
+public abstract class BaseContainerScreen<C extends AbstractContainerMenu> extends AbstractContainerScreen<C> {
     private final ResettableLazy<List<GuiInfoArea>> infoAreas;
     protected final ResourceLocation background;
 
@@ -52,22 +49,22 @@ import java.util.function.Consumer;
             if (w.isMouseOver(mouseX, mouseY) && w instanceof IGuiTooltipWidget ttw) { ttw.gatherTooltip(mouseX, mouseY, tooltip); }
         }
         Objects.requireNonNull(tooltip);
-        this.gatherAdditionalTooltips(mouseX, mouseY, tooltip::add, (t) -> tooltip.add(ICTextUtils.applyFormat(t, ChatFormatting.GRAY)));
+        this.gatherAdditionalTooltips(mouseX, mouseY, tooltip::add);
         if (!tooltip.isEmpty()) { graphics.renderTooltip(this.font, tooltip, Optional.empty(), mouseX, mouseY); }
         else { this.renderTooltip(graphics, mouseX, mouseY); }
     }
 
     @Override protected final void renderBg(@Nonnull GuiGraphics graphics, float partialTicks, int x, int y) {
         this.drawBackgroundTexture(graphics);
-        this.drawContainerBackgroundPre(graphics, partialTicks, x, y);
+        this.drawContainerBackgroundPre(graphics);
         for (GuiInfoArea area : this.infoAreas.get()) { area.draw(graphics); }
     }
 
     protected void drawBackgroundTexture(GuiGraphics graphics) { graphics.blit(this.background, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight); }
 
-    protected void drawContainerBackgroundPre(@Nonnull GuiGraphics graphics, float partialTicks, int x, int y) {}
+    protected void drawContainerBackgroundPre(@Nonnull GuiGraphics graphics) {}
 
-    protected void gatherAdditionalTooltips(int mouseX, int mouseY, Consumer<Component> addLine, Consumer<Component> addGray) {}
+    protected void gatherAdditionalTooltips(int mouseX, int mouseY, Consumer<Component> addLine) {}
 
     public int getLeftPos() { return leftPos; }
 

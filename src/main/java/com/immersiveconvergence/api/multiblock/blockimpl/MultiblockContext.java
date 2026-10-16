@@ -18,11 +18,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import java.util.function.BooleanSupplier;
 
-public record MultiblockContext<State extends IMultiblockState>(
-        MultiblockBEHelperMaster<State> masterHelper,
-        MultiblockRegistration<State> multiblock,
-        MultiblockLevel level
-) implements IMultiblockContext<State> {
+public record MultiblockContext<State extends IMultiblockState>(MultiblockBEHelperMaster<State> masterHelper, MultiblockRegistration<State> multiblock, MultiblockLevel level) implements IMultiblockContext<State> {
     @Override public State getState() { return masterHelper.getState(); }
 
     @Override public void markMasterDirty() { masterHelper.getMasterBE().setChanged(); }
@@ -53,19 +49,11 @@ public record MultiblockContext<State extends IMultiblockState>(
         if (oldValue != newValue) { level.updateNeighbourForOutputSignal(posInMultiblock); }
     }
 
-    @Override public <T> CapabilityReference<T> getCapabilityAt(
-            Capability<T> capability, BlockPos posRelativeToMB, RelativeBlockFace face
-    ) {
+    @Override public <T> CapabilityReference<T> getCapabilityAt(Capability<T> capability, BlockPos posRelativeToMB, RelativeBlockFace face) {
         return InitialMultiblockContext.getCapabilityAt(
                 masterHelper.getMasterBE(), masterHelper.getOrientation(), multiblock.masterPosInMB(),
                 capability, posRelativeToMB, face
         );
-    }
-
-    @Override public int getRedstoneInputValue(BlockPos posInMultiblock, RelativeBlockFace side, int fallback) {
-        Preconditions.checkState(masterHelper.multiblock.redstoneInputAware());
-        if (level.getBlockEntity(posInMultiblock) instanceof IMultiblockBE<?> beAtPos) { return beAtPos.getHelper().getRedstoneInput(side); }
-        else { return fallback; }
     }
 
     @Override public int getRedstoneInputValue(BlockPos posInMultiblock, int fallback) {

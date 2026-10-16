@@ -1,31 +1,28 @@
 package com.immersiveconvergence.api.block;
 
-import com.google.common.base.Preconditions;
 import com.immersiveconvergence.api.client.split.ISubmodelOffsetProvider;
-import com.immersiveconvergence.api.client.split.SplitModelProperties;
+import com.immersiveconvergence.api.multiblock.util.DirectionUtils;
+import com.immersiveconvergence.api.network.ITileSyncReceiver;
+
+import com.google.common.base.Preconditions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RedStoneWireBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.model.data.ModelData;
-
 import java.util.EnumMap;
 import java.util.Objects;
-import com.immersiveconvergence.api.network.ITileSyncReceiver;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@SuppressWarnings({"RedundantSuppression", "deprecation", "unused"}) public abstract class BaseBlockEntity extends BlockEntity implements BlockInterfaces.IBlockStateProvider, ISubmodelOffsetProvider , ITileSyncReceiver {
+@SuppressWarnings("deprecation") public abstract class BaseBlockEntity extends BlockEntity implements BlockInterfaces.IBlockStateProvider, ISubmodelOffsetProvider, ITileSyncReceiver {
     @Nullable private BlockState overrideBlockState = null;
     private final EnumMap<Direction, Integer> redstoneBySide = new EnumMap<>(Direction.class);
 
@@ -66,9 +63,7 @@ import javax.annotation.Nullable;
         return nbt;
     }
 
-    @Override public void receiveMessageFromClient(CompoundTag message) { }
-
-    public void receiveMessageFromServer(CompoundTag message) { }
+    @Override public void receiveMessageFromClient(CompoundTag message) {}
 
     @Override public boolean triggerEvent(int id, int type) {
         if (id == 0 || id == 255) { markContainingBlockForUpdate(null); return true; }
@@ -114,7 +109,7 @@ import javax.annotation.Nullable;
 
     @Nonnull public Level getLevelNonnull() { return Objects.requireNonNull(super.getLevel()); }
 
-    public void onEntityCollision(Level world, Entity entity) { }
+    public void onEntityCollision() { }
 
     public void setOverrideState(@Nullable BlockState state) { overrideBlockState = state; }
 
@@ -138,14 +133,7 @@ import javax.annotation.Nullable;
         redstoneBySide.clear();
     }
 
-    @Override @Nonnull public ModelData getModelData() {
-        BlockPos offset = getModelOffset(getState(), Vec3i.ZERO);
-        if (offset != null) { return ModelData.builder().with(SplitModelProperties.SUBMODEL_OFFSET, offset).build(); }
-        return ModelData.EMPTY;
-    }
-
-    @Override
-    public BlockPos getModelOffset(BlockState state, Vec3i size) {
+    @Override public BlockPos getModelOffset(BlockState state, Vec3i size) {
         if (!(this instanceof BlockInterfaces.IGeneralMultiblock multi)) { return BlockPos.ZERO; }
         BlockInterfaces.IGeneralMultiblock m = multi.master();
         if (!(m instanceof BlockEntity masterTile)) { return BlockPos.ZERO; }
@@ -184,7 +172,7 @@ import javax.annotation.Nullable;
     }
 
     protected boolean isRSPowered() {
-        for (Direction d : Direction.values()) { if (getRSInput(d) > 0) { return true; } }
+        for (Direction d : DirectionUtils.VALUES) { if (getRSInput(d) > 0) { return true; } }
         return false;
     }
 }

@@ -1,16 +1,13 @@
 package com.immersiveconvergence.api.client.gui;
 
-import com.immersiveconvergence.api.util.ICTextUtils;
-
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.energy.IEnergyStorage;
-
 import java.util.List;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class GuiEnergyArea extends GuiInfoArea {
+public class GuiEnergyArea extends GuiInfoArea {
     public static final String KEY_ENERGY_STORED = "gui.immersiveconvergence.energy_stored";
     private final IEnergyStorage energy;
 
@@ -19,7 +16,7 @@ import java.util.List;
         this.energy = energy;
     }
 
-    @Override protected void fillTooltipOverArea(int mouseX, int mouseY, List<Component> tooltip) { tooltip.add(ICTextUtils.applyFormat(Component.translatable(KEY_ENERGY_STORED, energy.getEnergyStored(), energy.getMaxEnergyStored()), ChatFormatting.GRAY)); }
+    @Override protected void fillTooltipOverArea(int mouseX, int mouseY, List<Component> tooltip) { tooltip.add(Component.translatable(KEY_ENERGY_STORED, energy.getEnergyStored(), energy.getMaxEnergyStored()).withStyle(ChatFormatting.GRAY)); }
 
     @Override public void draw(GuiGraphics graphics) {
         final int height = area.getHeight();

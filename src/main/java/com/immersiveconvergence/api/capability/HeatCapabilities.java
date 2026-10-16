@@ -1,11 +1,11 @@
 package com.immersiveconvergence.api.capability;
 
 import com.immersiveconvergence.core.ICCommonConfig;
+
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
 
-@SuppressWarnings("unused")
 public class HeatCapabilities {
     public static double maxHeat() { return ICCommonConfig.maxHeat; }
 

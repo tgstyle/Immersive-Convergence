@@ -7,20 +7,18 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 import java.util.function.IntSupplier;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class StateButton<E> extends Button {
+public class StateButton<E> extends Button {
     public final E[] states;
     protected final IntSupplier state;
     protected final ResourceLocation texture;
     protected final int texU, texV, offsetDir;
     protected final int[] textOffset;
 
-    @SuppressWarnings("unchecked")
-    public StateButton(int x, int y, int w, int h, Component name, E[] states, IntSupplier state, ResourceLocation texture, int texU, int texV, int offsetDir, Consumer<StateButton<E>> handler) {
+    @SuppressWarnings("unchecked") public StateButton(int x, int y, int w, int h, Component name, E[] states, IntSupplier state, ResourceLocation texture, int texU, int texV, int offsetDir, Consumer<StateButton<E>> handler) {
         super(x, y, w, h, name, btn -> handler.accept((StateButton<E>) btn), DEFAULT_NARRATION);
         this.states = states;
         this.state = state;

@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.BiFunction;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public abstract class MultiblockProcess<R extends ICMultiblockRecipe, CTX extends ProcessContext<R>> {
+public abstract class MultiblockProcess<R extends ICMultiblockRecipe, CTX extends ProcessContext<R>> {
     private final ResourceLocation recipeId;
     private final BiFunction<Level, ResourceLocation, R> getRecipe;
     public int processTick;
@@ -38,27 +38,24 @@ import java.util.function.BiFunction;
         this.processTick = data.getInt("process_processTick");
     }
 
-    protected List<ItemStack> getRecipeItemOutputs(Level level, CTX context) {
+    protected List<ItemStack> getRecipeItemOutputs(Level level) {
         R recipe = getLevelData(level).recipe;
         if (recipe == null) { return List.of(); }
-        return recipe.getActualItemOutputs();
+        return recipe.getItemOutputs();
     }
 
     protected List<FluidStack> getRecipeFluidOutputs(Level level) {
         R recipe = getLevelData(level).recipe;
         if (recipe == null) { return List.of(); }
-        return recipe.getActualFluidOutputs();
+        return recipe.getFluidOutputs();
     }
 
     public boolean canProcess(CTX context, Level level) {
         LevelDependentData<R> levelData = getLevelData(level);
         if (levelData.recipe == null) { return true; }
         if (context.getEnergy().extractEnergy(levelData.energyPerTick, true) == levelData.energyPerTick) {
-            List<ItemStack> outputs = getRecipeItemOutputs(level, context);
-            if (outputs != null) {
-                for (ItemStack output : outputs) {
-                    if (!output.isEmpty() && !canOutputItem(context, output)) { return false; }
-                }
+            for (ItemStack output : getRecipeItemOutputs(level)) {
+                if (!output.isEmpty() && !canOutputItem(context, output)) { return false; }
             }
             List<FluidStack> fluidOutputs = levelData.recipe.getFluidOutputs();
             if (fluidOutputs != null) {
@@ -66,7 +63,7 @@ import java.util.function.BiFunction;
                     if (!canOutputFluid(context, output)) { return false; }
                 }
             }
-            return context.additionalCanProcessCheck(this, level);
+            return true;
         }
         return false;
     }
@@ -83,7 +80,7 @@ import java.util.function.BiFunction;
 
         if (extraProcessTicks < 0) { extraProcessTicks = levelData.recipe.getMultipleProcessTicks(); }
 
-        if (extraProcessTicks >= 0) {
+        if (extraProcessTicks >= 0 && levelData.energyPerTick > 0) {
             int averageInsertion = context.getEnergy().getAverageInsertion();
             int averageExtraction = context.getEnergy().getAverageExtraction();
             if (averageInsertion < averageExtraction) { extraProcessTicks = Math.max(0, extraProcessTicks - 1); }
@@ -110,26 +107,29 @@ import java.util.function.BiFunction;
 
     protected void processFinish(CTX context, IMultiblockLevel level) {
         final Level rawLevel = level.getRawLevel();
-        List<ItemStack> outputs = getRecipeItemOutputs(rawLevel, context);
-        if (outputs != null) {
-            for (ItemStack output : outputs) { outputItem(context, output, level); }
-        }
+        for (ItemStack output : getRecipeItemOutputs(rawLevel)) { outputItem(context, output); }
         List<FluidStack> fluidOutputs = getRecipeFluidOutputs(rawLevel);
         if (fluidOutputs != null) {
             for (FluidStack output : fluidOutputs) { outputFluid(context, output); }
         }
-
-        context.onProcessFinish(this, level.getRawLevel());
         this.clearProcess = true;
     }
 
-    public abstract void writeExtraDataToNBT(CompoundTag nbt);
+    public CompoundTag toNBT() {
+        CompoundTag tag = new CompoundTag();
+        tag.putString("recipe", recipeId.toString());
+        tag.putInt("process_processTick", processTick);
+        writeExtraDataToNBT(tag);
+        return tag;
+    }
+
+    protected abstract void writeExtraDataToNBT(CompoundTag nbt);
 
     protected abstract boolean canOutputItem(CTX context, ItemStack output);
 
     protected abstract boolean canOutputFluid(CTX context, FluidStack output);
 
-    protected abstract void outputItem(CTX context, ItemStack output, IMultiblockLevel level);
+    protected abstract void outputItem(CTX context, ItemStack output);
 
     protected abstract void outputFluid(CTX context, FluidStack output);
 
@@ -147,12 +147,9 @@ import java.util.function.BiFunction;
         else { this.levelData = new LevelDependentData<>(null, 20, 0); }
     }
 
-    public ResourceLocation getRecipeId() { return recipeId; }
-
     public int getMaxTicks(Level level) { return getLevelData(level).maxTicks; }
 
     @Nullable public R getRecipe(Level level) { return getLevelData(level).recipe; }
 
-    protected record LevelDependentData<R extends ICMultiblockRecipe>(@Nullable R recipe, int maxTicks, int energyPerTick) {
-    }
+    protected record LevelDependentData<R extends ICMultiblockRecipe>(@Nullable R recipe, int maxTicks, int energyPerTick) {}
 }

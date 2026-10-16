@@ -14,7 +14,6 @@ import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,26 +21,20 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-@SuppressWarnings("unused")
-@Mod.EventBusSubscriber(modid = ICLib.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class SplitModelHandler {
+@Mod.EventBusSubscriber(modid = ICLib.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD) public class SplitModelHandler {
     private static final String INVENTORY_VARIANT = "inventory";
     private static final Map<ResourceLocation, Machine> MACHINES = new HashMap<>();
 
     public static void register(Block block, ResourceLocation multiblock) { register(block, multiblock, Direction.NORTH); }
 
-    public static void register(Block block, ResourceLocation multiblock, Direction unrotated) {
-        put(block, unrotated, mirrored -> () -> SplitData.fromMultiblock(multiblock, mirrored));
-    }
+    public static void register(Block block, ResourceLocation multiblock, Direction unrotated) { put(block, unrotated, mirrored -> () -> SplitData.fromMultiblock(multiblock, mirrored)); }
 
     public static void register(Block block, List<Vec3i> parts, Direction unrotated) {
         SplitData data = SplitData.fromParts(parts);
         put(block, unrotated, mirrored -> () -> data);
     }
 
-    private static void put(Block block, Direction unrotated, Function<Boolean, Supplier<SplitData>> data) {
-        MACHINES.put(ForgeRegistries.BLOCKS.getKey(block), new Machine(unrotated, data));
-    }
+    private static void put(Block block, Direction unrotated, Function<Boolean, Supplier<SplitData>> data) { MACHINES.put(ForgeRegistries.BLOCKS.getKey(block), new Machine(unrotated, data)); }
 
     @SubscribeEvent public static void onModifyBakingResult(ModelEvent.ModifyBakingResult event) {
         Map<ResourceLocation, BakedModel> models = event.getModels();

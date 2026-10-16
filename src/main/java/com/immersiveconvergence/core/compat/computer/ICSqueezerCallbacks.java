@@ -10,7 +10,7 @@ import blusunrize.immersiveengineering.common.util.compat.computers.generic.Inde
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.owners.SqueezerCallbacks;
 import net.minecraft.world.item.ItemStack;
 
-@SuppressWarnings("unused") public class ICSqueezerCallbacks extends SqueezerCallbacks {
+public class ICSqueezerCallbacks extends SqueezerCallbacks {
     @ComputerCallable public Object[] getRecipe(CallbackEnvironment<State> env, @IndexArgument int slot) {
         ItemStack input = ComputerValues.slot(env.object().getInventory(), slot, 8, "Input slots are 1-8");
         SqueezerRecipe recipe = SqueezerRecipe.findRecipe(env.level(), input);

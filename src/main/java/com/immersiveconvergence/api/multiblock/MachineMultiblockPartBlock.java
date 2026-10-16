@@ -1,6 +1,5 @@
 package com.immersiveconvergence.api.multiblock;
 
-import com.immersiveconvergence.api.block.BlockInterfaces;
 import com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistration;
 import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockBE;
 import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockState;
@@ -8,8 +7,6 @@ import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockPartBlo
 import com.immersiveconvergence.api.util.IItemDropProvider;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -18,25 +15,13 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.FakePlayer;
-
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class MachineMultiblockPartBlock<S extends IMultiblockState> extends MultiblockPartBlock<S> {
+public class MachineMultiblockPartBlock<S extends IMultiblockState> extends MultiblockPartBlock<S> {
     public MachineMultiblockPartBlock(Properties properties, MultiblockRegistration<S> multiblock) { super(properties, multiblock); }
-
-    @Nonnull @Override public InteractionResult use(@Nonnull BlockState state, @Nonnull Level level, @Nonnull BlockPos pos, @Nonnull Player player, @Nonnull InteractionHand hand, @Nonnull BlockHitResult hit) {
-        BlockEntity te = level.getBlockEntity(pos);
-        if (te instanceof BlockInterfaces.IPlayerInteraction be) {
-            Vec3 hitVec = hit.getLocation().subtract(pos.getX(), pos.getY(), pos.getZ());
-            if (be.interact(hit.getDirection(), player, hand, player.getItemInHand(hand), (float) hitVec.x, (float) hitVec.y, (float) hitVec.z)) { return InteractionResult.sidedSuccess(level.isClientSide); }
-        }
-        return super.use(state, level, pos, player, hand, hit);
-    }
 
     @Override public void playerWillDestroy(@Nonnull Level level, @Nonnull BlockPos pos, @Nonnull BlockState state, @Nonnull Player player) {
         if (level.isClientSide) { return; }
@@ -87,13 +72,10 @@ import java.util.List;
         super.onRemove(state, level, pos, newState, isMoving);
     }
 
-    @SuppressWarnings("deprecation")
-    @Override @Nonnull public List<ItemStack> getDrops(@Nonnull BlockState state, @Nonnull LootParams.Builder builder) {
+    @SuppressWarnings("deprecation") @Override @Nonnull public List<ItemStack> getDrops(@Nonnull BlockState state, @Nonnull LootParams.Builder builder) {
         List<ItemStack> drops = new ArrayList<>(super.getDrops(state, builder));
         BlockEntity te = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
-        if (te instanceof IItemDropProvider dropInv) {
-            dropInv.getDroppedItems().forEach(drops::add);
-        }
+        if (te instanceof IItemDropProvider dropInv) { dropInv.getDroppedItems().forEach(drops::add); }
         return drops;
     }
 }

@@ -8,10 +8,9 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.items.IItemHandlerModifiable;
-
 import java.util.List;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public interface IDisplayContext {
+public interface IDisplayContext {
     default boolean isActive() { return false; }
 
     default IEnergyStorage getEnergyStorage() { return null; }

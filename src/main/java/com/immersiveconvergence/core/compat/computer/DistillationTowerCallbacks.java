@@ -9,12 +9,11 @@ import blusunrize.immersiveengineering.common.util.compat.computers.generic.impl
 import flaxbeard.immersivepetroleum.common.blocks.multiblocks.logic.distillation_tower.DistillationTowerLogic;
 import flaxbeard.immersivepetroleum.common.blocks.multiblocks.logic.distillation_tower.DistillationTowerLogic.State;
 import net.minecraft.world.item.ItemStack;
-
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("unused") public class DistillationTowerCallbacks extends Callback<State> {
+public class DistillationTowerCallbacks extends Callback<State> {
     public DistillationTowerCallbacks() {
         addAdditional(MBEnergyCallbacks.INSTANCE, state -> state.energy);
         addAdditional(new TankInfoCallbacks<>(state -> state.tanks.input(), "input"));

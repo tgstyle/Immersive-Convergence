@@ -8,7 +8,7 @@ import blusunrize.immersiveengineering.common.util.compat.computers.generic.Call
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.ComputerCallable;
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.impl.MBEnergyCallbacks;
 
-@SuppressWarnings("unused") public class FluidPumpCallbacks extends Callback<FluidPumpBlockEntity> {
+public class FluidPumpCallbacks extends Callback<FluidPumpBlockEntity> {
     public FluidPumpCallbacks() {
         addAdditional(MBEnergyCallbacks.INSTANCE, pump -> ((FluidPumpAccessor) pump).ic$getEnergyStorage());
         addAdditional(new TankInfoCallbacks<>(pump -> ((FluidPumpAccessor) pump).ic$getTank(), ""));

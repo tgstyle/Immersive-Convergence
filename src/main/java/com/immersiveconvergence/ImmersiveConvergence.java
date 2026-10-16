@@ -1,7 +1,12 @@
 package com.immersiveconvergence;
 
 import com.immersiveconvergence.api.ICMods;
-import com.immersiveconvergence.api.capability.*;
+import com.immersiveconvergence.api.capability.HeatCapabilities;
+import com.immersiveconvergence.api.capability.IHeatConsumer;
+import com.immersiveconvergence.api.capability.IHeatProvider;
+import com.immersiveconvergence.api.capability.IMechanicalEnergyConsumer;
+import com.immersiveconvergence.api.capability.IMechanicalEnergyProvider;
+import com.immersiveconvergence.api.capability.MechanicalCapabilities;
 import com.immersiveconvergence.api.integration.top.ProbeIntegration;
 import com.immersiveconvergence.api.loot.LootEntryTypes;
 import com.immersiveconvergence.api.multiblock.MultiblockRegistry;
@@ -20,6 +25,7 @@ import com.immersiveconvergence.core.registration.ICItems;
 import com.immersiveconvergence.core.registration.ICMenuTypes;
 import com.immersiveconvergence.core.proxy.ClientProxySupplier;
 import com.immersiveconvergence.core.proxy.CommonProxy;
+
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
@@ -35,9 +41,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
-@SuppressWarnings("unused")
-@Mod(ICLib.MODID)
-public class ImmersiveConvergence {
+@Mod(ICLib.MODID) public class ImmersiveConvergence {
     public static final CommonProxy proxy = DistExecutor.safeRunForDist(() -> ClientProxySupplier::get, () -> CommonProxy::new);
 
     public ImmersiveConvergence(FMLJavaModLoadingContext context) {
@@ -47,7 +51,7 @@ public class ImmersiveConvergence {
         modEventBus.addListener(this::registerCapabilities);
         if (ICMods.computerCraft()) { ICComputerCraft.init(); }
         ICLib.IC_LOGGER.info("Starting Proxy Mod Construction");
-        CommonProxy.modConstruction(modEventBus);
+        CommonProxy.modConstruction();
         MultiblockRegistry.init();
         ICBlocks.init(modEventBus);
         ICItems.init(modEventBus);
@@ -88,7 +92,5 @@ public class ImmersiveConvergence {
     private static final CapabilityToken<IMechanicalEnergyProvider> MECHANICAL_PROVIDER_TOKEN = new CapabilityToken<>() {};
     private static final CapabilityToken<IMechanicalEnergyConsumer> MECHANICAL_CONSUMER_TOKEN = new CapabilityToken<>() {};
 
-    @SubscribeEvent public static void onServerStarting(ServerStartingEvent event) {
-        ICLib.IC_LOGGER.info("HELLO FROM SERVER STARTING");
-    }
+    @SubscribeEvent public static void onServerStarting(ServerStartingEvent event) { ICLib.IC_LOGGER.info("HELLO FROM SERVER STARTING"); }
 }

@@ -8,10 +8,9 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraftforge.client.model.data.ModelProperty;
-
 import java.util.Map;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class ModProperties {
+public class ModProperties {
     public static final DirectionProperty FACING_ALL;
     public static final DirectionProperty FACING_HORIZONTAL;
     public static final DirectionProperty FACING_TOP_DOWN;

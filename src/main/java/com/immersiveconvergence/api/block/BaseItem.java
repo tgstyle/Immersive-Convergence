@@ -7,10 +7,9 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
-
 import javax.annotation.Nonnull;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class BaseItem extends Item {
+public class BaseItem extends Item {
 
     public BaseItem(Properties props) { super(props); }
 

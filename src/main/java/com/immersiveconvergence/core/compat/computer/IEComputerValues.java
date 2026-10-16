@@ -1,12 +1,12 @@
 package com.immersiveconvergence.core.compat.computer;
 
+import com.immersiveconvergence.api.compat.computercraft.ICLuaConvert;
+
 import blusunrize.immersiveengineering.api.crafting.MultiblockRecipe;
 import blusunrize.immersiveengineering.common.blocks.multiblocks.process.MultiblockProcess;
-import blusunrize.immersiveengineering.common.util.compat.computers.cctweaked.CCLuaTypeConverter;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.fluids.FluidStack;
-
 import javax.annotation.Nullable;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -15,9 +15,9 @@ import java.util.Map;
 public final class IEComputerValues {
     private IEComputerValues() {}
 
-    public static Object item(ItemStack stack) { return CCLuaTypeConverter.INSTANCE.serialize(stack); }
+    public static Object item(ItemStack stack) { return ICLuaConvert.item(stack); }
 
-    public static Object fluid(FluidStack stack) { return CCLuaTypeConverter.INSTANCE.serialize(stack); }
+    public static Object fluid(FluidStack stack) { return ICLuaConvert.fluid(stack); }
 
     public static Object[] recipe(ItemStack input, ItemStack itemOutput, FluidStack fluidOutput, int time) { return new Object[] {item(input), item(itemOutput), fluid(fluidOutput), time}; }
 

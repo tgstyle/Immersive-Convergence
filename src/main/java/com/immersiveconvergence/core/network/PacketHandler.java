@@ -14,11 +14,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
-
 import javax.annotation.Nonnull;
 import java.util.function.Function;
 
-@SuppressWarnings("unused")
 public class PacketHandler {
     public static final String NET_VERSION = "3";
     public static final SimpleChannel INSTANCE = NetworkRegistry.ChannelBuilder

@@ -1,6 +1,5 @@
 package com.immersiveconvergence.api.crafting;
 
-import com.immersiveconvergence.api.util.ICFluidUtils;
 import com.immersiveconvergence.api.util.ICUtils;
 
 import com.google.gson.JsonElement;
@@ -16,8 +15,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.registries.ForgeRegistries;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -27,7 +24,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-@SuppressWarnings("unused") public class ICFluidTagInput implements Predicate<FluidStack> {
+public class ICFluidTagInput implements Predicate<FluidStack> {
     protected final Either<TagKey<Fluid>, List<ResourceLocation>> fluidTag;
     protected final int amount;
     @Nullable protected final CompoundTag nbtTag;
@@ -41,8 +38,6 @@ import java.util.stream.Stream;
     public ICFluidTagInput(TagKey<Fluid> tag, int amount, @Nullable CompoundTag nbtTag) { this(Either.left(tag), amount, nbtTag); }
 
     public ICFluidTagInput(ResourceLocation tag, int amount, @Nullable CompoundTag nbtTag) { this(TagKey.create(Registries.FLUID, tag), amount, nbtTag); }
-
-    public ICFluidTagInput(ResourceLocation tag, int amount) { this(tag, amount, null); }
 
     public ICFluidTagInput(TagKey<Fluid> tag, int amount) { this(tag, amount, null); }
 
@@ -84,32 +79,11 @@ import java.util.stream.Stream;
         return true;
     }
 
-    @Nonnull public List<FluidStack> getMatchingFluidStacks() {
-        return fluidTag.map(ICFluidTagInput::tagFluids, list -> list.stream().map(ForgeRegistries.FLUIDS::getValue)).map(fluid -> new FluidStack(fluid, amount, nbtTag)).toList();
-    }
+    @Nonnull public List<FluidStack> getMatchingFluidStacks() { return fluidTag.map(ICFluidTagInput::tagFluids, list -> list.stream().map(ForgeRegistries.FLUIDS::getValue)).map(fluid -> new FluidStack(fluid, amount, nbtTag)).toList(); }
 
     private static Stream<Fluid> tagFluids(TagKey<Fluid> tag) { return Objects.requireNonNull(ForgeRegistries.FLUIDS.tags()).getTag(tag).stream(); }
 
     public int getAmount() { return amount; }
-
-    public FluidStack getRandomizedExampleStack(int rand) {
-        List<FluidStack> all = getMatchingFluidStacks();
-        return all.get((rand / 20) % all.size());
-    }
-
-    public boolean extractFrom(IFluidHandler handler, FluidAction action) {
-        for (int tank = 0; tank < handler.getTanks(); tank++) {
-            FluidStack inTank = handler.getFluidInTank(tank);
-            if (testIgnoringAmount(inTank)) {
-                FluidStack toExtract = ICFluidUtils.copyFluidStackWithAmount(inTank, amount);
-                if (handler.drain(toExtract, FluidAction.SIMULATE).getAmount() >= amount) {
-                    if (action != FluidAction.SIMULATE) { handler.drain(toExtract, action); }
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 
     public static ICFluidTagInput read(FriendlyByteBuf input) {
         int count = input.readVarInt();
@@ -119,6 +93,4 @@ import java.util.stream.Stream;
         CompoundTag nbt = input.readBoolean() ? input.readNbt() : null;
         return new ICFluidTagInput(Either.right(matching), amount, nbt);
     }
-
-    public ICFluidTagInput withAmount(int amount) { return new ICFluidTagInput(fluidTag, amount, nbtTag); }
 }

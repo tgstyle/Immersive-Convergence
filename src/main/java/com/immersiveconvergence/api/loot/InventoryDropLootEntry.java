@@ -13,11 +13,10 @@ import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class InventoryDropLootEntry extends LootPoolSingletonContainer {
+public class InventoryDropLootEntry extends LootPoolSingletonContainer {
     protected InventoryDropLootEntry(int weightIn, int qualityIn, LootItemCondition[] conditionsIn, LootItemFunction[] functionsIn) { super(weightIn, qualityIn, conditionsIn, functionsIn); }
 
     @Override protected void createItemStack(@Nonnull Consumer<ItemStack> output, LootContext context) {

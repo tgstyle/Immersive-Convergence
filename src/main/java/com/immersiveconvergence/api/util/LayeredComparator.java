@@ -1,10 +1,9 @@
 package com.immersiveconvergence.api.util;
 
 import net.minecraft.util.Mth;
-
 import java.util.function.ObjIntConsumer;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class LayeredComparator<CTX> {
+public class LayeredComparator<CTX> {
     private final double maxValue;
     private final int numLayers;
     private final double layerSize;

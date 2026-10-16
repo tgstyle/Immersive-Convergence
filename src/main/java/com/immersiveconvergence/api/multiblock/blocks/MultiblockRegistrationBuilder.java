@@ -1,18 +1,16 @@
 package com.immersiveconvergence.api.multiblock.blocks;
 
-import com.immersiveconvergence.api.multiblock.ICTemplateMultiblock;
+import com.immersiveconvergence.api.multiblock.TemplateMultiblock;
 import com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistration.Disassembler;
 import com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistration.ExtraComponent;
 import com.immersiveconvergence.api.multiblock.blocks.component.IMultiblockComponent.StateWrapper;
 import com.immersiveconvergence.api.multiblock.blocks.component.IMultiblockComponent;
-import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockContext;
 import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockLogic;
 import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockState;
 import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockBlockEntityDummy;
 import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockBlockEntityMaster;
-import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockItem;
 import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockPartBlock;
-import com.immersiveconvergence.api.multiblock.blocks.util.ShapeType;
+import static com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistrationBuilder.RegistrationMethod.fromDeferred;
 
 import com.google.common.base.Preconditions;
 import net.minecraft.core.BlockPos;
@@ -23,24 +21,19 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.registries.DeferredRegister;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import static com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistrationBuilder.RegistrationMethod.fromDeferred;
 
-@SuppressWarnings({"unused", "UnusedReturnValue", "RedundantSuppression"}) public abstract class MultiblockRegistrationBuilder<
+public abstract class MultiblockRegistrationBuilder<
         State extends IMultiblockState,
         Self extends MultiblockRegistrationBuilder<State, Self>
         > {
@@ -56,7 +49,6 @@ import static com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistrat
     private boolean mirrorable = true;
     private boolean hasComparatorOutput = false;
     private boolean redstoneInputAware = false;
-    private boolean postProcessesShape = false;
     private Supplier<BlockPos> getMasterPosInMB;
     private Function<Level, Vec3i> getSize;
     private Disassembler disassemble;
@@ -78,19 +70,10 @@ import static com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistrat
         return self();
     }
 
-    public Self postProcessesShape() {
-        this.postProcessesShape = true;
-        return self();
-    }
-
     public Self redstoneAware() {
         this.redstoneInputAware = true;
         return self();
     }
-
-    public Self defaultBEs(DeferredRegister<BlockEntityType<?>> register) { return defaultBEs(fromDeferred(register)); }
-
-    public Self defaultBEs(RegistrationMethod<BlockEntityType<?>> register) { return customBEs(register, MultiblockBlockEntityMaster::new, MultiblockBlockEntityDummy::new); }
 
     public Self customBEs(RegistrationMethod<BlockEntityType<?>> register, BEConstructor<State, ? extends MultiblockBlockEntityMaster<State>> master, BEConstructor<State, ? extends MultiblockBlockEntityDummy<State>> dummy) {
         Preconditions.checkState(this.masterBE == null);
@@ -100,43 +83,16 @@ import static com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistrat
         return self();
     }
 
-    public Self defaultBlock(
-            DeferredRegister<Block> register,
-            DeferredRegister<Item> blockItemRegister,
-            BlockBehaviour.Properties properties
-    ) { return defaultBlock(fromDeferred(register), fromDeferred(blockItemRegister), properties); }
+    public Self customBlock(DeferredRegister<Block> register, DeferredRegister<Item> blockItemRegister, Function<MultiblockRegistration<State>, ? extends MultiblockPartBlock<State>> make, Function<Block, Item> makeItem) { return customBlock(fromDeferred(register), fromDeferred(blockItemRegister), make, makeItem); }
 
-    public Self defaultBlock(
-            RegistrationMethod<Block> register,
-            RegistrationMethod<Item> blockItemRegister,
-            BlockBehaviour.Properties properties
-    ) {
-        return customBlock(register, blockItemRegister, reg -> {
-            if (reg.mirrorable()) { return new MultiblockPartBlock.WithMirrorState<>(properties, reg); }
-            else { return new MultiblockPartBlock<>(properties, reg); }
-        }, MultiblockItem::new);
-    }
-
-    public Self customBlock(
-            DeferredRegister<Block> register,
-            DeferredRegister<Item> blockItemRegister,
-            Function<MultiblockRegistration<State>, ? extends MultiblockPartBlock<State>> make,
-            Function<Block, Item> makeItem
-    ) { return customBlock(fromDeferred(register), fromDeferred(blockItemRegister), make, makeItem); }
-
-    public Self customBlock(
-            RegistrationMethod<Block> register,
-            RegistrationMethod<Item> blockItemRegister,
-            Function<MultiblockRegistration<State>, ? extends MultiblockPartBlock<State>> make,
-            Function<Block, Item> makeItem
-    ) {
+    public Self customBlock(RegistrationMethod<Block> register, RegistrationMethod<Item> blockItemRegister, Function<MultiblockRegistration<State>, ? extends MultiblockPartBlock<State>> make, Function<Block, Item> makeItem) {
         Preconditions.checkState(this.block == null);
         this.block = register.register(name.getPath(), () -> make.apply(this.result));
         this.item = blockItemRegister.register(name.getPath(), () -> makeItem.apply(this.result.block().get()));
         return self();
     }
 
-    public Self structure(Supplier<ICTemplateMultiblock> structure) {
+    public Self structure(Supplier<TemplateMultiblock> structure) {
         Preconditions.checkState(this.getMasterPosInMB == null);
         Preconditions.checkState(this.disassemble == null);
         this.getMasterPosInMB = () -> structure.get().getMasterFromOriginOffset();
@@ -169,23 +125,9 @@ import static com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistrat
         Objects.requireNonNull(disassemble);
         Objects.requireNonNull(structure);
         Preconditions.checkState(this.result == null);
-        if (!postProcessesShape) {
-            try {
-                final Method postProcessMethod = logic.getClass().getMethod(
-                        "postProcessAbsoluteShape",
-                        IMultiblockContext.class, VoxelShape.class, CollisionContext.class, BlockPos.class, ShapeType.class
-                );
-                final Class<?> declaringClass = postProcessMethod.getDeclaringClass();
-                Preconditions.checkState(
-                        declaringClass == IMultiblockLogic.class,
-                        "Multiblock overrides postProcessAbsoluteShape, but is not marked as post processing! ID: %s",
-                        name
-                );
-            } catch (NoSuchMethodException e) { throw new RuntimeException(e); }
-        }
         this.result = new MultiblockRegistration<>(
                 logic, extraComponents, masterBE, dummyBE, block, item,
-                mirrorable, hasComparatorOutput, redstoneInputAware, postProcessesShape,
+                mirrorable, hasComparatorOutput, redstoneInputAware,
                 getMasterPosInMB, getSize, disassemble, structure, name
         );
         return this.result;

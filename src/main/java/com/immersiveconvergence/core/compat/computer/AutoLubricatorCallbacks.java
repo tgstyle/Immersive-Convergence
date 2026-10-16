@@ -13,7 +13,7 @@ import flaxbeard.immersivepetroleum.common.util.Utils;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.fluids.FluidStack;
 
-@SuppressWarnings("unused") public class AutoLubricatorCallbacks extends Callback<AutoLubricatorTileEntity> {
+public class AutoLubricatorCallbacks extends Callback<AutoLubricatorTileEntity> {
     public AutoLubricatorCallbacks() { addAdditional(new TankInfoCallbacks<>(lubricator -> lubricator.tank, "")); }
 
     @SuppressWarnings({"rawtypes", "unchecked"}) @ComputerCallable public boolean isActive(CallbackEnvironment<AutoLubricatorTileEntity> env) {

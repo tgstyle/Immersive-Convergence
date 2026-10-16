@@ -12,7 +12,7 @@ import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.fluids.FluidStack;
 import org.joml.Matrix4f;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class FluidRender {
+public class FluidRender {
     public static void drawRepeatedFluidSpriteGui(MultiBufferSource buffer, PoseStack transform, FluidStack fluid, float x, float y, float w, float h) {
         RenderType renderType = RenderTypes.getGuiTranslucent(InventoryMenu.BLOCK_ATLAS);
         VertexConsumer builder = buffer.getBuffer(renderType);

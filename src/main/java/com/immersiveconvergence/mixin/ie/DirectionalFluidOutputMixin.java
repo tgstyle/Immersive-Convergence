@@ -11,12 +11,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(value = DirectionalFluidOutput.class, remap = false)
-public abstract class DirectionalFluidOutputMixin {
+@Mixin(value = DirectionalFluidOutput.class, remap = false) public abstract class DirectionalFluidOutputMixin {
     @Final @Shadow(remap = false) private BlockEntity containingTile;
 
-    @Inject(method = "stripPressure()Z", at = @At("HEAD"), cancellable = true, remap = false)
-    private void ic$pipeStripPressure(CallbackInfoReturnable<Boolean> cir) {
-        if (containingTile instanceof IICFluidPipe pipe) { cir.setReturnValue(pipe.stripPressureTag()); }
+    @Inject(method = "stripPressure()Z", at = @At("HEAD"), cancellable = true, remap = false) private void ic$pipeStripPressure(CallbackInfoReturnable<Boolean> cir) {
+        if (containingTile instanceof IICFluidPipe) { cir.setReturnValue(false); }
     }
 }

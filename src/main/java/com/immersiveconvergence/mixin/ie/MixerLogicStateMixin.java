@@ -8,8 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-@Mixin(MixerLogic.State.class)
-public abstract class MixerLogicStateMixin implements IMixerStateDebounce {
+@Mixin(MixerLogic.State.class) public abstract class MixerLogicStateMixin implements IMixerStateDebounce {
     @Unique private final NonNullList<ItemStack> ic$lastComponents = NonNullList.withSize(MixerLogic.NUM_SLOTS, ItemStack.EMPTY);
     @Unique private int ic$stableTicks = 0;
 

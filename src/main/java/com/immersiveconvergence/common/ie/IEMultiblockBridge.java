@@ -8,7 +8,8 @@ import blusunrize.immersiveengineering.api.multiblocks.MultiblockHandler;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockBEHelperMaster;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.logic.IMultiblockBE;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.registry.MultiblockPartBlock;
-import blusunrize.immersiveengineering.common.register.IEItems;
+import blusunrize.immersiveengineering.api.multiblocks.blocks.util.CapabilityPosition;
+import blusunrize.immersiveengineering.api.multiblocks.blocks.util.RelativeBlockFace;
 import blusunrize.immersiveengineering.common.util.Utils;
 import blusunrize.immersiveengineering.common.util.advancements.IEAdvancements;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -38,8 +39,6 @@ public final class IEMultiblockBridge {
 
     public static void register(IMultiblock multiblock) { MultiblockHandler.registerMultiblock(new Adapter(multiblock)); }
 
-    public static boolean isHammer(ItemStack stack) { return stack.getItem() == IEItems.Tools.HAMMER.get(); }
-
     public static ItemStack pickBlock(BlockState state) { return Utils.getPickBlock(state); }
 
     public static boolean isPartBlock(Block block) { return block instanceof MultiblockPartBlock<?>; }
@@ -49,6 +48,14 @@ public final class IEMultiblockBridge {
     public static void markDisassembling(@Nullable BlockEntity be) {
         if (be instanceof IMultiblockBE<?> multiblockBE) { multiblockBE.getHelper().markDisassembling(); }
     }
+
+    public static com.immersiveconvergence.api.multiblock.blocks.util.CapabilityPosition toIC(CapabilityPosition position) { return new com.immersiveconvergence.api.multiblock.blocks.util.CapabilityPosition(position.posInMultiblock(), toIC(position.side())); }
+
+    @Nullable public static com.immersiveconvergence.api.multiblock.blocks.util.RelativeBlockFace toIC(@Nullable RelativeBlockFace face) { return face == null ? null : com.immersiveconvergence.api.multiblock.blocks.util.RelativeBlockFace.valueOf(face.name()); }
+
+    public static CapabilityPosition toIE(com.immersiveconvergence.api.multiblock.blocks.util.CapabilityPosition position) { return new CapabilityPosition(position.posInMultiblock(), toIE(position.side())); }
+
+    @Nullable public static RelativeBlockFace toIE(@Nullable com.immersiveconvergence.api.multiblock.blocks.util.RelativeBlockFace face) { return face == null ? null : RelativeBlockFace.valueOf(face.name()); }
 
     @Nullable public static Component displayName(ResourceLocation name) {
         MultiblockHandler.IMultiblock multiblock = MultiblockHandler.getByUniqueName(name);

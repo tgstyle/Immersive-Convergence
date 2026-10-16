@@ -4,7 +4,7 @@ import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockContext;
 
 import net.minecraftforge.common.util.LazyOptional;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class StoredCapability<T> {
+public class StoredCapability<T> {
     private final T value;
     private LazyOptional<T> cap = LazyOptional.empty();
 

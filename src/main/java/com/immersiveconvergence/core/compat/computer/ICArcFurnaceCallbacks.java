@@ -5,6 +5,6 @@ import blusunrize.immersiveengineering.common.util.compat.computers.generic.Call
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.ComputerCallable;
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.owners.ArcFurnaceCallbacks;
 
-@SuppressWarnings("unused") public class ICArcFurnaceCallbacks extends ArcFurnaceCallbacks {
+public class ICArcFurnaceCallbacks extends ArcFurnaceCallbacks {
     @ComputerCallable public boolean hasElectrodes(CallbackEnvironment<State> env) { return env.object().hasElectrodes(); }
 }

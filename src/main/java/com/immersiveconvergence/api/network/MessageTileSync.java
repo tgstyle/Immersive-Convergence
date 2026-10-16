@@ -7,10 +7,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.network.NetworkEvent;
-
 import java.util.function.Supplier;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class MessageTileSync implements INetworkMessage {
+public class MessageTileSync implements INetworkMessage {
     private final BlockPos pos;
     private final CompoundTag nbt;
 
@@ -29,7 +28,6 @@ import java.util.function.Supplier;
         buf.writeNbt(this.nbt);
     }
 
-    @SuppressWarnings("resource")
     @Override public void process(Supplier<NetworkEvent.Context> context) {
         NetworkEvent.Context ctx = context.get();
         ServerPlayer player = ctx.getSender();

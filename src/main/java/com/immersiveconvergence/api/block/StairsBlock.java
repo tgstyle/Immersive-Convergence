@@ -3,10 +3,9 @@ package com.immersiveconvergence.api.block;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-
 import java.util.function.Supplier;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class StairsBlock extends StairBlock implements IBlock {
+public class StairsBlock extends StairBlock implements IBlock {
     private final Supplier<? extends IBlock> base;
 
     public <T extends Block & IBlock> StairsBlock(BlockBehaviour.Properties properties, Supplier<T> base) {
@@ -14,11 +13,7 @@ import java.util.function.Supplier;
         this.base = base;
     }
 
-    public boolean hasFlavour() {
-        return this.base.get().hasFlavour();
-    }
+    public boolean hasFlavour() { return this.base.get().hasFlavour(); }
 
-    public String getNameForFlavour() {
-        return this.base.get().getNameForFlavour();
-    }
+    public String getNameForFlavour() { return this.base.get().getNameForFlavour(); }
 }

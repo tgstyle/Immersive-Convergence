@@ -3,10 +3,9 @@ package com.immersiveconvergence.api.util;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-
 import javax.annotation.Nonnull;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public record MultiTankFluidHandler(IFluidTank[] internal, boolean allowDrain, boolean allowFill, Runnable afterTransfer) implements IFluidHandler {
+public record MultiTankFluidHandler(IFluidTank[] internal, boolean allowDrain, boolean allowFill, Runnable afterTransfer) implements IFluidHandler {
     public MultiTankFluidHandler(IFluidTank internal, boolean allowDrain, boolean allowFill, Runnable afterTransfer) { this(new IFluidTank[]{internal}, allowDrain, allowFill, afterTransfer); }
 
     public static MultiTankFluidHandler drainOnly(IFluidTank internal, Runnable afterTransfer) { return new MultiTankFluidHandler(internal, true, false, afterTransfer); }

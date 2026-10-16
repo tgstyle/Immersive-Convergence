@@ -6,13 +6,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public abstract class CapabilityReference<T> {
+public abstract class CapabilityReference<T> {
     protected final Capability<T> cap;
 
     protected CapabilityReference(Capability<T> cap) { this.cap = Objects.requireNonNull(cap); }

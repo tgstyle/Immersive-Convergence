@@ -10,7 +10,7 @@ import blusunrize.immersiveengineering.common.util.compat.computers.generic.Inde
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.owners.FermenterCallbacks;
 import net.minecraft.world.item.ItemStack;
 
-@SuppressWarnings("unused") public class ICFermenterCallbacks extends FermenterCallbacks {
+public class ICFermenterCallbacks extends FermenterCallbacks {
     @ComputerCallable public Object[] getRecipe(CallbackEnvironment<State> env, @IndexArgument int slot) {
         ItemStack input = ComputerValues.slot(env.object().getInventory(), slot, 8, "Input slots are 1-8");
         FermenterRecipe recipe = FermenterRecipe.findRecipe(env.level(), input);

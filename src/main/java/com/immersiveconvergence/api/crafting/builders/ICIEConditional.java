@@ -9,12 +9,11 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.ModLoadedCondition;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
-@SuppressWarnings("unused") public final class ICIEConditional {
+public final class ICIEConditional {
     private ICIEConditional() {}
 
     public static Consumer<FinishedRecipe> wrap(Consumer<FinishedRecipe> out) { return recipe -> out.accept(new Wrapped(recipe)); }

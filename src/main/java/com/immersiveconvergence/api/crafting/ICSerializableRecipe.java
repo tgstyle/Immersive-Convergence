@@ -11,8 +11,8 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.Lazy;
 import javax.annotation.Nonnull;
 
-@SuppressWarnings("unused") public abstract class ICSerializableRecipe implements Recipe<Container> {
-    public static final Lazy<ItemStack> LAZY_EMPTY = of(ItemStack.EMPTY);
+public abstract class ICSerializableRecipe implements Recipe<Container> {
+    public static final Lazy<ItemStack> LAZY_EMPTY = Lazy.of(() -> ItemStack.EMPTY);
     protected final Lazy<ItemStack> outputDummy;
     protected final RecipeType<?> type;
     protected final ResourceLocation id;
@@ -40,6 +40,4 @@ import javax.annotation.Nonnull;
     @Override @Nonnull public RecipeSerializer<?> getSerializer() { return getICSerializer(); }
 
     @Override @Nonnull public RecipeType<?> getType() { return type; }
-
-    public static Lazy<ItemStack> of(ItemStack value) { return Lazy.of(() -> value); }
 }

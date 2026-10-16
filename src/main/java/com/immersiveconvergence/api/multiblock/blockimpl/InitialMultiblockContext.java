@@ -15,14 +15,8 @@ import net.minecraftforge.common.capabilities.Capability;
 import org.jetbrains.annotations.Nullable;
 import java.util.function.Supplier;
 
-public record InitialMultiblockContext<State extends IMultiblockState>(
-        BlockEntity masterBE,
-        MultiblockOrientation orientation,
-        BlockPos masterOffset
-) implements IInitialMultiblockContext<State> {
-    @Override public <T> CapabilityReference<T> getCapabilityAt(
-            Capability<T> capability, BlockPos posRelativeToMB, RelativeBlockFace face
-    ) { return getCapabilityAt(masterBE, orientation, masterOffset, capability, posRelativeToMB, face); }
+public record InitialMultiblockContext<State extends IMultiblockState>(BlockEntity masterBE, MultiblockOrientation orientation, BlockPos masterOffset) implements IInitialMultiblockContext<State> {
+    @Override public <T> CapabilityReference<T> getCapabilityAt(Capability<T> capability, BlockPos posRelativeToMB, RelativeBlockFace face) { return getCapabilityAt(masterBE, orientation, masterOffset, capability, posRelativeToMB, face); }
 
     @Override public Supplier<@Nullable Level> levelSupplier() { return masterBE::getLevel; }
 
@@ -30,10 +24,7 @@ public record InitialMultiblockContext<State extends IMultiblockState>(
 
     @Override public Runnable getSyncRunnable() { return () -> MultiblockContext.requestBESync(masterBE); }
 
-    public static <T> CapabilityReference<T> getCapabilityAt(
-            BlockEntity masterBE, MultiblockOrientation orientation, BlockPos masterOffset,
-            Capability<T> capability, BlockPos posRelativeToMB, RelativeBlockFace face
-    ) {
+    public static <T> CapabilityReference<T> getCapabilityAt(BlockEntity masterBE, MultiblockOrientation orientation, BlockPos masterOffset, Capability<T> capability, BlockPos posRelativeToMB, RelativeBlockFace face) {
         return CapabilityReference.forBlockEntityAt(masterBE, () -> {
             final BlockPos offset = orientation.getAbsoluteOffset(posRelativeToMB.subtract(masterOffset));
             final BlockPos pos = masterBE.getBlockPos().offset(offset);

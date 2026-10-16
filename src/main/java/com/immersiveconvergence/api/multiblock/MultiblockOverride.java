@@ -85,4 +85,10 @@ public final class MultiblockOverride {
         }
         return null;
     }
+
+    @Nullable public static CapabilityPosition resolve(ResourceLocation id, Capability<?> capability, CapabilityPosition position) {
+        MultiblockOverride override = get(id);
+        if (override == null || override.ignores(capability)) { return position; }
+        return override.map(capability, position);
+    }
 }

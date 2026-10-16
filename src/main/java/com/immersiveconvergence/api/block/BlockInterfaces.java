@@ -1,6 +1,7 @@
 package com.immersiveconvergence.api.block;
 
 import com.immersiveconvergence.core.lib.ICLib;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -25,23 +26,17 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.apache.commons.lang3.mutable.MutableObject;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-@SuppressWarnings({"unused", "RedundantSuppression"}) public class BlockInterfaces {
-    public BlockInterfaces() { }
+public class BlockInterfaces {
+    public BlockInterfaces() {}
 
     public interface IGeneralMultiblock extends IBlockStateProvider {
         @Nullable IGeneralMultiblock master();
-
-        default boolean isDummy() {
-            BlockState state = getState();
-            return !state.hasProperty(ModProperties.MULTIBLOCKSLAVE) || state.getValue(ModProperties.MULTIBLOCKSLAVE);
-        }
     }
 
     public interface IHasDummyBlocks extends IGeneralMultiblock {
@@ -149,13 +144,13 @@ import java.util.function.Consumer;
 
         default Direction getFacingForPlacement(BlockPlaceContext ctx) {
             Direction f = getFacingLimitation().getDirectionForPlacement(ctx);
-            if (mirrorFacingOnPlacement(ctx.getPlayer())) { return f.getOpposite(); }
+            if (mirrorFacingOnPlacement()) { return f.getOpposite(); }
             else { return f; }
         }
 
-        default boolean mirrorFacingOnPlacement(LivingEntity placer) { return false; }
+        default boolean mirrorFacingOnPlacement() { return false; }
 
-        default boolean canHammerRotate(Direction side, Vec3 hit, LivingEntity entity) { return true; }
+        default boolean canHammerRotate() { return true; }
 
         default void afterRotation() { }
     }

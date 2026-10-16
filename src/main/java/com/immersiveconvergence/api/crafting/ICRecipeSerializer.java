@@ -15,7 +15,7 @@ import net.minecraftforge.common.crafting.conditions.ICondition.IContext;
 import net.minecraftforge.common.util.Lazy;
 import javax.annotation.Nonnull;
 
-@SuppressWarnings("unused") public abstract class ICRecipeSerializer<R extends Recipe<?>> implements RecipeSerializer<R> {
+public abstract class ICRecipeSerializer<R extends Recipe<?>> implements RecipeSerializer<R> {
     public abstract ItemStack getIcon();
 
     public abstract R readFromJson(ResourceLocation recipeId, JsonObject json, IContext context);
@@ -27,7 +27,7 @@ import javax.annotation.Nonnull;
     protected static Lazy<ItemStack> readOutput(JsonElement outputObject) {
         if (outputObject.isJsonObject() && outputObject.getAsJsonObject().has("item")) { return Lazy.of(() -> ShapedRecipe.itemStackFromJson(outputObject.getAsJsonObject())); }
         ICIngredientWithSize outgredient = ICIngredientWithSize.deserialize(outputObject);
-        return Lazy.of(() -> ICUtils.preferredStack(outgredient.getMatchingStacks()));
+        return Lazy.of(() -> outgredient.hasNoMatchingItems() ? ItemStack.EMPTY : ICUtils.preferredStack(outgredient.getMatchingStacks()));
     }
 
     protected static Lazy<ItemStack> readLazyStack(FriendlyByteBuf buf) {
