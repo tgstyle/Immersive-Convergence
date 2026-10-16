@@ -49,6 +49,8 @@ import javax.annotation.Nullable;
 
     @Override public float getShadeBrightness(@Nonnull BlockState state, @Nonnull BlockGetter world, @Nonnull BlockPos pos) { return this.notNormalBlock ? 1.0F : super.getShadeBrightness(state, world, pos); }
 
+    @Override public boolean isCollisionShapeFullBlock(@Nonnull BlockState state, @Nonnull BlockGetter level, @Nonnull BlockPos pos) { return !this.notNormalBlock && super.isCollisionShapeFullBlock(state, level, pos); }
+
     @Override public boolean propagatesSkylightDown(@Nonnull BlockState state, @Nonnull BlockGetter reader, @Nonnull BlockPos pos) { return this.notNormalBlock || super.propagatesSkylightDown(state, reader, pos); }
 
     protected BlockState getInitDefaultState() {

@@ -33,7 +33,6 @@ public enum JadeFluidProvider implements IServerExtensionProvider<Object, Compou
         for (IFluidTank tank : context.getInternalTanks()) {
             if (tank == null) { continue; }
             FluidStack fs = tank.getFluid();
-            if (fs.isEmpty()) { continue; }
             list.add(FluidView.writeDefault(JadeFluidObject.of(fs.getFluid(), fs.getAmount(), fs.getTag()), tank.getCapacity()));
         }
         return list.isEmpty() ? null : List.of(new ViewGroup<>(list));

@@ -40,6 +40,7 @@ public class DisplayLines {
     public static Component describe(Line line) {
         if (line instanceof Text text) { return text.text(); }
         Progress progress = (Progress) line;
+        if (progress.suffix().equals("%")) { return Component.literal((progress.max() > 0 ? progress.value() * 100 / progress.max() : 0) + "%"); }
         return Component.literal(progress.value() + "/" + progress.max() + progress.suffix());
     }
 
