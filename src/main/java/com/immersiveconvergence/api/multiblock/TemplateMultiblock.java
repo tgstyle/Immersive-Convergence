@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
@@ -134,7 +135,7 @@ import javax.annotation.Nullable;
         BlockState newState = getBlock().defaultBlockState();
         newState = newState.setValue(ModProperties.MULTIBLOCKSLAVE, !offsetFromMaster.equals(Vec3i.ZERO));
         if (newState.hasProperty(ModProperties.MIRRORED)) { newState = newState.setValue(ModProperties.MIRRORED, mirrored); }
-        if (newState.hasProperty(ModProperties.FACING_HORIZONTAL)) { newState = newState.setValue(ModProperties.FACING_HORIZONTAL, clickDirection.getOpposite()); }
+        if (newState.hasProperty(BlockStateProperties.HORIZONTAL_FACING)) { newState = newState.setValue(BlockStateProperties.HORIZONTAL_FACING, clickDirection.getOpposite()); }
         if (newState.hasProperty(ModProperties.ACTIVE)) { newState = newState.setValue(ModProperties.ACTIVE, false); }
         world.setBlock(actualPos, newState, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
         BlockEntity curr = world.getBlockEntity(actualPos);

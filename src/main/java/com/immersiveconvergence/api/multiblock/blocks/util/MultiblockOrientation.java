@@ -11,6 +11,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.AABB;
@@ -25,7 +26,7 @@ public record MultiblockOrientation(Direction front, boolean mirrored) {
 
     public MultiblockOrientation(BlockState blockState, boolean mirrorable) {
         this(
-                blockState.getValue(ModProperties.FACING_HORIZONTAL),
+                blockState.getValue(BlockStateProperties.HORIZONTAL_FACING),
                 mirrorable && blockState.getValue(ModProperties.MIRRORED)
         );
     }

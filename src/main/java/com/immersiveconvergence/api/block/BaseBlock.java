@@ -137,8 +137,8 @@ import javax.annotation.Nullable;
     }
 
     @Nullable private Property<Direction> findFacingProperty(BlockState state) {
-        if (state.hasProperty(ModProperties.FACING_ALL)) { return ModProperties.FACING_ALL; }
-        else { return state.hasProperty(ModProperties.FACING_HORIZONTAL) ? ModProperties.FACING_HORIZONTAL : null; }
+        if (state.hasProperty(BlockStateProperties.FACING)) { return BlockStateProperties.FACING; }
+        else { return state.hasProperty(BlockStateProperties.HORIZONTAL_FACING) ? BlockStateProperties.HORIZONTAL_FACING : null; }
     }
 
     protected boolean canRotate() { return !this.getStateDefinition().getProperties().contains(ModProperties.MULTIBLOCKSLAVE); }

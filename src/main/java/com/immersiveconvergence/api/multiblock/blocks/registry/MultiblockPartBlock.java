@@ -25,6 +25,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -52,7 +53,7 @@ import javax.annotation.Nullable;
     @Override protected void createBlockStateDefinition(@Nonnull Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(ModProperties.MULTIBLOCKSLAVE);
-        builder.add(ModProperties.FACING_HORIZONTAL);
+        builder.add(BlockStateProperties.HORIZONTAL_FACING);
     }
 
     @Nullable @Override public BlockEntity newBlockEntity(@Nonnull BlockPos pos, @Nonnull BlockState state) {
