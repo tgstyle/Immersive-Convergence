@@ -79,7 +79,7 @@ public class ProbeIntegration {
         DisplayLines lines = new DisplayLines();
         context.addDisplayLines(level, lines);
         for (DisplayLines.Line line : lines.lines()) {
-            if (line instanceof DisplayLines.Text(Component text)) { probeInfo.text(text); }
+            if (line instanceof DisplayLines.Text(Component text)) { probeInfo.mcText(text); }
             else if (line instanceof DisplayLines.Progress progress) { addProgress(probeInfo, progress); }
         }
     }

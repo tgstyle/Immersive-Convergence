@@ -32,7 +32,7 @@ public enum JadeEnergyProvider implements IServerExtensionProvider<CompoundTag>,
         return List.of(new ViewGroup<>(list));
     }
 
-    @Override public List<ClientViewGroup<EnergyView>> getClientGroups(Accessor<?> accessor, List<ViewGroup<CompoundTag>> list) { return ClientViewGroup.map(list, tag -> EnergyView.read(tag, "RF"), null); }
+    @Override public List<ClientViewGroup<EnergyView>> getClientGroups(Accessor<?> accessor, List<ViewGroup<CompoundTag>> list) { return ClientViewGroup.map(list, tag -> EnergyView.read(tag, "IF"), null); }
 
     @Override public ResourceLocation getUid() { return ICLib.rl("energy"); }
 }
