@@ -33,10 +33,6 @@ public class RotorCreativeBlock extends ModEntityBlock<RotorCreativeBlockEntity>
 
     @Override @Nonnull public VoxelShape getShape(@Nonnull BlockState state, @Nonnull BlockGetter level, @Nonnull BlockPos pos, @Nonnull CollisionContext context) { return getRotorShape(state); }
 
-    @Override @Nonnull public VoxelShape getCollisionShape(@Nonnull BlockState state, @Nonnull BlockGetter level, @Nonnull BlockPos pos, @Nonnull CollisionContext context) { return getRotorShape(state); }
-
-    @Override public @Nonnull VoxelShape getOcclusionShape(@Nonnull BlockState state, @Nonnull BlockGetter level, @Nonnull BlockPos pos) { return getRotorShape(state); }
-
     private VoxelShape getRotorShape(BlockState state) {
         Direction facing = state.getValue(FACING);
         double minAlong = 0.0D;
