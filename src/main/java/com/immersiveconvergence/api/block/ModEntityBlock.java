@@ -25,6 +25,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -51,8 +52,8 @@ import javax.annotation.Nullable;
 
     @Override protected BlockState getInitDefaultState() {
         BlockState ret = super.getInitDefaultState();
-        if (ret.hasProperty(ModProperties.FACING_ALL)) { ret = ret.setValue(ModProperties.FACING_ALL, getDefaultFacing()); }
-        else if (ret.hasProperty(ModProperties.FACING_HORIZONTAL)) { ret = ret.setValue(ModProperties.FACING_HORIZONTAL, getDefaultFacing()); }
+        if (ret.hasProperty(BlockStateProperties.FACING)) { ret = ret.setValue(BlockStateProperties.FACING, getDefaultFacing()); }
+        else if (ret.hasProperty(BlockStateProperties.HORIZONTAL_FACING)) { ret = ret.setValue(BlockStateProperties.HORIZONTAL_FACING, getDefaultFacing()); }
         for (BooleanProperty defaultOff : DEFAULT_OFF) { if (ret.hasProperty(defaultOff)) { ret = ret.setValue(defaultOff, false); } }
         return ret;
     }

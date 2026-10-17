@@ -65,11 +65,9 @@ public class BaseFluid extends FlowingFluid {
 
     public BaseFluid(FluidEntry entry) { this.entry = entry; }
 
-    protected boolean isGaseous() { return getFluidType().getDensity() < 0; }
-
     @Nonnull @Override public Item getBucket() { return entry.getBucket(); }
 
-    @Override protected boolean canBeReplacedWith(@Nonnull FluidState fluidState, @Nonnull BlockGetter blockReader, @Nonnull BlockPos pos, @Nonnull Fluid fluidIn, @Nonnull Direction direction) { return (isGaseous() ? direction == Direction.UP : direction == Direction.DOWN) && !isSame(fluidIn); }
+    @Override protected boolean canBeReplacedWith(@Nonnull FluidState fluidState, @Nonnull BlockGetter blockReader, @Nonnull BlockPos pos, @Nonnull Fluid fluidIn, @Nonnull Direction direction) { return (getFluidType().isLighterThanAir() ? direction == Direction.UP : direction == Direction.DOWN) && !isSame(fluidIn); }
 
     @Override public boolean isSame(@Nonnull Fluid fluidIn) { return fluidIn == entry.getStill() || fluidIn == entry.getFlowing(); }
 
@@ -115,13 +113,13 @@ public class BaseFluid extends FlowingFluid {
 
     @Override public void tick(@Nonnull Level pLevel, @Nonnull BlockPos pPos, @Nonnull FluidState pState) {
         super.tick(pLevel, pPos, pState);
-        if (!pLevel.isClientSide && isGaseous() && pState.isSource()) { pLevel.setBlock(pPos, Blocks.AIR.defaultBlockState(), 3); }
+        if (!pLevel.isClientSide && getFluidType().isLighterThanAir() && pState.isSource()) { pLevel.setBlock(pPos, Blocks.AIR.defaultBlockState(), 3); }
     }
 
     @Override protected void spread(@Nonnull Level pLevel, @Nonnull BlockPos pPos, FluidState pState) {
         if (!pState.isEmpty()) {
             BlockState blockstate = pLevel.getBlockState(pPos);
-            Direction gravityDir = isGaseous() ? Direction.UP : Direction.DOWN;
+            Direction gravityDir = getFluidType().isLighterThanAir() ? Direction.UP : Direction.DOWN;
             BlockPos blockpos = pPos.relative(gravityDir);
             BlockState blockState = pLevel.getBlockState(blockpos);
             FluidState fluidState = this.getNewLiquid(pLevel, blockpos, blockState);
@@ -151,7 +149,7 @@ public class BaseFluid extends FlowingFluid {
     }
 
     @Override @Nonnull protected FluidState getNewLiquid(@Nonnull Level pLevel, @Nonnull BlockPos pPos, @Nonnull BlockState pBlockState) {
-        boolean isGaseous = isGaseous();
+        boolean isGaseous = getFluidType().isLighterThanAir();
         Direction gravityDir = isGaseous ? Direction.UP : Direction.DOWN;
         Direction antiGravityDir = isGaseous ? Direction.DOWN : Direction.UP;
         int i = 0;
@@ -219,9 +217,9 @@ public class BaseFluid extends FlowingFluid {
         if (pFluidState.getValue(FALLING)) {
             for (Direction direction1 : Direction.Plane.HORIZONTAL) {
                 mutable.setWithOffset(pPos, direction1);
-                Direction checkOffset = isGaseous() ? Direction.DOWN : Direction.UP;
+                Direction checkOffset = getFluidType().isLighterThanAir() ? Direction.DOWN : Direction.UP;
                 if (this.isSolidFace(pBlockReader, mutable, direction1) || this.isSolidFace(pBlockReader, mutable.relative(checkOffset), direction1)) {
-                    double yAdd = isGaseous() ? 6.0D : -6.0D;
+                    double yAdd = getFluidType().isLighterThanAir() ? 6.0D : -6.0D;
                     vec3 = vec3.normalize().add(0.0D, yAdd, 0.0D);
                     break;
                 }
@@ -244,7 +242,7 @@ public class BaseFluid extends FlowingFluid {
     }
 
     private boolean myIsHole(BlockGetter pLevel, Fluid pFluid, BlockPos pPos, BlockState pState, BlockPos pTargetPos, BlockState pTargetState) {
-        Direction dir = isGaseous() ? Direction.UP : Direction.DOWN;
+        Direction dir = getFluidType().isLighterThanAir() ? Direction.UP : Direction.DOWN;
         if (!this.myCanPassThroughWall(dir, pLevel, pPos, pState, pTargetPos, pTargetState)) { return false; }
         else { return pTargetState.getFluidState().getType().isSame(this) || this.myCanHoldFluid(pLevel, pTargetPos, pTargetState, pFluid); }
     }
@@ -287,7 +285,7 @@ public class BaseFluid extends FlowingFluid {
                 FluidState fluidstate = pair.getSecond();
                 if (this.myCanPassThrough(pLevel, this.getFlowing(), pPos, pState, direction, blockpos, blockstate, fluidstate)) {
                     boolean flag = pHoleCache.computeIfAbsent(short1, (k) -> {
-                        BlockPos blockPos1 = blockpos.relative(isGaseous() ? Direction.UP : Direction.DOWN);
+                        BlockPos blockPos1 = blockpos.relative(getFluidType().isLighterThanAir() ? Direction.UP : Direction.DOWN);
                         BlockState blockState1 = pLevel.getBlockState(blockPos1);
                         return this.myIsHole(pLevel, this.getFlowing(), blockpos, blockstate, blockPos1, blockState1);
                     });
@@ -322,7 +320,7 @@ public class BaseFluid extends FlowingFluid {
             FluidState fluidState1 = this.getNewLiquid(pLevel, blockpos, blockState);
             if (this.myCanPassThrough(pLevel, fluidState1.getType(), pPos, pState, direction, blockpos, blockState, fluidstate)) {
                 boolean flag = short2booleanmap.computeIfAbsent(short1, (k) -> {
-                    BlockPos blockPos1 = blockpos.relative(isGaseous() ? Direction.UP : Direction.DOWN);
+                    BlockPos blockPos1 = blockpos.relative(getFluidType().isLighterThanAir() ? Direction.UP : Direction.DOWN);
                     BlockState blockState1 = pLevel.getBlockState(blockPos1);
                     return this.myIsHole(pLevel, this.getFlowing(), blockpos, blockState, blockPos1, blockState1);
                 });
