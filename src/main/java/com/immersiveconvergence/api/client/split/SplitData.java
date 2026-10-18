@@ -34,13 +34,12 @@ public record SplitData(Set<Vec3i> parts, Vec3i size) {
         TemplateMultiblock.TemplateData templateData;
         try { templateData = template.getTemplate(level); }
         catch (RuntimeException e) { return null; }
-        Vec3i templateSize = templateData.template().getSize();
         BlockPos master = template.getMasterFromOriginOffset();
         List<Vec3i> parts = new ArrayList<>(templateData.blocksWithoutAir().size());
         for (StructureBlockInfo info : templateData.blocksWithoutAir()) {
-            BlockPos pos = info.pos();
-            if (mirrored) { pos = new BlockPos(templateSize.getX() - pos.getX() - 1, pos.getY(), pos.getZ()); }
-            parts.add(pos.subtract(master));
+            BlockPos pos = info.pos().subtract(master);
+            if (mirrored) { pos = new BlockPos(-pos.getX(), pos.getY(), pos.getZ()); }
+            parts.add(pos);
         }
         if (parts.isEmpty()) { return null; }
         return fromParts(parts);
