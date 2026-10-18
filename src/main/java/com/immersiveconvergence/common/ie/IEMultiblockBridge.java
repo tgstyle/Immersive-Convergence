@@ -5,6 +5,7 @@ import com.immersiveconvergence.api.multiblock.MultiblockHandler.IMultiblock;
 
 import blusunrize.immersiveengineering.api.multiblocks.ClientMultiblocks.MultiblockManualData;
 import blusunrize.immersiveengineering.api.multiblocks.MultiblockHandler;
+import blusunrize.immersiveengineering.api.multiblocks.TemplateMultiblock;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockBEHelperMaster;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.logic.IMultiblockBE;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.registry.MultiblockPartBlock;
@@ -37,7 +38,7 @@ import java.util.function.Predicate;
 public final class IEMultiblockBridge {
     private IEMultiblockBridge() {}
 
-    public static void register(IMultiblock multiblock) { MultiblockHandler.registerMultiblock(new Adapter(multiblock)); }
+    public static void register(IMultiblock multiblock) { MultiblockHandler.registerMultiblock(multiblock instanceof com.immersiveconvergence.api.multiblock.TemplateMultiblock template ? new TemplateAdapter(template) : new Adapter(multiblock)); }
 
     public static ItemStack pickBlock(BlockState state) { return Utils.getPickBlock(state); }
 
@@ -91,6 +92,50 @@ public final class IEMultiblockBridge {
         @Override public void disassemble(Level world, BlockPos startPos, boolean mirrored, Direction clickDirectionAtCreation) { multiblock.disassemble(world, startPos, mirrored, clickDirectionAtCreation); }
 
         @Override public BlockPos getTriggerOffset() { return multiblock.getTriggerOffset(); }
+
+        @Override public void initializeClient(Consumer<MultiblockManualData> consumer) { consumer.accept(new ManualData(ClientMultiblocks.get(multiblock))); }
+
+        @Override public Component getDisplayName() { return multiblock.getDisplayName(); }
+
+        @Override public Block getBlock() { return multiblock.getBlock(); }
+    }
+
+    private static final class TemplateAdapter extends TemplateMultiblock {
+        private final com.immersiveconvergence.api.multiblock.TemplateMultiblock multiblock;
+
+        private TemplateAdapter(com.immersiveconvergence.api.multiblock.TemplateMultiblock multiblock) {
+            super(multiblock.getUniqueName(), multiblock.getMasterFromOriginOffset(), multiblock.getTriggerOffset(), new BlockPos(multiblock.getSize(null)));
+            this.multiblock = multiblock;
+        }
+
+        @Override public ResourceLocation getTemplateLocation() { return multiblock.getTemplateLocation(); }
+
+        @Nonnull @Override public TemplateData getTemplate(@Nonnull Level level) {
+            com.immersiveconvergence.api.multiblock.TemplateMultiblock.TemplateData data = multiblock.getTemplate(level);
+            return new TemplateData(data.template(), data.blocksWithoutAir(), data.triggerState());
+        }
+
+        @Override public ResourceLocation getUniqueName() { return multiblock.getUniqueName(); }
+
+        @Override public boolean isBlockTrigger(BlockState state, Direction side, @Nonnull Level world) { return multiblock.isBlockTrigger(state, side, world); }
+
+        @Override public boolean createStructure(Level world, BlockPos pos, Direction side, Player player) { return multiblock.createStructure(world, pos, side, player); }
+
+        @Override protected void replaceStructureBlock(StructureBlockInfo info, Level world, BlockPos actualPos, boolean mirrored, Direction clickDirection, Vec3i offsetFromMaster) {}
+
+        @Override public BlockPos getMasterFromOriginOffset() { return multiblock.getMasterFromOriginOffset(); }
+
+        @Override public List<StructureBlockInfo> getStructure(@Nonnull Level world) { return multiblock.getStructure(world); }
+
+        @Override public Vec3i getSize(@Nonnull Level world) { return multiblock.getSize(world); }
+
+        @Override public void disassemble(Level world, BlockPos startPos, boolean mirrored, Direction clickDirectionAtCreation) { multiblock.disassemble(world, startPos, mirrored, clickDirectionAtCreation); }
+
+        @Override public BlockPos getTriggerOffset() { return multiblock.getTriggerOffset(); }
+
+        @Override public boolean canBeMirrored() { return multiblock.canBeMirrored(); }
+
+        @Override public float getManualScale() { return multiblock.getManualScale(); }
 
         @Override public void initializeClient(Consumer<MultiblockManualData> consumer) { consumer.accept(new ManualData(ClientMultiblocks.get(multiblock))); }
 
