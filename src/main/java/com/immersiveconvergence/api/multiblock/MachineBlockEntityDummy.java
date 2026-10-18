@@ -17,7 +17,7 @@ public class MachineBlockEntityDummy<State extends IMultiblockState> extends Mul
     private final MachineBlockEntityCommon<State> common;
     private boolean disassembling = false;
 
-    public MachineBlockEntityDummy(BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState, MultiblockRegistration<State> multiblock) { super(type, worldPosition, blockState, multiblock); this.common = new MachineBlockEntityCommon<>(multiblock, this::getHelper, this::getLevel); }
+    public MachineBlockEntityDummy(BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState, MultiblockRegistration<State> multiblock) { super(type, worldPosition, blockState, multiblock); this.common = new MachineBlockEntityCommon<>(multiblock, this::getHelper); }
 
     public void markDisassembling() { this.disassembling = true; }
 
