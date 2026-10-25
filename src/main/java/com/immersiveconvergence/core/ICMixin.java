@@ -11,12 +11,12 @@ import zone.rong.mixinbooter.IEarlyMixinLoader;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.jar.JarFile;
 
 @IFMLLoadingPlugin.Name("ICMixin")
@@ -30,7 +30,7 @@ public class ICMixin implements IFMLLoadingPlugin, IEarlyMixinLoader {
     private static final String IE_PROBE_CLASS = "blusunrize/immersiveengineering/common/blocks/BlockIEBase.class";
     private static final String IP_PROBE_CLASS = "flaxbeard/immersivepetroleum/common/blocks/BlockIPBase.class";
     private static final String[] PROBE_CLASSES = {IE_PROBE_CLASS, IP_PROBE_CLASS};
-    private static Set<String> installedProbes;
+    private static Map<String, File> installedProbes;
 
     @Override public String[] getASMTransformerClass() { return new String[0]; }
 
@@ -52,15 +52,27 @@ public class ICMixin implements IFMLLoadingPlugin, IEarlyMixinLoader {
     }
 
     private static boolean installed(Context context, String modId, String probeClass) {
-        if (context.isModPresent(modId)) { return true; }
+        boolean present = context.isModPresent(modId);
+        boolean onLoader = Launch.classLoader.findResource(probeClass) != null;
+        if (present && onLoader) { return true; }
         if (installedProbes == null) { installedProbes = scanModDirectories(); }
-        boolean found = installedProbes.contains(probeClass);
-        if (found) { LOGGER.info("{} is installed but was not listed at the coremod phase; queueing its early mixins anyway.", modId); }
-        return found;
+        File jar = installedProbes.get(probeClass);
+        if (jar == null) { return present; }
+        if (!present) { LOGGER.info("{} is installed but was not listed at the coremod phase; queueing its early mixins anyway.", modId); }
+        if (!onLoader) { addToClassLoader(jar); }
+        return true;
     }
 
-    private static Set<String> scanModDirectories() {
-        Set<String> found = new HashSet<>();
+    private static void addToClassLoader(File jar) {
+        try {
+            Launch.classLoader.addURL(jar.toURI().toURL());
+            LOGGER.info("Added {} to the class loader so its early mixin targets resolve.", jar.getName());
+        }
+        catch (MalformedURLException e) { LOGGER.warn("Could not add {} to the class loader.", jar.getName(), e); }
+    }
+
+    private static Map<String, File> scanModDirectories() {
+        Map<String, File> found = new HashMap<>();
         File mods = new File(Launch.minecraftHome != null ? Launch.minecraftHome : new File("."), "mods");
         File[] nested = mods.listFiles(File::isDirectory);
         collectProbes(mods, found);
@@ -68,14 +80,14 @@ public class ICMixin implements IFMLLoadingPlugin, IEarlyMixinLoader {
         return found;
     }
 
-    private static void collectProbes(File directory, Set<String> found) {
+    private static void collectProbes(File directory, Map<String, File> found) {
         File[] files = directory.listFiles();
         if (files == null) { return; }
         for (File file : files) {
             if (!file.isFile() || !file.getName().toLowerCase(Locale.ROOT).endsWith(".jar")) { continue; }
             try (JarFile jar = new JarFile(file)) {
                 for (String probe : PROBE_CLASSES) {
-                    if (jar.getEntry(probe) != null) { found.add(probe); }
+                    if (jar.getEntry(probe) != null) { found.putIfAbsent(probe, file); }
                 }
             }
             catch (IOException e) { LOGGER.debug("Could not read {} while looking for installed mods.", file.getName(), e); }
