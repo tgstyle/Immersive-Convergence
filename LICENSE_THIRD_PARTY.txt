@@ -4,7 +4,8 @@ This mod contains code derived from the third-party projects listed below. Each 
 covered by its own license, reproduced in full here together with the copyright
 notice that license requires.
 
-See LICENSE for the GPLv3 license that applies to this mod's own source code, and
+See COPYING.LESSER for the LGPLv3 license that applies to this mod's own source code
+(it builds on the GPLv3 in LICENSE), and
 LICENSE_ASSETS.txt for asset terms.
 
 ---------------------------------------------------------------------
