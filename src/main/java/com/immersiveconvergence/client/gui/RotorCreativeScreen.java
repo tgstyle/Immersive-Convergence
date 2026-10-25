@@ -4,7 +4,6 @@ import com.immersiveconvergence.common.blocks.logic.RotorCreativeBlockEntity;
 import com.immersiveconvergence.api.network.MessageTileSync;
 import com.immersiveconvergence.core.network.PacketHandler;
 import com.immersiveconvergence.core.lib.ICLib;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -53,7 +52,7 @@ public class RotorCreativeScreen extends AbstractContainerScreen<RotorCreativeMe
         CompoundTag message = new CompoundTag();
         message.putInt("rpm", r);
         PacketHandler.sendToServer(new MessageTileSync(tile.getBlockPos(), message));
-        Minecraft.getInstance().setScreen(null);
+        onClose();
     }
     @Override public void containerTick() {
         super.containerTick();
