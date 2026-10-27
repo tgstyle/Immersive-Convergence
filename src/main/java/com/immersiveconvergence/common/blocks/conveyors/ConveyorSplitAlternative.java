@@ -88,36 +88,20 @@ public class ConveyorSplitAlternative extends ConveyorBasicAlternative {
     @Override public void onEntityCollision(TileEntity tile, Entity entity, EnumFacing facing) {
         if (mode == SplitMode.STOP) return;
 
-        super.onEntityCollision(tile, entity, facing);
-
         World world = tile.getWorld();
+        BlockPos pos = tile.getPos();
+        double height = entity.posY - pos.getY();
+        boolean onBelt = height >= 0D && height < HORIZONTAL_HEIGHT_LIMIT && !(entity instanceof EntityPlayer && entity.isSneaking());
+        if (onBelt) assignRedirect(tile, entity, facing);
+
+        super.onEntityCollision(tile, entity, facing);
 
         if (entity instanceof EntityItem && !world.isRemote && world.getTotalWorldTime() - lastUpdateTick > 4) {
             lastUpdateTick = world.getTotalWorldTime();
             tile.markDirty();
         }
 
-        BlockPos pos = tile.getPos();
-        double height = entity.posY - pos.getY();
-        if (height < 0D || height >= HORIZONTAL_HEIGHT_LIMIT || (entity instanceof EntityPlayer && entity.isSneaking())) return;
-
-        String nbtKey = getNBTKey(tile);
-        boolean hasRedirect = entity.getEntityData().hasKey(nbtKey);
-
-        if (!hasRedirect) {
-            EnumFacing output;
-            if (mode == SplitMode.SPLIT) {
-                if (nextOutput == null) nextOutput = facing.rotateYCCW();
-                output = nextOutput;
-                nextOutput = nextOutput.getOpposite();
-            } else if (mode == SplitMode.ALL_LEFT) {
-                output = facing.rotateYCCW();
-            } else {
-                output = facing.rotateY();
-            }
-            entity.getEntityData().setInteger(nbtKey, output.ordinal());
-            tile.markDirty();
-        }
+        if (!onBelt) return;
 
         Vec3d vec = getDirection(tile, entity, facing);
         entity.motionX = vec.x;
@@ -138,34 +122,30 @@ public class ConveyorSplitAlternative extends ConveyorBasicAlternative {
         } else {
             ConveyorHandler.applyMagnetSupression(entity, (IConveyorTile)tile);
         }
+    }
 
-        if (entity instanceof EntityItem && entity.ticksExisted > 1) {
-            EntityItem item = (EntityItem)entity;
-            if (!contact) item.setNoDespawn();
-            else handleInsertion(tile, item, facing, getConveyorDirection(), distX, distZ);
+    private void assignRedirect(TileEntity tile, Entity entity, EnumFacing facing) {
+        String nbtKey = getNBTKey(tile);
+        if (entity.getEntityData().hasKey(nbtKey)) return;
+        EnumFacing output;
+        if (mode == SplitMode.SPLIT) {
+            if (nextOutput == null) nextOutput = facing.rotateYCCW();
+            output = nextOutput;
+            nextOutput = nextOutput.getOpposite();
+        } else if (mode == SplitMode.ALL_LEFT) {
+            output = facing.rotateYCCW();
+        } else {
+            output = facing.rotateY();
         }
+        entity.getEntityData().setInteger(nbtKey, output.ordinal());
+        tile.markDirty();
     }
 
     @Override public void onItemDeployed(TileEntity tile, EntityItem entity, EnumFacing facing) {
         if (mode == SplitMode.STOP) return;
 
         runTimer = IDLE_TIME_TICKS;
-
-        String nbtKey = getNBTKey(tile);
-        if (!entity.getEntityData().hasKey(nbtKey)) {
-            EnumFacing output;
-            if (mode == SplitMode.SPLIT) {
-                if (nextOutput == null) nextOutput = facing.rotateYCCW();
-                output = nextOutput;
-                nextOutput = nextOutput.getOpposite();
-            } else if (mode == SplitMode.ALL_LEFT) {
-                output = facing.rotateYCCW();
-            } else {
-                output = facing.rotateY();
-            }
-            entity.getEntityData().setInteger(nbtKey, output.ordinal());
-            tile.markDirty();
-        }
+        assignRedirect(tile, entity, facing);
 
         Vec3d vec = getDirection(tile, entity, facing);
         entity.motionX = vec.x;
