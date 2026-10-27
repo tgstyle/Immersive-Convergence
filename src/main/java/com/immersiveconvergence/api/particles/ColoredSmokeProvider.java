@@ -7,5 +7,5 @@ import net.minecraft.client.particle.SpriteSet;
 import javax.annotation.Nonnull;
 
 public record ColoredSmokeProvider(SpriteSet sprites) implements ParticleProvider<ColoredSmoke> {
-    @Override public Particle createParticle(ColoredSmoke data, @Nonnull ClientLevel level, double x, double y, double z, double velX, double velY, double velZ) { return new ColoredSmokeParticle(level, x, y, z, velX, velY, velZ, data.color(), data.collideHorizontal(), data.collideVertical(), this.sprites); }
+    @Override public Particle createParticle(ColoredSmoke data, @Nonnull ClientLevel level, double x, double y, double z, double velX, double velY, double velZ) { return new ColoredSmokeParticle(level, x, y, z, velX, velY, velZ, data.color(), data.collideHorizontal(), data.collideVertical(), data.scale(), this.sprites); }
 }

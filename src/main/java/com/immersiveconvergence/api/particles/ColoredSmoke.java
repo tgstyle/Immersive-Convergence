@@ -13,13 +13,14 @@ import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 
 public record ColoredSmoke(Vector3f color, boolean collideHorizontal,
-                           boolean collideVertical) implements ParticleOptions {
+                           boolean collideVertical, float scale) implements ParticleOptions {
     public static final MapCodec<ColoredSmoke> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
             Codec.FLOAT.fieldOf("r").forGetter(d -> d.color.x()),
             Codec.FLOAT.fieldOf("g").forGetter(d -> d.color.y()),
             Codec.FLOAT.fieldOf("b").forGetter(d -> d.color.z()),
             Codec.BOOL.optionalFieldOf("collide_horizontal", false).forGetter(d -> d.collideHorizontal),
-            Codec.BOOL.optionalFieldOf("collide_vertical", false).forGetter(d -> d.collideVertical)
+            Codec.BOOL.optionalFieldOf("collide_vertical", false).forGetter(d -> d.collideVertical),
+            Codec.FLOAT.optionalFieldOf("scale", 1.0F).forGetter(d -> d.scale)
     ).apply(inst, ColoredSmoke::new));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ColoredSmoke> STREAM_CODEC = StreamCodec.composite(
@@ -28,6 +29,7 @@ public record ColoredSmoke(Vector3f color, boolean collideHorizontal,
             ByteBufCodecs.FLOAT, d -> d.color.z(),
             ByteBufCodecs.BOOL, d -> d.collideHorizontal,
             ByteBufCodecs.BOOL, d -> d.collideVertical,
+            ByteBufCodecs.FLOAT, d -> d.scale,
             ColoredSmoke::new
     );
 
@@ -35,7 +37,9 @@ public record ColoredSmoke(Vector3f color, boolean collideHorizontal,
 
     public ColoredSmoke(float r, float g, float b) { this(r, g, b, false, false); }
 
-    public ColoredSmoke(float r, float g, float b, boolean collideHorizontal, boolean collideVertical) { this(new Vector3f(r, g, b), collideHorizontal, collideVertical); }
+    public ColoredSmoke(float r, float g, float b, boolean collideHorizontal, boolean collideVertical) { this(r, g, b, collideHorizontal, collideVertical, 1.0F); }
+
+    public ColoredSmoke(float r, float g, float b, boolean collideHorizontal, boolean collideVertical, float scale) { this(new Vector3f(r, g, b), collideHorizontal, collideVertical, scale); }
 
     @Override @Nonnull public ParticleType<?> getType() { return typeSupplier.get(); }
 }

@@ -17,12 +17,12 @@ public class ColoredSmokeParticle extends TextureSheetParticle {
     private boolean collideHorizontal;
     private boolean collideVertical;
 
-    public ColoredSmokeParticle(ClientLevel level, double x, double y, double z, double velX, double velY, double velZ, Vector3f color, boolean collideHorizontal, boolean collideVertical, SpriteSet sprites) {
+    public ColoredSmokeParticle(ClientLevel level, double x, double y, double z, double velX, double velY, double velZ, Vector3f color, boolean collideHorizontal, boolean collideVertical, float scale, SpriteSet sprites) {
         super(level, x, y, z);
         this.rCol = color.x();
         this.gCol = color.y();
         this.bCol = color.z();
-        this.quadSize *= 3.0F;
+        this.quadSize *= 3.0F * scale;
         this.lifetime = (int)(80.0D / (level.random.nextFloat() * 0.5D + 0.5D));
         this.friction = 0.98F;
         this.speedUpWhenYMotionIsBlocked = false;
