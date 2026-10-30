@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(BlockRenderDispatcher.class)
 public abstract class BlockRenderDispatcherMixin {
-    @ModifyVariable(method = "renderBreakingTexture(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/BlockAndTintGetter;Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/neoforged/neoforge/client/model/data/ModelData;)V", at = @At(value = "STORE", ordinal = 0), remap = false, name = "bakedmodel")
+    @ModifyVariable(method = "renderBreakingTexture(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/BlockAndTintGetter;Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/neoforged/neoforge/client/model/data/ModelData;)V", at = @At(value = "STORE", ordinal = 0), ordinal = 0, remap = false)
     private BakedModel ic$useFullBlockModelForDamage(BakedModel bakedmodel, BlockState state, BlockPos pos, BlockAndTintGetter level) {
         if (state.getBlock() instanceof MachineMultiblockPartBlock) {
             BlockModelShaper modelShapes = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper();
