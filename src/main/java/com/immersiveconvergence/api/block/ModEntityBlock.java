@@ -1,6 +1,8 @@
 package com.immersiveconvergence.api.block;
 
 import com.immersiveconvergence.api.multiblock.util.DirectionUtils;
+import com.immersiveconvergence.api.wires.ICWires;
+import com.immersiveconvergence.api.wires.IICConnector;
 
 import java.util.Collection;
 import java.util.List;
@@ -178,6 +180,7 @@ import javax.annotation.Nullable;
             boolean b = ((BlockInterfaces.IPlayerInteraction) tile).interact(side, player, hand, heldItem, hitX, hitY, hitZ);
             if (b) { return InteractionResult.SUCCESS; }
         }
+        if (tile instanceof IICConnector && ICWires.isWireCoil(heldItem)) { return InteractionResult.PASS; }
         if (tile instanceof MenuProvider menuProvider && hand == InteractionHand.MAIN_HAND && !player.isShiftKeyDown()) {
             if (player instanceof ServerPlayer serverPlayer) {
                 if (menuProvider instanceof IMasterMenuProvider<?> interaction) {

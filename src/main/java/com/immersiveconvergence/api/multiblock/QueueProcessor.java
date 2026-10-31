@@ -4,7 +4,7 @@ import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockBEHelperMaster;
 import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockBE;
 import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockPartBlock;
-import com.immersiveconvergence.common.ie.IEMultiblockBridge;
+import com.immersiveconvergence.api.bridge.ICBridges;
 import com.immersiveconvergence.core.ICCommonConfig;
 import com.immersiveconvergence.core.lib.ICLib;
 
@@ -92,7 +92,7 @@ import java.util.function.Function;
     @SubscribeEvent public static void onBlockBreak(BlockEvent.BreakEvent event) {
         if (event.getLevel().isClientSide() || event.getPlayer() instanceof FakePlayer) { return; }
         Block block = event.getState().getBlock();
-        if (!(block instanceof MultiblockPartBlock) && !(ICMods.immersiveEngineering() && IEMultiblockBridge.isPartBlock(block))) { return; }
+        if (!(block instanceof MultiblockPartBlock) && !(ICMods.immersiveEngineering() && ICBridges.multiblock().isPartBlock(block))) { return; }
         currentlyBreakingPos = event.getPos().immutable();
         sneakBreaking = event.getPlayer().isShiftKeyDown();
     }
@@ -231,7 +231,7 @@ import java.util.function.Function;
                     if (level.getBlockState(actual).getBlock() != partBlock) { continue; }
                     BlockEntity part = level.getBlockEntity(actual);
                     if (part instanceof IMultiblockBE<?> be && !(be.getHelper() instanceof IMultiblockBEHelperMaster) && cell.equals(be.getHelper().getPositionInMB())) { strays.add(actual); }
-                    else if (ICMods.immersiveEngineering() && IEMultiblockBridge.isStrayDummy(part, cell)) { strays.add(actual); }
+                    else if (ICMods.immersiveEngineering() && ICBridges.multiblock().isStrayDummy(part, cell)) { strays.add(actual); }
                 }
             }
         }
@@ -247,7 +247,7 @@ import java.util.function.Function;
 
     private static void markHelperDisassembling(@Nullable BlockEntity be) {
         if (be instanceof IMultiblockBE<?> multiblockBE) { multiblockBE.getHelper().markDisassembling(); }
-        else if (ICMods.immersiveEngineering()) { IEMultiblockBridge.markDisassembling(be); }
+        else if (ICMods.immersiveEngineering()) { ICBridges.multiblock().markDisassembling(be); }
     }
 
     @SubscribeEvent public static void onServerTick(TickEvent.ServerTickEvent event) {

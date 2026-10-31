@@ -1,6 +1,7 @@
 package com.immersiveconvergence;
 
 import com.immersiveconvergence.api.ICMods;
+import com.immersiveconvergence.api.bridge.ICBridges;
 import com.immersiveconvergence.api.capability.HeatCapabilities;
 import com.immersiveconvergence.api.capability.IHeatConsumer;
 import com.immersiveconvergence.api.capability.IHeatProvider;
@@ -13,6 +14,11 @@ import com.immersiveconvergence.api.loot.LootEntryTypes;
 import com.immersiveconvergence.api.multiblock.MultiblockRegistry;
 import com.immersiveconvergence.core.compat.IEClearTanks;
 import com.immersiveconvergence.core.compat.IPClearTanks;
+import com.immersiveconvergence.api.wires.ICWireType;
+import com.immersiveconvergence.api.wires.ICWires;
+import com.immersiveconvergence.common.bridge.ICBridgeService;
+import com.immersiveconvergence.common.energy.wires.ICWireService;
+import com.immersiveconvergence.common.ie.IEWireBridge;
 import com.immersiveconvergence.core.compat.computercraft.ICComputerCraft;
 import com.immersiveconvergence.core.ICClientConfig;
 import com.immersiveconvergence.core.ICCommonConfig;
@@ -40,6 +46,7 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
@@ -47,9 +54,12 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
     public static final CommonProxy proxy = DistExecutor.safeRunForDist(() -> ClientProxySupplier::get, () -> CommonProxy::new);
 
     public ImmersiveConvergence(FMLJavaModLoadingContext context) {
+        ICWires.install(new ICWireService());
+        ICBridges.install(new ICBridgeService());
         IEventBus modEventBus = context.getModEventBus();
         CraftingHelper.register(ICIEEnabledCondition.Serializer.INSTANCE);
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(this::loadComplete);
         modEventBus.addListener(this::enqueueIMC);
         modEventBus.addListener(this::registerCapabilities);
         if (ICMods.computerCraft()) { ICComputerCraft.init(); }
@@ -71,8 +81,18 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
     private void commonSetup(final FMLCommonSetupEvent event) {
         ICLib.IC_LOGGER.info("HELLO FROM COMMON SETUP");
         event.enqueueWork(PacketHandler::initialize);
-        if (ICMods.immersiveEngineering()) { IEClearTanks.register(); }
+        if (ICMods.immersiveEngineering()) {
+            IEClearTanks.register();
+            event.enqueueWork(IEWireBridge::registerWireTypes);
+        }
         if (ICMods.immersivePetroleum()) { IPClearTanks.register(); }
+    }
+
+    private void loadComplete(final FMLLoadCompleteEvent event) {
+        event.enqueueWork(() -> {
+            if (ICMods.immersiveEngineering()) { IEWireBridge.adoptWireTypes(); }
+            ICWireType.freeze();
+        });
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event) {

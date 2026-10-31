@@ -1,7 +1,7 @@
 package com.immersiveconvergence.api.manual;
 
 import com.immersiveconvergence.api.ICMods;
-import com.immersiveconvergence.common.ie.IEManualBridge;
+import com.immersiveconvergence.api.bridge.ICBridges;
 
 import net.minecraft.resources.ResourceLocation;
 import java.util.function.Function;
@@ -16,18 +16,18 @@ public final class ICManual {
     public static ICManualCategory ieCategory(String name, int priority) { return category(ICMods.ie(name), priority); }
 
     public static void addEntry(ICManualCategory category, ResourceLocation file) {
-        if (ICMods.immersiveEngineering()) { IEManualBridge.addEntry(category, file); }
+        if (ICMods.immersiveEngineering()) { ICBridges.integration().addManualEntry(category, file); }
     }
 
     public static void addConfigGetter(Function<String, Object> getter) {
-        if (ICMods.immersiveEngineering()) { IEManualBridge.addConfigGetter(getter); }
+        if (ICMods.immersiveEngineering()) { ICBridges.integration().addManualConfigGetter(getter); }
     }
 
     public static void reset() {
-        if (ICMods.immersiveEngineering()) { IEManualBridge.reset(); }
+        if (ICMods.immersiveEngineering()) { ICBridges.integration().resetManual(); }
     }
 
     public static void reload() {
-        if (ICMods.immersiveEngineering()) { IEManualBridge.reload(); }
+        if (ICMods.immersiveEngineering()) { ICBridges.integration().reloadManual(); }
     }
 }

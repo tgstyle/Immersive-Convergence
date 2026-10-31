@@ -17,7 +17,7 @@ public final class ICIEEnabledCondition implements ICondition {
 
     @Override public ResourceLocation getID() { return NAME; }
 
-    @Override public boolean test(@Nonnull IContext context) { return ICMods.immersiveEngineering(); }
+    @Override public boolean test(@Nonnull IContext context) { return ICMods.ieContent(); }
 
     @Override public String toString() { return "ie_enabled"; }
 

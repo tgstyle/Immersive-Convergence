@@ -46,5 +46,15 @@ public class ICLanguage extends LanguageProvider {
         add("config.jade.plugin_immersiveconvergence.multiblock_icon", "Multiblock Icons");
         add("chat.immersiveconvergence.info.rsControl.invertedOn", "Redstone control: Inverted");
         add("chat.immersiveconvergence.info.rsControl.invertedOff", "Redstone control: Not inverted");
+        add("chat.immersiveconvergence.info.wire.coilTooShort", "The coil does not hold enough wire");
+        add("chat.immersiveconvergence.info.wire.duplicate", "These two points are already wired");
+        add("chat.immersiveconvergence.info.wire.invalidPoint", "The other end is no longer a connector");
+        add("chat.immersiveconvergence.info.wire.obstructed", "Something is in the wire's way");
+        add("death.attack.immersiveconvergence.wire_shock", "%1$s was electrocuted by a wire");
+        add("chat.immersiveconvergence.info.wire.sameConnector", "A wire cannot end on the block it starts from");
+        add("chat.immersiveconvergence.info.wire.tooFar", "The wire would be longer than this type allows");
+        add("chat.immersiveconvergence.info.wire.unloaded", "The wire's path or its other end is not loaded");
+        add("chat.immersiveconvergence.info.wire.wrongCable", "This connector does not take this wire");
+        add("chat.immersiveconvergence.info.wire.wrongDimension", "The other end of this wire is in another dimension");
     }
 }

@@ -1,11 +1,17 @@
 package com.immersiveconvergence.api.multiblock;
 
+import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.core.lib.ICLib;
 
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.Tag;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.FileToIdConverter;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraftforge.fml.ModList;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -18,18 +24,44 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 public abstract class GenericShape implements Function<BlockPos, VoxelShape> {
     static final String STRUCTURE_FOLDER = "structures/multiblocks/";
+    private static final String MULTIBLOCK_FOLDER = "multiblocks/";
+    private static final String IFAB_FOLDER = "ifab/";
+    private static final FileToIdConverter STRUCTURES = new FileToIdConverter("structures", ".nbt");
+    private static final Map<ResourceManager, Map<ResourceLocation, ResourceLocation>> SOURCES = Collections.synchronizedMap(new WeakHashMap<>());
+
+    static String structureFile(String multiblockName) { return STRUCTURE_FOLDER + (ICMods.immersiveEngineering() ? "" : IFAB_FOLDER) + multiblockName + ".nbt"; }
+
+    static ResourceLocation templateSource(ResourceManager manager, ResourceLocation loc) {
+        if (ICMods.immersiveEngineering() || !loc.getPath().startsWith(MULTIBLOCK_FOLDER)) { return loc; }
+        return SOURCES.computeIfAbsent(manager, key -> new ConcurrentHashMap<>()).computeIfAbsent(loc, id -> packOverrides(manager, id) ? id : ifabSource(manager, id));
+    }
+
+    private static ResourceLocation ifabSource(ResourceManager manager, ResourceLocation id) {
+        ResourceLocation ifab = id.withPath(path -> MULTIBLOCK_FOLDER + IFAB_FOLDER + path.substring(MULTIBLOCK_FOLDER.length()));
+        return manager.getResource(STRUCTURES.idToFile(ifab)).isPresent() ? ifab : id;
+    }
+
+    static ResourceLocation structureResource(ResourceManager manager, ResourceLocation loc) { return STRUCTURES.idToFile(templateSource(manager, loc)); }
+
+    private static boolean packOverrides(ResourceManager manager, ResourceLocation id) {
+        List<Resource> stack = manager.getResourceStack(STRUCTURES.idToFile(id));
+        var mod = ModList.get().getModFileById(id.getNamespace());
+        return !stack.isEmpty() && (mod == null || !stack.get(stack.size() - 1).sourcePackId().equals(mod.getFile().getFileName()));
+    }
     public static final AABB FULL_BLOCK = new AABB(0D, 0D, 0D, 1D, 1D, 1D);
     private final Map<BlockPos, VoxelShape> shapeCache = new ConcurrentHashMap<>();
 
     public static int[] loadDimensions(Class<?> owner, String modid, String multiblockName) {
         int[] packed = MultiblockDataLoader.packSize(modid, multiblockName);
         if (packed != null) { return packed; }
-        String path = "/data/" + modid + "/" + STRUCTURE_FOLDER + multiblockName + ".nbt";
+        String path = "/data/" + modid + "/" + structureFile(multiblockName);
+        if (owner.getResource(path) == null) { path = "/data/" + modid + "/" + STRUCTURE_FOLDER + multiblockName + ".nbt"; }
         try (InputStream is = owner.getResourceAsStream(path)) {
             if (is == null) {
                 ICLib.IC_LOGGER.error("Structure file not found at resource path: {} for multiblock: {}", path, multiblockName);

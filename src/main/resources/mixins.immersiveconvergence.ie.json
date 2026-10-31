@@ -29,7 +29,14 @@
     "MixerLogicStateMixin",
     "MixerRecipeMixin",
     "PipeFluidHandlerMixin",
-    "FluidPumpBlockEntityMixin"
+    "FluidPumpBlockEntityMixin",
+    "GlobalWireNetworkMixin",
+    "WireSyncManagerAccessor",
+    "WireCoilItemMixin",
+    "ConnectorBlockEntityHelperMixin",
+    "EnergyTransferHandlerMixin",
+    "WireCollisionsMixin",
+    "WireDamageHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

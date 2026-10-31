@@ -3,7 +3,7 @@ package com.immersiveconvergence.api.multiblock;
 import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.block.ModProperties;
 import com.immersiveconvergence.api.util.ICUtils;
-import com.immersiveconvergence.common.ie.IERenderBridge;
+import com.immersiveconvergence.api.bridge.ICBridges;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -71,7 +71,7 @@ public class ClientMultiblockProperties implements ClientMultiblocks.MultiblockM
         BlockPos master = this.multiblock.getMasterFromOriginOffset();
         matrix.translate(master.getX(), master.getY(), master.getZ());
         BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(this.multiblock.getBlock().defaultBlockState());
-        VertexConsumer consumer = buffer.getBuffer(ICMods.immersiveEngineering() ? IERenderBridge.translucentFullbright() : RenderType.translucent());
+        VertexConsumer consumer = buffer.getBuffer(ICMods.immersiveEngineering() ? ICBridges.client().translucentFullbright() : RenderType.translucent());
         for (BakedQuad quad : model.getQuads(null, null, ICUtils.RANDOM_SOURCE, ModelData.EMPTY, null)) { consumer.putBulkData(matrix.last(), quad, 1, 1, 1, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY); }
         matrix.pushPose();
         { renderExtras(); }

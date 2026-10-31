@@ -2,6 +2,7 @@ package com.immersiveconvergence.api.multiblock;
 
 import com.immersiveconvergence.api.multiblock.blocks.util.MultiblockOrientation;
 import com.immersiveconvergence.api.multiblock.blocks.util.RelativeBlockFace;
+import com.immersiveconvergence.api.wires.ICTargetingInfo;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -32,6 +33,8 @@ public record FormationCandidate(BlockPos origin, Rotation rotation, Mirror mirr
     public BlockPos toAbsolute(BlockPos posInMultiblock) { return origin.offset(StructureTemplate.calculateRelativePosition(settings(), posInMultiblock)); }
 
     public Direction toAbsolute(RelativeBlockFace face) { return face.forFront(orientation()); }
+
+    public ICTargetingInfo toAbsolute(ICTargetingInfo target) { return TemplateMultiblock.getAbsoluteTarget(target, mirror, rotation); }
 
     public boolean faces(Level level, List<BlockPos> portCells, RelativeBlockFace portFace, Capability<?> partnerCapability) {
         Direction direction = toAbsolute(portFace);

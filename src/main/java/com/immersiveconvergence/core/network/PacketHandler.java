@@ -18,7 +18,7 @@ import javax.annotation.Nonnull;
 import java.util.function.Function;
 
 public class PacketHandler {
-    public static final String NET_VERSION = "3";
+    public static final String NET_VERSION = "4";
     public static final SimpleChannel INSTANCE = NetworkRegistry.ChannelBuilder
             .named(ICLib.rl("main"))
             .networkProtocolVersion(() -> NET_VERSION)
@@ -34,6 +34,8 @@ public class PacketHandler {
         registerMessage(MessageMenuSync.class, MessageMenuSync::new);
         registerMessage(MessageMultiblockData.class, MessageMultiblockData::new);
         registerMessage(MessageMultiblockTemplates.class, MessageMultiblockTemplates::new);
+        registerMessage(ICWireSyncPacket.class, ICWireSyncPacket::new);
+        registerMessage(ICWireDeltaPacket.class, ICWireDeltaPacket::new);
     }
 
     public static <T extends INetworkMessage> void registerMessage(Class<T> type, Function<FriendlyByteBuf, T> decoder) {

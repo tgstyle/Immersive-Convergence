@@ -3,7 +3,7 @@ package com.immersiveconvergence.api.util;
 import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.multiblock.util.CapabilityReference;
 import com.immersiveconvergence.api.multiblock.util.DirectionalBlockPos;
-import com.immersiveconvergence.common.ie.IERecipeBridge;
+import com.immersiveconvergence.api.bridge.ICBridges;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -60,7 +60,7 @@ public class ICUtils {
     public static CompoundTag parseNbtFromJson(JsonElement jsonElement) throws CommandSyntaxException { return TagParser.parseTag(jsonElement.isJsonObject() ? GSON.toJson(jsonElement) : jsonElement.getAsString()); }
 
     public static ItemStack preferredStack(ItemStack[] stacks) {
-        if (ICMods.immersiveEngineering()) { return IERecipeBridge.preferredStack(stacks); }
+        if (ICMods.immersiveEngineering()) { return ICBridges.integration().preferredStack(stacks); }
         return Arrays.stream(stacks).min(Comparator.comparing(stack -> Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(stack.getItem())))).orElseThrow(() -> new IllegalArgumentException("Empty array?"));
     }
 
