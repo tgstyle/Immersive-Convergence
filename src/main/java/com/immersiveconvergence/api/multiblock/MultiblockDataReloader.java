@@ -53,7 +53,7 @@ public final class MultiblockDataReloader extends SimplePreparableReloadListener
                 ICLib.IC_LOGGER.error("Error reading multiblock data {}", file, e);
                 continue;
             }
-            Optional<Resource> structure = manager.getResource(ResourceLocation.fromNamespaceAndPath(id.getNamespace(), GenericShape.STRUCTURE_FOLDER + id.getPath() + ".nbt"));
+            Optional<Resource> structure = manager.getResource(GenericShape.structureResource(manager, ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "multiblocks/" + id.getPath())));
             if (structure.isEmpty()) { continue; }
             try (InputStream is = structure.get().open()) {
                 int[] size = GenericShape.readSize(is);

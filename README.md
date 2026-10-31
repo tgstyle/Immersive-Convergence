@@ -245,7 +245,9 @@ the setup and the options. An OBJ goes through `obj_to_bbmodel.py` and
 ## Blocks a machine is built from
 The layout of a machine is a vanilla structure file, the same format a structure
 block saves. Replacing it in a data pack changes what the player has to build
-and what the hammer forms.
+and what the hammer forms. Without Immersive Engineering the mod's default
+blocks come from `multiblocks/ifab/<id>.nbt`, or the plain path when a mod ships
+no such file, and a pack's file at the path above still wins.
 
 Two things follow from that file rather than from any model. The machine is only
 formed if every block matches, so a structure listing blocks a player cannot get

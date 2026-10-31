@@ -5,14 +5,24 @@ import com.immersiveconvergence.api.multiblock.MultiblockHandler.IMultiblock;
 import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockBlockEntityDummy;
 import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockBlockEntityMaster;
 import com.immersiveconvergence.api.multiblock.util.DirectionUtils;
+import com.immersiveconvergence.api.wires.ICConnectResult;
+import com.immersiveconvergence.api.wires.ICTargetingInfo;
+import com.immersiveconvergence.api.wires.ICTemplateWire;
+import com.immersiveconvergence.api.wires.IICWireTemplate;
 import com.immersiveconvergence.core.lib.ICLib;
 
 import com.google.common.base.Preconditions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtAccounter;
+import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -26,6 +36,8 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
 import net.neoforged.neoforge.data.loading.DatagenModLoader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -34,6 +46,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import static net.minecraft.world.level.block.Mirror.FRONT_BACK;
 import javax.annotation.Nonnull;
@@ -46,14 +59,16 @@ import javax.annotation.Nullable;
     protected final BlockPos triggerFromOrigin;
     protected final BlockPos size;
     protected final List<BlockMatcher.MatcherPredicate> additionalPredicates;
+    @Nullable private TemplateData clientTemplate;
     @Nullable private TemplateData template;
     private List<StructureBlockInfo> sortedStructureBlocks;
     private Map<BlockPos, BlockState> triggerStateMap;
     private int cacheGeneration;
+    @Nullable private TemplateData cachedFor;
 
     public record TriggerPoint(BlockPos cell, Rotation offset) {}
 
-    public record TemplateData(StructureTemplate template, List<StructureBlockInfo> blocksWithoutAir, BlockState triggerState) {}
+    public record TemplateData(StructureTemplate template, List<StructureBlockInfo> blocksWithoutAir, BlockState triggerState, @Nonnull List<ICTemplateWire> wires) implements IICWireTemplate {}
 
     public TemplateMultiblock(ResourceLocation loc, BlockPos masterFromOrigin, BlockPos triggerFromOrigin, BlockPos size) { this(loc, masterFromOrigin, triggerFromOrigin, size, List.of()); }
 
@@ -81,6 +96,14 @@ import javax.annotation.Nullable;
 
     public static BlockPos getAbsoluteOffset(BlockPos relative, Mirror mirror, Rotation rot) { return StructureTemplate.calculateRelativePosition(new StructurePlaceSettings().setMirror(mirror).setRotation(rot), relative); }
 
+    public static ICTargetingInfo getAbsoluteTarget(ICTargetingInfo local, Mirror mirror, Rotation rot) {
+        BlockPos axisX = getAbsoluteOffset(new BlockPos(1, 0, 0), mirror, rot);
+        BlockPos axisZ = getAbsoluteOffset(new BlockPos(0, 0, 1), mirror, rot);
+        float alongX = local.hitX() - 0.5F;
+        float alongZ = local.hitZ() - 0.5F;
+        return new ICTargetingInfo(0.5F + alongX * axisX.getX() + alongZ * axisZ.getX(), local.hitY(), 0.5F + alongX * axisX.getZ() + alongZ * axisZ.getZ());
+    }
+
     public static BlockPos getAbsoluteOffset(BlockPos relative, boolean mirrored, Direction facing) {
         Rotation rot = DirectionUtils.getRotationBetweenFacings(Direction.NORTH, facing);
         if (rot == null) { return BlockPos.ZERO; }
@@ -89,13 +112,14 @@ import javax.annotation.Nullable;
 
     private void ensureStructureInitialized(@Nonnull Level level) {
         final StructureTemplate newTemplate;
-        if (level instanceof ServerLevel serverLevel) { newTemplate = serverLevel.getStructureManager().get(loc).orElse(null); }
+        if (level instanceof ServerLevel serverLevel) { newTemplate = serverLevel.getStructureManager().get(GenericShape.templateLocation(serverLevel.getServer().getResourceManager(), loc)).orElse(null); }
         else {
             if (!DatagenModLoader.isRunningDataGen() && !level.isClientSide) { throw new RuntimeException("Unexpected level parameter: " + level); }
             newTemplate = SYNCED_CLIENT_TEMPLATES.get(loc);
         }
         if (newTemplate == null) { throw new RuntimeException("Template " + loc + " does not exist!"); }
-        if (this.template != null && newTemplate == template.template()) { return; }
+        TemplateData current = level.isClientSide ? clientTemplate : template;
+        if (current != null && newTemplate == current.template()) { return; }
         List<StructureBlockInfo> blocksWithoutAir = new ArrayList<>(newTemplate.palettes.getFirst().blocks());
         final Iterator<StructureBlockInfo> it = blocksWithoutAir.iterator();
         BlockState trigger = null;
@@ -106,7 +130,24 @@ import javax.annotation.Nullable;
             else if (info.state().isAir()) { ICLib.IC_LOGGER.error("Found non-default air block in template {}", loc); }
         }
         Preconditions.checkState(trigger != null, "Trigger state was not found in template for " + loc);
-        this.template = new TemplateData(newTemplate, blocksWithoutAir, trigger);
+        List<ICTemplateWire> wires = level instanceof ServerLevel server ? readWires(server) : List.of();
+        TemplateData built = new TemplateData(newTemplate, blocksWithoutAir, trigger, wires);
+        if (level.isClientSide) { clientTemplate = built; } else { template = built; }
+    }
+
+    private List<ICTemplateWire> readWires(ServerLevel level) {
+        ResourceManager manager = level.getServer().getResourceManager();
+        Optional<Resource> resource = manager.getResource(GenericShape.structureResource(manager, loc));
+        if (resource.isEmpty()) { return List.of(); }
+        try (InputStream stream = resource.get().open()) {
+            ListTag tags = NbtIo.readCompressed(stream, NbtAccounter.unlimitedHeap()).getList(IICWireTemplate.TAG, Tag.TAG_COMPOUND);
+            List<ICTemplateWire> wires = new ArrayList<>();
+            for (int i = 0; i < tags.size(); i++) { wires.add(ICTemplateWire.readFromNBT(tags.getCompound(i))); }
+            return List.copyOf(wires);
+        } catch (IOException | RuntimeException e) {
+            ICLib.IC_LOGGER.error("Could not read the stored wires of template {}", loc, e);
+            return List.of();
+        }
     }
 
     protected List<TriggerPoint> getTriggerPoints() { return List.of(new TriggerPoint(getTriggerOffset(), Rotation.NONE)); }
@@ -115,20 +156,23 @@ import javax.annotation.Nullable;
 
     private void ensureCaches(TemplateData data) {
         int generation = MultiblockDataLoader.generation();
-        if (sortedStructureBlocks != null && cacheGeneration == generation) { return; }
-        cacheGeneration = generation;
+        if (sortedStructureBlocks != null && cacheGeneration == generation && cachedFor == data) { return; }
         List<StructureBlockInfo> nonAir = data.blocksWithoutAir();
-        sortedStructureBlocks = new ArrayList<>(nonAir);
-        sortedStructureBlocks.sort(Comparator.comparingInt(info -> -info.pos().getY()));
-        triggerStateMap = new HashMap<>();
+        List<StructureBlockInfo> sorted = new ArrayList<>(nonAir);
+        sorted.sort(Comparator.comparingInt(info -> -info.pos().getY()));
+        Map<BlockPos, BlockState> triggers = new HashMap<>();
         for (TriggerPoint trigger : getTriggerPoints()) {
             for (StructureBlockInfo info : nonAir) {
                 if (info.pos().equals(trigger.cell())) {
-                    triggerStateMap.put(trigger.cell(), info.state());
+                    triggers.put(trigger.cell(), info.state());
                     break;
                 }
             }
         }
+        triggerStateMap = triggers;
+        sortedStructureBlocks = sorted;
+        cacheGeneration = generation;
+        cachedFor = data;
     }
 
     @SuppressWarnings("deprecation") private static BlockState rotate(BlockState state, Rotation rotation) { return state.rotate(rotation); }
@@ -174,10 +218,19 @@ import javax.annotation.Nullable;
             }
             if (candidates.isEmpty()) { continue; }
             FormationCandidate chosen = candidates.size() == 1 ? candidates.getFirst() : chooseCandidate(world, candidates, player);
-            if (!world.isClientSide) { form(world, chosen.origin(), rot, chosen.mirror(), chosen.front().getOpposite()); }
+            if (!world.isClientSide) {
+                form(world, chosen.origin(), rot, chosen.mirror(), chosen.front().getOpposite());
+                placeStoredWires(world, chosen);
+            }
             return true;
         }
         return false;
+    }
+
+    private void placeStoredWires(Level world, FormationCandidate chosen) {
+        for (ICConnectResult result : getTemplate(world).placeWires(world, chosen::toAbsolute, chosen::toAbsolute)) {
+            if (result != ICConnectResult.OK && result != ICConnectResult.CANCELED) { ICLib.IC_LOGGER.warn("A stored wire of {} was not placed: {}", loc, result); }
+        }
     }
 
     private boolean matches(Level world, List<StructureBlockInfo> structure, BlockPos triggerCell, FormationCandidate candidate) {
@@ -235,7 +288,7 @@ import javax.annotation.Nullable;
     @Nonnull public TemplateData getTemplate(@Nonnull Level world) {
         try {
             ensureStructureInitialized(world);
-            TemplateData result = Objects.requireNonNull(template);
+            TemplateData result = Objects.requireNonNull(world.isClientSide ? clientTemplate : template);
             Vec3i resultSize = result.template().getSize();
             Preconditions.checkState(resultSize.equals(this.size), "Wrong template size for multiblock %s, template size: %s", loc, resultSize);
             ensureCaches(result);

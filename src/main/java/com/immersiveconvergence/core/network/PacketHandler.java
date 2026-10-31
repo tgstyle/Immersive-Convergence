@@ -17,7 +17,7 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 @EventBusSubscriber(modid = ICLib.MODID) public class PacketHandler {
-    private static final String PROTOCOL_VERSION = "3";
+    private static final String PROTOCOL_VERSION = "4";
 
     @SubscribeEvent public static void register(final RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar(PROTOCOL_VERSION);
@@ -26,6 +26,8 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
         registrar.playToClient(MessageMenuSync.TYPE, MessageMenuSync.STREAM_CODEC, MessageMenuSync::handle);
         registrar.playToClient(MessageMultiblockData.TYPE, MessageMultiblockData.STREAM_CODEC, MessageMultiblockData::handle);
         registrar.playToClient(MessageMultiblockTemplates.TYPE, MessageMultiblockTemplates.STREAM_CODEC, MessageMultiblockTemplates::handle);
+        registrar.playToClient(ICWireSyncPacket.TYPE, ICWireSyncPacket.STREAM_CODEC, ICWireSyncPacket::handle);
+        registrar.playToClient(ICWireDeltaPacket.TYPE, ICWireDeltaPacket.STREAM_CODEC, ICWireDeltaPacket::handle);
     }
 
     public static void sendToServer(CustomPacketPayload message) { if (message != null) { PacketDistributor.sendToServer(message); } }

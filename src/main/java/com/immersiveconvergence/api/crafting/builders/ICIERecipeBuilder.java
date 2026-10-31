@@ -3,7 +3,6 @@ package com.immersiveconvergence.api.crafting.builders;
 import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.crafting.ICIngredientWithSize;
 import com.immersiveconvergence.api.crafting.ICTagOutput;
-import com.immersiveconvergence.api.crafting.conditions.ICIEEnabledCondition;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -16,6 +15,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
 import java.util.List;
 
 public abstract class ICIERecipeBuilder<B extends ICIERecipeBuilder<B>> {
@@ -24,7 +24,7 @@ public abstract class ICIERecipeBuilder<B extends ICIERecipeBuilder<B>> {
     protected ICIERecipeBuilder(String type) { json.addProperty("type", ICMods.ie(type).toString()); }
 
     public void build(ICJsonRecipes recipes, ResourceLocation id) {
-        ICondition.writeConditions(JsonOps.INSTANCE, json, List.of(ICIEEnabledCondition.INSTANCE));
+        ICondition.writeConditions(JsonOps.INSTANCE, json, List.of(new ModLoadedCondition("immersiveengineering")));
         recipes.accept(id, json);
     }
 

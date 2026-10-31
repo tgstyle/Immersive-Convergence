@@ -22,7 +22,6 @@ public final class ICIEContent {
     public static final ResourceLocation COIL_HV = ICMods.ie("coil_hv");
     public static final ResourceLocation CONNECTOR_REDSTONE = ICMods.ie("connector_redstone");
     public static final ResourceLocation CONNECTOR_HV = ICMods.ie("connector_hv");
-    public static final ResourceLocation CONVEYOR_BASIC = ICMods.ie("conveyor_basic");
     public static final ResourceLocation FURNACE_HEATER = ICMods.ie("furnace_heater");
     public static final ResourceLocation INGOT_HOP_GRAPHITE = ICMods.ie("ingot_hop_graphite");
     public static final ResourceLocation MOLD_PLATE = ICMods.ie("mold_plate");

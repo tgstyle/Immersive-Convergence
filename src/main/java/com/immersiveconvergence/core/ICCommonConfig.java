@@ -44,9 +44,9 @@ public class ICCommonConfig {
         BUILDER
                 .comment(
                         "EXPERIMENTAL. Run as though Immersive Engineering were not installed, even when it is.",
-                        "Every Immersive Engineering path in Immersive Convergence and Immersive Technology gates off: no wires, no conveyors, no connectors, no IE multiblock templates, and none of the content built out of IE blocks or items. Immersive Petroleum gates off with it, because it cannot work without Immersive Engineering.",
+                        "Every Immersive Engineering path in Immersive Convergence and Immersive Technology gates off: no wires, no connectors, no IE multiblock templates, and none of the content built out of IE blocks or items. Immersive Technology keeps two template sets, and its recipes switch between them at load. Immersive Petroleum gates off with it, because it cannot work without Immersive Engineering.",
                         "Recipes that name IE items will have no valid ingredients, multiblocks whose templates are built from IE blocks cannot be assembled, and anything already placed from them will not come back.",
-                        "Turning this on means: I know what I am doing, and I can replace the needed recipes, and NBT data myself.",
+                        "Turning this on means: I know what I am doing.",
                         "Read once at startup; a change needs a game restart.")
                 .gameRestart()
                 .define("disable_immersive_engineering", false);

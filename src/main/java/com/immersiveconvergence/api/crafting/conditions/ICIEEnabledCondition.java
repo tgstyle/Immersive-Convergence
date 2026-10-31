@@ -21,7 +21,7 @@ public final class ICIEEnabledCondition implements ICondition {
 
     public static void init(IEventBus bus) { REGISTER.register(bus); }
 
-    @Override public boolean test(@Nonnull IContext context) { return ICMods.immersiveEngineering(); }
+    @Override public boolean test(@Nonnull IContext context) { return ICMods.ieContent(); }
 
     @Override public @Nonnull MapCodec<? extends ICondition> codec() { return CODEC; }
 

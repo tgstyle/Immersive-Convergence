@@ -28,7 +28,14 @@
     "IFluidPipeMixin",
     "MixerLogicMixin",
     "MixerLogicStateMixin",
-    "MixerRecipeMixin"
+    "MixerRecipeMixin",
+    "GlobalWireNetworkMixin",
+    "WireSyncManagerAccessor",
+    "WireCoilItemMixin",
+    "ConnectorBlockEntityHelperMixin",
+    "EnergyTransferHandlerMixin",
+    "WireCollisionsMixin",
+    "WireDamageHandlerMixin"
   ],
   "client": [
     "AbstractSplitModelMixin",

@@ -29,6 +29,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -38,14 +39,16 @@ public record FluidEntry(Supplier<BaseFluid> flowing, Supplier<BaseFluid> still,
 
     public static FluidEntry make(FluidRegisters registers, String name, int burnTime, ResourceLocation stillTex, ResourceLocation flowingTex, @Nullable Consumer<FluidType.Properties> buildAttributes, int tintColor) { return make(registers, name, burnTime, stillTex, flowingTex, BaseFluid::new, BaseFluid.Flowing::new, buildAttributes, ImmutableList.of(), tintColor); }
 
-    public static FluidEntry make(FluidRegisters registers, String name, int burnTime, ResourceLocation stillTex, ResourceLocation flowingTex, Function<FluidEntry, ? extends BaseFluid> makeStill, Function<FluidEntry, ? extends BaseFluid> makeFlowing, @Nullable Consumer<FluidType.Properties> buildAttributes, List<Property<?>> properties, int tintColor) {
+    public static FluidEntry make(FluidRegisters registers, String name, int burnTime, ResourceLocation stillTex, ResourceLocation flowingTex, Function<FluidEntry, ? extends BaseFluid> makeStill, Function<FluidEntry, ? extends BaseFluid> makeFlowing, @Nullable Consumer<FluidType.Properties> buildAttributes, List<Property<?>> properties, int tintColor) { return make(registers, name, burnTime, stillTex, flowingTex, BaseFluidBlock::new, makeStill, makeFlowing, buildAttributes, properties, tintColor); }
+
+    public static FluidEntry make(FluidRegisters registers, String name, int burnTime, ResourceLocation stillTex, ResourceLocation flowingTex, BiFunction<FluidEntry, BlockBehaviour.Properties, ? extends BaseFluidBlock> makeBlock, Function<FluidEntry, ? extends BaseFluid> makeStill, Function<FluidEntry, ? extends BaseFluid> makeFlowing, @Nullable Consumer<FluidType.Properties> buildAttributes, List<Property<?>> properties, int tintColor) {
         FluidType.Properties builder = FluidType.Properties.create().sound(SoundActions.BUCKET_FILL, SoundEvents.BUCKET_FILL).sound(SoundActions.BUCKET_EMPTY, SoundEvents.BUCKET_EMPTY);
         if (buildAttributes != null) { buildAttributes.accept(builder); }
         Supplier<FluidType> type = registers.fluidTypes().register(name, () -> makeTypeWithTextures(builder, stillTex, flowingTex, tintColor));
         Mutable<FluidEntry> thisMutable = new MutableObject<>();
         Supplier<BaseFluid> still = registers.fluids().register(name, () -> BaseFluid.makeFluid(makeStill, thisMutable.getValue()));
         Supplier<BaseFluid> flowing = registers.fluids().register(name + "_flowing", () -> BaseFluid.makeFluid(makeFlowing, thisMutable.getValue()));
-        BlockEntry<BaseFluidBlock> block = registers.block(name + "_fluid_block", () -> BlockBehaviour.Properties.ofFullCopy(Blocks.WATER), p -> new BaseFluidBlock(thisMutable.getValue(), p));
+        BlockEntry<BaseFluidBlock> block = registers.block(name + "_fluid_block", () -> BlockBehaviour.Properties.ofFullCopy(Blocks.WATER), p -> makeBlock.apply(thisMutable.getValue(), p));
         Supplier<BucketItem> bucket = registers.items().register(name + "_bucket", () -> makeBucket(still, burnTime));
         FluidEntry entry = new FluidEntry(flowing, still, block, bucket, type, properties, tintColor);
         thisMutable.setValue(entry);

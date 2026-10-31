@@ -2,7 +2,7 @@ package com.immersiveconvergence.api.util;
 
 import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.crafting.builders.ICIEContent;
-import com.immersiveconvergence.common.ie.IERecipeBridge;
+import com.immersiveconvergence.api.bridge.ICBridges;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.RandomSource;
@@ -18,7 +18,7 @@ public class ICUtils {
     public static boolean isHammer(ItemStack stack) { return stack.is(ICIEContent.HAMMERS); }
 
     public static ItemStack preferredStack(ItemStack[] stacks) {
-        if (ICMods.immersiveEngineering()) { return IERecipeBridge.preferredStack(stacks); }
+        if (ICMods.immersiveEngineering()) { return ICBridges.integration().preferredStack(stacks); }
         return Arrays.stream(stacks).min(Comparator.comparing(stack -> BuiltInRegistries.ITEM.getKey(stack.getItem()))).orElseThrow(() -> new IllegalArgumentException("Empty array?"));
     }
 }

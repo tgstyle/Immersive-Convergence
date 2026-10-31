@@ -1,10 +1,16 @@
 package com.immersiveconvergence.core.proxy;
 
+import com.immersiveconvergence.api.ICMods;
+import com.immersiveconvergence.api.bridge.ICBridges;
 import com.immersiveconvergence.api.block.BlockInterfaces;
 import com.immersiveconvergence.api.client.StandaloneModel;
 import com.immersiveconvergence.api.manual.ICManual;
 import com.immersiveconvergence.api.manual.ICManualCategory;
 import com.immersiveconvergence.api.multiblock.MultiblockDataLoader;
+import com.immersiveconvergence.api.wires.ICWires;
+import com.immersiveconvergence.client.ICClientBridge;
+import com.immersiveconvergence.client.ICWireClientView;
+import com.immersiveconvergence.client.IEWireClientView;
 import com.immersiveconvergence.client.gui.RotorCreativeScreen;
 import com.immersiveconvergence.client.models.ICRotorModels;
 import com.immersiveconvergence.client.renderer.RotorCreativeRenderer;
@@ -37,6 +43,9 @@ import java.util.List;
     private static final List<String> MANUAL_ENTRIES = List.of("multiblock_disassembly", "clearing_tanks");
 
     @SubscribeEvent public static void onClientSetup(FMLClientSetupEvent event) {
+        ICBridges.installClient(new ICClientBridge());
+        if (ICMods.immersiveEngineering()) { ICWires.installClient(new IEWireClientView()); }
+        else { ICWires.installClient(new ICWireClientView()); }
         event.enqueueWork(() -> {
             ICManualCategory construction = ICManual.ieCategory(ICManual.CAT_CONSTRUCTION, 0);
             for (String name : MANUAL_ENTRIES) { ICManual.addEntry(construction, ICLib.rl(name)); }
