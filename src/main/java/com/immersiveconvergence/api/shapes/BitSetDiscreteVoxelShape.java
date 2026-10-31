@@ -1,6 +1,6 @@
 package com.immersiveconvergence.api.shapes;
 
-import com.immersiveconvergence.common.util.ICMth;
+import com.immersiveconvergence.api.util.ICMth;
 
 import net.minecraft.util.EnumFacing;
 import java.util.BitSet;

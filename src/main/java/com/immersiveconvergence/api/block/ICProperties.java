@@ -1,5 +1,7 @@
 package com.immersiveconvergence.api.block;
 
+import com.immersiveconvergence.api.bridge.ICBridges;
+
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 
@@ -26,7 +28,7 @@ public class ICProperties {
         int extra = com.immersiveconvergence.api.ICMods.immersiveEngineering() ? 2 : 1;
         IUnlistedProperty<?>[] array = java.util.Arrays.copyOf(unlisted, unlisted.length + extra);
         array[unlisted.length] = CONNECTIONS;
-        if (extra == 2) { array[unlisted.length + 1] = com.immersiveconvergence.common.block.IETileBridge.connectionsProperty(); }
+        if (extra == 2) { array[unlisted.length + 1] = ICBridges.tile().connectionsProperty(); }
         return array;
     }
 

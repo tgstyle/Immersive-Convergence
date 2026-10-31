@@ -1,6 +1,6 @@
 package com.immersiveconvergence.api.block;
 
-import com.immersiveconvergence.common.block.IETileBridge;
+import com.immersiveconvergence.api.bridge.ICBridges;
 import com.immersiveconvergence.api.client.IICOBJModelCallback;
 import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces;
@@ -79,7 +79,7 @@ public class ICBlockBase<E extends Enum<E> & ICBlockBase.IBlockEnum> extends Blo
             if (o instanceof IUnlistedProperty) unlistedPropList.add((IUnlistedProperty)o);
             if (o instanceof IUnlistedProperty[]) unlistedPropList.addAll(Arrays.asList((IUnlistedProperty[])o));
         }
-        if (unlistedPropList.contains(IICOBJModelCallback.PROPERTY) && ICMods.immersiveEngineering()) { unlistedPropList.add(IETileBridge.objCallbackProperty()); }
+        if (unlistedPropList.contains(IICOBJModelCallback.PROPERTY) && ICMods.immersiveEngineering()) { unlistedPropList.add(ICBridges.tile().objCallbackProperty()); }
         this.additionalProperties = propList.toArray(new IProperty[0]);
         this.additionalUnlistedProperties = unlistedPropList.toArray(new IUnlistedProperty[0]);
         this.setDefaultState(getInitDefaultState());
@@ -125,7 +125,7 @@ public class ICBlockBase<E extends Enum<E> & ICBlockBase.IBlockEnum> extends Blo
             if (o instanceof IUnlistedProperty) unlistedPropList.add((IUnlistedProperty)o);
             if (o instanceof IUnlistedProperty[]) unlistedPropList.addAll(Arrays.asList((IUnlistedProperty[])o));
         }
-        if (unlistedPropList.contains(IICOBJModelCallback.PROPERTY) && ICMods.immersiveEngineering()) { unlistedPropList.add(IETileBridge.objCallbackProperty()); }
+        if (unlistedPropList.contains(IICOBJModelCallback.PROPERTY) && ICMods.immersiveEngineering()) { unlistedPropList.add(ICBridges.tile().objCallbackProperty()); }
         tempProperties = propList.toArray(new IProperty[0]);
         tempUnlistedProperties = unlistedPropList.toArray(new IUnlistedProperty[0]);
         return material;

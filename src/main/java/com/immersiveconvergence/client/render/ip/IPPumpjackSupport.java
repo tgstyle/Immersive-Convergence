@@ -2,7 +2,7 @@ package com.immersiveconvergence.client.render.ip;
 
 import com.immersiveconvergence.api.client.split.SplitModelHandler;
 import com.immersiveconvergence.common.multiblock.IEMultiblockRegistry;
-import com.immersiveconvergence.common.util.ICLogger;
+import com.immersiveconvergence.api.util.ICLogger;
 
 import com.google.common.collect.ImmutableMap;
 import flaxbeard.immersivepetroleum.common.IPContent;

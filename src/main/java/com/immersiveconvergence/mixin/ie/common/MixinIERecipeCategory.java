@@ -1,7 +1,7 @@
 package com.immersiveconvergence.mixin.ie.common;
 
 import com.immersiveconvergence.api.ICJEICatalysts;
-import com.immersiveconvergence.common.util.ICLogger;
+import com.immersiveconvergence.api.util.ICLogger;
 
 import blusunrize.immersiveengineering.common.util.compat.jei.IERecipeCategory;
 import mezz.jei.api.IModRegistry;

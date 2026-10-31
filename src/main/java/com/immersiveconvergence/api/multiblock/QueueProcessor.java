@@ -5,7 +5,7 @@ import com.immersiveconvergence.ImmersiveConvergence;
 import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.ITileDrop;
 import com.immersiveconvergence.api.util.ICUtils;
-import com.immersiveconvergence.common.multiblock.IEMultiblockPartBridge;
+import com.immersiveconvergence.api.bridge.ICBridges;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.block.state.IBlockState;
@@ -115,7 +115,7 @@ public class QueueProcessor {
 
     private static void readOnPlacement(@Nullable TileEntity placed, ItemStack stack) {
         if (placed instanceof ITileDrop) { ((ITileDrop)placed).readOnPlacement(null, stack); }
-        else if (placed != null && ICMods.immersiveEngineering()) { IEMultiblockPartBridge.readOnPlacement(placed, stack); }
+        else if (placed != null && ICMods.immersiveEngineering()) { ICBridges.multiblock().readOnPlacement(placed, stack); }
     }
 
     public static Result handleDisassembly(ICMultiblockPart broken, int[] structureDimensions, boolean dropOriginal) {

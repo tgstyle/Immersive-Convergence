@@ -1,6 +1,9 @@
 package com.immersiveconvergence.api.multiblock;
 
 import com.immersiveconvergence.api.ICLib;
+import com.immersiveconvergence.api.wires.ICConnectResult;
+import com.immersiveconvergence.api.wires.ICTargetingInfo;
+import com.immersiveconvergence.api.util.ICLogger;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -95,8 +98,16 @@ public abstract class TemplateMultiblock implements ICMultiblock {
                 }
             }
         }
+        placeStoredWires(world, chosen);
         onFormed(player, pos, hammer);
         return true;
+    }
+
+    private void placeStoredWires(World world, FormationCandidate chosen) {
+        if (world.isRemote) { return; }
+        for (ICConnectResult result : template.placeWires(world, chosen::toWorld, chosen::toWorld)) {
+            if (result != ICConnectResult.OK && result != ICConnectResult.CANCELED) { ICLogger.warn("A stored wire of " + uniqueName + " was not placed: " + result); }
+        }
     }
 
     private FormationCandidate chooseCandidate(World world, List<FormationCandidate> candidates, @Nullable EntityPlayer player) {
@@ -238,6 +249,22 @@ public abstract class TemplateMultiblock implements ICMultiblock {
     }
 
     public static BlockPos localToWorld(BlockPos origin, int x, int y, int z, EnumFacing facing, boolean mirrored) { return localToWorld(origin, mirrored ? -x : x, y, z, facing); }
+
+    public static ICTargetingInfo localToWorld(ICTargetingInfo local, EnumFacing facing, boolean mirrored) {
+        BlockPos axisX = localToWorld(BlockPos.ORIGIN, 1, 0, 0, facing, mirrored);
+        BlockPos axisZ = localToWorld(BlockPos.ORIGIN, 0, 0, 1, facing, mirrored);
+        BlockPos face = localToWorld(BlockPos.ORIGIN, local.side.getXOffset(), local.side.getYOffset(), local.side.getZOffset(), facing, mirrored);
+        float alongX = local.hitX - 0.5F;
+        float alongZ = local.hitZ - 0.5F;
+        return new ICTargetingInfo(facingAlong(face), 0.5F + alongX * axisX.getX() + alongZ * axisZ.getX(), local.hitY, 0.5F + alongX * axisX.getZ() + alongZ * axisZ.getZ());
+    }
+
+    private static EnumFacing facingAlong(BlockPos direction) {
+        for (EnumFacing facing : EnumFacing.values()) {
+            if (facing.getXOffset() == direction.getX() && facing.getYOffset() == direction.getY() && facing.getZOffset() == direction.getZ()) { return facing; }
+        }
+        throw new IllegalArgumentException("Not a face direction: " + direction);
+    }
 
     public static BlockPos localToWorld(BlockPos origin, int x, int y, int z, EnumFacing facing) {
         switch (facing) {

@@ -3,7 +3,7 @@ package com.immersiveconvergence.api.multiblock;
 import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.ITileDrop;
 import com.immersiveconvergence.api.util.IICInventory;
-import com.immersiveconvergence.common.multiblock.IEMultiblockPartBridge;
+import com.immersiveconvergence.api.bridge.ICBridges;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
@@ -23,7 +23,7 @@ public final class MultiblockDrops {
             if (tile instanceof ITileDrop && ((ITileDrop)tile).preventInventoryDrop()) { return null; }
             return ((IICInventory)tile).getDroppedItems();
         }
-        return tile != null && ICMods.immersiveEngineering() ? IEMultiblockPartBridge.droppedItemsOf(tile) : null;
+        return tile != null && ICMods.immersiveEngineering() ? ICBridges.multiblock().droppedItemsOf(tile) : null;
     }
 
     public static void dropMasterInventory(World world, BlockPos pos, ICMultiblockPart tile) {

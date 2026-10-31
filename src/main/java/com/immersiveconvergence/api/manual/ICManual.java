@@ -1,7 +1,7 @@
 package com.immersiveconvergence.api.manual;
 
 import com.immersiveconvergence.api.multiblock.ICMultiblock;
-import com.immersiveconvergence.common.manual.IEManualBridge;
+import com.immersiveconvergence.api.bridge.ICBridges;
 
 import net.minecraftforge.fml.common.Loader;
 
@@ -16,7 +16,7 @@ public class ICManual {
     public static boolean available() { return Loader.isModLoaded("immersiveengineering"); }
 
     public static void addEntry(String name, String category, ICManualPage... pages) {
-        if (available()) { IEManualBridge.addEntry(name, category, pages); }
+        if (available()) { ICBridges.integration().addManualEntry(name, category, pages); }
     }
 
     public static ICManualPage text(String key) { return ICManualPage.text(key); }

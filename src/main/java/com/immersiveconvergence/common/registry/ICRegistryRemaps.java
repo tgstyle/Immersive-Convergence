@@ -1,6 +1,6 @@
 package com.immersiveconvergence.common.registry;
 
-import com.immersiveconvergence.common.util.ICLogger;
+import com.immersiveconvergence.api.util.ICLogger;
 
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;

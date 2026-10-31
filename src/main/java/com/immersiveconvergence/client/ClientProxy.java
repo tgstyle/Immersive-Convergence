@@ -2,12 +2,14 @@ package com.immersiveconvergence.client;
 
 import com.immersiveconvergence.ImmersiveConvergence;
 import com.immersiveconvergence.api.ICMods;
+import com.immersiveconvergence.api.bridge.ICBridges;
 import com.immersiveconvergence.api.manual.ICManual;
 import com.immersiveconvergence.api.client.split.MultiblockTextureHandler;
 import com.immersiveconvergence.api.client.split.SplitModelHandler;
 import com.immersiveconvergence.api.network.BinaryTileSyncMessage;
 import com.immersiveconvergence.api.network.MessageStopSound;
 import com.immersiveconvergence.api.network.TileSyncMessage;
+import com.immersiveconvergence.api.wires.ICWires;
 import com.immersiveconvergence.common.CommonProxy;
 import com.immersiveconvergence.common.ICContent;
 import com.immersiveconvergence.common.multiblock.IEMultiblockRegistry;
@@ -16,14 +18,17 @@ import com.immersiveconvergence.client.event.ICClientEventHandler;
 import com.immersiveconvergence.client.render.IEParticleTextures;
 import com.immersiveconvergence.client.render.TileRenderRotorCreative;
 import com.immersiveconvergence.client.render.ip.IPPumpjackSupport;
+import com.immersiveconvergence.client.models.ICConnectionLoader;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
@@ -38,8 +43,11 @@ public class ClientProxy extends CommonProxy {
 
     @Override public void preInit() {
         super.preInit();
+        ICBridges.installClient(new ICClientBridge());
         OBJLoader.INSTANCE.addDomain(ImmersiveConvergence.MODID);
+        ICWires.installClient(ICMods.immersiveEngineering() ? new IEWireClientView() : new ICWireClientView());
         if (ICMods.immersiveEngineering()) { IEModelSupport.addObjDomain(); }
+        else { ModelLoaderRegistry.registerLoader(ICConnectionLoader.INSTANCE); }
         MultiblockTextureHandler.register(ImmersiveConvergence.MODID);
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRotorCreative.class, new TileRenderRotorCreative());
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new ICClientEventHandler());
@@ -90,4 +98,6 @@ public class ClientProxy extends CommonProxy {
     @Override public boolean isMultiplayerClient() { return !Minecraft.getMinecraft().isSingleplayer(); }
 
     @Override public void scheduleClient(Runnable task) { Minecraft.getMinecraft().addScheduledTask(task); }
+
+    @Override public World clientWorld() { return Minecraft.getMinecraft().world; }
 }

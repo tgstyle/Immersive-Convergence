@@ -1,4 +1,4 @@
-package com.immersiveconvergence.api.energy;
+package com.immersiveconvergence.api.wires.connectors;
 
 import com.immersiveconvergence.api.client.IICOBJModelCallback;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IBlockBounds;
@@ -6,6 +6,10 @@ import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IBlockOverlayTe
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IDirectionalTile;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IHammerInteraction;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IRedstoneOutput;
+import com.immersiveconvergence.api.wires.ICConnectionPoint;
+import com.immersiveconvergence.api.wires.ICWire;
+import com.immersiveconvergence.api.wires.ICWireCause;
+import com.immersiveconvergence.api.wires.ICWireType;
 
 import net.minecraft.block.BlockRedstoneWire;
 import net.minecraft.block.state.IBlockState;
@@ -16,7 +20,6 @@ import net.minecraft.item.EnumDyeColor;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 
@@ -109,32 +112,30 @@ public class ICTileEntityConnectorRedstone extends ICTileEntityConnectable
         return true;
     }
 
-    @Override @Nullable public Boolean canConnectCable(@Nonnull ICWireType cable, @Nonnull ICTargetingInfo target, @Nonnull net.minecraft.util.math.Vec3i offset) {
-        if (!ICWireType.REDSTONE_CATEGORY.equals(cable.getCategory())) { return false; }
-        return limitType == null || limitType == cable;
+    @Override public boolean accepts(@Nonnull ICConnectionPoint point, @Nonnull ICWireType type) {
+        if (type.getCategory() == null || !"REDSTONE".equals(type.getCategory().getName())) { return false; }
+        return limitType == null || limitType == type;
     }
 
-    @Override public boolean connectCable(@Nonnull ICWireType cable, @Nonnull ICTargetingInfo target, BlockPos otherMaster) {
-        acceptCable(cable);
+    @Override public void onWireAdded(@Nonnull ICConnectionPoint point, @Nonnull ICWire wire) {
+        super.onWireAdded(point, wire);
         networkConnectorsUpdated();
-        return true;
     }
 
-    @Override public boolean removeCable(@Nullable BlockPos otherEnd, boolean all) {
-        forgetCable(null);
+    @Override public void onWireRemoved(@Nonnull ICConnectionPoint point, @Nonnull ICWire wire, @Nonnull ICWireCause cause) {
+        super.onWireRemoved(point, wire, cause);
         networkLeave();
-        return true;
     }
 
     @Nullable public Vec3d raytraceOffset() { return null; }
 
     @Nullable public Vec3d connectionOffset(@Nonnull ICWireType cable) { return null; }
 
-    @Override @Nonnull public Vec3d connectionOffset(@Nonnull ICWireType cable, @Nullable BlockPos otherEnd) {
-        Vec3d custom = connectionOffset(cable);
+    @Override @Nonnull public Vec3d offset(@Nonnull ICConnectionPoint point, @Nonnull ICWireType type) {
+        Vec3d custom = connectionOffset(type);
         if (custom != null) { return custom; }
         EnumFacing side = facing.getOpposite();
-        double conRadius = cable.getRenderDiameter() / 2;
+        double conRadius = type.getRenderDiameter() / 2;
         return new Vec3d(.5 - conRadius * side.getXOffset(), .5 - conRadius * side.getYOffset(), .5 - conRadius * side.getZOffset());
     }
 

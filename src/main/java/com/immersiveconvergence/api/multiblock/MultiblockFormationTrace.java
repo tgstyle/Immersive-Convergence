@@ -1,6 +1,6 @@
 package com.immersiveconvergence.api.multiblock;
 
-import com.immersiveconvergence.common.util.ICLogger;
+import com.immersiveconvergence.api.util.ICLogger;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;

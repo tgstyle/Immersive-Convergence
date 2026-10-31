@@ -3,7 +3,7 @@ package com.immersiveconvergence.api.multiblock;
 import com.immersiveconvergence.ImmersiveConvergence;
 import com.immersiveconvergence.api.client.ICSoundHandler;
 import com.immersiveconvergence.api.client.split.ISubmodelOffsetProvider;
-import com.immersiveconvergence.common.util.ICLogger;
+import com.immersiveconvergence.api.util.ICLogger;
 import com.immersiveconvergence.api.crafting.ICRecipe;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IPlayerInteraction;
 import com.immersiveconvergence.api.network.MessageStopSound;

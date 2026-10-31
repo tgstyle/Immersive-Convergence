@@ -1,22 +1,30 @@
 package com.immersiveconvergence;
 
 import com.immersiveconvergence.api.ICMods;
+import com.immersiveconvergence.api.bridge.ICBridges;
+import com.immersiveconvergence.api.multiblock.ICTickingRegistry;
 import com.immersiveconvergence.api.multiblock.QueueProcessor;
+import com.immersiveconvergence.api.util.ICLogger;
+import com.immersiveconvergence.api.util.ICResources;
+import com.immersiveconvergence.api.wires.ICWireType;
+import com.immersiveconvergence.api.wires.ICWires;
 import com.immersiveconvergence.common.energy.IEWireBridge;
+import com.immersiveconvergence.common.energy.wires.ICWireService;
 import com.immersiveconvergence.common.util.IEToolboxBridge;
 import com.immersiveconvergence.common.multiblock.IEMultiblockRegistry;
 import com.immersiveconvergence.common.multiblock.IEMultiblocks;
 import com.immersiveconvergence.common.CommonProxy;
 import com.immersiveconvergence.common.ICContent;
-import com.immersiveconvergence.common.event.ICTickingRegistry;
+import com.immersiveconvergence.common.bridge.ICBridgeService;
+import com.immersiveconvergence.common.event.ICTickingService;
 import com.immersiveconvergence.common.registry.ICRegistryRemaps;
 import com.immersiveconvergence.common.blocks.conveyors.ICConveyorRegistry;
 import com.immersiveconvergence.common.blocks.pipes.ICPipeRegistry;
-import com.immersiveconvergence.common.util.ICLogger;
 import com.immersiveconvergence.common.util.compat.ICCompatModule;
 import com.immersiveconvergence.common.util.RdplBridge;
-import com.immersiveconvergence.common.util.ICResources;
 import com.immersiveconvergence.core.ICCommonConfig;
+import com.immersiveconvergence.core.network.ICWireDeltaPacket;
+import com.immersiveconvergence.core.network.ICWireSyncPacket;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -33,6 +41,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.relauncher.Side;
 
 import javax.annotation.Nonnull;
 
@@ -55,6 +64,7 @@ public class ImmersiveConvergence {
 
     @EventHandler public void preInit(FMLPreInitializationEvent event) {
         ICLogger.logger = event.getModLog();
+        ICBridges.install(new ICBridgeService());
         ConfigManager.sync(MODID, Type.INSTANCE);
         ICMods.init(ICCommonConfig.experimental.disableImmersiveEngineering);
         if (ICCommonConfig.experimental.disableImmersiveEngineering) {
@@ -62,15 +72,18 @@ public class ImmersiveConvergence {
         }
         if (ICResources.deferToRdpl()) { RdplBridge.registerDataFolders("recipes_multiblocks", "multiblocks"); }
         ICResources.migrateToRdpl();
+        ICWires.install(new ICWireService());
         QueueProcessor.queueEnabled = () -> ICCommonConfig.multiblocks.disassemblyMode == ICCommonConfig.DisassemblyMode.PROCESS_QUEUE;
         MinecraftForge.EVENT_BUS.register(ICRegistryRemaps.class);
-        MinecraftForge.EVENT_BUS.register(new ICTickingRegistry());
+        ICTickingService ticking = new ICTickingService();
+        ICTickingRegistry.install(ticking);
+        MinecraftForge.EVENT_BUS.register(ticking);
         ICContent.preInit();
         ICCompatModule.preInitAll();
         if (ICMods.immersiveEngineering()) { IEMultiblocks.init(); }
-        ICConveyorRegistry.register();
         ICPipeRegistry.register();
         proxy.preInit();
+        ICConveyorRegistry.register();
     }
 
     @EventHandler public void init(FMLInitializationEvent event) {
@@ -80,11 +93,17 @@ public class ImmersiveConvergence {
             IEToolboxBridge.registerToolType();
         }
         ICCompatModule.initAll();
+        packetHandler.registerMessage(ICWireSyncPacket.Handler.class, ICWireSyncPacket.class, 4, Side.CLIENT);
+        packetHandler.registerMessage(ICWireDeltaPacket.Handler.class, ICWireDeltaPacket.class, 5, Side.CLIENT);
         proxy.init();
     }
 
     @EventHandler public void postInit(FMLPostInitializationEvent event) {
-        if (ICMods.immersiveEngineering()) { IEMultiblockRegistry.loadAll(); }
+        if (ICMods.immersiveEngineering()) {
+            IEMultiblockRegistry.loadAll();
+            IEWireBridge.adoptWireTypes();
+        }
+        ICWireType.freeze();
         proxy.postInit();
     }
 

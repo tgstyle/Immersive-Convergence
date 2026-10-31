@@ -3,7 +3,7 @@ package com.immersiveconvergence.api.client.split;
 import com.immersiveconvergence.ImmersiveConvergence;
 import com.immersiveconvergence.api.client.mirror.BakedMirroredModel;
 import com.immersiveconvergence.api.multiblock.TemplateMultiblock;
-import com.immersiveconvergence.common.util.ICLogger;
+import com.immersiveconvergence.api.util.ICLogger;
 
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;

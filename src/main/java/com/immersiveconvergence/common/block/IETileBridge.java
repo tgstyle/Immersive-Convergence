@@ -1,7 +1,7 @@
 package com.immersiveconvergence.common.block;
 
-import com.immersiveconvergence.api.energy.ICTileEntityConnectable;
 import com.immersiveconvergence.api.client.IICOBJModelCallback;
+import com.immersiveconvergence.api.wires.connectors.ICTileEntityConnectable;
 import blusunrize.immersiveengineering.ImmersiveEngineering;
 import blusunrize.immersiveengineering.api.energy.wires.IImmersiveConnectable;
 import blusunrize.immersiveengineering.api.energy.wires.ImmersiveNetHandler;

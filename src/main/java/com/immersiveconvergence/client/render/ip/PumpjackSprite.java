@@ -1,6 +1,6 @@
 package com.immersiveconvergence.client.render.ip;
 
-import com.immersiveconvergence.common.util.ICLogger;
+import com.immersiveconvergence.api.util.ICLogger;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -8,6 +8,8 @@ import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
+
+import javax.annotation.Nonnull;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.function.Function;
@@ -18,9 +20,9 @@ public class PumpjackSprite extends TextureAtlasSprite {
 
     public PumpjackSprite() { super(NAME); }
 
-    @Override public boolean hasCustomLoader(IResourceManager manager, ResourceLocation location) { return true; }
+    @Override public boolean hasCustomLoader(@Nonnull IResourceManager manager, @Nonnull ResourceLocation location) { return true; }
 
-    @Override public boolean load(IResourceManager manager, ResourceLocation location, Function<ResourceLocation, TextureAtlasSprite> textureGetter) {
+    @Override public boolean load(@Nonnull IResourceManager manager, @Nonnull ResourceLocation location, @Nonnull Function<ResourceLocation, TextureAtlasSprite> textureGetter) {
         try (IResource resource = manager.getResource(SOURCE)) {
             BufferedImage source = TextureUtil.readBufferedImage(resource.getInputStream());
             int size = Math.max(source.getWidth(), source.getHeight());

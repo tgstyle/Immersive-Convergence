@@ -1,6 +1,6 @@
 package com.immersiveconvergence.api.shapes;
 
-import com.immersiveconvergence.common.util.ICMth;
+import com.immersiveconvergence.api.util.ICMth;
 
 import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.doubles.DoubleList;

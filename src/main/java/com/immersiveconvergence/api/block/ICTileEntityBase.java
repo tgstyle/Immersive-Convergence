@@ -4,7 +4,7 @@ import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.energy.ICFluxWrapper;
 import com.immersiveconvergence.api.energy.IICFluxConnector;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IDirectionalTile;
-import com.immersiveconvergence.common.block.IETileBridge;
+import com.immersiveconvergence.api.bridge.ICBridges;
 
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
@@ -112,7 +112,7 @@ public abstract class ICTileEntityBase extends TileEntity {
         }
         if (id == 254) {
             IBlockState state = world.getBlockState(pos);
-            if (state instanceof IExtendedBlockState && ICMods.immersiveEngineering()) { IETileBridge.removeStateFromSmartModelCache((IExtendedBlockState)state); }
+            if (state instanceof IExtendedBlockState && ICMods.immersiveEngineering()) { ICBridges.tile().removeStateFromSmartModelCache((IExtendedBlockState)state); }
             world.notifyBlockUpdate(pos, state, state, 3);
             return true;
         }
@@ -151,7 +151,7 @@ public abstract class ICTileEntityBase extends TileEntity {
     }
 
     @Override public double getMaxRenderDistanceSquared() {
-        if (renderDistanceMultiplier == null) { renderDistanceMultiplier = ICMods.immersiveEngineering() ? IETileBridge.renderDistanceMultiplier() : 1.0D; }
+        if (renderDistanceMultiplier == null) { renderDistanceMultiplier = ICMods.immersiveEngineering() ? ICBridges.tile().renderDistanceMultiplier() : 1.0D; }
         return super.getMaxRenderDistanceSquared() * renderDistanceMultiplier * renderDistanceMultiplier;
     }
 }

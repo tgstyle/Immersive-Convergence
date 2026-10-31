@@ -19,8 +19,7 @@ import com.immersiveconvergence.api.util.ICFluxStorage;
 import com.immersiveconvergence.api.util.ICFluxStorageAdvanced;
 import com.immersiveconvergence.api.util.ICUtils;
 import com.immersiveconvergence.api.util.IICInventory;
-import com.immersiveconvergence.common.event.ICTickingRegistry;
-import com.immersiveconvergence.common.util.ICLogger;
+import com.immersiveconvergence.api.util.ICLogger;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;

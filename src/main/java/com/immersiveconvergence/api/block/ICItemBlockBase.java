@@ -1,7 +1,7 @@
 package com.immersiveconvergence.api.block;
 import com.immersiveconvergence.api.ICLib;
 import com.immersiveconvergence.api.ICMods;
-import com.immersiveconvergence.common.client.IEClientBridge;
+import com.immersiveconvergence.api.bridge.ICBridges;
 
 import com.immersiveconvergence.api.util.ICNBT;
 import net.minecraft.block.Block;
@@ -39,7 +39,7 @@ public class ICItemBlockBase extends ItemBlock {
     @Override public void getSubItems(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> itemList) { if (this.isInCreativeTab(tab)) this.block.getSubBlocks(tab, itemList); }
     @Override @Nonnull public String getTranslationKey(@Nonnull ItemStack stack) { return ((ICBlockBase<?>) this.block).getTranslationKey(stack); }
     @SideOnly(Side.CLIENT)
-    @Override public FontRenderer getFontRenderer(@Nonnull ItemStack stack) { return ICMods.immersiveEngineering() ? IEClientBridge.itemFont() : null; }
+    @Override public FontRenderer getFontRenderer(@Nonnull ItemStack stack) { return ICMods.immersiveEngineering() ? ICBridges.client().itemFont() : null; }
     @Override public void addInformation(@Nonnull ItemStack stack, World worldIn, @Nonnull List<String> list, @Nonnull ITooltipFlag advInfo) {
         if (((ICBlockBase<?>) block).hasFlavour(stack)) {
             String subName = ((ICBlockBase<?>) this.block).getStateFromMeta(stack.getItemDamage()).getValue(((ICBlockBase<?>) this.block).property).toString().toLowerCase(Locale.US);

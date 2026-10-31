@@ -1,7 +1,7 @@
 package com.immersiveconvergence.api.client;
 
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IMetaBlock;
-import com.immersiveconvergence.common.util.ICLogger;
+import com.immersiveconvergence.api.util.ICLogger;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;

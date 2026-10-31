@@ -1,6 +1,6 @@
 package com.immersiveconvergence.common.util.compat;
 
-import com.immersiveconvergence.common.util.ICLogger;
+import com.immersiveconvergence.api.util.ICLogger;
 import com.immersiveconvergence.common.util.compat.computercraft.ICComputerCraft;
 import com.immersiveconvergence.common.util.compat.crafttweaker.ICCraftTweaker;
 import com.immersiveconvergence.common.util.compat.opencomputers.ICOpenComputers;

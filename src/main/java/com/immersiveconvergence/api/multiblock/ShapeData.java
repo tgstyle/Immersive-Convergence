@@ -1,7 +1,7 @@
 package com.immersiveconvergence.api.multiblock;
 
-import com.immersiveconvergence.common.util.ICLogger;
-import com.immersiveconvergence.common.util.ICResources;
+import com.immersiveconvergence.api.util.ICLogger;
+import com.immersiveconvergence.api.util.ICResources;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;

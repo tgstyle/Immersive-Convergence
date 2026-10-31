@@ -246,6 +246,10 @@ save it with a structure block, and copy the resulting file in. Remember that
 the machine's own ports have to stay where the layout file says they are, so
 rearranging blocks and moving points of interest usually go together.
 
+Without Immersive Engineering the mod's default blocks come from
+`structures/multiblocks/ifab/<id>.nbt`, or the plain path when a mod ships no such file,
+and a file at the override path above still wins.
+
 Air and structure void count as empty. Nothing is required in those positions
 and they are left alone when the machine forms, which is how machines with
 hollow interiors or overhangs are described.

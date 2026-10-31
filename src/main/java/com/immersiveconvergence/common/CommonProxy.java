@@ -4,7 +4,10 @@ import com.immersiveconvergence.ImmersiveConvergence;
 import com.immersiveconvergence.api.network.BinaryTileSyncMessage;
 import com.immersiveconvergence.api.network.TileSyncMessage;
 
+import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
+
+import javax.annotation.Nullable;
 
 public class CommonProxy {
 
@@ -22,4 +25,6 @@ public class CommonProxy {
     public boolean isMultiplayerClient() { return false; }
 
     public void scheduleClient(Runnable task) {}
+
+    @Nullable public World clientWorld() { return null; }
 }

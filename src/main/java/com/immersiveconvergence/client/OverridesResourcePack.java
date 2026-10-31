@@ -1,7 +1,7 @@
 package com.immersiveconvergence.client;
 
-import com.immersiveconvergence.common.util.ICLogger;
-import com.immersiveconvergence.common.util.ICResources;
+import com.immersiveconvergence.api.util.ICLogger;
+import com.immersiveconvergence.api.util.ICResources;
 
 import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.client.resources.data.IMetadataSection;

@@ -38,7 +38,10 @@
     "ie.common.MixinIETileEntityFluidPipe",
     "ie.common.MixinIETileEntityMultiblockPart",
     "ie.common.MixinIETileEntityOriginalBlock",
-    "ie.common.MixinIEToolVoltmeter"
+    "ie.common.MixinIEToolVoltmeter",
+    "ie.common.MixinIENetHandlerEvents",
+    "ie.common.MixinIECoilPlacement",
+    "ie.common.MixinIEEventHandlerWires"
   ],
   "client": [
     "ie.client.MixinIEClientProxySound",

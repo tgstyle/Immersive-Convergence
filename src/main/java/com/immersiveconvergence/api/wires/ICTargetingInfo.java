@@ -1,4 +1,4 @@
-package com.immersiveconvergence.api.energy;
+package com.immersiveconvergence.api.wires;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;

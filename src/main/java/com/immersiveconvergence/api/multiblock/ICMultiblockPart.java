@@ -1,7 +1,7 @@
 package com.immersiveconvergence.api.multiblock;
 
 import com.immersiveconvergence.api.ICMods;
-import com.immersiveconvergence.common.multiblock.IEMultiblockPartBridge;
+import com.immersiveconvergence.api.bridge.ICBridges;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 public interface ICMultiblockPart {
     @Nullable static ICMultiblockPart of(@Nullable TileEntity tile) {
         if (tile instanceof ICMultiblockPart) { return (ICMultiblockPart)tile; }
-        return tile != null && ICMods.immersiveEngineering() ? IEMultiblockPartBridge.partOf(tile) : null;
+        return tile != null && ICMods.immersiveEngineering() ? ICBridges.multiblock().partOf(tile) : null;
     }
 
     World getPartWorld();

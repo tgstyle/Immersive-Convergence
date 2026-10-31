@@ -1,6 +1,6 @@
 package com.immersiveconvergence.api.multiblock;
 
-import com.immersiveconvergence.common.multiblock.IEMultiblockBridge;
+import com.immersiveconvergence.api.bridge.ICBridges;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -22,14 +22,14 @@ public class MultiblockRegistry {
 
     public static <T extends ICMultiblock> T register(T multiblock) {
         MULTIBLOCKS.add(multiblock);
-        if (immersiveEngineering()) { IEMultiblockBridge.register(multiblock); }
+        if (immersiveEngineering()) { ICBridges.multiblock().register(multiblock); }
         return multiblock;
     }
 
     public static List<ICMultiblock> getMultiblocks() { return Collections.unmodifiableList(MULTIBLOCKS); }
 
     public static boolean exists(String uniqueName) {
-        if (immersiveEngineering()) { return IEMultiblockBridge.exists(uniqueName); }
+        if (immersiveEngineering()) { return ICBridges.multiblock().exists(uniqueName); }
         for (ICMultiblock multiblock : MULTIBLOCKS) {
             if (multiblock.getUniqueName().equalsIgnoreCase(uniqueName)) { return true; }
         }
@@ -37,7 +37,7 @@ public class MultiblockRegistry {
     }
 
     public static boolean formFirstMatching(World world, BlockPos pos, EnumFacing side, EntityPlayer player, ItemStack stack, Predicate<String> allowed) {
-        if (immersiveEngineering()) { return IEMultiblockBridge.formFirstMatching(world, pos, side, player, stack, allowed); }
+        if (immersiveEngineering()) { return ICBridges.multiblock().formFirstMatching(world, pos, side, player, stack, allowed); }
         for (ICMultiblock multiblock : MULTIBLOCKS) {
             if (!multiblock.isBlockTrigger(world.getBlockState(pos))) { continue; }
             if (!allowed.test(multiblock.getUniqueName())) { continue; }
@@ -47,10 +47,10 @@ public class MultiblockRegistry {
     }
 
     public static boolean formationCancelled(EntityPlayer player, ICMultiblock multiblock, BlockPos pos, ItemStack hammer) {
-        return immersiveEngineering() && IEMultiblockBridge.formationCancelled(player, multiblock, pos, hammer);
+        return immersiveEngineering() && ICBridges.multiblock().formationCancelled(player, multiblock, pos, hammer);
     }
 
     public static void formationDone(EntityPlayer player, ICMultiblock multiblock, BlockPos pos, ItemStack hammer) {
-        if (immersiveEngineering()) { IEMultiblockBridge.formationDone(player, multiblock, pos, hammer); }
+        if (immersiveEngineering()) { ICBridges.multiblock().formationDone(player, multiblock, pos, hammer); }
     }
 }

@@ -11,8 +11,8 @@ import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
 import com.immersiveconvergence.api.ICMods;
-import com.immersiveconvergence.common.client.IEClientBridge;
-import com.immersiveconvergence.common.util.ICLogger;
+import com.immersiveconvergence.api.bridge.ICBridges;
+import com.immersiveconvergence.api.util.ICLogger;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -70,7 +70,7 @@ public final class SplitModelProperties {
     }
 
     private static void warnUnformedPart(IBlockState state, BlockPos pos, @Nullable TileEntity te) {
-        if (ICMods.immersiveEngineering() && IEClientBridge.unformedMultiblockPart(te) && WARNED_POSITIONS.add(pos.toImmutable())) {
+        if (te != null && ICMods.immersiveEngineering() && ICBridges.client().unformedMultiblockPart(te) && WARNED_POSITIONS.add(pos.toImmutable())) {
             ICLogger.error("IC split model: unformed multiblock part at " + pos + " on " + state.getBlock().getRegistryName() + " (" + te.getClass().getName() + "), so the block draws nothing");
         }
     }
@@ -78,6 +78,6 @@ public final class SplitModelProperties {
     @Nullable public static BlockPos modelOffset(@Nullable TileEntity te) {
         if (te instanceof ISubmodelOffsetProvider) { return ((ISubmodelOffsetProvider)te).getModelOffset(); }
         if (te == null || !ICMods.immersiveEngineering()) { return null; }
-        return IEClientBridge.multiblockPartOffset(te);
+        return ICBridges.client().multiblockPartOffset(te);
     }
 }

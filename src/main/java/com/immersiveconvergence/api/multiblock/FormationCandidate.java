@@ -1,5 +1,7 @@
 package com.immersiveconvergence.api.multiblock;
 
+import com.immersiveconvergence.api.wires.ICTargetingInfo;
+
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -25,6 +27,8 @@ public final class FormationCandidate {
     }
 
     public BlockPos toWorld(BlockPos posInMultiblock) { return TemplateMultiblock.localToWorld(origin, template.localX(posInMultiblock.getX(), mirrored), posInMultiblock.getY(), posInMultiblock.getZ(), side); }
+
+    public ICTargetingInfo toWorld(ICTargetingInfo target) { return TemplateMultiblock.localToWorld(target, side, mirrored); }
 
     public EnumFacing toWorld(LocalFacing facing) {
         EnumFacing global = facing.LocalToGlobal(side);

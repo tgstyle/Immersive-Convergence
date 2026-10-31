@@ -3,7 +3,7 @@ package com.immersiveconvergence.common.blocks.conveyors;
 import com.immersiveconvergence.api.ICConveyors;
 import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.client.ICModels;
-import com.immersiveconvergence.common.util.ICLogger;
+import com.immersiveconvergence.api.util.ICLogger;
 import com.immersiveconvergence.core.ICMixinConfig;
 
 import net.minecraftforge.fml.common.FMLCommonHandler;

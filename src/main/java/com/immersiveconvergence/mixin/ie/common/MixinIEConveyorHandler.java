@@ -1,6 +1,6 @@
 package com.immersiveconvergence.mixin.ie.common;
 
-import com.immersiveconvergence.common.util.ICLogger;
+import com.immersiveconvergence.api.util.ICLogger;
 import com.immersiveconvergence.core.ICMixinConfig;
 import com.immersiveconvergence.common.blocks.conveyors.*;
 import blusunrize.immersiveengineering.api.tool.ConveyorHandler;

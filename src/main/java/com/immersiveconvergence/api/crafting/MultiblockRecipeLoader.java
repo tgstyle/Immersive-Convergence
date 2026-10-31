@@ -1,8 +1,8 @@
 package com.immersiveconvergence.api.crafting;
 
-import com.immersiveconvergence.common.util.ICLogger;
-import com.immersiveconvergence.common.util.ICResources;
-import com.immersiveconvergence.common.util.RdplBridge;
+import com.immersiveconvergence.api.bridge.ICBridges;
+import com.immersiveconvergence.api.util.ICLogger;
+import com.immersiveconvergence.api.util.ICResources;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -52,7 +52,7 @@ public class MultiblockRecipeLoader {
         Path overrides = ICResources.overrideRoot(modid).resolve(folder);
         try { Files.createDirectories(overrides); }
         catch (IOException e) { ICLogger.error("Failed to create the recipe override folder - " + e.getMessage()); }
-        if (ICResources.deferToRdpl()) { RdplBridge.forEach(modid, folder, "json", (name, contents) -> readContents(files, name, contents)); }
+        if (ICResources.deferToRdpl()) { ICBridges.rdpl().forEach(modid, folder, "json", (name, contents) -> readContents(files, name, contents)); }
         else {
             try (Stream<Path> stream = Files.walk(overrides)) { stream.filter(Files::isRegularFile).forEach(file -> readFile(files, overrides, file)); }
             catch (IOException e) { ICLogger.error("Failed to read recipe overrides - " + e.getMessage()); }

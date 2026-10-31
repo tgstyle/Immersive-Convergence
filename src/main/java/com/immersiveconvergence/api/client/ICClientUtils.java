@@ -1,7 +1,7 @@
 package com.immersiveconvergence.api.client;
 
 import com.immersiveconvergence.api.ICMods;
-import com.immersiveconvergence.common.client.IEClientBridge;
+import com.immersiveconvergence.api.bridge.ICBridges;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -130,7 +130,7 @@ public class ICClientUtils {
     }
 
     public static void addFluidTooltip(FluidStack fluid, List<String> tooltip, int tankCapacity) {
-        if (ICMods.immersiveEngineering()) { IEClientBridge.addFluidTooltip(fluid, tooltip, tankCapacity); return; }
+        if (ICMods.immersiveEngineering()) { ICBridges.client().addFluidTooltip(fluid, tooltip, tankCapacity); return; }
         tooltip.add(fluid != null && fluid.getFluid() != null ? fluid.getFluid().getRarity(fluid).color + fluid.getLocalizedName() : TextFormatting.GRAY + "Empty");
         String amount = TextFormatting.GRAY.toString() + (fluid != null ? fluid.amount : 0);
         tooltip.add(tankCapacity > 0 ? amount + "/" + tankCapacity + "mB" : amount + "mB");

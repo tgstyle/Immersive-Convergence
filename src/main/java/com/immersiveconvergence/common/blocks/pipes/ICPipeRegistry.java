@@ -1,7 +1,7 @@
 package com.immersiveconvergence.common.blocks.pipes;
 
 import com.immersiveconvergence.api.ICMods;
-import com.immersiveconvergence.common.util.ICLogger;
+import com.immersiveconvergence.api.util.ICLogger;
 import com.immersiveconvergence.core.ICMixinConfig;
 
 import blusunrize.immersiveengineering.common.blocks.metal.TileEntityFluidPipe;

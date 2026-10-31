@@ -1,10 +1,17 @@
 package com.immersiveconvergence.mixin.ie.common;
 
 import com.immersiveconvergence.ImmersiveConvergence;
-import com.immersiveconvergence.api.energy.ICTargetingInfo;
-import com.immersiveconvergence.api.energy.ICTileEntityConnectable;
-import com.immersiveconvergence.api.energy.ICWireType;
+import com.immersiveconvergence.api.ICMods;
+import com.immersiveconvergence.api.wires.ICConnectionPoint;
+import com.immersiveconvergence.api.wires.ICWire;
+import com.immersiveconvergence.api.wires.ICWireType;
+import com.immersiveconvergence.api.wires.IICEnergyConnector;
+import com.immersiveconvergence.api.wires.connectors.ICTileEntityConnectable;
+import com.immersiveconvergence.common.energy.ICIEWireType;
 import com.immersiveconvergence.common.energy.IEWireBridge;
+import com.immersiveconvergence.common.energy.IEWireEvents;
+import com.immersiveconvergence.common.energy.IEWireGraph;
+import com.immersiveconvergence.common.energy.wires.ICWireSavedData;
 
 import blusunrize.immersiveengineering.api.ApiUtils;
 import blusunrize.immersiveengineering.api.TargetingInfo;
@@ -31,8 +38,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.AbstractSet;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -43,44 +51,78 @@ public abstract class MixinICConnectableWires extends net.minecraft.tileentity.T
     @Unique private final List<Pair<Float, Consumer<Float>>> immersiveconvergence$sources = new ArrayList<>();
     @Unique private long immersiveconvergence$lastSourceUpdate = 0;
 
-    @Unique private ICTileEntityConnectable immersiveconvergence$self() { return (ICTileEntityConnectable)(Object)this; }
+    @SuppressWarnings("ConstantConditions") @Unique private ICTileEntityConnectable immersiveconvergence$self() { return (ICTileEntityConnectable)(Object)this; }
 
     @Unique private BlockPos immersiveconvergence$otherEnd(Connection con) { return con.start.equals(pos) ? con.end : con.start; }
 
-    @Override public BlockPos getConnectionMaster(@Nullable WireType cableType, TargetingInfo target) { return immersiveconvergence$self().connectionMaster(); }
+    @Unique private ICConnectionPoint immersiveconvergence$pointOf(Connection con) { return immersiveconvergence$self().pointToward(immersiveconvergence$otherEnd(con), IEWireBridge.required(con.cableType)); }
+
+    @Unique private ICWire immersiveconvergence$wire(ICConnectionPoint point, BlockPos otherEnd, ICWireType type) { return new ICWire(point, Vec3d.ZERO, new ICConnectionPoint(otherEnd, 0), Vec3d.ZERO, type); }
+
+    @Unique @Nullable private IICEnergyConnector immersiveconvergence$energy() {
+        Object self = this;
+        return self instanceof IICEnergyConnector ? (IICEnergyConnector)self : null;
+    }
+
+    @Override public boolean canConnect() { return !immersiveconvergence$self().points().isEmpty(); }
+
+    @Override public boolean isEnergyOutput() { return immersiveconvergence$energy() != null; }
+
+    @Override public int outputEnergy(int amount, boolean simulate, int energyType) {
+        IICEnergyConnector energy = immersiveconvergence$energy();
+        return energy == null ? 0 : energy.accept(new ICConnectionPoint(pos, 0), amount, simulate);
+    }
+
+    @Override public void onEnergyPassthrough(int amount) {
+        IICEnergyConnector energy = immersiveconvergence$energy();
+        if (energy != null) { energy.onPassthrough(new ICConnectionPoint(pos, 0), amount); }
+    }
+
+    @Override public BlockPos getConnectionMaster(@Nullable WireType cableType, TargetingInfo target) { return immersiveconvergence$self().master(); }
 
     @Override public boolean canConnectCable(WireType cableType, TargetingInfo target, @Nonnull Vec3i offset) {
-        ICWireType cable = IEWireBridge.required(cableType);
-        Boolean accepted = immersiveconvergence$self().canConnectCable(cable, IEWireBridge.targeting(target), offset);
-        return accepted != null ? accepted : immersiveconvergence$self().acceptsCable(cable);
+        if (!ICMods.immersiveEngineering()) { return false; }
+        ICConnectionPoint point = immersiveconvergence$self().pointAt(IEWireBridge.targeting(target), offset);
+        return point != null && immersiveconvergence$self().accepts(point, IEWireBridge.required(cableType));
     }
 
     @Override public void connectCable(WireType cableType, TargetingInfo target, IImmersiveConnectable other) {
         ICWireType cable = IEWireBridge.required(cableType);
-        if (!immersiveconvergence$self().connectCable(cable, IEWireBridge.targeting(target), other.getConnectionMaster(cableType, target))) {
-            immersiveconvergence$self().acceptCable(cable);
-        }
+        BlockPos otherMaster = other.getConnectionMaster(cableType, target);
+        ICConnectionPoint targeted = immersiveconvergence$self().pointAt(IEWireBridge.targeting(target), Vec3i.NULL_VECTOR);
+        ICConnectionPoint point = targeted != null ? targeted : immersiveconvergence$self().pointToward(otherMaster, cable);
+        immersiveconvergence$self().onWireAdded(point, immersiveconvergence$wire(point, otherMaster, cable));
+        ICWireSavedData.ieWireAdded(world, pos, otherMaster, cable);
+        IEWireGraph.invalidate(world);
     }
 
     @Override public WireType getCableLimiter(@Nonnull TargetingInfo target) {
         return IEWireBridge.toIE(immersiveconvergence$self().cableLimiter(IEWireBridge.targeting(target)));
     }
 
-    @Override public boolean allowEnergyToPass(Connection con) { return immersiveconvergence$self().allowEnergyToPass(); }
+    @Override public boolean allowEnergyToPass(Connection con) { return immersiveconvergence$self().passes(con == null ? new ICConnectionPoint(pos, 0) : immersiveconvergence$pointOf(con)); }
 
     @Override public void removeCable(Connection connection) {
-        if (!immersiveconvergence$self().removeCable(connection == null ? null : immersiveconvergence$otherEnd(connection), connection == null)) {
-            immersiveconvergence$self().forgetCable(connection == null ? null : IEWireBridge.of(connection.cableType));
+        if (connection == null) {
+            ICWireSavedData.ieWireRemoved(world, pos, null, null);
+            IEWireGraph.invalidate(world);
+            return;
         }
+        BlockPos otherEnd = immersiveconvergence$otherEnd(connection);
+        ICWireType type = IEWireBridge.required(connection.cableType);
+        ICConnectionPoint point = immersiveconvergence$pointOf(connection);
+        immersiveconvergence$self().onWireRemoved(point, immersiveconvergence$wire(point, otherEnd, type), IEWireEvents.cause());
+        ICWireSavedData.ieWireRemoved(world, pos, otherEnd, type);
+        IEWireGraph.invalidate(world);
     }
 
     @Override @Nonnull public Vec3d getConnectionOffset(@Nonnull Connection con) {
-        return immersiveconvergence$self().connectionOffset(IEWireBridge.required(con.cableType), immersiveconvergence$otherEnd(con));
+        return immersiveconvergence$self().offset(immersiveconvergence$pointOf(con), IEWireBridge.required(con.cableType));
     }
 
     @Override @Nonnull public Vec3d getConnectionOffset(@Nonnull Connection con, TargetingInfo target, Vec3i offsetLink) {
-        ICTargetingInfo info = IEWireBridge.targeting(target);
-        return immersiveconvergence$self().connectionOffset(IEWireBridge.required(con.cableType), info);
+        ICConnectionPoint point = immersiveconvergence$self().pointAt(IEWireBridge.targeting(target), offsetLink);
+        return immersiveconvergence$self().offset(point != null ? point : immersiveconvergence$pointOf(con), IEWireBridge.required(con.cableType));
     }
 
     @Override public void addAvailableEnergy(float amount, Consumer<Float> consume) {
@@ -122,6 +164,7 @@ public abstract class MixinICConnectableWires extends net.minecraft.tileentity.T
         if (c.cableType == WireType.COPPER) { return 8 * 2F / c.cableType.getTransferRate(); }
         if (c.cableType == WireType.ELECTRUM) { return 8 * 5F / c.cableType.getTransferRate(); }
         if (c.cableType == WireType.STEEL) { return 8 * 15F / c.cableType.getTransferRate(); }
+        if (c.cableType instanceof ICIEWireType) { return 8 * ((ICIEWireType)c.cableType).getDamageFactor() / c.cableType.getTransferRate(); }
         return 0;
     }
 
@@ -165,56 +208,28 @@ public abstract class MixinICConnectableWires extends net.minecraft.tileentity.T
     @Unique private Set<Connection> immersiveconvergence$genConns() {
         Set<Connection> conns = ImmersiveNetHandler.INSTANCE.getConnections(world, pos);
         if (conns == null) { return ImmutableSet.of(); }
-        Set<Connection> ret = new HashSet<Connection>() {
-            @Override public boolean equals(Object o) {
-                if (o == this) { return true; }
-                if (!(o instanceof HashSet)) { return false; }
-                HashSet<?> other = (HashSet<?>)o;
-                if (other.size() != this.size()) { return false; }
-                for (Connection c : this) {
-                    if (!other.contains(c)) { return false; }
-                }
-                return true;
-            }
-        };
+        List<Connection> ret = new ArrayList<>();
         for (Connection c : conns) {
             if (ApiUtils.toIIC(c.end, world, false) == null) { continue; }
             c.getSubVertices(world);
             ret.add(c);
         }
-        return ret;
-    }
+        return new AbstractSet<Connection>() {
+            @Override @Nonnull public Iterator<Connection> iterator() { return ret.iterator(); }
 
-
-    @Override public void onLoad() {
-        super.onLoad();
-        if (world.isRemote) { ImmersiveConvergence.proxy.scheduleClient(this::immersiveconvergence$refreshWires); }
-    }
-
-    @Unique private void immersiveconvergence$refreshWires() {
-        if (world == null || isInvalid()) { return; }
-        Set<Connection> conns = ImmersiveNetHandler.INSTANCE.getConnections(world, pos);
-        if (conns == null || conns.isEmpty()) { return; }
-        for (Connection con : conns) {
-            if (!world.isBlockLoaded(con.end)) { continue; }
-            con.catenaryVertices = null;
-            world.markBlockRangeForRenderUpdate(con.end, con.end);
-        }
-        world.markBlockRangeForRenderUpdate(pos, pos);
+            @Override public int size() { return ret.size(); }
+        };
     }
 
     @Override public void onChunkUnload() {
         super.onChunkUnload();
+        if (!ICMods.immersiveEngineering()) { return; }
         if (!world.isRemote) { ImmersiveNetHandler.INSTANCE.addProxy(new IICProxy(this)); }
     }
 
     @Override public void validate() {
         super.validate();
+        if (!ICMods.immersiveEngineering()) { return; }
         if (!world.isRemote) { ApiUtils.addFutureServerTask(world, () -> ImmersiveNetHandler.INSTANCE.onTEValidated(this)); }
-    }
-
-    @Override public void invalidate() {
-        super.invalidate();
-        if (world.isRemote && ImmersiveConvergence.proxy.isMultiplayerClient()) { ImmersiveNetHandler.INSTANCE.clearAllConnectionsFor(pos, world, this, false); }
     }
 }

@@ -1,0 +1,1 @@
+{"ingredients":{"ie_or":"com.immersiveconvergence.api.crafting.IEOrIngredientFactory"},"conditions":{"ie_active":"com.immersiveconvergence.api.crafting.IEActiveConditionFactory","ifab_only":"com.immersiveconvergence.api.crafting.IFabOnlyConditionFactory"}}

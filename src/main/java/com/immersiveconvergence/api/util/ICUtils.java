@@ -7,7 +7,7 @@ import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.block.ICBlockBase;
 import com.immersiveconvergence.api.crafting.ICIngredient;
 import com.immersiveconvergence.api.energy.IICFluxAcceptor;
-import com.immersiveconvergence.common.util.IEChatBridge;
+import com.immersiveconvergence.api.bridge.ICBridges;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPistonBase;
@@ -50,6 +50,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.Set;
 
 @SuppressWarnings("unused")
 public class ICUtils {
@@ -199,7 +200,11 @@ public class ICUtils {
         return ItemStack.EMPTY;
     }
 
-    public static boolean isHammer(ItemStack stack) { return !stack.isEmpty() && stack.getItem().getToolClasses(stack).contains(ICLib.TOOL_HAMMER); }
+    public static boolean isHammer(ItemStack stack) {
+        if (stack.isEmpty()) { return false; }
+        Set<String> toolClasses = stack.getItem().getToolClasses(stack);
+        return toolClasses.contains(ICLib.TOOL_HAMMER) || toolClasses.contains(ICLib.TOOL_IFAB_HAMMER);
+    }
 
     public static void modifyInvStackSize(NonNullList<ItemStack> inv, int slot, int amount) {
         if (slot >= 0 && slot < inv.size() && !inv.get(slot).isEmpty()) {
@@ -267,7 +272,7 @@ public class ICUtils {
     public static void sendServerNoSpamMessages(EntityPlayer player, ITextComponent... messages) {
         if (messages.length < 1) { return; }
         if (ICMods.immersiveEngineering()) {
-            IEChatBridge.sendServerNoSpamMessages(player, messages);
+            ICBridges.integration().sendServerNoSpamMessages(player, messages);
             return;
         }
         for (ITextComponent message : messages) { player.sendStatusMessage(message, true); }

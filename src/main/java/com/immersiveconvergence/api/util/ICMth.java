@@ -1,4 +1,4 @@
-package com.immersiveconvergence.common.util;
+package com.immersiveconvergence.api.util;
 
 import java.util.function.IntPredicate;
 import net.minecraft.util.EnumFacing;

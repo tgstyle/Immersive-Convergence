@@ -1,7 +1,7 @@
 package com.immersiveconvergence.api.client.split;
 
 import com.immersiveconvergence.ImmersiveConvergence;
-import com.immersiveconvergence.common.util.ICLogger;
+import com.immersiveconvergence.api.util.ICLogger;
 
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.ResourceLocation;

@@ -6,10 +6,13 @@ import com.immersiveconvergence.api.multiblock.ICTileEntityMultiblockMetal;
 import com.immersiveconvergence.api.multiblock.ICTileEntityMultiblockPart;
 import com.immersiveconvergence.api.util.ICInventoryHandler;
 import com.immersiveconvergence.api.ICMods;
+import com.immersiveconvergence.api.client.ICModels;
 import com.immersiveconvergence.api.util.ICDimensionBlockPos;
 import com.immersiveconvergence.api.util.ICUtils;
-import com.immersiveconvergence.common.block.IETileBridge;
+import com.immersiveconvergence.api.bridge.ICBridges;
 import com.immersiveconvergence.api.util.IICInventory;
+import com.immersiveconvergence.api.wires.IICConnector;
+import com.immersiveconvergence.api.wires.IICWireCoil;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.*;
 
 import net.minecraft.block.Block;
@@ -124,12 +127,12 @@ public abstract class ICBlockTileProvider<E extends Enum<E> & ICBlockBase.IBlock
         if (tile == null) { tile = tempTile.get(dpos); }
         if (tile != null && (!(tile instanceof ITileDrop) || !((ITileDrop)tile).preventInventoryDrop())) {
             NonNullList<ItemStack> dropped = tile instanceof IICInventory ? ((IICInventory)tile).getDroppedItems()
-                    : ICMods.immersiveEngineering() ? IETileBridge.droppedItems(tile) : null;
+                    : ICMods.immersiveEngineering() ? ICBridges.tile().droppedItems(tile) : null;
             if (dropped != null) {
                 for (ItemStack s : dropped) { if (!s.isEmpty()) { drops.add(s); } }
             } else if (tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)) {
                 IItemHandler h = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-                if (h instanceof ICInventoryHandler || (ICMods.immersiveEngineering() && IETileBridge.isInventoryHandler(h))) {
+                if (h != null && (h instanceof ICInventoryHandler || (ICMods.immersiveEngineering() && ICBridges.tile().isInventoryHandler(h)))) {
                     for (int i = 0; i < h.getSlots(); i++) {
                         if (!h.getStackInSlot(i).isEmpty()) {
                             drops.add(h.getStackInSlot(i));
@@ -149,7 +152,7 @@ public abstract class ICBlockTileProvider<E extends Enum<E> & ICBlockBase.IBlock
     @Override public void breakBlock(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull IBlockState state) {
         TileEntity tile = world.getTileEntity(pos);
         if (tile instanceof IHasDummyBlocks) { ((IHasDummyBlocks)tile).breakDummies(pos, state); }
-        if (tile != null && !world.isRemote && ICMods.immersiveEngineering()) { IETileBridge.clearConnections(tile, world, world.getGameRules().getBoolean("doTileDrops")); }
+        if (tile != null && !world.isRemote && ICMods.immersiveEngineering()) { ICBridges.tile().clearConnections(tile, world, world.getGameRules().getBoolean("doTileDrops")); }
         tempTile.put(new ICDimensionBlockPos(pos, world.provider.getDimension()), tile);
         super.breakBlock(world, pos, state);
         world.removeTileEntity(pos);
@@ -257,13 +260,13 @@ public abstract class ICBlockTileProvider<E extends Enum<E> & ICBlockBase.IBlock
                         }
                     }
                 }
-                if (te instanceof IAdvancedHasObjProperty) { extended = extended.withProperty(Properties.AnimationProperty, ((IAdvancedHasObjProperty)te).getOBJState()); }
-                else if (te instanceof IHasObjProperty) { extended = extended.withProperty(Properties.AnimationProperty, new OBJModel.OBJState(((IHasObjProperty)te).compileDisplayList(), true)); }
+                if (extended.getUnlistedNames().contains(Properties.AnimationProperty) && te instanceof IAdvancedHasObjProperty) { extended = extended.withProperty(Properties.AnimationProperty, ((IAdvancedHasObjProperty)te).getOBJState()); }
+                else if (extended.getUnlistedNames().contains(Properties.AnimationProperty) && te instanceof IHasObjProperty) { extended = extended.withProperty(Properties.AnimationProperty, new OBJModel.OBJState(((IHasObjProperty)te).compileDisplayList(), true)); }
                 if (te instanceof IDynamicTexture) { extended = extended.withProperty(ICProperties.OBJ_TEXTURE_REMAP, ((IDynamicTexture)te).getTextureReplacements()); }
-                if (ICMods.immersiveEngineering()) { extended = IETileBridge.extendState(extended, te); }
+                if (ICMods.immersiveEngineering()) { extended = ICBridges.tile().extendState(extended, te); }
                 if (te instanceof IPropertyPassthrough && ((IExtendedBlockState)state).getUnlistedNames().contains(ICProperties.TILEENTITY_PASSTHROUGH)) { extended = extended.withProperty(ICProperties.TILEENTITY_PASSTHROUGH, te); }
-                if (ICMods.immersiveEngineering() && ((IExtendedBlockState)state).getUnlistedNames().contains(ICProperties.CONNECTIONS)) {
-                    Set<?> connections = IETileBridge.wireConnections(te);
+                if (((IExtendedBlockState)state).getUnlistedNames().contains(ICProperties.CONNECTIONS)) {
+                    Set<?> connections = ICMods.immersiveEngineering() ? ICBridges.tile().wireConnections(te) : ICModels.nativeConnections(pos);
                     if (connections != null) { extended = extended.withProperty(ICProperties.CONNECTIONS, connections); }
                 }
             }
@@ -313,6 +316,7 @@ public abstract class ICBlockTileProvider<E extends Enum<E> & ICBlockBase.IBlock
             boolean b = ((IPlayerInteraction)tile).interact(side, player, hand, heldItem, hitX, hitY, hitZ);
             if (b) { return true; }
         }
+        if (tile instanceof IICConnector && player.getHeldItem(hand).getItem() instanceof IICWireCoil) { return false; }
         if (tile instanceof IGuiTile && hand == EnumHand.MAIN_HAND && !player.isSneaking()) {
             TileEntity master = ((IGuiTile)tile).getGuiMaster();
             if (!world.isRemote && master != null && ((IGuiTile)master).canOpenGui(player)) { context.guiOpener.open(player, (TileEntity & IGuiTile)master); }
@@ -434,6 +438,6 @@ public abstract class ICBlockTileProvider<E extends Enum<E> & ICBlockBase.IBlock
 
     @Override public void onEntityCollision(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull IBlockState state, @Nonnull Entity entity) {
         TileEntity te = world.getTileEntity(pos);
-        if (te != null && ICMods.immersiveEngineering()) { IETileBridge.onEntityCollision(te, world, entity); }
+        if (te != null && ICMods.immersiveEngineering()) { ICBridges.tile().onEntityCollision(te, world, entity); }
     }
 }

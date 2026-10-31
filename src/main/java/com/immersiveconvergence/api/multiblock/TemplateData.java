@@ -1,7 +1,10 @@
 package com.immersiveconvergence.api.multiblock;
 
-import com.immersiveconvergence.common.util.ICLogger;
-import com.immersiveconvergence.common.util.ICResources;
+import com.immersiveconvergence.api.ICMods;
+import com.immersiveconvergence.api.wires.ICTemplateWire;
+import com.immersiveconvergence.api.wires.IICWireTemplate;
+import com.immersiveconvergence.api.util.ICLogger;
+import com.immersiveconvergence.api.util.ICResources;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -10,32 +13,39 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.math.BlockPos;
+import javax.annotation.Nonnull;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-public final class TemplateData {
+public final class TemplateData implements IICWireTemplate {
     private static final HashMap<String, TemplateData> CACHE = new HashMap<>();
     public final int width, height, length;
     public final IBlockState[][][] structure;
     public final Set<BlockPos> airCells;
     public final HashMap<BlockPos, NBTTagCompound> cellData;
+    private final List<ICTemplateWire> wires;
 
-    private TemplateData(int width, int height, int length, IBlockState[][][] structure, Set<BlockPos> airCells, HashMap<BlockPos, NBTTagCompound> cellData) {
+    private TemplateData(int width, int height, int length, IBlockState[][][] structure, Set<BlockPos> airCells, HashMap<BlockPos, NBTTagCompound> cellData, List<ICTemplateWire> wires) {
         this.width = width;
         this.height = height;
         this.length = length;
         this.structure = structure;
         this.airCells = airCells;
         this.cellData = cellData;
+        this.wires = Collections.unmodifiableList(wires);
     }
 
     public static TemplateData load(String modid, String id) {
         String key = modid + ":" + id;
         if (CACHE.containsKey(key)) { return CACHE.get(key); }
         TemplateData data = null;
-        try (InputStream stream = ICResources.open(modid, "structures/multiblocks/" + id + ".nbt")) {
+        String path = "structures/multiblocks/" + id + ".nbt";
+        try (InputStream stream = ICMods.immersiveEngineering() ? ICResources.open(modid, path) : ICResources.open(modid, path, "structures/multiblocks/ifab/" + id + ".nbt")) {
             data = parse(CompressedStreamTools.readCompressed(stream));
         } catch (Exception e) { ICLogger.error("Couldn't load structure " + key + ": " + e); }
         CACHE.put(key, data);
@@ -61,8 +71,13 @@ public final class TemplateData {
             if (state.getBlock() == Blocks.AIR || state.getBlock() == Blocks.STRUCTURE_VOID) { continue; }
             structure[pos.getIntAt(1)][pos.getIntAt(2)][pos.getIntAt(0)] = state;
         }
-        return new TemplateData(width, height, length, structure, airCells, cellData);
+        List<ICTemplateWire> wires = new ArrayList<>();
+        NBTTagList wireTags = nbt.getTagList(TAG, 10);
+        for (int i = 0; i < wireTags.tagCount(); i++) { wires.add(ICTemplateWire.readFromNBT(wireTags.getCompoundTagAt(i))); }
+        return new TemplateData(width, height, length, structure, airCells, cellData, wires);
     }
+
+    @Nonnull @Override public List<ICTemplateWire> wires() { return wires; }
 
     public NBTTagCompound getCellData(int x, int y, int z) { return cellData.get(new BlockPos(x, y, z)); }
 
