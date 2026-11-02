@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = ItemIETool.class, remap = false) public abstract class MixinItemIETool {
 
-    @Inject(method = "onItemUse", at = @At("HEAD"), cancellable = true) private void immersiveconvergence$readICFlux(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ, CallbackInfoReturnable<EnumActionResult> cir) {
+    @Inject(method = "onItemUse", at = @At("HEAD"), cancellable = true, remap = true, require = 1) private void immersiveconvergence$readICFlux(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ, CallbackInfoReturnable<EnumActionResult> cir) {
         if (world.isRemote || player.isSneaking()) { return; }
         ItemStack stack = player.getHeldItem(hand);
         if (stack.getMetadata() != 2) { return; }

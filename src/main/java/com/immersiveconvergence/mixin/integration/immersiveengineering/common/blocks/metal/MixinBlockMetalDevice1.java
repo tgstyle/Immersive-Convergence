@@ -62,9 +62,9 @@ import javax.annotation.Nonnull;
         super.breakBlock(world, pos, state);
     }
 
-    @Redirect(method = "neighborChanged", at = @At(value = "INVOKE", target = "Ljava/util/concurrent/ConcurrentHashMap;clear()V", ordinal = 0)) private void redirectNeighborClear(ConcurrentHashMap<?, ?> instance) { if (ICMixinConfig.mixinSettings.replaceIEPipes) { TileEntityFluidPipeAlternative.indirectConnections.clear(); }
+    @Redirect(method = "neighborChanged", at = @At(value = "INVOKE", target = "Ljava/util/concurrent/ConcurrentHashMap;clear()V", ordinal = 0, remap = false), remap = true) private void redirectNeighborClear(ConcurrentHashMap<?, ?> instance) { if (ICMixinConfig.mixinSettings.replaceIEPipes) { TileEntityFluidPipeAlternative.indirectConnections.clear(); }
     else { instance.clear(); } }
 
-    @Redirect(method = "getStateForPlacement", at = @At(value = "INVOKE", target = "Ljava/util/concurrent/ConcurrentHashMap;clear()V", ordinal = 0)) private void redirectPlacementClear(ConcurrentHashMap<?, ?> instance) { if (ICMixinConfig.mixinSettings.replaceIEPipes) { TileEntityFluidPipeAlternative.indirectConnections.clear(); }
+    @Redirect(method = "getStateForPlacement(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumFacing;FFFILnet/minecraft/entity/EntityLivingBase;)Lnet/minecraft/block/state/IBlockState;", at = @At(value = "INVOKE", target = "Ljava/util/concurrent/ConcurrentHashMap;clear()V", ordinal = 0, remap = false), remap = true) private void redirectPlacementClear(ConcurrentHashMap<?, ?> instance) { if (ICMixinConfig.mixinSettings.replaceIEPipes) { TileEntityFluidPipeAlternative.indirectConnections.clear(); }
     else { instance.clear(); } }
 }

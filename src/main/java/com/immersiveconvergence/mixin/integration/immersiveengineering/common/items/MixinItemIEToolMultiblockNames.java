@@ -9,5 +9,5 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(value = ItemIETool.class, remap = false) public abstract class MixinItemIEToolMultiblockNames {
-    @Redirect(method = "addInformation", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/resources/I18n;format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;", remap = true), remap = false) private String immersiveconvergence$resolveMultiblockName(String translateKey, Object[] parameters) { return I18n.format(ICMultiblockNames.resolve(translateKey), parameters); }
+    @Redirect(method = "addInformation", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/resources/I18n;format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;"), remap = true, require = 1) private String immersiveconvergence$resolveMultiblockName(String translateKey, Object[] parameters) { return I18n.format(ICMultiblockNames.resolve(translateKey), parameters); }
 }
