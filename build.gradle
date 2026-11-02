@@ -106,6 +106,8 @@ ext {
     version_top_curse = versionProps['version_top_curse']
     version_engineered_schematics_curse = versionProps['version_engineered_schematics_curse']
     version_ip_curse = versionProps['version_ip_curse']
+    version_oc_modrinth = versionProps['version_oc_modrinth']
+    version_oc_scala_curse = versionProps['version_oc_scala_curse']
     version_cctweaked = versionProps['version_cctweaked']
     mod_license = gradleProps['mod_license']
     mod_name = gradleProps['mod_name']
@@ -236,6 +238,13 @@ repositories {
         }
     }
     maven {
+        name = 'Modrinth'
+        url = 'https://api.modrinth.com/maven'
+        content {
+            includeGroup 'maven.modrinth'
+        }
+    }
+    maven {
         name = 'ParchmentMC'
         url = 'https://ldtteam.jfrog.io/artifactory/parchmentmc-public/'
     }
@@ -257,6 +266,9 @@ dependencies {
     modRuntimeOnly "curse.maven:${version_ie_curse}"
     modCompileOnly "curse.maven:${version_ip_curse}"
     modRuntimeOnly "curse.maven:${version_ip_curse}"
+    modCompileOnly "maven.modrinth:${version_oc_modrinth}"
+    modRuntimeOnly "maven.modrinth:${version_oc_modrinth}"
+    modRuntimeOnly "curse.maven:${version_oc_scala_curse}"
     modCompileOnly "mezz.jei:jei-${version_minecraft}-forge-api:${version_jei}"
     modCompileOnly "mezz.jei:jei-${version_minecraft}-common-api:${version_jei}"
     modImplementation "mezz.jei:jei-${version_minecraft}-forge:${version_jei}"

@@ -1,5 +1,8 @@
 package com.immersiveconvergence.core.compat.computer;
 
+import com.immersiveconvergence.core.compat.computer.alias.IndexedStackAlias;
+import com.immersiveconvergence.core.compat.computer.alias.IndexedTankInfoAlias;
+
 import blusunrize.immersiveengineering.api.tool.assembler.RecipeQuery;
 import blusunrize.immersiveengineering.common.blocks.metal.CrafterPatternInventory;
 import blusunrize.immersiveengineering.common.blocks.multiblocks.logic.AssemblerLogic;
@@ -16,6 +19,11 @@ import java.util.List;
 import java.util.Map;
 
 public class ICAssemblerCallbacks extends AssemblerCallbacks {
+    public ICAssemblerCallbacks() {
+        addAdditional(new IndexedStackAlias<>((state, index) -> state.getInventory().getStackInSlot(index), 18, "Only slots 1-18 are available", "getStackInSlot"));
+        addAdditional(new IndexedTankInfoAlias<>((state, index) -> state.tanks[index], AssemblerLogic.NUM_TANKS, "getTank"));
+    }
+
     @ComputerCallable public boolean hasIngredients(CallbackEnvironment<State> env, @IndexArgument int recipe) {
         CrafterPatternInventory pattern = pattern(env.object(), recipe);
         if (pattern.inv.get(9).isEmpty()) { throw new IllegalArgumentException("The requested recipe is invalid"); }

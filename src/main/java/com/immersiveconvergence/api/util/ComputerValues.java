@@ -39,6 +39,27 @@ public final class ComputerValues {
         return result;
     }
 
+    public static Map<String, Object> item(ItemStack stack) {
+        Map<String, Object> info = new HashMap<>();
+        if (stack.isEmpty()) { return info; }
+        ResourceLocation key = ForgeRegistries.ITEMS.getKey(stack.getItem());
+        info.put("size", stack.getCount());
+        info.put("name", key == null ? null : key.toString());
+        info.put("nameUnlocalized", stack.getDescriptionId());
+        info.put("label", stack.getHoverName().getString());
+        info.put("damage", stack.getDamageValue());
+        info.put("maxDamage", stack.getMaxDamage());
+        info.put("maxSize", stack.getMaxStackSize());
+        info.put("hasTag", stack.hasTag());
+        return info;
+    }
+
+    public static Map<String, Object> fluid(FluidStack stack) {
+        Map<String, Object> info = new HashMap<>();
+        putFluid(info, stack);
+        return info;
+    }
+
     public static String fluidName(Fluid fluid) {
         ResourceLocation key = ForgeRegistries.FLUIDS.getKey(fluid);
         return key == null ? null : key.getPath();

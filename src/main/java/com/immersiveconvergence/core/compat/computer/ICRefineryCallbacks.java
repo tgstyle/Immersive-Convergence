@@ -1,5 +1,7 @@
 package com.immersiveconvergence.core.compat.computer;
 
+import com.immersiveconvergence.api.util.ComputerValues;
+import com.immersiveconvergence.core.compat.computer.alias.TankInfoAlias;
 import com.immersiveconvergence.mixin.ie.RefineryStateAccessor;
 
 import blusunrize.immersiveengineering.api.crafting.FluidTagInput;
@@ -15,6 +17,24 @@ import java.util.List;
 import java.util.Map;
 
 public class ICRefineryCallbacks extends RefineryCallbacks {
+    private static final int EMPTY_CONTAINER_SLOT = 1;
+    private static final int FILLED_CONTAINER_SLOT = 2;
+
+    public ICRefineryCallbacks() { addAdditional(new TankInfoAlias<>(state -> state.tanks.output(), "getOutputTank")); }
+
+    @ComputerCallable public boolean isActive(CallbackEnvironment<State> env) { return isRunning(env); }
+
+    @ComputerCallable public Map<String, Object> getInputFluidTanks(CallbackEnvironment<State> env) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("input1", ComputerValues.tankInfo(env.object().tanks.leftInput()));
+        result.put("input2", ComputerValues.tankInfo(env.object().tanks.rightInput()));
+        return result;
+    }
+
+    @ComputerCallable public Map<String, Object> getEmptyCannisters(CallbackEnvironment<State> env) { return Map.of("output", IEComputerValues.item(env.object().getInventory().getStackInSlot(EMPTY_CONTAINER_SLOT))); }
+
+    @ComputerCallable public Map<String, Object> getFullCannisters(CallbackEnvironment<State> env) { return Map.of("output", IEComputerValues.item(env.object().getInventory().getStackInSlot(FILLED_CONTAINER_SLOT))); }
+
     @ComputerCallable public Map<String, Object> getRecipe(CallbackEnvironment<State> env) {
         RefineryRecipe recipe = recipe(env);
         if (recipe == null) { throw new IllegalArgumentException("The recipe of the refinery is invalid"); }

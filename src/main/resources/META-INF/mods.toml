@@ -33,6 +33,13 @@ versionRange="[${version_ie_min},)"
 ordering="AFTER"
 side="BOTH"
 
+[[dependencies.immersiveconvergence]]
+modId="opencomputers"
+mandatory=false
+versionRange="[0,)"
+ordering="AFTER"
+side="BOTH"
+
 [[mixins]]
 config="mixins.immersiveconvergence.json"
 
