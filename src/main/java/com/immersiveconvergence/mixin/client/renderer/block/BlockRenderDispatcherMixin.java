@@ -1,0 +1,25 @@
+package com.immersiveconvergence.mixin.client.renderer.block;
+
+import com.immersiveconvergence.api.multiblock.machine.MachineMultiblockPartBlock;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.block.BlockModelShaper;
+import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
+
+@Mixin(BlockRenderDispatcher.class) public abstract class BlockRenderDispatcherMixin {
+    @ModifyVariable(method = "renderBreakingTexture(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/BlockAndTintGetter;Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/neoforged/neoforge/client/model/data/ModelData;)V", at = @At(value = "STORE", ordinal = 0), ordinal = 0, remap = false) private BakedModel ic$useFullBlockModelForDamage(BakedModel bakedmodel, BlockState state, BlockPos pos, BlockAndTintGetter level) {
+        if (state.getBlock() instanceof MachineMultiblockPartBlock) {
+            BlockModelShaper modelShapes = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper();
+            return modelShapes.getBlockModel(Blocks.STONE.defaultBlockState());
+        }
+        return bakedmodel;
+    }
+}

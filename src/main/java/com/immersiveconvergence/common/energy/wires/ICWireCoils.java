@@ -9,7 +9,7 @@ import com.immersiveconvergence.api.wires.ICWireLink;
 import com.immersiveconvergence.api.wires.ICWireType;
 import com.immersiveconvergence.api.wires.IICConnector;
 import com.immersiveconvergence.api.wires.IICWireCoil;
-import com.immersiveconvergence.common.ie.IEWireBridge;
+import com.immersiveconvergence.core.integration.immersiveengineering.IEWireBridge;
 import com.immersiveconvergence.core.lib.ICLib;
 import com.immersiveconvergence.core.registration.ICDataComponents;
 
@@ -24,9 +24,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
+import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Set;
 
 public final class ICWireCoils {
     private ICWireCoils() {}

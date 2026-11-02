@@ -1,7 +1,7 @@
 package com.immersiveconvergence.api.client;
 
 import com.immersiveconvergence.api.multiblock.util.DirectionUtils;
-import com.immersiveconvergence.core.ICClientConfig;
+import com.immersiveconvergence.core.config.ICClientConfig;
 
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
@@ -12,6 +12,7 @@ import com.mojang.blaze3d.vertex.VertexFormatElement;
 import com.mojang.blaze3d.vertex.VertexFormatElement.Type;
 import com.mojang.blaze3d.vertex.VertexFormatElement.Usage;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import java.util.List;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -23,7 +24,6 @@ import org.joml.Matrix3fc;
 import org.joml.Matrix4fc;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import java.util.List;
 
 public class RenderUtils {
     private static final Vector4f[] quadCoords = new Vector4f[4];

@@ -4,13 +4,13 @@ import com.immersiveconvergence.api.bridge.IICIntegrationBridge;
 import com.immersiveconvergence.api.crafting.ICCokeOvenRecipe;
 import com.immersiveconvergence.api.crafting.ICRecipeType;
 import com.immersiveconvergence.api.manual.ICManualCategory;
-import com.immersiveconvergence.common.ie.IECokeOvenBridge;
-import com.immersiveconvergence.common.ie.IEFluidPipeBridge;
-import com.immersiveconvergence.common.ie.IEManualBridge;
-import com.immersiveconvergence.common.ie.IERecipeBridge;
-import com.immersiveconvergence.common.ie.IERenderBridge;
-import com.immersiveconvergence.common.ie.IEWireBridge;
+import com.immersiveconvergence.core.integration.immersiveengineering.IECokeOvenBridge;
+import com.immersiveconvergence.core.integration.immersiveengineering.IEFluidPipeBridge;
+import com.immersiveconvergence.core.integration.immersiveengineering.IEManualBridge;
+import com.immersiveconvergence.core.integration.immersiveengineering.IERecipeBridge;
+import com.immersiveconvergence.core.integration.immersiveengineering.IEWireBridge;
 
+import blusunrize.immersiveengineering.api.IEApi;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -18,13 +18,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.fluids.FluidStack;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Function;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public final class ICIntegrationBridge implements IICIntegrationBridge {
-    @Override public void addRenderCacheClearer(@Nonnull Runnable clearer) { IERenderBridge.addRenderCacheClearer(clearer); }
+    @Override public void addRenderCacheClearer(@Nonnull Runnable clearer) { IEApi.renderCacheClearers.add(clearer); }
 
     @Override public boolean isWireCoil(@Nonnull ItemStack stack) { return IEWireBridge.isWireCoil(stack); }
 

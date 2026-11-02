@@ -14,8 +14,7 @@ import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nonnull;
 
-@SuppressWarnings("unused")
-public class ICWireCoilItem extends Item implements IICWireCoil {
+@SuppressWarnings("unused") public class ICWireCoilItem extends Item implements IICWireCoil {
     private final ICWireType type;
 
     public ICWireCoilItem(@Nonnull ICWireType type) {

@@ -4,14 +4,14 @@ import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.wires.ICConnectionPoint;
 import com.immersiveconvergence.api.wires.ICWire;
 import com.immersiveconvergence.api.wires.IICEnergyNetwork;
-import com.immersiveconvergence.common.ie.IEWireBridge;
+import com.immersiveconvergence.core.integration.immersiveengineering.IEWireBridge;
 
 import net.minecraft.world.level.Level;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public final class ICEnergyView implements IICEnergyNetwork {
     private final Level level;

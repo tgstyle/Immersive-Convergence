@@ -14,8 +14,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
 
-@SuppressWarnings("DataFlowIssue")
-public class ICBlockEntities {
+@SuppressWarnings("DataFlowIssue") public class ICBlockEntities {
     public static final DeferredRegister<BlockEntityType<?>> REGISTER = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, ICLib.MODID);
 
     public static final Supplier<BlockEntityType<RotorCreativeBlockEntity>> ROTOR_CREATIVE = REGISTER.register(

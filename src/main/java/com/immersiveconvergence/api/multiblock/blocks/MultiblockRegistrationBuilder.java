@@ -1,13 +1,13 @@
 package com.immersiveconvergence.api.multiblock.blocks;
 
-import com.immersiveconvergence.api.multiblock.MultiblockOverride;
 import com.immersiveconvergence.api.multiblock.TemplateMultiblock;
 import com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistration.Disassembler;
 import com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistration.ExtraComponent;
+import static com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistrationBuilder.RegistrationMethod.fromDeferred;
+import com.immersiveconvergence.api.multiblock.blocks.component.IMultiblockComponent;
 import com.immersiveconvergence.api.multiblock.blocks.component.IMultiblockComponent.CapabilityGetter;
 import com.immersiveconvergence.api.multiblock.blocks.component.IMultiblockComponent.CapabilityRegistrar;
 import com.immersiveconvergence.api.multiblock.blocks.component.IMultiblockComponent.StateWrapper;
-import com.immersiveconvergence.api.multiblock.blocks.component.IMultiblockComponent;
 import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockBEHelper;
 import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockBE;
 import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockLogic;
@@ -15,9 +15,16 @@ import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockState;
 import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockBlockEntityDummy;
 import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockBlockEntityMaster;
 import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockPartBlock;
-import static com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistrationBuilder.RegistrationMethod.fromDeferred;
+import com.immersiveconvergence.api.multiblock.data.MultiblockOverride;
 
 import com.google.common.base.Preconditions;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -37,13 +44,6 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 public abstract class MultiblockRegistrationBuilder<
         State extends IMultiblockState,

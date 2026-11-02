@@ -2,7 +2,7 @@ package com.immersiveconvergence.core.network;
 
 import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.wires.ICWire;
-import com.immersiveconvergence.client.ICClientWires;
+import com.immersiveconvergence.client.util.ICClientWires;
 import com.immersiveconvergence.common.energy.wires.ICWireSavedData;
 import com.immersiveconvergence.core.lib.ICLib;
 
@@ -18,13 +18,12 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.level.ChunkWatchEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-@EventBusSubscriber(modid = ICLib.MODID)
-public final class ICWireSyncPacket implements CustomPacketPayload {
+@EventBusSubscriber(modid = ICLib.MODID) public final class ICWireSyncPacket implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<ICWireSyncPacket> TYPE = new CustomPacketPayload.Type<>(ICLib.rl("wire_sync"));
     public static final StreamCodec<FriendlyByteBuf, ICWireSyncPacket> STREAM_CODEC = StreamCodec.of(ICWireSyncPacket::write, ICWireSyncPacket::new);
     private final ResourceKey<Level> dimension;

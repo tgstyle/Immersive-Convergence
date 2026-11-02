@@ -34,7 +34,5 @@ public class ClumpedModel<Texture> {
         this.clumpedParts = ImmutableMap.copyOf(clumpedParts);
     }
 
-    public Map<ModelSplitterVec3i, SplitObjModel<Texture>> getClumpedParts() {
-        return this.clumpedParts;
-    }
+    public Map<ModelSplitterVec3i, SplitObjModel<Texture>> getClumpedParts() { return this.clumpedParts; }
 }

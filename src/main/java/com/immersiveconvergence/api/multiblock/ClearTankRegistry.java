@@ -1,8 +1,15 @@
 package com.immersiveconvergence.api.multiblock;
 
 import com.immersiveconvergence.api.multiblock.blocks.util.CapabilityPosition;
+import com.immersiveconvergence.api.multiblock.data.MultiblockOverride;
 import com.immersiveconvergence.api.util.ICUtils;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.ToIntFunction;
+import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -11,12 +18,6 @@ import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.ToIntFunction;
 
 public class ClearTankRegistry {
     public static final String KEY_TANK_CLEARED = "gui.immersiveconvergence.input_tank_cleared";

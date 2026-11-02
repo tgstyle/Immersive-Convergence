@@ -56,7 +56,7 @@ public class MultiblockDataLoader {
         return owner.getResource(jarPath(modid, multiblockName)) == null;
     }
 
-    @Nullable static int[] packSize(String modid, String multiblockName) {
+    @Nullable public static int[] packSize(String modid, String multiblockName) {
         Pack current = pack;
         return current == null ? null : current.sizes.get(ResourceLocation.fromNamespaceAndPath(modid, multiblockName));
     }
@@ -117,7 +117,7 @@ public class MultiblockDataLoader {
         return true;
     }
 
-    static void apply(Map<ResourceLocation, String> json, Map<ResourceLocation, int[]> sizes) {
+    public static void apply(Map<ResourceLocation, String> json, Map<ResourceLocation, int[]> sizes) {
         if (unchanged(pack, json, sizes)) { return; }
         Map<ResourceLocation, MultiblockData> data = new HashMap<>();
         for (Map.Entry<ResourceLocation, String> entry : json.entrySet()) {

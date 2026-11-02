@@ -1,7 +1,7 @@
 package com.immersiveconvergence.client.renderer;
 
 import com.immersiveconvergence.api.ICMods;
-import com.immersiveconvergence.client.ICClientWires;
+import com.immersiveconvergence.client.util.ICClientWires;
 import com.immersiveconvergence.core.lib.ICLib;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -19,9 +19,7 @@ import net.neoforged.neoforge.client.event.AddSectionGeometryEvent;
 
 import java.util.List;
 
-@SuppressWarnings("unused")
-@EventBusSubscriber(modid = ICLib.MODID, value = Dist.CLIENT)
-public final class ICWireSectionRenderer {
+@SuppressWarnings("unused") @EventBusSubscriber(modid = ICLib.MODID, value = Dist.CLIENT) public final class ICWireSectionRenderer {
     private static final ResourceLocation WIRE_TEXTURE = ResourceLocation.withDefaultNamespace("block/white_concrete");
 
     private ICWireSectionRenderer() {}

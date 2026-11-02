@@ -1,13 +1,19 @@
 package com.immersiveconvergence.api.multiblock;
 
 import com.immersiveconvergence.api.ICMods;
+import com.immersiveconvergence.api.bridge.ICBridges;
 import com.immersiveconvergence.api.multiblock.MultiblockHandler.IMultiblock;
 import com.immersiveconvergence.api.multiblock.blockimpl.MultiblockBEHelperDummy;
 import com.immersiveconvergence.api.multiblock.blockimpl.MultiblockBEHelperMaster;
 import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockBEHelperDummy;
 import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockBEHelperMaster;
-import com.immersiveconvergence.api.bridge.ICBridges;
+import com.immersiveconvergence.api.multiblock.shape.BlockMatchers;
+import com.immersiveconvergence.api.multiblock.util.MultiblockAdvancementTrigger;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
+import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -19,10 +25,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModList;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Predicate;
 
 public class MultiblockRegistry {
     private static final List<IMultiblock> PENDING_IE = new ArrayList<>();

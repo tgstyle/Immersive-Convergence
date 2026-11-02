@@ -4,7 +4,7 @@
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
   "client": [
-    "BlockRenderDispatcherMixin"
+    "client.renderer.block.BlockRenderDispatcherMixin"
   ],
   "injectors": {
     "defaultRequire": 1

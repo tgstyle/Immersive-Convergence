@@ -1,24 +1,25 @@
 package com.immersiveconvergence.core.proxy;
 
 import com.immersiveconvergence.api.ICMods;
-import com.immersiveconvergence.api.bridge.ICBridges;
 import com.immersiveconvergence.api.block.BlockInterfaces;
+import com.immersiveconvergence.api.bridge.ICBridges;
 import com.immersiveconvergence.api.client.StandaloneModel;
 import com.immersiveconvergence.api.manual.ICManual;
 import com.immersiveconvergence.api.manual.ICManualCategory;
 import com.immersiveconvergence.api.multiblock.MultiblockDataLoader;
 import com.immersiveconvergence.api.wires.ICWires;
-import com.immersiveconvergence.client.ICClientBridge;
-import com.immersiveconvergence.client.ICWireClientView;
-import com.immersiveconvergence.client.IEWireClientView;
 import com.immersiveconvergence.client.gui.RotorCreativeScreen;
 import com.immersiveconvergence.client.models.ICRotorModels;
 import com.immersiveconvergence.client.renderer.RotorCreativeRenderer;
+import com.immersiveconvergence.client.util.ICClientBridge;
+import com.immersiveconvergence.client.util.ICWireClientView;
+import com.immersiveconvergence.client.util.IEWireClientView;
 import com.immersiveconvergence.core.lib.ICLib;
 import com.immersiveconvergence.core.registration.ICBlockEntities;
 import com.immersiveconvergence.core.registration.ICMenuTypes;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -36,7 +37,6 @@ import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
-import java.util.List;
 
 @EventBusSubscriber(modid = ICLib.MODID, value = Dist.CLIENT) public class ClientProxy extends CommonProxy {
 

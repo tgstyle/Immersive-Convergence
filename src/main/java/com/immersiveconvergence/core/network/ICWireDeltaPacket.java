@@ -2,7 +2,7 @@ package com.immersiveconvergence.core.network;
 
 import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.wires.ICWire;
-import com.immersiveconvergence.client.ICClientWires;
+import com.immersiveconvergence.client.util.ICClientWires;
 import com.immersiveconvergence.core.lib.ICLib;
 
 import net.minecraft.core.registries.Registries;
@@ -16,11 +16,11 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.Nonnull;
 
 public final class ICWireDeltaPacket implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<ICWireDeltaPacket> TYPE = new CustomPacketPayload.Type<>(ICLib.rl("wire_delta"));

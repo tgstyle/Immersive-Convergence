@@ -8,8 +8,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Set;
 
-@SuppressWarnings("unused")
-public interface IICWireCollision {
+@SuppressWarnings("unused") public interface IICWireCollision {
     @Nonnull Set<ICWire> wiresHitting(@Nonnull Level level, @Nonnull AABB box);
 
     @Nullable ICWireHit raytrace(@Nonnull Level level, @Nonnull Vec3 from, @Nonnull Vec3 to);

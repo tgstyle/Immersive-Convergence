@@ -18,9 +18,7 @@ public class SplitModel<Texture> {
         this.submodels = builder.build();
     }
 
-    public Map<ModelSplitterVec3i, SplitObjModel<Texture>> getParts() {
-        return this.submodels;
-    }
+    public Map<ModelSplitterVec3i, SplitObjModel<Texture>> getParts() { return this.submodels; }
 
     private static <Texture> Map<Integer, SplitObjModel<Texture>> splitInPlanes(SplitObjModel<Texture> input, Axis axis) {
         if (input.isEmpty()) { return Map.of(); }

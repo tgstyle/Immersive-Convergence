@@ -13,9 +13,7 @@ public class SplitObjModel<Texture> {
     private final List<Polygon<Texture>> allFaces;
     private final double minX, maxX, minY, maxY, minZ, maxZ;
 
-    public SplitObjModel(List<Polygon<Texture>> allFaces) {
-        this(Map.of("", new Group<>(allFaces)));
-    }
+    public SplitObjModel(List<Polygon<Texture>> allFaces) { this(Map.of("", new Group<>(allFaces))); }
 
     public SplitObjModel(Map<String, Group<Texture>> faces) {
         this.faces = ImmutableMap.copyOf(faces);
@@ -44,8 +42,8 @@ public class SplitObjModel<Texture> {
 
     public static <Texture> SplitObjModel<Texture> union(SplitObjModel<Texture> a, SplitObjModel<Texture> b) {
         List<Group<Texture>> groups = new ArrayList<>();
-        if (a != null) groups.addAll(a.faces.values());
-        if (b != null) groups.addAll(b.faces.values());
+        if (a != null) { groups.addAll(a.faces.values()); }
+        if (b != null) { groups.addAll(b.faces.values()); }
         return new SplitObjModel<>(groups.stream().flatMap(g -> g.getFaces().stream()).collect(Collectors.toList()));
     }
 
@@ -55,25 +53,15 @@ public class SplitObjModel<Texture> {
         return result.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> new SplitObjModel<>(Map.of("", e.getValue()))));
     }
 
-    public SplitObjModel<Texture> translate(int axis, double amount) {
-        return new SplitObjModel<>(this.allFaces.stream().map(p -> p.translate(axis, amount)).collect(Collectors.toList()));
-    }
+    public SplitObjModel<Texture> translate(int axis, double amount) { return new SplitObjModel<>(this.allFaces.stream().map(p -> p.translate(axis, amount)).collect(Collectors.toList())); }
 
-    public SplitObjModel<Texture> translate(Vec3d offset) {
-        return new SplitObjModel<>(this.allFaces.stream().map(p -> p.translate(offset)).collect(Collectors.toList()));
-    }
+    public SplitObjModel<Texture> translate(Vec3d offset) { return new SplitObjModel<>(this.allFaces.stream().map(p -> p.translate(offset)).collect(Collectors.toList())); }
 
-    public SplitObjModel<Texture> quadify() {
-        return new SplitObjModel<>(this.allFaces.stream().flatMap(p -> p.quadify().stream()).collect(Collectors.toList()));
-    }
+    public SplitObjModel<Texture> quadify() { return new SplitObjModel<>(this.allFaces.stream().flatMap(p -> p.quadify().stream()).collect(Collectors.toList())); }
 
-    public boolean isEmpty() {
-        return this.allFaces.isEmpty();
-    }
+    public boolean isEmpty() { return this.allFaces.isEmpty(); }
 
-    public List<Polygon<Texture>> getFaces() {
-        return this.allFaces;
-    }
+    public List<Polygon<Texture>> getFaces() { return this.allFaces; }
 
     public double getMinX() { return minX; }
     public double getMaxX() { return maxX; }

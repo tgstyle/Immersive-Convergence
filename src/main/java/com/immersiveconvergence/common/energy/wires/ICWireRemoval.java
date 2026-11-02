@@ -29,8 +29,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-@EventBusSubscriber(modid = ICLib.MODID)
-public final class ICWireRemoval {
+@EventBusSubscriber(modid = ICLib.MODID) public final class ICWireRemoval {
     private static final Map<ResourceKey<Level>, Set<BlockPos>> PENDING = new HashMap<>();
 
     private ICWireRemoval() {}

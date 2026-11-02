@@ -1,0 +1,29 @@
+package com.immersiveconvergence.mixin.integration.immersiveengineering.common.util.compat.computers.generic;
+
+import com.immersiveconvergence.api.ICMods;
+import com.immersiveconvergence.core.integration.computer.IEComputerCallbacks;
+import com.immersiveconvergence.core.integration.computer.IEComputerIntegration;
+import com.immersiveconvergence.core.integration.computer.ip.IPComputerIntegration;
+
+import blusunrize.immersiveengineering.common.util.compat.computers.generic.CallbackOwner;
+import blusunrize.immersiveengineering.common.util.compat.computers.generic.Callbacks;
+import net.minecraft.resources.ResourceLocation;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Map;
+
+@Mixin(value = Callbacks.class, remap = false) public class CallbacksMixin {
+    @Shadow @Final private static Map<ResourceLocation, CallbackOwner<?>> CALLBACKS;
+
+    @Inject(method = "ensureInitialized", at = @At("TAIL")) private static void ic$registerComputerCallbacks(CallbackInfo ci) {
+        if (!ICMods.immersiveEngineering()) { return; }
+        IEComputerIntegration.register();
+        if (ICMods.immersivePetroleum()) { IPComputerIntegration.register(); }
+        CALLBACKS.putAll(IEComputerCallbacks.all());
+    }
+}

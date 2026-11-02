@@ -14,8 +14,7 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 import java.util.Collections;
 import java.util.List;
 
-@EventBusSubscriber(modid = ICLib.MODID)
-public class ICDataGenerators {
+@EventBusSubscriber(modid = ICLib.MODID) public class ICDataGenerators {
     @SubscribeEvent public static void generate(GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
         ExistingFileHelper helper = event.getExistingFileHelper();

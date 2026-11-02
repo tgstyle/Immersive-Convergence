@@ -32,8 +32,7 @@ import java.util.Set;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 
-@EventBusSubscriber(modid = ICLib.MODID)
-public final class ICEnergyTransfer {
+@EventBusSubscriber(modid = ICLib.MODID) public final class ICEnergyTransfer {
     private static final int ACTIVE_TICKS = 20;
     private static final Map<ResourceKey<Level>, State> STATES = new HashMap<>();
     private static final Comparator<Node> NODE_ORDER = Comparator.<Node>comparingDouble(node -> node.cost).thenComparingDouble(node -> node.length)
@@ -220,9 +219,7 @@ public final class ICEnergyTransfer {
             for (ICWire wire : network.wiresAt(node.point)) {
                 if (wire.getType().getRole() == ICWireRole.ENERGY && wire.getType().getTransferRate() > 0) { relax(best, queue, settled, node, wire.other(node.point), wire, lossOf(wire), wire.getLength()); }
             }
-            for (Map.Entry<ICConnectionPoint, Double> link : network.getLinks(node.point).entrySet()) {
-                relax(best, queue, settled, node, link.getKey(), null, Mth.clamp(link.getValue(), 0, 1), 0);
-            }
+            for (Map.Entry<ICConnectionPoint, Double> link : network.getLinks(node.point).entrySet()) { relax(best, queue, settled, node, link.getKey(), null, Mth.clamp(link.getValue(), 0, 1), 0); }
         }
         return found;
     }

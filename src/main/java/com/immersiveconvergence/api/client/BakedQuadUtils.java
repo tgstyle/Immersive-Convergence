@@ -39,7 +39,6 @@ public class BakedQuadUtils {
     public static class ITBakedQuadBuilder {
         public static final VertexFormat FORMAT = DefaultVertexFormat.BLOCK;
         private static final int INTS_PER_VERTEX = FORMAT.getVertexSize() / 4;
-
         private static final int POS_OFFSET = getOffset(VertexFormatElement.POSITION) / 4;
         private static final int COLOR_OFFSET = getOffset(VertexFormatElement.COLOR) / 4;
         private static final int UV_OFFSET = getOffset(VertexFormatElement.UV) / 4;

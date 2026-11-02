@@ -1,8 +1,8 @@
 package com.immersiveconvergence.core.registration;
 
 import com.immersiveconvergence.api.gui.ArgContainer;
-import com.immersiveconvergence.common.blocks.gui.RotorCreativeMenu;
 import com.immersiveconvergence.common.blocks.logic.RotorCreativeBlockEntity;
+import com.immersiveconvergence.common.gui.RotorCreativeMenu;
 import com.immersiveconvergence.core.lib.ICLib;
 
 import net.minecraft.core.registries.Registries;

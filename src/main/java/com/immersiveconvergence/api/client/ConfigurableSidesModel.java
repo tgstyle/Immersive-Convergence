@@ -58,11 +58,8 @@ public class ConfigurableSidesModel extends BaseBakedModel {
     private static final Map<Direction, Enums.IOSideConfig> DEFAULT_KEY = normalizeConfig(null);
     private final LoadingCache<Map<Direction, Enums.IOSideConfig>, Map<Direction, BakedQuad>> modelCache;
     private final RenderTypeGroup renderTypes;
-
     final String name;
-
     public Map<Direction, Map<Enums.IOSideConfig, TextureAtlasSprite>> textures;
-
     static final ItemTransforms defaultTransforms;
 
     public ConfigurableSidesModel(String name, Map<Direction, Map<Enums.IOSideConfig, TextureAtlasSprite>> textures, RenderTypeGroup renderTypes) {

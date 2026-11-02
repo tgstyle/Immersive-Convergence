@@ -14,13 +14,9 @@ public record Polygon<Texture>(List<Vertex> points, Texture texture) {
         this.texture = texture;
     }
 
-    public List<Vertex> getPoints() {
-        return this.points;
-    }
+    public List<Vertex> getPoints() { return this.points; }
 
-    public Texture getTexture() {
-        return this.texture;
-    }
+    public Texture getTexture() { return this.texture; }
 
     public Map<EpsilonMath.Sign, Polygon<Texture>> splitAlong(ModPlane p) {
         List<EpsilonMath.Sign> signs = new ArrayList<>(this.points.size());
@@ -33,9 +29,7 @@ public record Polygon<Texture>(List<Vertex> points, Texture texture) {
         EpsilonMath.Sign zeroSign = signs.getFirst();
         for (; firstSignStart < this.points.size(); ++firstSignStart) {
             EpsilonMath.Sign signHere = signs.get(firstSignStart);
-            if (zeroSign != signHere && signHere != EpsilonMath.Sign.ZERO) {
-                break;
-            }
+            if (zeroSign != signHere && signHere != EpsilonMath.Sign.ZERO) { break; }
         }
 
         if (firstSignStart >= this.points.size()) { return Map.of(zeroSign, this); }
@@ -95,22 +89,8 @@ public record Polygon<Texture>(List<Vertex> points, Texture texture) {
     public List<Polygon<Texture>> quadify() {
         List<Polygon<Texture>> quads = new ArrayList<>((this.points.size() / 2) + 1);
         int secondVertex;
-        for (secondVertex = 1; secondVertex + 2 < this.points.size(); secondVertex += 2) {
-            quads.add(new Polygon<>(List.of(
-                    this.points.getFirst(),
-                    this.points.get(secondVertex),
-                    this.points.get(secondVertex + 1),
-                    this.points.get(secondVertex + 2)
-            ), this.getTexture()));
-        }
-        if (secondVertex + 1 < this.points.size()) {
-            quads.add(new Polygon<>(List.of(
-                    this.points.getFirst(),
-                    this.points.get(secondVertex),
-                    this.points.get(secondVertex + 1),
-                    this.points.get(secondVertex + 1)
-            ), this.getTexture()));
-        }
+        for (secondVertex = 1; secondVertex + 2 < this.points.size(); secondVertex += 2) { quads.add(new Polygon<>(List.of( this.points.getFirst(), this.points.get(secondVertex), this.points.get(secondVertex + 1), this.points.get(secondVertex + 2) ), this.getTexture())); }
+        if (secondVertex + 1 < this.points.size()) { quads.add(new Polygon<>(List.of( this.points.getFirst(), this.points.get(secondVertex), this.points.get(secondVertex + 1), this.points.get(secondVertex + 1) ), this.getTexture())); }
         return quads;
     }
 }

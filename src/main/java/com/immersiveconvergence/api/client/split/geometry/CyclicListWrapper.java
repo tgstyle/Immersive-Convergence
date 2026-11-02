@@ -5,9 +5,7 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 
 public record CyclicListWrapper<T>(List<T> wrapped) {
-    public T get(int i) {
-        return this.wrapped.get(this.toIndex(i));
-    }
+    public T get(int i) { return this.wrapped.get(this.toIndex(i)); }
 
     public List<T> sublist(int begin, int end) {
         while (begin > end) { end += this.wrapped.size(); }

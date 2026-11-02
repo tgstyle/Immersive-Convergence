@@ -1,6 +1,6 @@
 package com.immersiveconvergence.api.capability;
 
-import com.immersiveconvergence.core.ICCommonConfig;
+import com.immersiveconvergence.core.config.ICCommonConfig;
 
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;

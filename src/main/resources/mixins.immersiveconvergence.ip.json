@@ -1,11 +1,11 @@
 {
   "required": false,
-  "package": "com.immersiveconvergence.mixin.ip",
+  "package": "com.immersiveconvergence.mixin.accessor.immersivepetroleum",
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
   "plugin": "com.immersiveconvergence.core.ICIPMixinPlugin",
   "mixins": [
-    "GasGeneratorAccessor"
+    "GasGeneratorTileEntityAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -1,13 +1,15 @@
 package com.immersiveconvergence.api.multiblock;
 
+import com.immersiveconvergence.api.multiblock.shape.FullblockShape;
+import com.immersiveconvergence.api.multiblock.shape.GenericShape;
 import com.immersiveconvergence.core.lib.ICLib;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 public final class ShapeData {
     public final Function<BlockPos, VoxelShape> getter;

@@ -10,8 +10,7 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nonnull;
 import java.util.function.UnaryOperator;
 
-@SuppressWarnings("unused")
-public record ICTemplateWire(@Nonnull BlockPos first, @Nonnull ICTargetingInfo firstTarget, @Nonnull BlockPos second, @Nonnull ICTargetingInfo secondTarget, @Nonnull String type) {
+@SuppressWarnings("unused") public record ICTemplateWire(@Nonnull BlockPos first, @Nonnull ICTargetingInfo firstTarget, @Nonnull BlockPos second, @Nonnull ICTargetingInfo secondTarget, @Nonnull String type) {
     private static final String FIRST = "first";
     private static final String SECOND = "second";
     private static final String POS = "pos";

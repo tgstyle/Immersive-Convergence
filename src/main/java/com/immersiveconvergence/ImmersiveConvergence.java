@@ -10,14 +10,15 @@ import com.immersiveconvergence.api.wires.ICWireType;
 import com.immersiveconvergence.api.wires.ICWires;
 import com.immersiveconvergence.common.bridge.ICBridgeService;
 import com.immersiveconvergence.common.energy.wires.ICWireService;
-import com.immersiveconvergence.common.ie.IEWireBridge;
-import com.immersiveconvergence.core.compat.IEClearTanks;
-import com.immersiveconvergence.core.compat.IPClearTanks;
-import com.immersiveconvergence.core.compat.computercraft.ICComputerCraft;
-import com.immersiveconvergence.core.compat.opencomputers.ICOpenComputers;
-import com.immersiveconvergence.core.ICClientConfig;
-import com.immersiveconvergence.core.ICCommonConfig;
+import com.immersiveconvergence.core.config.ICClientConfig;
+import com.immersiveconvergence.core.config.ICCommonConfig;
+import com.immersiveconvergence.core.integration.computercraft.ICComputerCraft;
+import com.immersiveconvergence.core.integration.immersiveengineering.IEClearTanks;
+import com.immersiveconvergence.core.integration.immersiveengineering.IEWireBridge;
+import com.immersiveconvergence.core.integration.immersivepetroleum.IPClearTanks;
+import com.immersiveconvergence.core.integration.opencomputers.ICOpenComputers;
 import com.immersiveconvergence.core.lib.ICLib;
+import com.immersiveconvergence.core.proxy.CommonProxy;
 import com.immersiveconvergence.core.registration.ICBlockEntities;
 import com.immersiveconvergence.core.registration.ICBlocks;
 import com.immersiveconvergence.core.registration.ICCreativeTab;
@@ -25,10 +26,8 @@ import com.immersiveconvergence.core.registration.ICDataComponents;
 import com.immersiveconvergence.core.registration.ICItems;
 import com.immersiveconvergence.core.registration.ICMenuTypes;
 import com.immersiveconvergence.core.registry.ICRegistryAliases;
-import com.immersiveconvergence.core.proxy.CommonProxy;
 
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
@@ -36,8 +35,6 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
 @Mod(ICLib.MODID) public class ImmersiveConvergence {
     public ImmersiveConvergence(IEventBus modEventBus, ModContainer container) {
@@ -60,7 +57,6 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
         ICIEEnabledCondition.init(modEventBus);
         container.registerConfig(ModConfig.Type.COMMON, ICCommonConfig.SPEC);
         container.registerConfig(ModConfig.Type.CLIENT, ICClientConfig.SPEC);
-        NeoForge.EVENT_BUS.register(ImmersiveConvergence.class);
         ICRegistryAliases.register();
     }
 
@@ -84,6 +80,4 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
         if (ModList.get().isLoaded(ProbeIntegration.MODID)) { ProbeIntegration.enqueueIMC(); }
         if (ICMods.openComputers()) { ICOpenComputers.enqueueIMC(); }
     }
-
-    @SubscribeEvent public static void onServerStarting(ServerStartingEvent event) {}
 }

@@ -9,7 +9,5 @@ public record Vertex(Vec3d position, Vec3d normal, UVCoords uv) {
         return this.translate(new Vec3d(offsetData));
     }
 
-    public Vertex translate(Vec3d offset) {
-        return new Vertex(this.position.add(offset), this.normal, this.uv);
-    }
+    public Vertex translate(Vec3d offset) { return new Vertex(this.position.add(offset), this.normal, this.uv); }
 }

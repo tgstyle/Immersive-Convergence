@@ -1,16 +1,18 @@
 package com.immersiveconvergence.api.multiblock.blocks.registry;
 
 import com.immersiveconvergence.api.block.ModProperties;
-import com.immersiveconvergence.api.multiblock.QueueProcessor;
-import com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistration.ExtraComponent;
 import com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistration;
+import com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistration.ExtraComponent;
 import com.immersiveconvergence.api.multiblock.blocks.component.IClientTickableComponent;
 import com.immersiveconvergence.api.multiblock.blocks.component.IServerTickableComponent;
 import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockBE;
 import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockState;
 import com.immersiveconvergence.api.multiblock.blocks.util.ShapeType;
+import com.immersiveconvergence.api.multiblock.process.QueueProcessor;
 
 import com.google.common.base.Preconditions;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
@@ -33,8 +35,6 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class MultiblockPartBlock<State extends IMultiblockState> extends Block implements EntityBlock {
     private final MultiblockRegistration<State> multiblock;
