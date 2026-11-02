@@ -9,8 +9,7 @@ import net.minecraftforge.eventbus.api.Event;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@SuppressWarnings("unused")
-public abstract class ICWireEvent extends Event {
+@SuppressWarnings("unused") public abstract class ICWireEvent extends Event {
     private final Level world;
 
     protected ICWireEvent(@Nonnull Level world) { this.world = world; }

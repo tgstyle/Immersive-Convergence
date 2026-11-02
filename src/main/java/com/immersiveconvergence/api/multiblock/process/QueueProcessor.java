@@ -1,0 +1,310 @@
+package com.immersiveconvergence.api.multiblock.process;
+
+import com.immersiveconvergence.api.ICMods;
+import com.immersiveconvergence.api.bridge.ICBridges;
+import com.immersiveconvergence.api.multiblock.TemplateMultiblock;
+import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockBEHelperMaster;
+import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockBE;
+import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockPartBlock;
+import com.immersiveconvergence.api.multiblock.disassembly.DisassemblyMode;
+import com.immersiveconvergence.api.multiblock.machine.MachineBlockEntityDummy;
+import com.immersiveconvergence.api.multiblock.machine.MachineBlockEntityMaster;
+import com.immersiveconvergence.core.config.ICCommonConfig;
+import com.immersiveconvergence.core.lib.ICLib;
+
+import com.mojang.authlib.GameProfile;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.Function;
+import javax.annotation.Nullable;
+import net.minecraft.commands.arguments.EntityAnchorArgument;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Containers;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+
+@Mod.EventBusSubscriber(modid = ICLib.MODID) public class QueueProcessor {
+    public static final int DISASSEMBLE_QUEUE_SIZE = 8;
+    public static final List<QueueProcessor> pendingQueues = new ArrayList<>();
+    public static final Set<BlockPos> activeDisassemblies = new HashSet<>();
+    public static final Set<ResourceLocation> MANAGED = new HashSet<>();
+    public static BlockPos currentlyBreakingPos = null;
+    public static boolean sneakBreaking = false;
+    private static final Comparator<BlockPos> Y_DESC_COMPARATOR = Comparator.comparingInt(pos -> -pos.getY());
+    private static final GameProfile FALLBACK_PROFILE = new GameProfile(UUID.fromString("256cb34d-064f-3b7b-be9f-aa63f5ff7d65"), "[IT-Disassembler]");
+    private final ServerLevel level;
+    private final Deque<BlockPos> queue = new ArrayDeque<>();
+    private final @Nullable ServerPlayer owner;
+    private final boolean dropItems;
+    private final BlockPos dropAt;
+    private final List<ItemStack> allDrops;
+    private final BlockPos masterPos;
+    private FakePlayer fakePlayer;
+    private boolean finished = false;
+
+    public QueueProcessor(ServerLevel level, List<BlockPos> toBreak, @Nullable ServerPlayer owner, boolean dropItems, BlockPos dropAt, List<ItemStack> allDrops, @Nullable BlockPos masterPos) {
+        this.level = level;
+        List<BlockPos> sorted = new ArrayList<>(toBreak);
+        sorted.sort(Y_DESC_COMPARATOR);
+        if (masterPos != null && sorted.remove(masterPos)) { sorted.add(0, masterPos); }
+        this.masterPos = masterPos;
+        this.queue.addAll(sorted);
+        this.owner = owner;
+        this.dropItems = dropItems;
+        this.dropAt = dropAt;
+        this.allDrops = allDrops;
+
+    }
+
+    @SubscribeEvent public static void onBlockBreak(BlockEvent.BreakEvent event) {
+        if (event.getLevel().isClientSide() || event.getPlayer() instanceof FakePlayer) { return; }
+        Block block = event.getState().getBlock();
+        if (!(block instanceof MultiblockPartBlock) && !(ICMods.immersiveEngineering() && ICBridges.multiblock().isPartBlock(block))) { return; }
+        currentlyBreakingPos = event.getPos().immutable();
+        sneakBreaking = event.getPlayer().isShiftKeyDown();
+    }
+
+    public static boolean disassemble(ServerLevel serverLevel, List<StructureBlockInfo> structure, BlockPos origin, Mirror mirror, Rotation rot, BlockPos masterPos, Vec3i size, Block partBlock, boolean handleTemplateMode) { return disassemble(serverLevel, structure, origin, mirror, rot, masterPos, size, partBlock, handleTemplateMode, null); }
+
+    @SuppressWarnings("deprecation") public static boolean disassemble(ServerLevel serverLevel, List<StructureBlockInfo> structure, BlockPos origin, Mirror mirror, Rotation rot, BlockPos masterPos, Vec3i size, Block partBlock, boolean handleTemplateMode, @Nullable Function<BlockPos, BlockState> cellState) {
+        BlockPos initiatedAt = currentlyBreakingPos;
+        boolean templateMode = sneakBreaking || ICCommonConfig.disassemblyMode == DisassemblyMode.TEMPLATE_BLOCKS;
+        if (templateMode && !handleTemplateMode) { return false; }
+        boolean doTileDrops = serverLevel.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS);
+        ServerPlayer breakingPlayer = (ServerPlayer) serverLevel.getNearestPlayer(masterPos.getX() + 0.5, masterPos.getY() + 0.5, masterPos.getZ() + 0.5, -1.0, e -> true);
+        boolean dropItems = doTileDrops;
+        if (breakingPlayer != null && breakingPlayer.gameMode.getGameModeForPlayer() == GameType.CREATIVE) { dropItems = false; }
+        ItemStack tool = breakingPlayer != null ? breakingPlayer.getMainHandItem() : ItemStack.EMPTY;
+        ItemStack effectiveTool = tool.isEmpty() ? new ItemStack(Items.DIAMOND_PICKAXE) : tool;
+        if (!activeDisassemblies.add(masterPos.immutable())) { return true; }
+        markHelperDisassembling(serverLevel.getBlockEntity(masterPos));
+
+        for (StructureBlockInfo info : structure) {
+            BlockPos actualPos = TemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot);
+            prepareBlockForDisassembly(serverLevel, actualPos);
+        }
+        List<BlockPos> strays = findStrayParts(serverLevel, structure, origin, mirror, rot, size, partBlock);
+        for (BlockPos stray : strays) { prepareBlockForDisassembly(serverLevel, stray); }
+
+        BlockPos brokenPos = initiatedAt != null ? initiatedAt : masterPos;
+        if (initiatedAt == null && breakingPlayer != null) {
+            Vec3 eyePos = breakingPlayer.getEyePosition();
+            Vec3 look = breakingPlayer.getViewVector(1.0F);
+            double reach = breakingPlayer.getAttributeValue(ForgeMod.BLOCK_REACH.get());
+            Vec3 end = eyePos.add(look.scale(reach + 2));
+            ClipContext ctx = new ClipContext(eyePos, end, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, breakingPlayer);
+            BlockHitResult hit = serverLevel.clip(ctx);
+            if (hit.getType() == HitResult.Type.BLOCK) {
+                BlockPos hitPos = hit.getBlockPos();
+                for (StructureBlockInfo info : structure) {
+                    BlockPos actual = TemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot);
+                    if (actual.equals(hitPos)) {
+                        brokenPos = actual;
+                        break;
+                    }
+                }
+            }
+            if (brokenPos.equals(masterPos)) {
+                double minDist = Double.MAX_VALUE;
+                BlockPos closest = null;
+                for (StructureBlockInfo info : structure) {
+                    BlockPos actual = TemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot);
+                    double dist = Vec3.atCenterOf(actual).distanceToSqr(eyePos);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        closest = actual;
+                    }
+                }
+                if (closest != null) { brokenPos = closest; }
+            }
+        }
+
+        List<ItemStack> allDrops = new ArrayList<>();
+        List<BlockPos> toBreak = new ArrayList<>();
+
+        LootParams.Builder baseLootBuilder = dropItems ? new LootParams.Builder(serverLevel)
+                .withParameter(LootContextParams.TOOL, effectiveTool)
+                .withOptionalParameter(LootContextParams.THIS_ENTITY, breakingPlayer) : null;
+
+        if (templateMode) {
+            BlockState brokenTemplate = null;
+            for (StructureBlockInfo info : structure) {
+                BlockPos actualPos = TemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot);
+                BlockState stateAfterMirror = placedState(info, cellState).mirror(mirror);
+                BlockState template = stateAfterMirror.rotate(rot);
+                if (actualPos.equals(brokenPos)) { brokenTemplate = template; }
+                serverLevel.setBlockAndUpdate(actualPos, template);
+            }
+            for (BlockPos stray : strays) {
+                serverLevel.removeBlock(stray, false);
+                refreshLight(serverLevel, stray);
+            }
+            if (initiatedAt != null && brokenTemplate != null && !brokenTemplate.isAir()) {
+                if (dropItems) {
+                    BlockEntity brokenBE = serverLevel.getBlockEntity(brokenPos);
+                    LootParams.Builder params = baseLootBuilder
+                            .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(brokenPos))
+                            .withOptionalParameter(LootContextParams.BLOCK_ENTITY, brokenBE);
+                    try { for (ItemStack s : brokenTemplate.getDrops(params)) { Containers.dropItemStack(serverLevel, brokenPos.getX(), brokenPos.getY(), brokenPos.getZ(), s); } }
+                    catch (Exception e) { Containers.dropItemStack(serverLevel, brokenPos.getX(), brokenPos.getY(), brokenPos.getZ(), new ItemStack(brokenTemplate.getBlock())); }
+                }
+                serverLevel.removeBlock(brokenPos, false);
+                refreshLight(serverLevel, brokenPos);
+            }
+        }
+        else {
+            BlockPos harvestedByPlayer = handleTemplateMode ? null : initiatedAt;
+            for (StructureBlockInfo info : structure) {
+                BlockPos actualPos = TemplateMultiblock.withSettingsAndOffset(origin, info.pos(), mirror, rot);
+                BlockState stateAfterMirror = placedState(info, cellState).mirror(mirror);
+                BlockState template = stateAfterMirror.rotate(rot);
+                toBreak.add(actualPos);
+                if (dropItems && !template.isAir() && !actualPos.equals(harvestedByPlayer)) {
+                    BlockEntity templateBE = null;
+                    if (template.hasBlockEntity() && template.getBlock() instanceof EntityBlock entityBlock) {
+                        try { templateBE = entityBlock.newBlockEntity(actualPos, template); }
+                        catch (Exception ignored) { }
+                    }
+                    LootParams.Builder params = baseLootBuilder
+                            .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(actualPos))
+                            .withOptionalParameter(LootContextParams.BLOCK_ENTITY, templateBE);
+                    try { allDrops.addAll(template.getDrops(params)); }
+                    catch (Exception e) { allDrops.add(new ItemStack(template.getBlock())); }
+                }
+            }
+            toBreak.addAll(strays);
+        }
+
+        if (templateMode || toBreak.isEmpty()) { activeDisassemblies.remove(masterPos); }
+        else { pendingQueues.add(new QueueProcessor(serverLevel, toBreak, breakingPlayer, dropItems, brokenPos, allDrops, masterPos)); }
+        return true;
+    }
+
+    private static BlockState placedState(StructureBlockInfo info, @Nullable Function<BlockPos, BlockState> cellState) {
+        BlockState memorized = cellState != null ? cellState.apply(info.pos()) : null;
+        return memorized != null ? memorized : info.state();
+    }
+
+    private static List<BlockPos> findStrayParts(ServerLevel level, List<StructureBlockInfo> structure, BlockPos origin, Mirror mirror, Rotation rot, Vec3i size, Block partBlock) {
+        Set<BlockPos> templateCells = new HashSet<>();
+        for (StructureBlockInfo info : structure) { templateCells.add(info.pos()); }
+        List<BlockPos> strays = new ArrayList<>();
+        for (int y = 0; y < size.getY(); y++) {
+            for (int z = 0; z < size.getZ(); z++) {
+                for (int x = 0; x < size.getX(); x++) {
+                    BlockPos cell = new BlockPos(x, y, z);
+                    if (templateCells.contains(cell)) { continue; }
+                    BlockPos actual = TemplateMultiblock.withSettingsAndOffset(origin, cell, mirror, rot);
+                    if (level.getBlockState(actual).getBlock() != partBlock) { continue; }
+                    BlockEntity part = level.getBlockEntity(actual);
+                    if (part instanceof IMultiblockBE<?> be && !(be.getHelper() instanceof IMultiblockBEHelperMaster) && cell.equals(be.getHelper().getPositionInMB())) { strays.add(actual); }
+                    else if (ICMods.immersiveEngineering() && ICBridges.multiblock().isStrayDummy(part, cell)) { strays.add(actual); }
+                }
+            }
+        }
+        return strays;
+    }
+
+    public static void prepareBlockForDisassembly(Level world, BlockPos pos) {
+        BlockEntity be = world.getBlockEntity(pos);
+        if (be instanceof MachineBlockEntityMaster<?> master) { master.markDisassembling(); }
+        else if (be instanceof MachineBlockEntityDummy<?> dummy) { dummy.markDisassembling(); }
+        markHelperDisassembling(be);
+    }
+
+    private static void markHelperDisassembling(@Nullable BlockEntity be) {
+        if (be instanceof IMultiblockBE<?> multiblockBE) { multiblockBE.getHelper().markDisassembling(); }
+        else if (ICMods.immersiveEngineering()) { ICBridges.multiblock().markDisassembling(be); }
+    }
+
+    @SubscribeEvent public static void onServerTick(TickEvent.ServerTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) { return; }
+        if (pendingQueues.isEmpty()) { return; }
+        List<QueueProcessor> copy = new ArrayList<>(pendingQueues);
+        copy.forEach(QueueProcessor::tick);
+        pendingQueues.removeIf(QueueProcessor::isEmpty);
+    }
+
+    @SubscribeEvent public static void onServerStopping(ServerStoppingEvent event) {
+        for (QueueProcessor processor : new ArrayList<>(pendingQueues)) { while (!processor.isEmpty()) { processor.tick(); } }
+        pendingQueues.clear();
+        activeDisassemblies.clear();
+        currentlyBreakingPos = null;
+        sneakBreaking = false;
+    }
+
+    public void tick() {
+        if (queue.isEmpty()) {
+            if (dropItems && !allDrops.isEmpty()) { for (ItemStack s : allDrops) { Containers.dropItemStack(level, dropAt.getX(), dropAt.getY(), dropAt.getZ(), s); } }
+            allDrops.clear();
+
+            fakePlayer = null;
+            if (masterPos != null) { activeDisassemblies.remove(masterPos); }
+            finished = true;
+            return;
+        }
+
+        if (fakePlayer == null) { fakePlayer = getFakePlayer(level, owner); }
+
+        BlockPos batchPos = queue.peek();
+        if (batchPos != null) {
+            fakePlayer.setPos(batchPos.getX() + 0.5, batchPos.getY() + 1, batchPos.getZ() + 0.5);
+            fakePlayer.lookAt(EntityAnchorArgument.Anchor.EYES, Vec3.atCenterOf(batchPos));
+        }
+
+        for (int i = 0; i < DISASSEMBLE_QUEUE_SIZE && !queue.isEmpty(); ++i) {
+            BlockPos pos = queue.poll();
+            fakePlayer.gameMode.destroyBlock(pos);
+            refreshLight(level, pos);
+        }
+    }
+
+    public static void refreshLight(ServerLevel level, BlockPos pos) {
+        LevelChunk chunk = level.getChunkAt(pos);
+        chunk.getSkyLightSources().update(chunk, pos.getX() & 15, pos.getY(), pos.getZ() & 15);
+        level.getChunkSource().getLightEngine().checkBlock(pos);
+    }
+
+    private static FakePlayer getFakePlayer(ServerLevel level, @Nullable ServerPlayer owner) {
+        GameProfile profile = owner != null ? owner.getGameProfile() : FALLBACK_PROFILE;
+        FakePlayer fake = new FakePlayer(level, profile);
+        fake.gameMode.changeGameModeForPlayer(GameType.CREATIVE);
+        return fake;
+    }
+
+    public boolean isEmpty() { return finished; }
+}

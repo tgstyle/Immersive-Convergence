@@ -8,8 +8,8 @@
     "defaultRequire": 1
   },
   "client": [
-    "BlockRenderDispatcherMixin",
-    "client.RebuildTaskMixin",
-    "client.RenderRegionCacheMixin"
+    "client.renderer.block.BlockRenderDispatcherMixin",
+    "client.renderer.chunk.ChunkRenderDispatcherRenderChunkRebuildTaskMixin",
+    "client.renderer.chunk.RenderRegionCacheMixin"
   ]
 }

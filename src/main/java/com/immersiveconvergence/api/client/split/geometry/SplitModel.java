@@ -12,22 +12,16 @@ public class SplitModel<Texture> {
         ImmutableMap.Builder<ModelSplitterVec3i, SplitObjModel<Texture>> builder = ImmutableMap.builder();
         for (var xSlice : splitInPlanes(input, Axis.X).entrySet()) {
             for (var zColumn : splitInPlanes(xSlice.getValue(), Axis.Z).entrySet()) {
-                for (var yDice : splitInPlanes(zColumn.getValue(), Axis.Y).entrySet()) {
-                    builder.put(new ModelSplitterVec3i(xSlice.getKey(), yDice.getKey(), zColumn.getKey()), yDice.getValue());
-                }
+                for (var yDice : splitInPlanes(zColumn.getValue(), Axis.Y).entrySet()) { builder.put(new ModelSplitterVec3i(xSlice.getKey(), yDice.getKey(), zColumn.getKey()), yDice.getValue()); }
             }
         }
         this.submodels = builder.build();
     }
 
-    public Map<ModelSplitterVec3i, SplitObjModel<Texture>> getParts() {
-        return this.submodels;
-    }
+    public Map<ModelSplitterVec3i, SplitObjModel<Texture>> getParts() { return this.submodels; }
 
     private static <Texture> Map<Integer, SplitObjModel<Texture>> splitInPlanes(SplitObjModel<Texture> input, Axis axis) {
-        if (input.isEmpty()) {
-            return Map.of();
-        }
+        if (input.isEmpty()) { return Map.of(); }
 
         double min = axis.getMin(input);
         double max = axis.getMax(input);
@@ -52,9 +46,7 @@ public class SplitModel<Texture> {
     }
 
     private static <Texture> void putModel(Map<Integer, SplitObjModel<Texture>> sectionModels, Axis axis, int section, SplitObjModel<Texture> baseSectionModel) {
-        if (baseSectionModel != null && !baseSectionModel.isEmpty()) {
-            sectionModels.put(section, baseSectionModel.translate(axis.ordinal(), -section).quadify());
-        }
+        if (baseSectionModel != null && !baseSectionModel.isEmpty()) { sectionModels.put(section, baseSectionModel.translate(axis.ordinal(), -section).quadify()); }
     }
 
     private enum Axis {

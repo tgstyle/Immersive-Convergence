@@ -15,8 +15,7 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.Collections;
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = ICLib.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = {Dist.CLIENT, Dist.DEDICATED_SERVER})
-public class ICDataGenerators {
+@Mod.EventBusSubscriber(modid = ICLib.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = {Dist.CLIENT, Dist.DEDICATED_SERVER}) public class ICDataGenerators {
     @SubscribeEvent public static void generate(GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
         PackOutput out = generator.getPackOutput();

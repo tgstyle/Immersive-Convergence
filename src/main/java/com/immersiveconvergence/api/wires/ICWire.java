@@ -8,8 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@SuppressWarnings("unused")
-public final class ICWire {
+@SuppressWarnings("unused") public final class ICWire {
     private final ICConnectionPoint a;
     private final ICConnectionPoint b;
     private final Vec3 offsetA;

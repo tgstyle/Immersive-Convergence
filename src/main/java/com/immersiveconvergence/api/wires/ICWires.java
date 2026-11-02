@@ -14,8 +14,7 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@SuppressWarnings("unused")
-public final class ICWires {
+@SuppressWarnings("unused") public final class ICWires {
     private static IICWireService service;
     private static IICWireClientView clientView;
 

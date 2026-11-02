@@ -10,8 +10,7 @@ public interface IServerTickableBE extends ITickableBase
     static <T extends BlockEntity>BlockEntityTicker<T> makeTicker() {
         return (level, pos, state, blockEntity) -> {
             IServerTickableBE tickable = (IServerTickableBE) blockEntity;
-            if (tickable.canTickAny())
-                tickable.tickServer();
+            if (tickable.canTickAny()) { tickable.tickServer(); }
         };
     }
 }

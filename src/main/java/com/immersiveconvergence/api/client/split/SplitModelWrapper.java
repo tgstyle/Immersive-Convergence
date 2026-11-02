@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 public abstract class SplitModelWrapper<T extends BakedModel> extends BakedModelWrapper<T> {
     @Nonnull private final Supplier<SplitData> splitDataSource;
     private volatile SplitData splitData;
-
     private static final Set<SplitModelWrapper<?>> WEAK_INSTANCES = Collections.newSetFromMap(new WeakHashMap<>());
 
     static {
@@ -79,9 +78,7 @@ public abstract class SplitModelWrapper<T extends BakedModel> extends BakedModel
         Map<Vec3i, List<BakedQuad>> map = new HashMap<>();
         for (var e : clumpedModel.getClumpedParts().entrySet()) {
             List<BakedQuad> subModelFaces = new ArrayList<>(e.getValue().getFaces().size());
-            for (Polygon<QuadPolygonUtils.ExtraQuadData> p : e.getValue().getFaces()) {
-                subModelFaces.add(QuadPolygonUtils.toBakedQuad(p.getPoints(), p.getTexture(), transform.getRotation().blockCenterToCorner(), true));
-            }
+            for (Polygon<QuadPolygonUtils.ExtraQuadData> p : e.getValue().getFaces()) { subModelFaces.add(QuadPolygonUtils.toBakedQuad(p.getPoints(), p.getTexture(), transform.getRotation().blockCenterToCorner(), true)); }
             Vec3i mcKey = new Vec3i(e.getKey().x(), e.getKey().y(), e.getKey().z());
             map.put(mcKey, subModelFaces);
         }

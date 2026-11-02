@@ -8,9 +8,9 @@ import com.immersiveconvergence.api.wires.IICWireCollision;
 import com.immersiveconvergence.api.wires.IICWireNetwork;
 import com.immersiveconvergence.api.wires.IICWireService;
 import com.immersiveconvergence.api.wires.connectors.ICConnectableBlockEntity;
-import com.immersiveconvergence.common.ie.IEWireBridge;
-import com.immersiveconvergence.common.ie.IEWireView;
 import com.immersiveconvergence.common.util.ICWireCollision;
+import com.immersiveconvergence.core.integration.immersiveengineering.IEWireBridge;
+import com.immersiveconvergence.core.integration.immersiveengineering.IEWireView;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -19,11 +19,11 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public final class ICWireService implements IICWireService {
     private final IICWireCollision collision = new ICWireCollision();

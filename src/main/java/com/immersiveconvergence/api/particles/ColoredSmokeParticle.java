@@ -81,6 +81,7 @@ public class ColoredSmokeParticle extends TextureSheetParticle {
         if (dx != d0) { this.xd *= -0.8D; }
         if (dz != d2) { this.zd *= -0.8D; }
         if (dy != d1) { this.yd = (d1 > 0) ? 0.0D : -this.yd * 0.8D; }
-        if (dy != d1 && d1 < 0.0D) { this.onGround = true; } else if (dy != d1 && d1 > 0.0D) { this.onGround = true; }
+        if (dy != d1 && d1 < 0.0D) { this.onGround = true; }
+        else if (dy != d1 && d1 > 0.0D) { this.onGround = true; }
     }
 }

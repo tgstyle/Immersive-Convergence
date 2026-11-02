@@ -9,8 +9,7 @@ import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 
-@SuppressWarnings("unused")
-public final class ICWireDamage {
+@SuppressWarnings("unused") public final class ICWireDamage {
     public static final ResourceKey<DamageType> SHOCK = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath("immersiveconvergence", "wire_shock"));
     private static final ResourceKey<DamageType> IE_SHOCK = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath("immersiveengineering", "wire_shock"));
 

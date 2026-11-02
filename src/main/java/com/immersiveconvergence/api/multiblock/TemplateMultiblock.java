@@ -4,6 +4,8 @@ import com.immersiveconvergence.api.block.ModProperties;
 import com.immersiveconvergence.api.multiblock.MultiblockHandler.IMultiblock;
 import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockBlockEntityDummy;
 import com.immersiveconvergence.api.multiblock.blocks.registry.MultiblockBlockEntityMaster;
+import com.immersiveconvergence.api.multiblock.process.QueueProcessor;
+import com.immersiveconvergence.api.multiblock.shape.GenericShape;
 import com.immersiveconvergence.api.multiblock.util.DirectionUtils;
 import com.immersiveconvergence.api.wires.ICConnectResult;
 import com.immersiveconvergence.api.wires.ICTargetingInfo;
@@ -12,6 +14,20 @@ import com.immersiveconvergence.api.wires.IICWireTemplate;
 import com.immersiveconvergence.core.lib.ICLib;
 
 import com.google.common.base.Preconditions;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -27,6 +43,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Mirror;
+import static net.minecraft.world.level.block.Mirror.FRONT_BACK;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -35,21 +52,6 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
 import net.minecraftforge.data.loading.DatagenModLoader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import static net.minecraft.world.level.block.Mirror.FRONT_BACK;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 @SuppressWarnings("MismatchedQueryAndUpdateOfCollection") public abstract class TemplateMultiblock implements IMultiblock {
     public static final Map<ResourceLocation, StructureTemplate> SYNCED_CLIENT_TEMPLATES = new HashMap<>();
@@ -131,7 +133,8 @@ import javax.annotation.Nullable;
         Preconditions.checkState(trigger != null, "Trigger state was not found in template for " + loc);
         List<ICTemplateWire> wires = level instanceof ServerLevel server ? readWires(server) : List.of();
         TemplateData built = new TemplateData(newTemplate, blocksWithoutAir, trigger, wires);
-        if (level.isClientSide) { clientTemplate = built; } else { template = built; }
+        if (level.isClientSide) { clientTemplate = built; }
+        else { template = built; }
     }
 
     private List<ICTemplateWire> readWires(ServerLevel level) {

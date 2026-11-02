@@ -1,9 +1,10 @@
 package com.immersiveconvergence.client.gui;
-import com.immersiveconvergence.common.blocks.gui.RotorCreativeMenu;
-import com.immersiveconvergence.common.blocks.logic.RotorCreativeBlockEntity;
 import com.immersiveconvergence.api.network.MessageTileSync;
-import com.immersiveconvergence.core.network.PacketHandler;
+import com.immersiveconvergence.common.blocks.logic.RotorCreativeBlockEntity;
+import com.immersiveconvergence.common.gui.RotorCreativeMenu;
 import com.immersiveconvergence.core.lib.ICLib;
+import com.immersiveconvergence.core.network.PacketHandler;
+import javax.annotation.Nonnull;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -12,7 +13,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import javax.annotation.Nonnull;
 public class RotorCreativeScreen extends AbstractContainerScreen<RotorCreativeMenu> {
     private static final ResourceLocation TEXTURE = ICLib.makeTextureLocation("rotor_creative");
     private final RotorCreativeBlockEntity tile;

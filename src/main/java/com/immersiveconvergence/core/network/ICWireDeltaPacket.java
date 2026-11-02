@@ -1,9 +1,9 @@
 package com.immersiveconvergence.core.network;
 
 import com.immersiveconvergence.api.ICMods;
-import com.immersiveconvergence.api.wires.ICWire;
 import com.immersiveconvergence.api.network.INetworkMessage;
-import com.immersiveconvergence.client.ICClientWires;
+import com.immersiveconvergence.api.wires.ICWire;
+import com.immersiveconvergence.client.util.ICClientWires;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
@@ -14,12 +14,12 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkEvent;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
+import javax.annotation.Nonnull;
 
 public final class ICWireDeltaPacket implements INetworkMessage {
     private final ResourceKey<Level> dimension;

@@ -1,6 +1,6 @@
 package com.immersiveconvergence.client.renderer;
 
-import com.immersiveconvergence.client.ICClientWires;
+import com.immersiveconvergence.client.util.ICClientWires;
 
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
@@ -15,9 +15,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.BlockAndTintGetter;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.Nonnull;
 
 public final class ICWireSectionRenderer {
     private static final ResourceLocation WIRE_TEXTURE = ResourceLocation.fromNamespaceAndPath("minecraft", "block/white_concrete");

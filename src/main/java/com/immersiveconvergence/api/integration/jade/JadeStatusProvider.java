@@ -20,7 +20,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public enum JadeStatusProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
     INSTANCE;
-
     public static final String KEY_STATUS = "gui.immersiveconvergence.status";
     public static final String KEY_ACTIVE = "gui.immersiveconvergence.status_active";
     public static final String KEY_INACTIVE = "gui.immersiveconvergence.status_inactive";

@@ -5,8 +5,7 @@ import net.minecraft.world.level.ChunkPos;
 
 import javax.annotation.Nonnull;
 
-@SuppressWarnings("unused")
-public record ICConnectionPoint(@Nonnull BlockPos position, int index) implements Comparable<ICConnectionPoint> {
+@SuppressWarnings("unused") public record ICConnectionPoint(@Nonnull BlockPos position, int index) implements Comparable<ICConnectionPoint> {
     public ICConnectionPoint {
         position = position.immutable();
     }

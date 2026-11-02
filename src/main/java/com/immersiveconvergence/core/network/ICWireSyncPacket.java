@@ -1,9 +1,9 @@
 package com.immersiveconvergence.core.network;
 
 import com.immersiveconvergence.api.ICMods;
-import com.immersiveconvergence.api.wires.ICWire;
 import com.immersiveconvergence.api.network.INetworkMessage;
-import com.immersiveconvergence.client.ICClientWires;
+import com.immersiveconvergence.api.wires.ICWire;
+import com.immersiveconvergence.client.util.ICClientWires;
 import com.immersiveconvergence.common.energy.wires.ICWireSavedData;
 import com.immersiveconvergence.core.lib.ICLib;
 
@@ -22,8 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
-@Mod.EventBusSubscriber(modid = ICLib.MODID)
-public final class ICWireSyncPacket implements INetworkMessage {
+@Mod.EventBusSubscriber(modid = ICLib.MODID) public final class ICWireSyncPacket implements INetworkMessage {
     private final ResourceKey<Level> dimension;
     private final List<ICWire> wires;
 

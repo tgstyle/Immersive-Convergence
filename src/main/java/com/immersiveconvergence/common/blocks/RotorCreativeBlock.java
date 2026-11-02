@@ -61,6 +61,5 @@ public class RotorCreativeBlock extends ModEntityBlock<RotorCreativeBlockEntity>
         return InteractionResult.CONSUME;
     }
 
-    @SuppressWarnings("deprecation")
-    @OnlyIn(Dist.CLIENT) @Override public @Nonnull RenderShape getRenderShape(@Nonnull BlockState state) { return RenderShape.ENTITYBLOCK_ANIMATED; }
+    @SuppressWarnings("deprecation") @OnlyIn(Dist.CLIENT) @Override public @Nonnull RenderShape getRenderShape(@Nonnull BlockState state) { return RenderShape.ENTITYBLOCK_ANIMATED; }
 }

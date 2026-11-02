@@ -38,13 +38,11 @@ public class BakedQuadUtils {
     public static class ITBakedQuadBuilder {
         public static final VertexFormat FORMAT = DefaultVertexFormat.BLOCK;
         private static final int INTS_PER_VERTEX = FORMAT.getIntegerSize();
-
         private static final int POS_OFFSET = 0;
         private static final int COLOR_OFFSET = 3;
         private static final int UV_OFFSET = 4;
         private static final int LIGHTMAP_OFFSET = 6;
         private static final int NORMAL_OFFSET = 7;
-
         private int nextVertex = 0;
         private final int[] data = new int[INTS_PER_VERTEX * 4];
 

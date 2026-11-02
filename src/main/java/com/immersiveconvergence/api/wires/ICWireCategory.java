@@ -7,8 +7,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@SuppressWarnings("unused")
-public final class ICWireCategory {
+@SuppressWarnings("unused") public final class ICWireCategory {
     private static final Map<String, ICWireCategory> REGISTRY = new ConcurrentHashMap<>();
     private static volatile boolean frozen;
     public static final ICWireCategory LV = register("LV", ICWireRole.ENERGY, 1);

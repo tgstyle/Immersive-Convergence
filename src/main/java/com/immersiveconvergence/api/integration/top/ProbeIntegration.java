@@ -109,8 +109,7 @@ public class ProbeIntegration {
         row(probeInfo).progress(progress.value(), progress.max(), style);
     }
 
-    @SuppressWarnings("resource")
-    private static int getFluidColor(@Nullable FluidStack fluid) {
+    @SuppressWarnings("resource") private static int getFluidColor(@Nullable FluidStack fluid) {
         if (fluid == null || fluid.isEmpty()) { return 0xff555555; }
         IClientFluidTypeExtensions ext = IClientFluidTypeExtensions.of(fluid.getFluid());
         int tint = ext.getTintColor(fluid);

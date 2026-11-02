@@ -1,7 +1,14 @@
 package com.immersiveconvergence.api.multiblock;
 
-import com.immersiveconvergence.api.multiblock.ClientMultiblocks.MultiblockManualData;
+import com.immersiveconvergence.api.multiblock.client.ClientMultiblocks.MultiblockManualData;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -13,13 +20,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
 
 public class MultiblockHandler {
     static List<IMultiblock> multiblocks = new ArrayList<>();

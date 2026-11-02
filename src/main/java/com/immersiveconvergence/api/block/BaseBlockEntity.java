@@ -113,7 +113,8 @@ import javax.annotation.Nullable;
 
     public void setOverrideState(@Nullable BlockState state) { overrideBlockState = state; }
 
-    @Override @Nonnull public BlockState getBlockState() { if (overrideBlockState != null) { return overrideBlockState; } else { return super.getBlockState(); } }
+    @Override @Nonnull public BlockState getBlockState() { if (overrideBlockState != null) { return overrideBlockState; }
+    else { return super.getBlockState(); } }
 
     @Override public void setBlockState(@Nonnull BlockState newState) {
         BlockState old = getBlockState();

@@ -16,7 +16,6 @@ import snownee.jade.api.config.IPluginConfig;
 
 public enum JadeLinesProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
     INSTANCE;
-
     private static final String TAG = "ICLines";
 
     @Override public ResourceLocation getUid() { return ICLib.rl("lines"); }

@@ -1,20 +1,20 @@
 package com.immersiveconvergence.core.proxy;
 
 import com.immersiveconvergence.api.ICMods;
-import com.immersiveconvergence.api.bridge.ICBridges;
 import com.immersiveconvergence.api.block.BlockInterfaces;
+import com.immersiveconvergence.api.bridge.ICBridges;
 import com.immersiveconvergence.api.client.StandaloneModel;
 import com.immersiveconvergence.api.manual.ICManual;
 import com.immersiveconvergence.api.manual.ICManualCategory;
 import com.immersiveconvergence.api.multiblock.MultiblockDataLoader;
 import com.immersiveconvergence.api.wires.ICWires;
-import com.immersiveconvergence.client.ICClientBridge;
-import com.immersiveconvergence.client.ICWireClientView;
-import com.immersiveconvergence.client.IEWireClientView;
 import com.immersiveconvergence.client.gui.RotorCreativeScreen;
 import com.immersiveconvergence.client.models.ICRotorModels;
 import com.immersiveconvergence.client.renderer.RotorCreativeRenderer;
-import com.immersiveconvergence.common.blocks.gui.RotorCreativeMenu;
+import com.immersiveconvergence.client.util.ICClientBridge;
+import com.immersiveconvergence.client.util.ICWireClientView;
+import com.immersiveconvergence.client.util.IEWireClientView;
+import com.immersiveconvergence.common.gui.RotorCreativeMenu;
 import com.immersiveconvergence.core.lib.ICLib;
 import com.immersiveconvergence.core.registration.ICBlockEntities;
 import com.immersiveconvergence.core.registration.ICMenuTypes;
@@ -43,8 +43,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 import java.util.List;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = ICLib.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class ClientProxy extends CommonProxy {
+@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = ICLib.MODID, bus = Mod.EventBusSubscriber.Bus.MOD) public class ClientProxy extends CommonProxy {
     public static final IGuiOverlay OVERLAY_TEXT = (gui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
         Minecraft mc = Minecraft.getInstance();
         if (mc.screen != null || mc.player == null) { return; }

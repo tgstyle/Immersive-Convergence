@@ -5,8 +5,8 @@ import com.immersiveconvergence.api.wires.ICWire;
 import com.immersiveconvergence.api.wires.ICWireCause;
 import com.immersiveconvergence.api.wires.ICWireDamage;
 import com.immersiveconvergence.api.wires.ICWireEvent;
-import com.immersiveconvergence.common.ie.IEWireEvents;
 import com.immersiveconvergence.common.util.ICWireCollision;
+import com.immersiveconvergence.core.integration.immersiveengineering.IEWireEvents;
 import com.immersiveconvergence.core.lib.ICLib;
 
 import net.minecraft.core.BlockPos;
@@ -25,8 +25,7 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = ICLib.MODID)
-public final class ICWireWorldEvents {
+@Mod.EventBusSubscriber(modid = ICLib.MODID) public final class ICWireWorldEvents {
     private static final int SHOCK_INTERVAL = 10;
     private static final int RECONCILE_INTERVAL = 20;
 
@@ -34,9 +33,7 @@ public final class ICWireWorldEvents {
 
     @SubscribeEvent public static void onBlockPlaced(BlockEvent.EntityPlaceEvent event) {
         if (!(event.getLevel() instanceof ServerLevel level) || ICMods.immersiveEngineering()) { return; }
-        if (event instanceof BlockEvent.EntityMultiPlaceEvent multi) {
-            multi.getReplacedBlockSnapshots().forEach(snapshot -> cutThrough(level, snapshot.getPos()));
-        }
+        if (event instanceof BlockEvent.EntityMultiPlaceEvent multi) { multi.getReplacedBlockSnapshots().forEach(snapshot -> cutThrough(level, snapshot.getPos())); }
         else { cutThrough(level, event.getPos()); }
     }
 

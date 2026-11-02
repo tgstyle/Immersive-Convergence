@@ -1,10 +1,7 @@
 package com.immersiveconvergence.api.multiblock.blockimpl;
 
 import com.immersiveconvergence.api.multiblock.ClearTankRegistry;
-import com.immersiveconvergence.api.multiblock.IDisassemblingAware;
 import com.immersiveconvergence.api.multiblock.MultiblockDataLoader;
-import com.immersiveconvergence.api.multiblock.MultiblockOverride;
-import com.immersiveconvergence.api.multiblock.QueueProcessor;
 import com.immersiveconvergence.api.multiblock.ShapeData;
 import com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistration;
 import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockBEHelper;
@@ -16,10 +13,18 @@ import com.immersiveconvergence.api.multiblock.blocks.util.CapabilityPosition;
 import com.immersiveconvergence.api.multiblock.blocks.util.MultiblockOrientation;
 import com.immersiveconvergence.api.multiblock.blocks.util.RelativeBlockFace;
 import com.immersiveconvergence.api.multiblock.blocks.util.ShapeType;
+import com.immersiveconvergence.api.multiblock.data.MultiblockOverride;
+import com.immersiveconvergence.api.multiblock.disassembly.IDisassemblingAware;
+import com.immersiveconvergence.api.multiblock.process.QueueProcessor;
 import com.immersiveconvergence.api.multiblock.util.DirectionUtils;
 import com.immersiveconvergence.api.multiblock.util.MultiblockItemUtils;
 
 import com.google.common.base.Preconditions;
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.BiFunction;
+import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.protocol.Packet;
@@ -42,11 +47,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import javax.annotation.Nullable;
-import java.util.EnumMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.BiFunction;
 
 public abstract class MultiblockBEHelperCommon<State extends IMultiblockState> implements IMultiblockBEHelper<State>, IDisassemblingAware {
     protected final BlockEntity be;

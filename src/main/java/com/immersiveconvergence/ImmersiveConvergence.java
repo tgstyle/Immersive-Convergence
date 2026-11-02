@@ -2,46 +2,36 @@ package com.immersiveconvergence;
 
 import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.bridge.ICBridges;
-import com.immersiveconvergence.api.capability.HeatCapabilities;
-import com.immersiveconvergence.api.capability.IHeatConsumer;
-import com.immersiveconvergence.api.capability.IHeatProvider;
-import com.immersiveconvergence.api.capability.IMechanicalEnergyConsumer;
-import com.immersiveconvergence.api.capability.IMechanicalEnergyProvider;
-import com.immersiveconvergence.api.capability.MechanicalCapabilities;
 import com.immersiveconvergence.api.crafting.conditions.ICIEEnabledCondition;
 import com.immersiveconvergence.api.integration.top.ProbeIntegration;
 import com.immersiveconvergence.api.loot.LootEntryTypes;
 import com.immersiveconvergence.api.multiblock.MultiblockRegistry;
-import com.immersiveconvergence.core.compat.IEClearTanks;
-import com.immersiveconvergence.core.compat.IPClearTanks;
 import com.immersiveconvergence.api.wires.ICWireType;
 import com.immersiveconvergence.api.wires.ICWires;
 import com.immersiveconvergence.common.bridge.ICBridgeService;
 import com.immersiveconvergence.common.energy.wires.ICWireService;
-import com.immersiveconvergence.common.ie.IEWireBridge;
-import com.immersiveconvergence.core.compat.computercraft.ICComputerCraft;
-import com.immersiveconvergence.core.compat.opencomputers.ICOpenComputers;
-import com.immersiveconvergence.core.ICClientConfig;
-import com.immersiveconvergence.core.ICCommonConfig;
+import com.immersiveconvergence.core.config.ICClientConfig;
+import com.immersiveconvergence.core.config.ICCommonConfig;
+import com.immersiveconvergence.core.integration.computercraft.ICComputerCraft;
+import com.immersiveconvergence.core.integration.immersiveengineering.IEClearTanks;
+import com.immersiveconvergence.core.integration.immersiveengineering.IEWireBridge;
+import com.immersiveconvergence.core.integration.immersivepetroleum.IPClearTanks;
+import com.immersiveconvergence.core.integration.opencomputers.ICOpenComputers;
 import com.immersiveconvergence.core.lib.ICLib;
 import com.immersiveconvergence.core.network.PacketHandler;
-import com.immersiveconvergence.core.registry.ICRegistryRemaps;
+import com.immersiveconvergence.core.proxy.ClientProxySupplier;
+import com.immersiveconvergence.core.proxy.CommonProxy;
 import com.immersiveconvergence.core.registration.ICBlockEntities;
 import com.immersiveconvergence.core.registration.ICBlocks;
+import com.immersiveconvergence.core.registration.ICCapabilities;
 import com.immersiveconvergence.core.registration.ICCreativeTab;
 import com.immersiveconvergence.core.registration.ICItems;
 import com.immersiveconvergence.core.registration.ICMenuTypes;
-import com.immersiveconvergence.core.proxy.ClientProxySupplier;
-import com.immersiveconvergence.core.proxy.CommonProxy;
-
+import com.immersiveconvergence.core.registry.ICRegistryRemaps;
+import com.immersiveconvergence.core.util.ICServerEvents;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
@@ -62,7 +52,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::loadComplete);
         modEventBus.addListener(this::enqueueIMC);
-        modEventBus.addListener(this::registerCapabilities);
+        modEventBus.addListener(ICCapabilities::register);
         if (ICMods.computerCraft()) { ICComputerCraft.init(); }
         ICLib.IC_LOGGER.info("Starting Proxy Mod Construction");
         CommonProxy.modConstruction();
@@ -75,7 +65,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
         LootEntryTypes.init(modEventBus);
         context.registerConfig(ModConfig.Type.COMMON, ICCommonConfig.SPEC);
         context.registerConfig(ModConfig.Type.CLIENT, ICClientConfig.SPEC);
-        MinecraftForge.EVENT_BUS.register(ImmersiveConvergence.class);
+        MinecraftForge.EVENT_BUS.register(ICServerEvents.class);
         MinecraftForge.EVENT_BUS.addListener(ICRegistryRemaps::handleRemapping);
     }
 
@@ -102,21 +92,4 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
         if (ICMods.openComputers()) { ICOpenComputers.enqueueIMC(); }
     }
 
-    private void registerCapabilities(RegisterCapabilitiesEvent event) {
-        event.register(IHeatProvider.class);
-        event.register(IHeatConsumer.class);
-        event.register(IMechanicalEnergyProvider.class);
-        event.register(IMechanicalEnergyConsumer.class);
-        HeatCapabilities.HEAT_PROVIDER_CAPABILITY = CapabilityManager.get(HEAT_PROVIDER_TOKEN);
-        HeatCapabilities.HEAT_CONSUMER_CAPABILITY = CapabilityManager.get(HEAT_CONSUMER_TOKEN);
-        MechanicalCapabilities.MECHANICAL_PROVIDER_CAPABILITY = CapabilityManager.get(MECHANICAL_PROVIDER_TOKEN);
-        MechanicalCapabilities.MECHANICAL_CONSUMER_CAPABILITY = CapabilityManager.get(MECHANICAL_CONSUMER_TOKEN);
-    }
-
-    private static final CapabilityToken<IHeatProvider> HEAT_PROVIDER_TOKEN = new CapabilityToken<>() {};
-    private static final CapabilityToken<IHeatConsumer> HEAT_CONSUMER_TOKEN = new CapabilityToken<>() {};
-    private static final CapabilityToken<IMechanicalEnergyProvider> MECHANICAL_PROVIDER_TOKEN = new CapabilityToken<>() {};
-    private static final CapabilityToken<IMechanicalEnergyConsumer> MECHANICAL_CONSUMER_TOKEN = new CapabilityToken<>() {};
-
-    @SubscribeEvent public static void onServerStarting(ServerStartingEvent event) { ICLib.IC_LOGGER.info("HELLO FROM SERVER STARTING"); }
 }

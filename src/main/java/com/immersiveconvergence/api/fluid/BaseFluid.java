@@ -45,7 +45,6 @@ import java.util.function.Function;
 public class BaseFluid extends FlowingFluid {
     private static FluidEntry entryStatic;
     protected final FluidEntry entry;
-
     private static final int CACHE_SIZE = 200;
     private static final ThreadLocal<Object2ByteLinkedOpenHashMap<Block.BlockStatePairKey>> OCCLUSION_CACHE = ThreadLocal.withInitial(() -> {
         Object2ByteLinkedOpenHashMap<Block.BlockStatePairKey> map = new Object2ByteLinkedOpenHashMap<>(CACHE_SIZE) {

@@ -1,15 +1,17 @@
 package com.immersiveconvergence.api.multiblock;
 
 import com.immersiveconvergence.api.multiblock.blocks.MultiblockRegistration;
+import com.immersiveconvergence.api.multiblock.client.ClientMultiblockProperties;
+import com.immersiveconvergence.api.multiblock.client.ClientMultiblocks;
 
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public abstract class MachineTemplateMultiblock extends TemplateMultiblock {
     private final MultiblockRegistration<?> logic;

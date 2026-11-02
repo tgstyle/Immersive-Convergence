@@ -1,0 +1,145 @@
+package com.immersiveconvergence.api.multiblock.shape;
+
+import com.immersiveconvergence.api.ICMods;
+import com.immersiveconvergence.api.multiblock.MultiblockData;
+import com.immersiveconvergence.api.multiblock.MultiblockDataLoader;
+import com.immersiveconvergence.core.lib.ICLib;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import javax.annotation.Nullable;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.FileToIdConverter;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.fml.ModList;
+
+public abstract class GenericShape implements Function<BlockPos, VoxelShape> {
+    static final String STRUCTURE_FOLDER = "structures/multiblocks/";
+    private static final String MULTIBLOCK_FOLDER = "multiblocks/";
+    private static final String IFAB_FOLDER = "ifab/";
+    private static final FileToIdConverter STRUCTURES = new FileToIdConverter("structures", ".nbt");
+    private static final Map<ResourceManager, Map<ResourceLocation, ResourceLocation>> SOURCES = Collections.synchronizedMap(new WeakHashMap<>());
+
+    static String structureFile(String multiblockName) { return STRUCTURE_FOLDER + (ICMods.immersiveEngineering() ? "" : IFAB_FOLDER) + multiblockName + ".nbt"; }
+
+    public static ResourceLocation templateSource(ResourceManager manager, ResourceLocation loc) {
+        if (ICMods.immersiveEngineering() || !loc.getPath().startsWith(MULTIBLOCK_FOLDER)) { return loc; }
+        return SOURCES.computeIfAbsent(manager, key -> new ConcurrentHashMap<>()).computeIfAbsent(loc, id -> packOverrides(manager, id) ? id : ifabSource(manager, id));
+    }
+
+    private static ResourceLocation ifabSource(ResourceManager manager, ResourceLocation id) {
+        ResourceLocation ifab = id.withPath(path -> MULTIBLOCK_FOLDER + IFAB_FOLDER + path.substring(MULTIBLOCK_FOLDER.length()));
+        return manager.getResource(STRUCTURES.idToFile(ifab)).isPresent() ? ifab : id;
+    }
+
+    public static ResourceLocation structureResource(ResourceManager manager, ResourceLocation loc) { return STRUCTURES.idToFile(templateSource(manager, loc)); }
+
+    private static boolean packOverrides(ResourceManager manager, ResourceLocation id) {
+        List<Resource> stack = manager.getResourceStack(STRUCTURES.idToFile(id));
+        var mod = ModList.get().getModFileById(id.getNamespace());
+        return !stack.isEmpty() && (mod == null || !stack.get(stack.size() - 1).sourcePackId().equals(mod.getFile().getFileName()));
+    }
+    public static final AABB FULL_BLOCK = new AABB(0D, 0D, 0D, 1D, 1D, 1D);
+    private final Map<BlockPos, VoxelShape> shapeCache = new ConcurrentHashMap<>();
+
+    public static int[] loadDimensions(Class<?> owner, String modid, String multiblockName) {
+        int[] packed = MultiblockDataLoader.packSize(modid, multiblockName);
+        if (packed != null) { return packed; }
+        String path = "/data/" + modid + "/" + structureFile(multiblockName);
+        if (owner.getResource(path) == null) { path = "/data/" + modid + "/" + STRUCTURE_FOLDER + multiblockName + ".nbt"; }
+        try (InputStream is = owner.getResourceAsStream(path)) {
+            if (is == null) {
+                ICLib.IC_LOGGER.error("Structure file not found at resource path: {} for multiblock: {}", path, multiblockName);
+                return new int[]{0, 0, 0};
+            }
+            int[] size = readSize(is);
+            if (size == null) {
+                ICLib.IC_LOGGER.error("Structure file {} has no usable size tag for multiblock: {}", path, multiblockName);
+                return new int[]{0, 0, 0};
+            }
+            return size;
+        }
+        catch (Exception e) {
+            ICLib.IC_LOGGER.error("Error reading structure file at {} for multiblock: {}", path, multiblockName, e);
+            return new int[]{0, 0, 0};
+        }
+    }
+
+    @Nullable public static int[] readSize(InputStream is) throws IOException {
+        ListTag size = NbtIo.readCompressed(is).getList("size", Tag.TAG_INT);
+        return size.size() == 3 ? new int[]{size.getInt(0), size.getInt(1), size.getInt(2)} : null;
+    }
+
+    public static List<List<AABB>> loadShapes(MultiblockData data, int expectedNum) {
+        if (data.shapeAABB == null) { return null; }
+        List<List<AABB>> shapes = new ArrayList<>(expectedNum);
+        for (JsonElement posElem : data.shapeAABB) {
+            List<AABB> posShapes = new ArrayList<>();
+            if (posElem.isJsonNull() || !posElem.isJsonArray()) { shapes.add(posShapes); continue; }
+            JsonArray posArray = posElem.getAsJsonArray();
+            if (posArray.isEmpty()) { posShapes.add(FULL_BLOCK); }
+            for (JsonElement aabbElem : posArray) {
+                if (!aabbElem.isJsonArray()) { continue; }
+                JsonArray aabbArray = aabbElem.getAsJsonArray();
+                if (aabbArray.size() != 6) { continue; }
+                double[] vals = new double[6];
+                for (int i = 0; i < 6; i++) { vals[i] = aabbArray.get(i).getAsDouble(); }
+                posShapes.add(new AABB(vals[0], vals[1], vals[2], vals[3], vals[4], vals[5]));
+            }
+            shapes.add(posShapes);
+        }
+        if (shapes.size() != expectedNum) { return null; }
+        return shapes;
+    }
+
+    @Override public VoxelShape apply(BlockPos posInMultiblock) { return shapeCache.computeIfAbsent(posInMultiblock.immutable(), this::buildShape); }
+
+    private VoxelShape buildShape(BlockPos pos) {
+        List<AABB> list = getShape(pos);
+        if (list.isEmpty()) { return Shapes.empty(); }
+        VoxelShape shape = Shapes.create(list.get(0));
+        for (int i = 1; i < list.size(); i++) { shape = Shapes.or(shape, Shapes.create(list.get(i))); }
+        return shape.optimize();
+    }
+
+    protected abstract List<AABB> getShape(BlockPos posInMultiblock);
+
+    public static class JsonShape extends GenericShape {
+        private final int WIDTH, HEIGHT, LENGTH;
+        private final List<List<AABB>> SHAPES;
+
+        public JsonShape(int width, int height, int length, List<List<AABB>> shapes) {
+            this.WIDTH = width;
+            this.HEIGHT = height;
+            this.LENGTH = length;
+            this.SHAPES = shapes;
+        }
+
+        @Override protected List<AABB> getShape(BlockPos posInMultiblock) {
+            int x = posInMultiblock.getX();
+            int y = posInMultiblock.getY();
+            int z = posInMultiblock.getZ();
+            if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT || z < 0 || z >= LENGTH) { return Collections.emptyList(); }
+            int index = y * (WIDTH * LENGTH) + z * WIDTH + x;
+            if (index < 0 || index >= SHAPES.size()) { return Collections.emptyList(); }
+            return SHAPES.get(index);
+        }
+    }
+}

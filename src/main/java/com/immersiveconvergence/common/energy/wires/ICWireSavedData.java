@@ -6,7 +6,7 @@ import com.immersiveconvergence.api.wires.ICWire;
 import com.immersiveconvergence.api.wires.ICWireCategory;
 import com.immersiveconvergence.api.wires.ICWireType;
 import com.immersiveconvergence.api.wires.connectors.ICConnectableBlockEntity;
-import com.immersiveconvergence.common.ie.IEWireBridge;
+import com.immersiveconvergence.core.integration.immersiveengineering.IEWireBridge;
 import com.immersiveconvergence.core.lib.ICLib;
 
 import net.minecraft.core.BlockPos;
@@ -20,8 +20,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.phys.Vec3;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,9 +28,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-@SuppressWarnings("unused")
-public class ICWireSavedData extends SavedData {
+@SuppressWarnings("unused") public class ICWireSavedData extends SavedData {
     public static final String NAME = "immersiveconvergence_wires";
     private static final String LEDGER = "ledger";
     private static final String WAITING = "waiting";
