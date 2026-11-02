@@ -1,11 +1,11 @@
 package com.immersiveconvergence.common.util;
 
 import mctmods.resourcedatapackloader.pack.PackManager;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.function.BiConsumer;
-
 import javax.annotation.Nullable;
 
 public final class RdplBridge {

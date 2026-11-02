@@ -14,8 +14,7 @@ import javax.annotation.Nullable;
 
 import java.util.Collection;
 
-@SuppressWarnings("unused")
-public class ICCokeOvenRecipe {
+@SuppressWarnings("unused") public class ICCokeOvenRecipe {
     public final ItemStack output;
     public final int time;
     public final int creosoteOutput;

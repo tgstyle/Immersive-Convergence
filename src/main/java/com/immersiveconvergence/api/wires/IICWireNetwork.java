@@ -8,8 +8,7 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Set;
 
-@SuppressWarnings("unused")
-public interface IICWireNetwork {
+@SuppressWarnings("unused") public interface IICWireNetwork {
     @Nonnull Set<ICConnectionPoint> pointsAt(@Nonnull BlockPos pos);
 
     @Nonnull Collection<ICWire> wiresAt(@Nonnull ICConnectionPoint point);

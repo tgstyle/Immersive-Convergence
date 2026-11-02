@@ -1,12 +1,11 @@
 package com.immersiveconvergence.api.petroleum;
 
-import com.immersiveconvergence.core.ICCommonConfig;
+import com.immersiveconvergence.core.config.ICCommonConfig;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("unused")
-public final class ICPowerTiers {
+@SuppressWarnings("unused") public final class ICPowerTiers {
     private static final List<ICPowerTier> TIERS = new ArrayList<>();
 
     private ICPowerTiers() {}

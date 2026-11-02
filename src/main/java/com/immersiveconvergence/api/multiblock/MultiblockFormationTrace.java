@@ -28,10 +28,7 @@ public final class MultiblockFormationTrace {
             return;
         }
         int[] expected = {worldPos.getX() - masterWorldPos.getX(), worldPos.getY() - masterWorldPos.getY(), worldPos.getZ() - masterWorldPos.getZ()};
-        if (part.isPartUnformed() || part.getPartPos() != position || !Arrays.equals(part.getPartOffset(), expected)) {
-            ICLogger.error("IC multiblock formation: readback at " + worldPos + " holds formed " + !part.isPartUnformed() + ", pos " + part.getPartPos() + ", offset " + Arrays.toString(part.getPartOffset())
-                    + " after writing formed true, pos " + position + ", offset " + Arrays.toString(expected));
-        }
+        if (part.isPartUnformed() || part.getPartPos() != position || !Arrays.equals(part.getPartOffset(), expected)) { ICLogger.error("IC multiblock formation: readback at " + worldPos + " holds formed " + !part.isPartUnformed() + ", pos " + part.getPartPos() + ", offset " + Arrays.toString(part.getPartOffset()) + " after writing formed true, pos " + position + ", offset " + Arrays.toString(expected)); }
     }
 
     private static String describe(@Nullable TileEntity tile) { return tile == null ? "no tile entity" : tile.getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(tile)); }

@@ -2,8 +2,7 @@ package com.immersiveconvergence.api.bridge;
 
 import javax.annotation.Nonnull;
 
-@SuppressWarnings("unused")
-public final class ICBridges {
+@SuppressWarnings("unused") public final class ICBridges {
     private static IICBridgeService service;
     private static IICClientBridge clientBridge;
 

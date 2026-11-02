@@ -8,6 +8,7 @@ import blusunrize.immersiveengineering.client.models.ModelConveyor;
 import blusunrize.immersiveengineering.common.util.Utils;
 import blusunrize.immersiveengineering.common.util.chickenbones.Matrix4;
 import com.google.common.collect.Lists;
+import com.immersiveconvergence.client.renderer.ConveyorCoverRenderer;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -30,12 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-@SuppressWarnings("unused")
-public class ConveyorExtractCoveredAlternative extends ConveyorExtractAlternative {
+@SuppressWarnings("unused") public class ConveyorExtractCoveredAlternative extends ConveyorExtractAlternative {
     private ItemStack cover = ItemStack.EMPTY;
-
     private static final AxisAlignedBB TOP_BOX = new AxisAlignedBB(0, 0.75, 0, 1, 1, 1);
-
     private static final float PIXEL = 0.0625F;
     private static final float ARM_Y_LOW = 0.375F;
     private static final float ARM_Y_HIGH = 1.0F;
@@ -46,8 +44,7 @@ public class ConveyorExtractCoveredAlternative extends ConveyorExtractAlternativ
     private static final float CURTAIN_Z_MAX = 0.125F;
     private static final float PLATE_THICKNESS = 0.125F;
 
-    @SideOnly(Side.CLIENT)
-    @Override public List<BakedQuad> modifyQuads(List<BakedQuad> baseModel, @Nullable TileEntity tile, EnumFacing facing) {
+    @SideOnly(Side.CLIENT) @Override public List<BakedQuad> modifyQuads(List<BakedQuad> baseModel, @Nullable TileEntity tile, EnumFacing facing) {
         EnumFacing renderFacing = tile == null ? facing.getOpposite() : facing;
         Matrix4 mat = new Matrix4(renderFacing);
         ConveyorDirection dir = ConveyorDirection.HORIZONTAL;
@@ -58,7 +55,7 @@ public class ConveyorExtractCoveredAlternative extends ConveyorExtractAlternativ
 
         List<BakedQuad> model = ModelConveyor.getBaseConveyor(renderFacing, 1.0F, mat, dir, sprite, new boolean[]{w0, w1}, new boolean[]{true, true}, spriteColour, getDyeColour());
 
-        if (tile != null) initializeDirection(tile, facing);
+        if (tile != null) { initializeDirection(tile, facing); }
         EnumFacing armDirection = (tile == null) ? facing : this.extractDirection;
 
         TextureAtlasSprite textureSteel = ClientUtils.getSprite(new ResourceLocation("immersiveengineering", "blocks/storage_steel"));
@@ -74,18 +71,14 @@ public class ConveyorExtractCoveredAlternative extends ConveyorExtractAlternativ
 
         Function<EnumFacing, TextureAtlasSprite> getCasingSprite = f -> f.getAxis() == EnumFacing.Axis.Z ? textureSteel : textureCasing;
         Function<Vector3f[], Vector3f[]> vertexTransformer = vertices -> {
-            if (extend == 0.0F) return vertices;
+            if (extend == 0.0F) { return vertices; }
             Vector3f[] ret = new Vector3f[vertices.length];
-            for (int i = 0; i < ret.length; ++i) {
-                ret[i] = new Vector3f(vertices[i].x, vertices[i].y, vertices[i].z - extend);
-            }
+            for (int i = 0; i < ret.length; ++i) { ret[i] = new Vector3f(vertices[i].x, vertices[i].y, vertices[i].z - extend); }
             return ret;
         };
         Function<Vector3f[], Vector3f[]> casingTransformer = vertices -> {
             Vector3f[] ret = new Vector3f[vertices.length];
-            for (int i = 0; i < ret.length; ++i) {
-                ret[i] = new Vector3f(vertices[i].x, vertices[i].y - 0.25F, vertices[i].z - 0.625F - extend);
-            }
+            for (int i = 0; i < ret.length; ++i) { ret[i] = new Vector3f(vertices[i].x, vertices[i].y - 0.25F, vertices[i].z - 0.625F - extend); }
             return ret;
         };
 
@@ -107,7 +100,7 @@ public class ConveyorExtractCoveredAlternative extends ConveyorExtractAlternativ
 
             model.add(ClientUtils.createBakedQuad(DefaultVertexFormats.ITEM, ClientUtils.applyMatrixToVertices(armMatrix, vertices), Utils.rotateFacingTowardsDir(EnumFacing.DOWN, renderFacing), texConveyor, new double[]{15.0, extend * 16.0, 1.0, 0.0}, colour, true));
 
-            for (Vector3f vec : vertices) vec.setY(PLATE_THICKNESS);
+            for (Vector3f vec : vertices) { vec.setY(PLATE_THICKNESS); }
             model.add(ClientUtils.createBakedQuad(DefaultVertexFormats.ITEM, ClientUtils.applyMatrixToVertices(armMatrix, vertices), Utils.rotateFacingTowardsDir(EnumFacing.UP, renderFacing), texConveyor, new double[]{15.0, (1.0F - extend) * 16.0, 1.0, 16.0}, colour, false));
 
             model.addAll(ClientUtils.createBakedBox(new Vector3f(PIXEL, 0.25F, ARM_BASE_Z), new Vector3f(1.0F - PIXEL, 0.375F, ARM_BASE_Z + extend), armMatrix, renderFacing, casingTransformer, getExtensionSprite, colour));
@@ -122,7 +115,7 @@ public class ConveyorExtractCoveredAlternative extends ConveyorExtractAlternativ
 
         model.add(ClientUtils.createBakedQuad(DefaultVertexFormats.ITEM, ClientUtils.applyMatrixToVertices(armMatrix, vertexTransformer.apply(vertices)), Utils.rotateFacingTowardsDir(EnumFacing.NORTH, renderFacing), textureAssembler, new double[]{15.25, 13.25, 12.75, 15.25}, colour, false));
 
-        for (Vector3f vec : vertices) vec.setZ(PIXEL);
+        for (Vector3f vec : vertices) { vec.setZ(PIXEL); }
         model.add(ClientUtils.createBakedQuad(DefaultVertexFormats.ITEM, ClientUtils.applyMatrixToVertices(armMatrix, vertexTransformer.apply(vertices)), Utils.rotateFacingTowardsDir(EnumFacing.SOUTH, renderFacing), textureAssembler, new double[]{12.75, 13.25, 15.25, 15.25}, colour, true));
 
         for (int i = 0; i < 5; ++i) {
@@ -130,7 +123,7 @@ public class ConveyorExtractCoveredAlternative extends ConveyorExtractAlternativ
             model.addAll(ClientUtils.createBakedBox(new Vector3f(0.203125F + off, CURTAIN_Y_LOW, CURTAIN_Z), new Vector3f(0.296875F + off, CURTAIN_Y_HIGH, CURTAIN_Z_MAX), armMatrix, renderFacing, vertexTransformer, f -> textureCurtain, colour));
         }
 
-        ConveyorCoveredHelper.addCoverToQuads(model, renderFacing, () -> cover, dir, new boolean[]{w0, w1});
+        ConveyorCoverRenderer.addCoverToQuads(model, renderFacing, () -> cover, dir, new boolean[]{w0, w1});
         return model;
     }
 
@@ -146,12 +139,12 @@ public class ConveyorExtractCoveredAlternative extends ConveyorExtractAlternativ
         EnumFacing effectiveDir = (tile == null) ? facing : this.extractDirection;
         key += "e" + effectiveDir.ordinal();
         key += "ex" + getExtensionIntoBlock(tile);
-        if (!cover.isEmpty()) key += "s" + cover.getItem().getRegistryName() + cover.getMetadata();
+        if (!cover.isEmpty()) { key += "s" + cover.getItem().getRegistryName() + cover.getMetadata(); }
         return key;
     }
 
     @Override public boolean playerInteraction(TileEntity tile, EntityPlayer player, EnumHand hand, ItemStack heldItem, float hitX, float hitY, float hitZ, EnumFacing side) {
-        if (super.playerInteraction(tile, player, hand, heldItem, hitX, hitY, hitZ, side)) return true;
+        if (super.playerInteraction(tile, player, hand, heldItem, hitX, hitY, hitZ, side)) { return true; }
         return ConveyorCoveredHelper.handleCoverInteraction(tile, player, hand, heldItem, () -> cover, stack -> cover = stack);
     }
 
@@ -161,13 +154,11 @@ public class ConveyorExtractCoveredAlternative extends ConveyorExtractAlternativ
         return list;
     }
 
-    @Override public List<AxisAlignedBB> getSelectionBoxes(TileEntity tile, EnumFacing facing) {
-        return Lists.newArrayList(net.minecraft.block.Block.FULL_BLOCK_AABB);
-    }
+    @Override public List<AxisAlignedBB> getSelectionBoxes(TileEntity tile, EnumFacing facing) { return Lists.newArrayList(net.minecraft.block.Block.FULL_BLOCK_AABB); }
 
     @Override public NBTTagCompound writeConveyorNBT() {
         NBTTagCompound nbt = super.writeConveyorNBT();
-        if (!cover.isEmpty()) nbt.setTag("cover", cover.writeToNBT(new NBTTagCompound()));
+        if (!cover.isEmpty()) { nbt.setTag("cover", cover.writeToNBT(new NBTTagCompound())); }
         return nbt;
     }
 
@@ -179,7 +170,7 @@ public class ConveyorExtractCoveredAlternative extends ConveyorExtractAlternativ
     @Override public void onEntityCollision(TileEntity tile, Entity entity, EnumFacing facing) {
         super.onEntityCollision(tile, entity, facing);
 
-        if (entity instanceof EntityItem) ((EntityItem)entity).setPickupDelay(10);
+        if (entity instanceof EntityItem) { ((EntityItem)entity).setPickupDelay(10); }
     }
 
     @Override public void onItemDeployed(TileEntity tile, EntityItem entity, EnumFacing facing) {

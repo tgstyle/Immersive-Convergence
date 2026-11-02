@@ -1,0 +1,50 @@
+package com.immersiveconvergence.core.integration.immersivepetroleum;
+
+import com.immersiveconvergence.core.integration.immersiveengineering.IEClearTanks;
+import com.immersiveconvergence.core.integration.immersiveengineering.IEMultiblock;
+import com.immersiveconvergence.core.integration.immersiveengineering.IEMultiblockRegistry;
+
+import flaxbeard.immersivepetroleum.api.crafting.LubricatedHandler;
+import flaxbeard.immersivepetroleum.common.IPContent;
+import flaxbeard.immersivepetroleum.common.blocks.BlockIPMetalMultiblocks;
+import flaxbeard.immersivepetroleum.common.blocks.metal.BlockTypes_IPMetalMultiblock;
+import flaxbeard.immersivepetroleum.common.blocks.metal.TileEntityDistillationTower;
+import flaxbeard.immersivepetroleum.common.blocks.metal.TileEntityPumpjack;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Supplier;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.BlockRenderLayer;
+
+public final class IPMultiblocks {
+    private IPMultiblocks() {}
+
+    private static Supplier<IBlockState> state(BlockTypes_IPMetalMultiblock type) {
+        return () -> {
+            BlockIPMetalMultiblocks block = (BlockIPMetalMultiblocks)IPContent.blockMetalMultiblock;
+            return block.getDefaultState().withProperty(block.property, type);
+        };
+    }
+
+    public static void init() {
+        IEMultiblockRegistry.register("immersivepetroleum", "IP:DistillationTower", "distillation_tower",
+                state(BlockTypes_IPMetalMultiblock.DISTILLATION_TOWER), state(BlockTypes_IPMetalMultiblock.DISTILLATION_TOWER_PARENT),
+                IEMultiblock.Anchor.SIDE_RAW, true);
+        IEMultiblockRegistry.register("immersivepetroleum", "IP:Pumpjack", "pumpjack",
+                state(BlockTypes_IPMetalMultiblock.PUMPJACK), state(BlockTypes_IPMetalMultiblock.PUMPJACK_PARENT),
+                IEMultiblock.Anchor.SIDE, true);
+
+        IEMultiblockRegistry.registerTile(TileEntityDistillationTower.class, "IP:DistillationTower");
+        IEMultiblockRegistry.registerTile(TileEntityDistillationTower.TileEntityDistillationTowerParent.class, "IP:DistillationTower");
+        IEMultiblockRegistry.registerTile(TileEntityPumpjack.class, "IP:Pumpjack");
+        IEMultiblockRegistry.registerTile(TileEntityPumpjack.TileEntityPumpjackParent.class, "IP:Pumpjack");
+
+        IEClearTanks.register("IP:DistillationTower", new int[]{0}, tile -> {
+            ((TileEntityDistillationTower)tile).tanks[0].fluids.clear();
+            return 1;
+        });
+
+        LubricatedHandler.lubricatedTiles = new CopyOnWriteArrayList<>(LubricatedHandler.lubricatedTiles);
+    }
+
+    public static void alignRenderLayers() { ((BlockIPMetalMultiblocks)IPContent.blockMetalMultiblock).setMetaBlockLayer(BlockTypes_IPMetalMultiblock.DISTILLATION_TOWER.getMeta(), BlockRenderLayer.CUTOUT); }
+}

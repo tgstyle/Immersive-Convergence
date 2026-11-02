@@ -9,8 +9,7 @@ import net.minecraft.util.EnumFacing;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@SuppressWarnings("unused")
-public interface IICFluxHandler extends IICFluxConnector, IICFluxAcceptor, IICFluxProvider {
+@SuppressWarnings("unused") public interface IICFluxHandler extends IICFluxConnector, IICFluxAcceptor, IICFluxProvider {
     @Nonnull ICFluxStorage getFluxStorage();
 
     default void postEnergyTransferUpdate(int energy, boolean simulate) {}

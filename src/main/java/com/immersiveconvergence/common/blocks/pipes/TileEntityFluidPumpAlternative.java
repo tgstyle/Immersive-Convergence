@@ -1,10 +1,10 @@
 package com.immersiveconvergence.common.blocks.pipes;
 
 import com.immersiveconvergence.api.util.ICUtils;
-import com.immersiveconvergence.core.ICCommonConfig;
+import com.immersiveconvergence.core.config.ICCommonConfig;
 
-import com.immersiveconvergence.api.fluid.IICPipe;
 import com.immersiveconvergence.api.ICLib;
+import com.immersiveconvergence.api.fluid.IICPipe;
 import javax.annotation.Nonnull;
 
 import java.util.ArrayDeque;
@@ -17,7 +17,6 @@ import blusunrize.immersiveengineering.common.Config.IEConfig;
 import blusunrize.immersiveengineering.common.blocks.IEBlockInterfaces.*;
 import blusunrize.immersiveengineering.common.util.EnergyHelper.IIEInternalFluxHandler;
 import blusunrize.immersiveengineering.common.util.Utils;
-
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -117,7 +116,8 @@ public class TileEntityFluidPumpAlternative extends blusunrize.immersiveengineer
                     IFluidHandler handler = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, f.getOpposite());
                     if (handler == null) { continue; }
                     drainFromTank(handler);
-                } else if (world.getTotalWorldTime() % 20 == ((getPos().getX() ^ getPos().getZ()) & 19) && world.getBlockState(getPos().offset(f)).getBlock() == Blocks.WATER && IEConfig.Machines.pump_infiniteWater && tank.fill(new FluidStack(FluidRegistry.WATER, 1000), false) == 1000 && this.energyStorage.extractEnergy(IEConfig.Machines.pump_consumption, true) >= IEConfig.Machines.pump_consumption) {
+                }
+                else if (world.getTotalWorldTime() % 20 == ((getPos().getX() ^ getPos().getZ()) & 19) && world.getBlockState(getPos().offset(f)).getBlock() == Blocks.WATER && IEConfig.Machines.pump_infiniteWater && tank.fill(new FluidStack(FluidRegistry.WATER, 1000), false) == 1000 && this.energyStorage.extractEnergy(IEConfig.Machines.pump_consumption, true) >= IEConfig.Machines.pump_consumption) {
                     int connectedSources = 0;
                     for (EnumFacing f2 : EnumFacing.HORIZONTALS) {
                         IBlockState waterState = world.getBlockState(getPos().offset(f).offset(f2));
@@ -191,7 +191,8 @@ public class TileEntityFluidPumpAlternative extends blusunrize.immersiveengineer
             int out = this.outputFluid(drain, false);
             handler.drain(out, true);
             drainedAmount = out;
-        } else {
+        }
+        else {
             drain = handler.drain(Math.min(tank.getCapacity() - tank.getFluidAmount(), maxDrain), false);
             if (drain == null || drain.amount <= 0 || !tank.canFillFluidType(drain)) { return; }
             FluidStack drainCopy = drain.copy();
@@ -259,7 +260,8 @@ public class TileEntityFluidPumpAlternative extends blusunrize.immersiveengineer
             if (tile instanceof IICPipe && this.energyStorage.extractEnergy(accelPower, true) >= accelPower) {
                 if (insertResource.tag == null) { insertResource.tag = new NBTTagCompound(); }
                 insertResource.tag.setBoolean("pressurized", true);
-            } else {
+            }
+            else {
                 if (insertResource.tag != null) {
                     insertResource.tag.removeTag("pressurized");
                     if (insertResource.tag.isEmpty()) { insertResource.tag = null; }
@@ -284,7 +286,8 @@ public class TileEntityFluidPumpAlternative extends blusunrize.immersiveengineer
                     this.energyStorage.extractEnergy(accelPower, false);
                     if (insertResource.tag == null) { insertResource.tag = new NBTTagCompound(); }
                     insertResource.tag.setBoolean("pressurized", true);
-                } else {
+                }
+                else {
                     if (insertResource.tag != null) {
                         insertResource.tag.removeTag("pressurized");
                         if (insertResource.tag.isEmpty()) { insertResource.tag = null; }

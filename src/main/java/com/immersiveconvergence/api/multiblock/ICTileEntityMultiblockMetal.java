@@ -45,8 +45,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-@SuppressWarnings("unused")
-public abstract class ICTileEntityMultiblockMetal<T extends ICTileEntityMultiblockMetal<T, R>, R extends ICRecipe> extends ICTileEntityMultiblockPart<T> implements IICInventory, IICInternalFluxHandler, IHammerInteraction, IMirrorAble, IProcessTile, IComparatorOverride {
+@SuppressWarnings("unused") public abstract class ICTileEntityMultiblockMetal<T extends ICTileEntityMultiblockMetal<T, R>, R extends ICRecipe> extends ICTileEntityMultiblockPart<T> implements IICInventory, IICInternalFluxHandler, IHammerInteraction, IMirrorAble, IProcessTile, IComparatorOverride {
     public final ICFluxStorageAdvanced energyStorage;
     protected final boolean hasRedstoneControl;
     protected final ICMultiblock multiblockInstance;
@@ -174,8 +173,7 @@ public abstract class ICTileEntityMultiblockMetal<T extends ICTileEntityMultiblo
         if (energy != 0) { master.requestClientSync(); }
     }
 
-    @SideOnly(Side.CLIENT)
-    @Override @Nonnull public AxisAlignedBB getRenderBoundingBox() {
+    @SideOnly(Side.CLIENT) @Override @Nonnull public AxisAlignedBB getRenderBoundingBox() {
         if (!isDummy()) {
             BlockPos nullPos = this.getBlockPosForPos(0);
             return new AxisAlignedBB(nullPos, nullPos.offset(facing, structureDimensions[1]).offset(mirrored ? facing.rotateYCCW() : facing.rotateY(), structureDimensions[2]).up(structureDimensions[0]));
@@ -215,9 +213,7 @@ public abstract class ICTileEntityMultiblockMetal<T extends ICTileEntityMultiblo
     public boolean isRSDisabled() {
         if (computerOn != null) { return !computerOn; }
         T cached = redstoneTileCache;
-        if (cached != null && !cached.isInvalid()) {
-            return redstoneControlInverted != (world.getRedstonePowerFromNeighbors(cached.getPos()) > 0);
-        }
+        if (cached != null && !cached.isInvalid()) { return redstoneControlInverted != (world.getRedstonePowerFromNeighbors(cached.getPos()) > 0); }
         int[] rsPositions = cachedRedstonePos();
         if (rsPositions.length < 1) { return false; }
         for (int rsPos : rsPositions) {
@@ -230,8 +226,7 @@ public abstract class ICTileEntityMultiblockMetal<T extends ICTileEntityMultiblo
         return false;
     }
 
-    @SuppressWarnings("unchecked")
-    @Nullable public T getTileForPos(int targetPos) {
+    @SuppressWarnings("unchecked") @Nullable public T getTileForPos(int targetPos) {
         BlockPos target = getBlockPosForPos(targetPos);
         TileEntity tile = ICUtils.getExistingTileEntity(world, target);
         if (this.getClass().isInstance(tile)) { return (T)tile; }
@@ -518,11 +513,9 @@ public abstract class ICTileEntityMultiblockMetal<T extends ICTileEntityMultiblo
         protected abstract void writeExtraDataToNBT(NBTTagCompound nbt);
     }
 
-    @SuppressWarnings("unchecked")
-    void onProcessFinishGeneric(MultiblockProcess<?> process) { onProcessFinish((MultiblockProcess<R>)process); }
+    @SuppressWarnings("unchecked") void onProcessFinishGeneric(MultiblockProcess<?> process) { onProcessFinish((MultiblockProcess<R>)process); }
 
-    @SuppressWarnings("unchecked")
-    boolean additionalCanProcessCheckGeneric(MultiblockProcess<?> process) { return additionalCanProcessCheck((MultiblockProcess<R>)process); }
+    @SuppressWarnings("unchecked") boolean additionalCanProcessCheckGeneric(MultiblockProcess<?> process) { return additionalCanProcessCheck((MultiblockProcess<R>)process); }
 
     public static class MultiblockProcessInMachine<R extends ICRecipe> extends MultiblockProcess<R> {
         protected int[] inputSlots;

@@ -8,8 +8,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Random;
 
-@SideOnly(Side.CLIENT)
-@SuppressWarnings("unused") public final class BeamParticles {
+@SideOnly(Side.CLIENT) @SuppressWarnings("unused") public final class BeamParticles {
     private static final float SPAWN_CHANCE = 0.04f;
     private static final double BEAM_FRACTION = 0.9;
     private static final double SPEED_MIN = 0.08;

@@ -4,8 +4,7 @@ import net.minecraft.util.math.Vec3d;
 
 import javax.annotation.Nonnull;
 
-@SuppressWarnings("unused")
-public final class ICWireHit {
+@SuppressWarnings("unused") public final class ICWireHit {
     private final ICWire wire;
     private final Vec3d point;
 

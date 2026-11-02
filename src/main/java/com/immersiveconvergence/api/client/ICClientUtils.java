@@ -31,8 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@SuppressWarnings("unused")
-public class ICClientUtils {
+@SuppressWarnings("unused") public class ICClientUtils {
     private static final Map<String, ResourceLocation> RESOURCES = new ConcurrentHashMap<>();
     private static final float[] NO_FADE = {1, 1, 1, 1};
 
@@ -68,9 +67,7 @@ public class ICClientUtils {
         tessellator.draw();
     }
 
-    public static void drawTexturedRect(int x, int y, int w, int h, float picSize, int... uv) {
-        drawTexturedRect(x, y, w, h, uv[0] / picSize, uv[1] / picSize, uv[2] / picSize, uv[3] / picSize);
-    }
+    public static void drawTexturedRect(int x, int y, int w, int h, float picSize, int... uv) { drawTexturedRect(x, y, w, h, uv[0] / picSize, uv[1] / picSize, uv[2] / picSize, uv[3] / picSize); }
 
     public static void drawRepeatedSprite(float x, float y, float w, float h, int iconWidth, int iconHeight, float uMin, float uMax, float vMin, float vMax) {
         int iterMaxW = (int)(w / iconWidth);
@@ -136,9 +133,7 @@ public class ICClientUtils {
         tooltip.add(tankCapacity > 0 ? amount + "/" + tankCapacity + "mB" : amount + "mB");
     }
 
-    public static void handleGuiTank(IFluidTank tank, int x, int y, int w, int h, int oX, int oY, int oW, int oH, int mX, int mY, String originalTexture, ArrayList<String> tooltip) {
-        handleGuiTank(tank.getFluid(), tank.getCapacity(), x, y, w, h, oX, oY, oW, oH, mX, mY, originalTexture, tooltip);
-    }
+    public static void handleGuiTank(IFluidTank tank, int x, int y, int w, int h, int oX, int oY, int oW, int oH, int mX, int mY, String originalTexture, ArrayList<String> tooltip) { handleGuiTank(tank.getFluid(), tank.getCapacity(), x, y, w, h, oX, oY, oW, oH, mX, mY, originalTexture, tooltip); }
 
     public static void handleGuiTank(FluidStack fluid, int capacity, int x, int y, int w, int h, int oX, int oY, int oW, int oH, int mX, int mY, String originalTexture, ArrayList<String> tooltip) {
         if (tooltip != null) {
@@ -166,9 +161,7 @@ public class ICClientUtils {
         int width = 0;
         for (String s : list) {
             int l = font.getStringWidth(s);
-            if (l > width) {
-                width = l;
-            }
+            if (l > width) { width = l; }
         }
 
         int textX = x + 12;
@@ -223,13 +216,7 @@ public class ICClientUtils {
             VertexFormat format = quad.getFormat();
             int size = format.getIntegerSize();
             int uv = format.getUvOffsetById(0) / 4;
-            for (int i = 0; i < 4; i++) {
-                renderer.pos(Float.intBitsToFloat(data[size * i]), Float.intBitsToFloat(data[size * i + 1]), Float.intBitsToFloat(data[size * i + 2]))
-                        .color(255, 255, 255, 255)
-                        .tex(Float.intBitsToFloat(data[size * i + uv]), Float.intBitsToFloat(data[size * i + uv + 1]))
-                        .lightmap(light1, light2)
-                        .endVertex();
-            }
+            for (int i = 0; i < 4; i++) { renderer.pos(Float.intBitsToFloat(data[size * i]), Float.intBitsToFloat(data[size * i + 1]), Float.intBitsToFloat(data[size * i + 2])) .color(255, 255, 255, 255) .tex(Float.intBitsToFloat(data[size * i + uv]), Float.intBitsToFloat(data[size * i + uv + 1])) .lightmap(light1, light2) .endVertex(); }
         }
     }
 
@@ -255,9 +242,7 @@ public class ICClientUtils {
         }
     }
 
-    public static BakedQuad createBakedQuad(VertexFormat format, Vector3f[] vertices, EnumFacing facing, TextureAtlasSprite sprite, double[] uvs, float[] colour, boolean invert) {
-        return createBakedQuad(format, vertices, facing, sprite, uvs, colour, invert, NO_FADE);
-    }
+    public static BakedQuad createBakedQuad(VertexFormat format, Vector3f[] vertices, EnumFacing facing, TextureAtlasSprite sprite, double[] uvs, float[] colour, boolean invert) { return createBakedQuad(format, vertices, facing, sprite, uvs, colour, invert, NO_FADE); }
 
     public static BakedQuad createBakedQuad(VertexFormat format, Vector3f[] vertices, EnumFacing facing, TextureAtlasSprite sprite, double[] uvs, float[] colour, boolean invert, float[] alpha) {
         UnpackedBakedQuad.Builder builder = new UnpackedBakedQuad.Builder(format);

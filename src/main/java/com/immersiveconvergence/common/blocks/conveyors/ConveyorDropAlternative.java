@@ -32,12 +32,10 @@ public class ConveyorDropAlternative extends ConveyorBasicAlternative {
                 "c" + getDyeColour();
     }
 
-    @Override public boolean changeConveyorDirection() {
-        return false;
-    }
+    @Override public boolean changeConveyorDirection() { return false; }
 
     @Override public boolean setConveyorDirection(ConveyorDirection dir) {
-        if (dir != ConveyorDirection.HORIZONTAL) return false;
+        if (dir != ConveyorDirection.HORIZONTAL) { return false; }
         return super.setConveyorDirection(dir);
     }
 
@@ -71,21 +69,21 @@ public class ConveyorDropAlternative extends ConveyorBasicAlternative {
                 }
             }
             super.handleInsertion(tile, entity, facing, conDir, distX, distZ);
-        } else if (contact && isEmptySpace(tile.getWorld(), posDown, inventoryTile)) {
+        }
+        else if (contact && isEmptySpace(tile.getWorld(), posDown, inventoryTile)) {
             entity.motionX = 0;
             entity.motionZ = 0;
             entity.setPosition(tile.getPos().getX() + 0.5, tile.getPos().getY() - 0.5, tile.getPos().getZ() + 0.5);
-            if (inventoryTile == null) {
-                ConveyorHandler.revertMagnetSupression(entity, (IConveyorTile) tile);
-            }
-        } else {
+            if (inventoryTile == null) { ConveyorHandler.revertMagnetSupression(entity, (IConveyorTile) tile); }
+        }
+        else {
             super.handleInsertion(tile, entity, facing, conDir, distX, distZ);
         }
     }
 
     private boolean isEmptySpace(World world, BlockPos pos, TileEntity tile) {
-        if (world.isAirBlock(pos)) return true;
-        if (tile instanceof IConveyorTile) return true;
+        if (world.isAirBlock(pos)) { return true; }
+        if (tile instanceof IConveyorTile) { return true; }
         IBlockState state = world.getBlockState(pos);
         return state.getBlock() instanceof BlockTrapDoor && state.getValue(BlockTrapDoor.OPEN);
     }

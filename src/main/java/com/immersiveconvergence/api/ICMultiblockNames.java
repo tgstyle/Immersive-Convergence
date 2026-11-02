@@ -7,10 +7,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@SuppressWarnings("unused")
-public final class ICMultiblockNames {
+@SuppressWarnings("unused") public final class ICMultiblockNames {
     public static final String PREFIX_IE = "desc.immersiveengineering.info.multiblock.";
-
     private static final Map<String, String> OWNERS = new ConcurrentHashMap<>();
 
     private ICMultiblockNames() {}
@@ -20,8 +18,7 @@ public final class ICMultiblockNames {
         OWNERS.put(uniqueNamePrefix, modid);
     }
 
-    @SideOnly(Side.CLIENT)
-    public static String key(String uniqueName) {
+    @SideOnly(Side.CLIENT) public static String key(String uniqueName) {
         if (uniqueName == null) { return null; }
         int split = uniqueName.indexOf(':');
         if (split <= 0) { return PREFIX_IE + uniqueName; }
@@ -31,8 +28,7 @@ public final class ICMultiblockNames {
         return I18n.hasKey(owned) ? owned : PREFIX_IE + uniqueName;
     }
 
-    @SideOnly(Side.CLIENT)
-    public static String resolve(String key) {
+    @SideOnly(Side.CLIENT) public static String resolve(String key) {
         if (key == null || !key.startsWith(PREFIX_IE)) { return key; }
         return key(key.substring(PREFIX_IE.length()));
     }

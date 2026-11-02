@@ -1,7 +1,6 @@
 package com.immersiveconvergence.api.capability;
 
-@SuppressWarnings("unused")
-public class RotationInertiaProcess {
+@SuppressWarnings("unused") public class RotationInertiaProcess {
     private final int speedUpRate;
     private final int speedDownRate;
     private final double inertia;

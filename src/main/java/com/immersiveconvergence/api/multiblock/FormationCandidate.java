@@ -12,8 +12,7 @@ import java.util.function.BiPredicate;
 
 import javax.annotation.Nullable;
 
-@SuppressWarnings("unused")
-public final class FormationCandidate {
+@SuppressWarnings("unused") public final class FormationCandidate {
     private final TemplateMultiblock template;
     public final BlockPos origin;
     public final EnumFacing side;

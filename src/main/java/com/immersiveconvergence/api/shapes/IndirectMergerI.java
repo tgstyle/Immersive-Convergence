@@ -37,7 +37,8 @@ public class IndirectMergerI implements IIndexMerger {
             if (flag4) {
                 ++i1;
                 if (flag && (j1 == 0 || flag3)) { continue; }
-            } else {
+            }
+            else {
                 ++j1;
                 if (flag1 && (i1 == 0 || flag2)) { continue; }
             }
@@ -51,7 +52,8 @@ public class IndirectMergerI implements IIndexMerger {
                 this.result[l] = d1;
                 ++l;
                 d0 = d1;
-            } else {
+            }
+            else {
                 this.firstIndices[l - 1] = k1;
                 this.secondIndices[l - 1] = l1;
             }

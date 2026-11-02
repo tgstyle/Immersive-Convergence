@@ -1,6 +1,6 @@
 package com.immersiveconvergence.api;
 
-import com.immersiveconvergence.core.ICCommonConfig;
+import com.immersiveconvergence.core.config.ICCommonConfig;
 
 import net.minecraftforge.fml.common.Loader;
 

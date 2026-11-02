@@ -30,8 +30,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Stream;
 
-@SuppressWarnings("unused")
-public class MultiblockRecipeLoader {
+@SuppressWarnings("unused") public class MultiblockRecipeLoader {
     public interface TypeHandler { void register(JsonObject json, JsonContext context); }
 
     private static final JsonParser PARSER = new JsonParser();

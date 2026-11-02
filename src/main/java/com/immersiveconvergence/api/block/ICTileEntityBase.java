@@ -27,8 +27,7 @@ import net.minecraftforge.energy.CapabilityEnergy;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@SuppressWarnings("unused")
-public abstract class ICTileEntityBase extends TileEntity {
+@SuppressWarnings("unused") public abstract class ICTileEntityBase extends TileEntity {
     private static Double renderDistanceMultiplier;
 
     @Override public void readFromNBT(@Nonnull NBTTagCompound nbt) {
@@ -119,8 +118,7 @@ public abstract class ICTileEntityBase extends TileEntity {
         return super.receiveClientEvent(id, type);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    @Override public boolean shouldRefresh(World world, @Nonnull BlockPos pos, @Nonnull IBlockState oldState, @Nonnull IBlockState newState) {
+    @SuppressWarnings({"unchecked", "rawtypes"}) @Override public boolean shouldRefresh(World world, @Nonnull BlockPos pos, @Nonnull IBlockState oldState, @Nonnull IBlockState newState) {
         if (world.isBlockLoaded(pos)) { newState = world.getBlockState(pos); }
         if (oldState.getBlock() != newState.getBlock() || !(oldState.getBlock() instanceof ICBlockBase) || !(newState.getBlock() instanceof ICBlockBase)) { return true; }
         IProperty type = ((ICBlockBase<?>)oldState.getBlock()).getMetaProperty();
@@ -141,8 +139,7 @@ public abstract class ICTileEntityBase extends TileEntity {
         return super.hasCapability(capability, facing);
     }
 
-    @SuppressWarnings("unchecked")
-    @Override public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
+    @SuppressWarnings("unchecked") @Override public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
         if (capability == CapabilityEnergy.ENERGY && this instanceof IICFluxConnector) {
             ICFluxWrapper wrapper = ((IICFluxConnector)this).getCapabilityWrapper(facing);
             if (wrapper != null) { return (T)wrapper; }

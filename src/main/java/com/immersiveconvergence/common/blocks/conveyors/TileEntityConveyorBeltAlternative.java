@@ -18,9 +18,9 @@ public class TileEntityConveyorBeltAlternative extends TileEntityConveyorBelt {
         IConveyorBelt conveyor = getConveyorSubtype();
         if (conveyor != null) {
             NBTTagCompound subNBT = conveyor.writeConveyorNBT();
-            if (!subNBT.isEmpty()) compound.setTag("conveyorBeltSubtypeNBT", subNBT);
+            if (!subNBT.isEmpty()) { compound.setTag("conveyorBeltSubtypeNBT", subNBT); }
             ResourceLocation rl = ConveyorHandler.reverseClassRegistry.get(conveyor.getClass());
-            if (rl != null) compound.setString("conveyorBeltSubtype", rl.toString());
+            if (rl != null) { compound.setString("conveyorBeltSubtype", rl.toString()); }
         }
         return super.writeToNBT(compound);
     }
@@ -31,11 +31,8 @@ public class TileEntityConveyorBeltAlternative extends TileEntityConveyorBelt {
             ResourceLocation rl = new ResourceLocation(compound.getString("conveyorBeltSubtype"));
             IConveyorBelt subtype = ConveyorHandler.getConveyor(rl, this);
             setConveyorSubtype(subtype);
-            if (compound.hasKey("conveyorBeltSubtypeNBT")) {
-                subtype.readConveyorNBT(compound.getCompoundTag("conveyorBeltSubtypeNBT"));
-            }
-        } else if (getConveyorSubtype() == null) {
-            setConveyorSubtype(ConveyorHandler.getConveyor(DEFAULT_BASIC, this));
+            if (compound.hasKey("conveyorBeltSubtypeNBT")) { subtype.readConveyorNBT(compound.getCompoundTag("conveyorBeltSubtypeNBT")); }
         }
+        else if (getConveyorSubtype() == null) { setConveyorSubtype(ConveyorHandler.getConveyor(DEFAULT_BASIC, this)); }
     }
 }

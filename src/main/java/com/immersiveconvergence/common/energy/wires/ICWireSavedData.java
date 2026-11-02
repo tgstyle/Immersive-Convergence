@@ -33,8 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@SuppressWarnings("unused")
-public class ICWireSavedData extends WorldSavedData {
+@SuppressWarnings("unused") public class ICWireSavedData extends WorldSavedData {
     public static final String NAME = "immersiveconvergence_wires";
     private static final String LEDGER = "ledger";
     private static final String WAITING = "waiting";

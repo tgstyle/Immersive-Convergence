@@ -6,8 +6,7 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 
-@SuppressWarnings("unused")
-public final class ICDimensionBlockPos extends BlockPos {
+@SuppressWarnings("unused") public final class ICDimensionBlockPos extends BlockPos {
     public final int dimension;
 
     public ICDimensionBlockPos(int x, int y, int z, int dimension) {

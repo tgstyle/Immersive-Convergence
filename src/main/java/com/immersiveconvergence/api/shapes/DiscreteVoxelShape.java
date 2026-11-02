@@ -15,12 +15,11 @@ public abstract class DiscreteVoxelShape {
             this.xSize = xSize;
             this.ySize = ySize;
             this.zSize = zSize;
-        } else { throw new IllegalArgumentException("Need all positive sizes: x: " + xSize + ", y: " + ySize + ", z: " + zSize); }
+        }
+        else { throw new IllegalArgumentException("Need all positive sizes: x: " + xSize + ", y: " + ySize + ", z: " + zSize); }
     }
 
-    public boolean isFullWide(AxisCycle axisCycle, int x, int y, int z) {
-        return this.isFullWide(axisCycle.cycle(x, y, z, EnumFacing.Axis.X), axisCycle.cycle(x, y, z, EnumFacing.Axis.Y), axisCycle.cycle(x, y, z, EnumFacing.Axis.Z));
-    }
+    public boolean isFullWide(AxisCycle axisCycle, int x, int y, int z) { return this.isFullWide(axisCycle.cycle(x, y, z, EnumFacing.Axis.X), axisCycle.cycle(x, y, z, EnumFacing.Axis.Y), axisCycle.cycle(x, y, z, EnumFacing.Axis.Z)); }
 
     public boolean isFullWide(int x, int y, int z) { return x >= 0 && y >= 0 && z >= 0 && x < this.xSize && y < this.ySize && z < this.zSize && this.isFull(x, y, z); }
 
@@ -104,11 +103,13 @@ public abstract class DiscreteVoxelShape {
                     if (fullCount == 1 || fullCount == 3 || fullCount == 2 && (parity & 1) == 0) {
                         if (combine) {
                             if (zStart == -1) { zStart = z; }
-                        } else {
+                        }
+                        else {
                             consumer.consume(inverseCycle.cycle(x, y, z, EnumFacing.Axis.X), inverseCycle.cycle(x, y, z, EnumFacing.Axis.Y), inverseCycle.cycle(x, y, z, EnumFacing.Axis.Z),
                                     inverseCycle.cycle(x, y, z + 1, EnumFacing.Axis.X), inverseCycle.cycle(x, y, z + 1, EnumFacing.Axis.Y), inverseCycle.cycle(x, y, z + 1, EnumFacing.Axis.Z));
                         }
-                    } else if (zStart != -1) {
+                    }
+                    else if (zStart != -1) {
                         consumer.consume(inverseCycle.cycle(x, y, zStart, EnumFacing.Axis.X), inverseCycle.cycle(x, y, zStart, EnumFacing.Axis.Y), inverseCycle.cycle(x, y, zStart, EnumFacing.Axis.Z),
                                 inverseCycle.cycle(x, y, z, EnumFacing.Axis.X), inverseCycle.cycle(x, y, z, EnumFacing.Axis.Y), inverseCycle.cycle(x, y, z, EnumFacing.Axis.Z));
                         zStart = -1;

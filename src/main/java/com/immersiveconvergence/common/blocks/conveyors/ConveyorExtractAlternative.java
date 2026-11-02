@@ -42,7 +42,6 @@ public class ConveyorExtractAlternative extends ConveyorBasicAlternative {
     protected int transferCooldown = -1;
     protected int transferTickrate = 8;
     protected float extension = -1.0F;
-
     private static final float PIXEL = 0.0625F;
     private static final float ARM_BASE_Z = 0.625F;
     private static final float ARM_EXTEND_MAX = 0.25F;
@@ -57,12 +56,10 @@ public class ConveyorExtractAlternative extends ConveyorBasicAlternative {
     private static final float ITEM_SPAWN_Y = 0.1875F;
     private static final double ITEM_SPAWN_XZ_OFFSET = 0.5D;
 
-    public ConveyorExtractAlternative() {
-        this.extractDirection = EnumFacing.NORTH;
-    }
+    public ConveyorExtractAlternative() { this.extractDirection = EnumFacing.NORTH; }
 
     protected void initializeDirection(@Nullable TileEntity tile, EnumFacing facing) {
-        if (tile != null) this.extractDirection = facing.getOpposite();
+        if (tile != null) { this.extractDirection = facing.getOpposite(); }
     }
 
     protected float getExtensionIntoBlock(TileEntity tile) {
@@ -82,17 +79,16 @@ public class ConveyorExtractAlternative extends ConveyorBasicAlternative {
                         case WEST: extend = (float)(1.0 - aabb.maxX); break;
                         case EAST: extend = (float)aabb.minX; break;
                     }
-                    if (extend > ARM_EXTEND_MAX) extend = ARM_EXTEND_MAX;
+                    if (extend > ARM_EXTEND_MAX) { extend = ARM_EXTEND_MAX; }
                     float round = extend % PIXEL;
-                    if (round < extend) extend = round + PIXEL;
+                    if (round < extend) { extend = round + PIXEL; }
                 }
             }
         }
         return extend;
     }
 
-    @SideOnly(Side.CLIENT)
-    @Override public List<BakedQuad> modifyQuads(List<BakedQuad> baseModel, @Nullable TileEntity tile, EnumFacing facing) {
+    @SideOnly(Side.CLIENT) @Override public List<BakedQuad> modifyQuads(List<BakedQuad> baseModel, @Nullable TileEntity tile, EnumFacing facing) {
         initializeDirection(tile, facing);
         List<BakedQuad> model = super.modifyQuads(baseModel, tile, facing);
 
@@ -111,18 +107,14 @@ public class ConveyorExtractAlternative extends ConveyorBasicAlternative {
 
         Function<EnumFacing, TextureAtlasSprite> getCasingSprite = f -> f.getAxis() == EnumFacing.Axis.Z ? textureSteel : textureCasing;
         Function<Vector3f[], Vector3f[]> vertexTransformer = vertices -> {
-            if (extend == 0.0F) return vertices;
+            if (extend == 0.0F) { return vertices; }
             Vector3f[] ret = new Vector3f[vertices.length];
-            for (int i = 0; i < ret.length; ++i) {
-                ret[i] = new Vector3f(vertices[i].x, vertices[i].y, vertices[i].z - extend);
-            }
+            for (int i = 0; i < ret.length; ++i) { ret[i] = new Vector3f(vertices[i].x, vertices[i].y, vertices[i].z - extend); }
             return ret;
         };
         Function<Vector3f[], Vector3f[]> casingTransformer = vertices -> {
             Vector3f[] ret = new Vector3f[vertices.length];
-            for (int i = 0; i < ret.length; ++i) {
-                ret[i] = new Vector3f(vertices[i].x, vertices[i].y - 0.25F, vertices[i].z - 0.625F - extend);
-            }
+            for (int i = 0; i < ret.length; ++i) { ret[i] = new Vector3f(vertices[i].x, vertices[i].y - 0.25F, vertices[i].z - 0.625F - extend); }
             return ret;
         };
 
@@ -144,7 +136,7 @@ public class ConveyorExtractAlternative extends ConveyorBasicAlternative {
 
             model.add(ClientUtils.createBakedQuad(DefaultVertexFormats.ITEM, ClientUtils.applyMatrixToVertices(armMatrix, vertices), Utils.rotateFacingTowardsDir(EnumFacing.DOWN, facing), texConveyor, new double[]{15.0, extend * 16.0, 1.0, 0.0}, colour, true));
 
-            for (Vector3f vec : vertices) vec.setY(0.125F);
+            for (Vector3f vec : vertices) { vec.setY(0.125F); }
             model.add(ClientUtils.createBakedQuad(DefaultVertexFormats.ITEM, ClientUtils.applyMatrixToVertices(armMatrix, vertices), Utils.rotateFacingTowardsDir(EnumFacing.UP, facing), texConveyor, new double[]{15.0, (1.0F - extend) * 16.0, 1.0, 16.0}, colour, false));
 
             model.addAll(ClientUtils.createBakedBox(new Vector3f(PIXEL, 0.25F, ARM_BASE_Z), new Vector3f(1.0F - PIXEL, 0.375F, ARM_BASE_Z + extend), armMatrix, facing, casingTransformer, getExtensionSprite, colour));
@@ -159,7 +151,7 @@ public class ConveyorExtractAlternative extends ConveyorBasicAlternative {
 
         model.add(ClientUtils.createBakedQuad(DefaultVertexFormats.ITEM, ClientUtils.applyMatrixToVertices(armMatrix, vertexTransformer.apply(vertices)), Utils.rotateFacingTowardsDir(EnumFacing.NORTH, facing), textureAssembler, new double[]{15.25, 13.25, 12.75, 15.25}, colour, false));
 
-        for (Vector3f vec : vertices) vec.setZ(PIXEL);
+        for (Vector3f vec : vertices) { vec.setZ(PIXEL); }
         model.add(ClientUtils.createBakedQuad(DefaultVertexFormats.ITEM, ClientUtils.applyMatrixToVertices(armMatrix, vertexTransformer.apply(vertices)), Utils.rotateFacingTowardsDir(EnumFacing.SOUTH, facing), textureAssembler, new double[]{12.75, 13.25, 15.25, 15.25}, colour, true));
 
         for (int i = 0; i < 5; ++i) {
@@ -170,12 +162,10 @@ public class ConveyorExtractAlternative extends ConveyorBasicAlternative {
         return model;
     }
 
-    @Override public boolean changeConveyorDirection() {
-        return false;
-    }
+    @Override public boolean changeConveyorDirection() { return false; }
 
     @Override public boolean setConveyorDirection(ConveyorDirection dir) {
-        if (dir != ConveyorDirection.HORIZONTAL) return false;
+        if (dir != ConveyorDirection.HORIZONTAL) { return false; }
         return super.setConveyorDirection(dir);
     }
 
@@ -201,7 +191,7 @@ public class ConveyorExtractAlternative extends ConveyorBasicAlternative {
     }
 
     @Override public boolean isActive(TileEntity tile) {
-        if (tile == null) return true;
+        if (tile == null) { return true; }
         return runTimer > 0;
     }
 
@@ -248,11 +238,9 @@ public class ConveyorExtractAlternative extends ConveyorBasicAlternative {
     @Override public boolean playerInteraction(TileEntity tile, EntityPlayer player, EnumHand hand, ItemStack heldItem, float hitX, float hitY, float hitZ, EnumFacing side) {
         initializeDirection(tile, side);
         if (Utils.isHammer(heldItem) && player.isSneaking()) {
-            if (this.extractDirection.getAxis() == EnumFacing.Axis.Y) {
-                this.extractDirection = ((IConveyorTile) tile).getFacing().rotateY();
-            }
+            if (this.extractDirection.getAxis() == EnumFacing.Axis.Y) { this.extractDirection = ((IConveyorTile) tile).getFacing().rotateY(); }
             EnumFacing dir = this.extractDirection.rotateY();
-            if (dir == ((IConveyorTile) tile).getFacing()) dir = dir.rotateY();
+            if (dir == ((IConveyorTile) tile).getFacing()) { dir = dir.rotateY(); }
             this.extractDirection = dir;
 
             if (!tile.getWorld().isRemote) {
@@ -261,8 +249,12 @@ public class ConveyorExtractAlternative extends ConveyorBasicAlternative {
                 tile.getWorld().notifyBlockUpdate(tile.getPos(), state, state, 3);
             }
             return true;
-        } else if (Utils.isWirecutter(heldItem)) {
-            if (this.transferTickrate == 4) { this.transferTickrate = 8; } else if (this.transferTickrate == 8) { this.transferTickrate = 16; } else if (this.transferTickrate == 16) { this.transferTickrate = 20; } else if (this.transferTickrate == 20) { this.transferTickrate = 4; }
+        }
+        else if (Utils.isWirecutter(heldItem)) {
+            if (this.transferTickrate == 4) { this.transferTickrate = 8; }
+            else if (this.transferTickrate == 8) { this.transferTickrate = 16; }
+            else if (this.transferTickrate == 16) { this.transferTickrate = 20; }
+            else if (this.transferTickrate == 20) { this.transferTickrate = 4; }
             player.sendStatusMessage(new TextComponentTranslation(ICLib.CHAT_INFO + "tickrate", this.transferTickrate), true);
             return true;
         }
@@ -317,13 +309,13 @@ public class ConveyorExtractAlternative extends ConveyorBasicAlternative {
         ConveyorDirection conveyorDirection = getConveyorDirection();
         float heightLimit = conveyorDirection == ConveyorDirection.HORIZONTAL ? HORIZONTAL_HEIGHT_LIMIT : SLOPED_HEIGHT_LIMIT;
         double height = entity.posY - pos.getY();
-        if (entity.isDead || height < 0D || height >= heightLimit || (entity instanceof EntityPlayer && entity.isSneaking())) return;
+        if (entity.isDead || height < 0D || height >= heightLimit || (entity instanceof EntityPlayer && entity.isSneaking())) { return; }
 
         Vec3d vec = getDirection(tile, entity, facing);
         entity.motionX = vec.x;
         entity.motionY = vec.y;
         entity.motionZ = vec.z;
-        if (entity.fallDistance < MAX_FALL_RESET) entity.fallDistance = 0.0F;
+        if (entity.fallDistance < MAX_FALL_RESET) { entity.fallDistance = 0.0F; }
 
         int offsetX = facing.getXOffset();
         int offsetZ = facing.getZOffset();
@@ -343,14 +335,15 @@ public class ConveyorExtractAlternative extends ConveyorBasicAlternative {
             }
             BlockPos nextPos = new BlockPos(pos.getX() + offsetX, pos.getY(), pos.getZ() + offsetZ);
             TileEntity te = Utils.getExistingTileEntity(tile.getWorld(), nextPos);
-            if (!(te instanceof IConveyorTile)) ConveyorHandler.revertMagnetSupression(entity, (IConveyorTile)tile);
-        } else {
+            if (!(te instanceof IConveyorTile)) { ConveyorHandler.revertMagnetSupression(entity, (IConveyorTile)tile); }
+        }
+        else {
             ConveyorHandler.applyMagnetSupression(entity, (IConveyorTile)tile);
         }
 
         if (entity instanceof EntityItem && entity.ticksExisted > 1) {
             EntityItem item = (EntityItem)entity;
-            if (!contact) item.setNoDespawn();
+            if (!contact) { item.setNoDespawn(); }
             else handleInsertion(tile, item, facing, conveyorDirection, distX, distZ);
         }
 

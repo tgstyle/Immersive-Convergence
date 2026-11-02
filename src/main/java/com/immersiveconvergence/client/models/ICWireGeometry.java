@@ -1,7 +1,7 @@
 package com.immersiveconvergence.client.models;
 
 import com.immersiveconvergence.api.wires.ICWire;
-import com.immersiveconvergence.client.ICClientWires;
+import com.immersiveconvergence.client.util.ICClientWires;
 
 import com.google.common.collect.ImmutableList;
 
@@ -14,9 +14,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.Nonnull;
 
 public final class ICWireGeometry {
     private static final int[][] CORNERS = {{1, 1}, {-1, 1}, {-1, -1}, {1, -1}};

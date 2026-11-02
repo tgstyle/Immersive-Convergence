@@ -26,8 +26,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-@Mod.EventBusSubscriber(modid = ImmersiveConvergence.MODID)
-public final class ICWireRemoval {
+@Mod.EventBusSubscriber(modid = ImmersiveConvergence.MODID) public final class ICWireRemoval {
     private static final Map<Integer, Set<BlockPos>> PENDING = new HashMap<>();
 
     private ICWireRemoval() {}
@@ -49,9 +48,7 @@ public final class ICWireRemoval {
         if (!event.getWorld().isRemote) { PENDING.remove(event.getWorld().provider.getDimension()); }
     }
 
-    public static void removeBlock(@Nonnull World world, @Nonnull BlockPos pos) {
-        ICWires.network(world).removeAt(pos, ICWireCause.BLOCK_BROKEN);
-    }
+    public static void removeBlock(@Nonnull World world, @Nonnull BlockPos pos) { ICWires.network(world).removeAt(pos, ICWireCause.BLOCK_BROKEN); }
 
     public static void breakWires(@Nonnull World world, @Nonnull Collection<ICWire> wires, @Nonnull Vec3d dropAt, @Nonnull ICWireCause cause) {
         for (ICWire wire : ICWireSavedData.get(world).cutAll(wires, cause)) { InventoryHelper.spawnItemStack(world, dropAt.x, dropAt.y, dropAt.z, ICWireCoils.coilFor(wire)); }

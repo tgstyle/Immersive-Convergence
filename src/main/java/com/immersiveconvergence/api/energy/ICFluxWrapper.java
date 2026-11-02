@@ -3,8 +3,7 @@ package com.immersiveconvergence.api.energy;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.energy.IEnergyStorage;
 
-@SuppressWarnings("unused")
-public class ICFluxWrapper implements IEnergyStorage {
+@SuppressWarnings("unused") public class ICFluxWrapper implements IEnergyStorage {
     private final IICFluxConnector fluxHandler;
     public final EnumFacing side;
 

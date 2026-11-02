@@ -5,9 +5,9 @@
   "refmap": "mixins.immersiveconvergence.refmap.json",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "ip.common.MixinIPPumpjackDrain",
-    "ip.common.MixinIPPumpjackTweaks",
-    "ip.common.MixinIPReservoirType"
+    "integration.immersivepetroleum.api.crafting.MixinPumpjackHandler",
+    "integration.immersivepetroleum.common.blocks.metal.MixinTileEntityPumpjack",
+    "integration.immersivepetroleum.api.crafting.MixinPumpjackHandlerReservoirType"
   ],
   "injectors": {
     "defaultRequire": 1

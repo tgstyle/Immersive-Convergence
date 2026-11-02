@@ -6,8 +6,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-@SuppressWarnings("unused")
-public final class ICPipes {
+@SuppressWarnings("unused") public final class ICPipes {
     private static final Set<Fluid> NORMALLY_PRESSURIZED = Collections.synchronizedSet(new HashSet<>());
 
     private ICPipes() {}

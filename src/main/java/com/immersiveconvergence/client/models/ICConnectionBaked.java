@@ -65,7 +65,5 @@ public final class ICConnectionBaked implements IBakedModel {
 
     @Nonnull @Override public ItemOverrideList getOverrides() { return base.getOverrides(); }
 
-    @Nonnull @Override public Pair<? extends IBakedModel, Matrix4f> handlePerspective(@Nonnull ItemCameraTransforms.TransformType type) {
-        return Pair.of(this, base.handlePerspective(type).getRight());
-    }
+    @Nonnull @Override public Pair<? extends IBakedModel, Matrix4f> handlePerspective(@Nonnull ItemCameraTransforms.TransformType type) { return Pair.of(this, base.handlePerspective(type).getRight()); }
 }

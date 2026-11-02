@@ -31,8 +31,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-@SuppressWarnings("unused")
-public class ICBlockInterfaces {
+@SuppressWarnings("unused") public class ICBlockInterfaces {
     public interface IComparatorOverride {
         int getComparatorInputOverride();
     }
@@ -210,8 +209,7 @@ public class ICBlockInterfaces {
         ArrayList<String> compileDisplayList();
     }
 
-    @SuppressWarnings("deprecation")
-    public interface IAdvancedHasObjProperty {
+    @SuppressWarnings("deprecation") public interface IAdvancedHasObjProperty {
         OBJModel.OBJState getOBJState();
     }
 

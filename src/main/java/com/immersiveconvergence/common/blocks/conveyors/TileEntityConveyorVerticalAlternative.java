@@ -19,21 +19,15 @@ public class TileEntityConveyorVerticalAlternative extends TileEntityConveyorBel
 
     public TileEntityConveyorVerticalAlternative() {}
 
-    @Override @Nonnull public NBTTagCompound writeToNBT(@Nonnull NBTTagCompound compound) {
-        return super.writeToNBT(compound);
-    }
+    @Override @Nonnull public NBTTagCompound writeToNBT(@Nonnull NBTTagCompound compound) { return super.writeToNBT(compound); }
 
     @Override public void readFromNBT(@Nonnull NBTTagCompound compound) {
         super.readFromNBT(compound);
-        if (getConveyorSubtype() == null) {
-            setConveyorSubtype(ConveyorHandler.getConveyor(DEFAULT_VERTICAL, this));
-        }
+        if (getConveyorSubtype() == null) { setConveyorSubtype(ConveyorHandler.getConveyor(DEFAULT_VERTICAL, this)); }
     }
 
     @Override public void onEntityCollision(@Nonnull World world, @Nonnull Entity entity) {
-        if (getConveyorSubtype() != null) {
-            getConveyorSubtype().onEntityCollision(this, entity, facing);
-        }
+        if (getConveyorSubtype() != null) { getConveyorSubtype().onEntityCollision(this, entity, facing); }
     }
 
     @Override public boolean mirrorFacingOnPlacement(@Nonnull EntityLivingBase placer) { return false; }
@@ -48,7 +42,5 @@ public class TileEntityConveyorVerticalAlternative extends TileEntityConveyorBel
         return new float[]{minX, 0.0F, minZ, maxX, 1.0F, maxZ};
     }
 
-    @Override @Nonnull public List<AxisAlignedBB> getAdvancedColisionBounds() {
-        return Collections.emptyList();
-    }
+    @Override @Nonnull public List<AxisAlignedBB> getAdvancedColisionBounds() { return Collections.emptyList(); }
 }

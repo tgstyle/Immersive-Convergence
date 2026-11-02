@@ -3,8 +3,7 @@ package com.immersiveconvergence.api.wires;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 
-@SuppressWarnings("unused")
-public class ICTargetingInfo {
+@SuppressWarnings("unused") public class ICTargetingInfo {
     public final EnumFacing side;
     public final float hitX;
     public final float hitY;
@@ -24,7 +23,5 @@ public class ICTargetingInfo {
         tag.setFloat("hitZ", hitZ);
     }
 
-    public static ICTargetingInfo readFromNBT(NBTTagCompound tag) {
-        return new ICTargetingInfo(EnumFacing.values()[tag.getInteger("side")], tag.getFloat("hitX"), tag.getFloat("hitY"), tag.getFloat("hitZ"));
-    }
+    public static ICTargetingInfo readFromNBT(NBTTagCompound tag) { return new ICTargetingInfo(EnumFacing.values()[tag.getInteger("side")], tag.getFloat("hitX"), tag.getFloat("hitY"), tag.getFloat("hitZ")); }
 }

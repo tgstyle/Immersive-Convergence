@@ -20,8 +20,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
-@SuppressWarnings("unused")
-public abstract class ICTileEntityConnectable extends ICTileEntityBase implements IICConnector {
+@SuppressWarnings("unused") public abstract class ICTileEntityConnectable extends ICTileEntityBase implements IICConnector {
 
     protected ICWireType limitType = null;
 
@@ -77,9 +76,7 @@ public abstract class ICTileEntityConnectable extends ICTileEntityBase implement
         ICWires.connectableInvalidated(this);
     }
 
-    @Override public void readCustomNBT(@Nonnull NBTTagCompound nbt, boolean descPacket) {
-        limitType = ICWireType.readFromNBT(nbt, "limitType");
-    }
+    @Override public void readCustomNBT(@Nonnull NBTTagCompound nbt, boolean descPacket) { limitType = ICWireType.readFromNBT(nbt, "limitType"); }
 
     @Override public void writeCustomNBT(@Nonnull NBTTagCompound nbt, boolean descPacket) {
         if (limitType != null) { limitType.writeToNBT(nbt, "limitType"); }

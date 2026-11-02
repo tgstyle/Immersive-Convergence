@@ -16,9 +16,7 @@ import java.nio.file.Files;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-@SuppressWarnings("unused")
-@Mod.EventBusSubscriber(modid = ImmersiveConvergence.MODID, value = Side.CLIENT)
-public class MultiblockTextureHandler {
+@SuppressWarnings("unused") @Mod.EventBusSubscriber(modid = ImmersiveConvergence.MODID, value = Side.CLIENT) public class MultiblockTextureHandler {
     public static final String FOLDER = "multiblock";
     private static final String EXTENSION = ".png";
     private static final Set<String> NAMESPACES = new LinkedHashSet<>();

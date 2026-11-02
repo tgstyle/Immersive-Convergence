@@ -2,8 +2,7 @@ package com.immersiveconvergence.api.client.split.geometry;
 
 import com.google.common.base.Preconditions;
 
-@SuppressWarnings("unused")
-public final class Vec3d {
+@SuppressWarnings("unused") public final class Vec3d {
     public static final Vec3d ZERO = new Vec3d(0.0D, 0.0D, 0.0D);
     public final double x, y, z;
 

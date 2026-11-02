@@ -40,9 +40,7 @@ public final class IEWireGraph implements ICWireGraph {
 
     static int stamp(@Nonnull World world) { return (int)(world.getTotalWorldTime() / REBUILD_TICKS) + 65537 * EPOCHS.getOrDefault(world.provider.getDimension(), 0); }
 
-    @Nonnull @Override public Set<ICConnectionPoint> pointsAt(@Nonnull BlockPos pos) {
-        return connections(pos).isEmpty() ? Collections.emptySet() : Collections.singleton(new ICConnectionPoint(pos, 0));
-    }
+    @Nonnull @Override public Set<ICConnectionPoint> pointsAt(@Nonnull BlockPos pos) { return connections(pos).isEmpty() ? Collections.emptySet() : Collections.singleton(new ICConnectionPoint(pos, 0)); }
 
     @Nonnull @Override public Integer component(@Nonnull ICConnectionPoint point) { return 0; }
 
@@ -120,9 +118,7 @@ public final class IEWireGraph implements ICWireGraph {
         return connections == null ? Collections.emptySet() : connections;
     }
 
-    private Hop hop(Connection connection) {
-        return new Hop(connection, ImmersiveNetHandler.INSTANCE.getReverseConnection(world.provider.getDimension(), connection));
-    }
+    private Hop hop(Connection connection) { return new Hop(connection, ImmersiveNetHandler.INSTANCE.getReverseConnection(world.provider.getDimension(), connection)); }
 
     private static final class Hop {
         private final Connection connection;

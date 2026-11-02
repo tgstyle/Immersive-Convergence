@@ -10,8 +10,7 @@ import net.minecraftforge.common.util.Constants;
 import javax.annotation.Nonnull;
 import java.util.function.UnaryOperator;
 
-@SuppressWarnings("unused")
-public final class ICTemplateWire {
+@SuppressWarnings("unused") public final class ICTemplateWire {
     private static final String FIRST = "first";
     private static final String SECOND = "second";
     private static final String POS = "pos";

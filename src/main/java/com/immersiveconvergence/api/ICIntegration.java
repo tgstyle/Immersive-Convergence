@@ -12,8 +12,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("unused")
-public class ICIntegration {
+@SuppressWarnings("unused") public class ICIntegration {
     public static final String MODID = "immersiveengineering";
     private static final List<Runnable> RENDER_CACHE_CLEARERS = new ArrayList<>();
 

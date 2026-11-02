@@ -35,11 +35,9 @@ public class ConveyorBasicAlternative implements IConveyorBelt {
     protected int runTimer = 0;
     protected long lastUpdateTick = 0;
     protected long lastActivationTick = 0;
-
     private static final ResourceLocation TEXTURE_ON = new ResourceLocation("immersiveengineering", "blocks/conveyor");
     private static final ResourceLocation TEXTURE_OFF = new ResourceLocation("immersiveengineering", "blocks/conveyor_off");
     private static final ResourceLocation TEXTURE_COLOURED = new ResourceLocation("immersiveengineering", "blocks/conveyor_colour");
-
     private static final double BASE_SPEED = 1.15D;
     private static final double LATERAL_SPEED = 0.1D * BASE_SPEED;
     private static final double UP_SPEED = 0.17D * BASE_SPEED;
@@ -51,14 +49,12 @@ public class ConveyorBasicAlternative implements IConveyorBelt {
     protected static final double CONTACT_DIST = 0.9D;
     protected static final double UP_PUSH = 0.4D;
     protected static final float MAX_FALL_RESET = 3.0F;
-
     protected static final int IDLE_TIME_TICKS = 40;
     protected static final int ACTIVATION_CHECK_INTERVAL = 10;
 
     public ConveyorBasicAlternative() {}
 
-    @SideOnly(Side.CLIENT)
-    @Override public List<BakedQuad> modifyQuads(List<BakedQuad> baseModel, @Nullable TileEntity tile, EnumFacing facing) {
+    @SideOnly(Side.CLIENT) @Override public List<BakedQuad> modifyQuads(List<BakedQuad> baseModel, @Nullable TileEntity tile, EnumFacing facing) {
         if (tile == null) {
             EnumFacing itemFacing = facing.getOpposite();
             Matrix4 mat = new Matrix4(itemFacing);
@@ -70,9 +66,7 @@ public class ConveyorBasicAlternative implements IConveyorBelt {
         return baseModel;
     }
 
-    @SuppressWarnings("unused")
-    @SideOnly(Side.CLIENT)
-    public Matrix4 modifyBaseRotationMatrix(Matrix4 matrix, TileEntity tile, EnumFacing facing) { return matrix; }
+    @SuppressWarnings("unused") @SideOnly(Side.CLIENT) public Matrix4 modifyBaseRotationMatrix(Matrix4 matrix, TileEntity tile, EnumFacing facing) { return matrix; }
 
     @Override public boolean changeConveyorDirection() {
         direction = direction == ConveyorDirection.HORIZONTAL ? ConveyorDirection.UP : direction == ConveyorDirection.UP ? ConveyorDirection.DOWN : ConveyorDirection.HORIZONTAL;
@@ -111,16 +105,16 @@ public class ConveyorBasicAlternative implements IConveyorBelt {
     }
 
     @Override public boolean isActive(TileEntity tile) {
-        if (tile == null) return true;
+        if (tile == null) { return true; }
         return isPowered(tile) && runTimer > 0;
     }
 
     @Override public boolean isTicking(TileEntity tile) { return runTimer > 0; }
 
     @Override public void onUpdate(TileEntity tile, EnumFacing facing) {
-        if (runTimer <= 0) return;
+        if (runTimer <= 0) { return; }
         --runTimer;
-        if (runTimer != 0) return;
+        if (runTimer != 0) { return; }
 
         syncRenderState(tile);
     }
@@ -128,7 +122,7 @@ public class ConveyorBasicAlternative implements IConveyorBelt {
     @Override public boolean canBeDyed() { return true; }
 
     @Override public boolean setDyeColour(int colour) {
-        if (colour == this.dyeColour) return false;
+        if (colour == this.dyeColour) { return false; }
         this.dyeColour = colour;
         return true;
     }
@@ -160,8 +154,8 @@ public class ConveyorBasicAlternative implements IConveyorBelt {
     @Override public ResourceLocation getColouredStripesTexture() { return TEXTURE_COLOURED; }
 
     @Override public boolean renderWall(TileEntity tile, EnumFacing facing, int wall) {
-        if (tile == null) return true;
-        if (this.getConveyorDirection() != ConveyorDirection.HORIZONTAL) return true;
+        if (tile == null) { return true; }
+        if (this.getConveyorDirection() != ConveyorDirection.HORIZONTAL) { return true; }
 
         EnumFacing side = wall == 0 ? facing.rotateYCCW() : facing.rotateY();
         BlockPos pos = tile.getPos().offset(side);
@@ -180,8 +174,8 @@ public class ConveyorBasicAlternative implements IConveyorBelt {
         if (te instanceof IConveyorAttachable) {
             int b = 0;
             for (EnumFacing f : ((IConveyorAttachable) te).sigOutputDirections()) {
-                if (f == side.getOpposite()) ++b;
-                else if (f == EnumFacing.UP) ++b;
+                if (f == side.getOpposite()) { ++b; }
+                else if (f == EnumFacing.UP) { ++b; }
             }
             return b < 2;
         }
@@ -205,22 +199,23 @@ public class ConveyorBasicAlternative implements IConveyorBelt {
         double vY = entity.motionY;
         double vZ = LATERAL_SPEED * facing.getZOffset();
 
-        if (conveyorDirection == ConveyorDirection.UP) vY = UP_SPEED;
-        else if (conveyorDirection == ConveyorDirection.DOWN) vY = DOWN_SPEED;
-        if (conveyorDirection != ConveyorDirection.HORIZONTAL) entity.onGround = false;
+        if (conveyorDirection == ConveyorDirection.UP) { vY = UP_SPEED; }
+        else if (conveyorDirection == ConveyorDirection.DOWN) { vY = DOWN_SPEED; }
+        if (conveyorDirection != ConveyorDirection.HORIZONTAL) { entity.onGround = false; }
 
         if (facing.getAxis() == Axis.X) {
-            if (entity.posZ > pos.getZ() + CENTER_HIGH) vZ = -LATERAL_SPEED;
-            else if (entity.posZ < pos.getZ() + CENTER_LOW) vZ = LATERAL_SPEED;
-        } else {
-            if (entity.posX > pos.getX() + CENTER_HIGH) vX = -LATERAL_SPEED;
-            else if (entity.posX < pos.getX() + CENTER_LOW) vX = LATERAL_SPEED;
+            if (entity.posZ > pos.getZ() + CENTER_HIGH) { vZ = -LATERAL_SPEED; }
+            else if (entity.posZ < pos.getZ() + CENTER_LOW) { vZ = LATERAL_SPEED; }
+        }
+        else {
+            if (entity.posX > pos.getX() + CENTER_HIGH) { vX = -LATERAL_SPEED; }
+            else if (entity.posX < pos.getX() + CENTER_LOW) { vX = LATERAL_SPEED; }
         }
         return new Vec3d(vX, vY, vZ);
     }
 
     @Override public void onEntityCollision(TileEntity tile, Entity entity, EnumFacing facing) {
-        if (!isPowered(tile)) return;
+        if (!isPowered(tile)) { return; }
 
         World world = tile.getWorld();
         long now = world.getTotalWorldTime();
@@ -236,13 +231,13 @@ public class ConveyorBasicAlternative implements IConveyorBelt {
         ConveyorDirection conveyorDirection = getConveyorDirection();
         float heightLimit = conveyorDirection == ConveyorDirection.HORIZONTAL ? HORIZONTAL_HEIGHT_LIMIT : SLOPED_HEIGHT_LIMIT;
         double height = entity.posY - pos.getY();
-        if (entity.isDead || height < 0D || height >= heightLimit || (entity instanceof EntityPlayer && entity.isSneaking())) return;
+        if (entity.isDead || height < 0D || height >= heightLimit || (entity instanceof EntityPlayer && entity.isSneaking())) { return; }
 
         Vec3d vec = getDirection(tile, entity, facing);
         entity.motionX = vec.x;
         entity.motionY = vec.y;
         entity.motionZ = vec.z;
-        if (entity.fallDistance < MAX_FALL_RESET) entity.fallDistance = 0.0F;
+        if (entity.fallDistance < MAX_FALL_RESET) { entity.fallDistance = 0.0F; }
 
         int offsetX = facing.getXOffset();
         int offsetZ = facing.getZOffset();
@@ -262,14 +257,15 @@ public class ConveyorBasicAlternative implements IConveyorBelt {
             }
             BlockPos nextPos = new BlockPos(pos.getX() + offsetX, pos.getY(), pos.getZ() + offsetZ);
             TileEntity te = Utils.getExistingTileEntity(tile.getWorld(), nextPos);
-            if (!(te instanceof IConveyorTile)) ConveyorHandler.revertMagnetSupression(entity, (IConveyorTile)tile);
-        } else {
+            if (!(te instanceof IConveyorTile)) { ConveyorHandler.revertMagnetSupression(entity, (IConveyorTile)tile); }
+        }
+        else {
             ConveyorHandler.applyMagnetSupression(entity, (IConveyorTile)tile);
         }
 
         if (entity instanceof EntityItem && entity.ticksExisted > 1) {
             EntityItem item = (EntityItem)entity;
-            if (!contact) item.setNoDespawn();
+            if (!contact) { item.setNoDespawn(); }
             else handleInsertion(tile, item, facing, conveyorDirection, distX, distZ);
         }
     }

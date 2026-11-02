@@ -3,7 +3,7 @@ package com.immersiveconvergence.core.network;
 import com.immersiveconvergence.ImmersiveConvergence;
 import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.wires.ICWire;
-import com.immersiveconvergence.client.ICClientWires;
+import com.immersiveconvergence.client.util.ICClientWires;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -16,13 +16,13 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.Nonnull;
 
 public class ICWireDeltaPacket implements IMessage {
     private int dimension;

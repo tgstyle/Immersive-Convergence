@@ -13,9 +13,7 @@ public final class SplitModel<Texture> {
         ImmutableMap.Builder<ModelSplitterVec3i, SplitObjModel<Texture>> builder = ImmutableMap.builder();
         for (Map.Entry<Integer, SplitObjModel<Texture>> xSlice : splitInPlanes(input, Axis.X).entrySet()) {
             for (Map.Entry<Integer, SplitObjModel<Texture>> zColumn : splitInPlanes(xSlice.getValue(), Axis.Z).entrySet()) {
-                for (Map.Entry<Integer, SplitObjModel<Texture>> yDice : splitInPlanes(zColumn.getValue(), Axis.Y).entrySet()) {
-                    builder.put(new ModelSplitterVec3i(xSlice.getKey(), yDice.getKey(), zColumn.getKey()), yDice.getValue());
-                }
+                for (Map.Entry<Integer, SplitObjModel<Texture>> yDice : splitInPlanes(zColumn.getValue(), Axis.Y).entrySet()) { builder.put(new ModelSplitterVec3i(xSlice.getKey(), yDice.getKey(), zColumn.getKey()), yDice.getValue()); }
             }
         }
         this.submodels = builder.build();

@@ -19,8 +19,7 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@SuppressWarnings("unused")
-public class BakedMirroredModel implements IBakedModel {
+@SuppressWarnings("unused") public class BakedMirroredModel implements IBakedModel {
     private final IBakedModel base;
     private final List<BakedQuad> unculled;
     private final Map<EnumFacing, List<BakedQuad>> culled = new EnumMap<>(EnumFacing.class);
@@ -54,9 +53,7 @@ public class BakedMirroredModel implements IBakedModel {
             for (int e = 0; e < format.getElementCount(); e++) {
                 VertexFormatElement element = format.getElement(e);
                 int at = v * stride + format.getOffset(e) / 4;
-                if (element.getUsage() == VertexFormatElement.EnumUsage.POSITION && element.getType() == VertexFormatElement.EnumType.FLOAT) {
-                    out[at + component] = Float.floatToRawIntBits(1.0F - Float.intBitsToFloat(out[at + component]));
-                }
+                if (element.getUsage() == VertexFormatElement.EnumUsage.POSITION && element.getType() == VertexFormatElement.EnumType.FLOAT) { out[at + component] = Float.floatToRawIntBits(1.0F - Float.intBitsToFloat(out[at + component])); }
                 else if (element.getUsage() == VertexFormatElement.EnumUsage.NORMAL && element.getType() == VertexFormatElement.EnumType.BYTE) {
                     int shift = component * 8;
                     int negated = (-(byte) (out[at] >> shift)) & 0xFF;

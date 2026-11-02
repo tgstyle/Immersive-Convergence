@@ -8,8 +8,7 @@ import net.minecraftforge.fluids.FluidStack;
 
 import java.util.List;
 
-@SuppressWarnings("unused")
-public interface ICRecipe {
+@SuppressWarnings("unused") public interface ICRecipe {
     List<ICIngredient> getItemInputs();
 
     default boolean shouldCheckItemAvailability() { return true; }

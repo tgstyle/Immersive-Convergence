@@ -3,15 +3,12 @@ package com.immersiveconvergence.api.fluid;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 
-@SuppressWarnings("unused")
-public interface IICFluidPipe {
+@SuppressWarnings("unused") public interface IICFluidPipe {
     boolean canOutputPressurized(boolean consumePower);
 
     boolean hasOutputConnection(EnumFacing side);
 
-    static boolean is(TileEntity tile) {
-        return tile instanceof IICFluidPipe || IEFluidPipeBridge.isIEPipe(tile);
-    }
+    static boolean is(TileEntity tile) { return tile instanceof IICFluidPipe || IEFluidPipeBridge.isIEPipe(tile); }
 
     static boolean canOutputPressurized(TileEntity tile, boolean consumePower) {
         if (tile instanceof IICFluidPipe) { return ((IICFluidPipe)tile).canOutputPressurized(consumePower); }

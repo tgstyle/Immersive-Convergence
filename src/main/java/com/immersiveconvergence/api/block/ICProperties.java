@@ -16,8 +16,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 
-@SuppressWarnings("unused")
-public class ICProperties {
+@SuppressWarnings("unused") public class ICProperties {
     public static final PropertyDirection FACING_ALL = PropertyDirection.create("facing");
     public static final PropertyDirection FACING_HORIZONTAL = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
     public static final PropertyBoolInverted MULTIBLOCKSLAVE = PropertyBoolInverted.create("_0multiblockslave");

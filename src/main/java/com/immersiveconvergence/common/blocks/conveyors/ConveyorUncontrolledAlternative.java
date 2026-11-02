@@ -15,11 +15,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-@SuppressWarnings("unused")
-public class ConveyorUncontrolledAlternative extends ConveyorBasicAlternative {
+@SuppressWarnings("unused") public class ConveyorUncontrolledAlternative extends ConveyorBasicAlternative {
 
     @Override public boolean isActive(TileEntity tile) {
-        if (tile == null) return true;
+        if (tile == null) { return true; }
         return runTimer > 0;
     }
 
@@ -43,13 +42,13 @@ public class ConveyorUncontrolledAlternative extends ConveyorBasicAlternative {
         ConveyorDirection conveyorDirection = getConveyorDirection();
         float heightLimit = conveyorDirection == ConveyorDirection.HORIZONTAL ? HORIZONTAL_HEIGHT_LIMIT : SLOPED_HEIGHT_LIMIT;
         double height = entity.posY - pos.getY();
-        if (entity.isDead || height < 0D || height >= heightLimit || (entity instanceof EntityPlayer && entity.isSneaking())) return;
+        if (entity.isDead || height < 0D || height >= heightLimit || (entity instanceof EntityPlayer && entity.isSneaking())) { return; }
 
         Vec3d vec = getDirection(tile, entity, facing);
         entity.motionX = vec.x;
         entity.motionY = vec.y;
         entity.motionZ = vec.z;
-        if (entity.fallDistance < MAX_FALL_RESET) entity.fallDistance = 0.0F;
+        if (entity.fallDistance < MAX_FALL_RESET) { entity.fallDistance = 0.0F; }
 
         int offsetX = facing.getXOffset();
         int offsetZ = facing.getZOffset();
@@ -69,14 +68,15 @@ public class ConveyorUncontrolledAlternative extends ConveyorBasicAlternative {
             }
             BlockPos nextPos = new BlockPos(pos.getX() + offsetX, pos.getY(), pos.getZ() + offsetZ);
             TileEntity te = Utils.getExistingTileEntity(tile.getWorld(), nextPos);
-            if (!(te instanceof IConveyorTile)) ConveyorHandler.revertMagnetSupression(entity, (IConveyorTile)tile);
-        } else {
+            if (!(te instanceof IConveyorTile)) { ConveyorHandler.revertMagnetSupression(entity, (IConveyorTile)tile); }
+        }
+        else {
             ConveyorHandler.applyMagnetSupression(entity, (IConveyorTile)tile);
         }
 
         if (entity instanceof EntityItem && entity.ticksExisted > 1) {
             EntityItem item = (EntityItem)entity;
-            if (!contact) item.setNoDespawn();
+            if (!contact) { item.setNoDespawn(); }
             else handleInsertion(tile, item, facing, conveyorDirection, distX, distZ);
         }
     }

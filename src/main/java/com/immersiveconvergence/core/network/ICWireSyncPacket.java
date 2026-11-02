@@ -5,7 +5,7 @@ import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.wires.ICConnectionPoint;
 import com.immersiveconvergence.api.wires.ICWire;
 import com.immersiveconvergence.api.wires.ICWireType;
-import com.immersiveconvergence.client.ICClientWires;
+import com.immersiveconvergence.client.util.ICClientWires;
 import com.immersiveconvergence.common.energy.wires.ICWireSavedData;
 
 import io.netty.buffer.ByteBuf;
@@ -21,14 +21,13 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-@Mod.EventBusSubscriber(modid = ImmersiveConvergence.MODID)
-public class ICWireSyncPacket implements IMessage {
+@Mod.EventBusSubscriber(modid = ImmersiveConvergence.MODID) public class ICWireSyncPacket implements IMessage {
     private int dimension;
     private List<ICWire> wires;
 

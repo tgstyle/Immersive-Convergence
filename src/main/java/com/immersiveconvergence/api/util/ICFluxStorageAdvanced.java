@@ -1,7 +1,6 @@
 package com.immersiveconvergence.api.util;
 
-@SuppressWarnings("unused")
-public class ICFluxStorageAdvanced extends ICFluxStorage {
+@SuppressWarnings("unused") public class ICFluxStorageAdvanced extends ICFluxStorage {
     private int averageInsertion = 0;
     private int averageExtraction = 0;
     private double averageDecayFactor = .5;

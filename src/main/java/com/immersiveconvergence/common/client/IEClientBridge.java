@@ -35,8 +35,7 @@ public final class IEClientBridge {
 
     public static void addOBJDomain(String modid) { IEOBJLoader.instance.addDomain(modid); }
 
-    @SuppressWarnings("deprecation")
-    public static void registerConnectorForRender(String key, ResourceLocation baseModel) { WireApi.registerConnectorForRender(key, baseModel, null); }
+    @SuppressWarnings("deprecation") public static void registerConnectorForRender(String key, ResourceLocation baseModel) { WireApi.registerConnectorForRender(key, baseModel, null); }
 
     public static void clearConveyorModelCaches() throws ReflectiveOperationException {
         ModelConveyor.modelCache.clear();
@@ -45,9 +44,7 @@ public final class IEClientBridge {
         ((Map<?, ?>)itemCacheField.get(null)).clear();
     }
 
-    public static boolean isVoltmeter(net.minecraft.item.ItemStack stack) {
-        return !stack.isEmpty() && stack.getItem() == blusunrize.immersiveengineering.common.IEContent.itemTool && stack.getMetadata() == 2;
-    }
+    public static boolean isVoltmeter(net.minecraft.item.ItemStack stack) { return !stack.isEmpty() && stack.getItem() == blusunrize.immersiveengineering.common.IEContent.itemTool && stack.getMetadata() == 2; }
 
     public static String[] energyStoredText(int stored, int max) {
         return net.minecraft.client.resources.I18n.format(blusunrize.immersiveengineering.api.Lib.DESC_INFO + "energyStored",
@@ -57,9 +54,7 @@ public final class IEClientBridge {
 
     public static void addFluidTooltip(FluidStack fluid, List<String> tooltip, int tankCapacity) { ClientUtils.addFluidTooltip(fluid, tooltip, tankCapacity); }
 
-    @Nullable public static List<AxisAlignedBB> advancedSelectionBounds(TileEntity te) {
-        return te instanceof IAdvancedSelectionBounds ? ((IAdvancedSelectionBounds)te).getAdvancedSelectionBounds() : null;
-    }
+    @Nullable public static List<AxisAlignedBB> advancedSelectionBounds(TileEntity te) { return te instanceof IAdvancedSelectionBounds ? ((IAdvancedSelectionBounds)te).getAdvancedSelectionBounds() : null; }
 
     @Nullable public static BlockPos multiblockPartOffset(TileEntity te) {
         if (!(te instanceof TileEntityMultiblockPart) || !((TileEntityMultiblockPart<?>)te).formed) { return null; }

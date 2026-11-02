@@ -5,8 +5,7 @@ import net.minecraft.util.IStringSerializable;
 import javax.annotation.Nonnull;
 import java.util.Locale;
 
-@SuppressWarnings("unused")
-public enum ICSideConfig implements IStringSerializable {
+@SuppressWarnings("unused") public enum ICSideConfig implements IStringSerializable {
     NONE("none"),
     INPUT("in"),
     OUTPUT("out");

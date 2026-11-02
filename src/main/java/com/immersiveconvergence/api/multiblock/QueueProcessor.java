@@ -43,8 +43,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.BooleanSupplier;
 
-@Mod.EventBusSubscriber(modid = ImmersiveConvergence.MODID)
-public class QueueProcessor {
+@Mod.EventBusSubscriber(modid = ImmersiveConvergence.MODID) public class QueueProcessor {
     public static final int DISASSEMBLE_QUEUE_SIZE = 8;
     public static BooleanSupplier queueEnabled = () -> true;
     public static final List<QueueProcessor> pendingQueues = new ArrayList<>();
@@ -97,9 +96,7 @@ public class QueueProcessor {
         }
         BlockPos batchPos = queue.peek();
         if (batchPos != null) { fakePlayer.setPosition(batchPos.getX() + 0.5, batchPos.getY() + 1, batchPos.getZ() + 0.5); }
-        for (int i = 0; i < DISASSEMBLE_QUEUE_SIZE && !queue.isEmpty(); ++i) {
-            fakePlayer.interactionManager.tryHarvestBlock(queue.poll());
-        }
+        for (int i = 0; i < DISASSEMBLE_QUEUE_SIZE && !queue.isEmpty(); ++i) { fakePlayer.interactionManager.tryHarvestBlock(queue.poll()); }
     }
 
     public boolean isEmpty() { return finished; }

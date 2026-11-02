@@ -4,8 +4,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-@SuppressWarnings("unused")
-public final class ICJEICatalysts {
+@SuppressWarnings("unused") public final class ICJEICatalysts {
     private static final Set<String> SUPPRESSED = Collections.synchronizedSet(new HashSet<>());
 
     private ICJEICatalysts() {}

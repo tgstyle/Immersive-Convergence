@@ -5,8 +5,7 @@ import net.minecraftforge.fluids.FluidStack;
 
 import java.util.List;
 
-@SuppressWarnings("unused")
-public interface ICJEIRecipe {
+@SuppressWarnings("unused") public interface ICJEIRecipe {
     default boolean listInJEI() { return true; }
 
     List<ItemStack> getJEITotalItemInputs();

@@ -5,8 +5,7 @@ import net.minecraft.util.math.ChunkPos;
 
 import javax.annotation.Nonnull;
 
-@SuppressWarnings("unused")
-public final class ICConnectionPoint implements Comparable<ICConnectionPoint> {
+@SuppressWarnings("unused") public final class ICConnectionPoint implements Comparable<ICConnectionPoint> {
     private final BlockPos pos;
     private final int index;
 

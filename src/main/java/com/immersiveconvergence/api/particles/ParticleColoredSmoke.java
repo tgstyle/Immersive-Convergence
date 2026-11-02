@@ -8,9 +8,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Random;
 
-@SuppressWarnings("unused")
-@SideOnly(Side.CLIENT)
-public class ParticleColoredSmoke extends Particle {
+@SuppressWarnings("unused") @SideOnly(Side.CLIENT) public class ParticleColoredSmoke extends Particle {
     private static final double FRICTION = 0.98;
     private static final double BUOYANCY = 0.002;
     private static final double SPAWN_JITTER = 0.015;

@@ -9,8 +9,7 @@ import net.minecraftforge.fluids.FluidUtil;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@SuppressWarnings("unused")
-public class ICIngredientFluidStack extends Ingredient {
+@SuppressWarnings("unused") public class ICIngredientFluidStack extends Ingredient {
     private final FluidStack fluid;
     private ItemStack[] cachedStacks;
 

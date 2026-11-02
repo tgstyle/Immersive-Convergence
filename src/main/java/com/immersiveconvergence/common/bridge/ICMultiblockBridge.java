@@ -3,8 +3,8 @@ package com.immersiveconvergence.common.bridge;
 import com.immersiveconvergence.api.bridge.IICMultiblockBridge;
 import com.immersiveconvergence.api.multiblock.ICMultiblock;
 import com.immersiveconvergence.api.multiblock.ICMultiblockPart;
-import com.immersiveconvergence.common.multiblock.IEMultiblockBridge;
-import com.immersiveconvergence.common.multiblock.IEMultiblockPartBridge;
+import com.immersiveconvergence.core.integration.immersiveengineering.IEMultiblockBridge;
+import com.immersiveconvergence.core.integration.immersiveengineering.IEMultiblockPartBridge;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -14,9 +14,9 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.util.function.Predicate;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.function.Predicate;
 
 public final class ICMultiblockBridge implements IICMultiblockBridge {
     @Override public void register(@Nonnull ICMultiblock multiblock) { IEMultiblockBridge.register(multiblock); }

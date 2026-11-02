@@ -3,8 +3,7 @@ package com.immersiveconvergence.api.util;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.energy.IEnergyStorage;
 
-@SuppressWarnings("unused")
-public class ICFluxStorage implements IEnergyStorage {
+@SuppressWarnings("unused") public class ICFluxStorage implements IEnergyStorage {
     protected int energy;
     protected int capacity;
     protected int limitReceive;

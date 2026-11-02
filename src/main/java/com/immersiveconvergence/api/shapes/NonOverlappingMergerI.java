@@ -17,7 +17,8 @@ public class NonOverlappingMergerI extends AbstractDoubleList implements IIndexM
     @Override public int size() { return this.lower.size() + this.upper.size(); }
 
     @Override public void forMergedIndexes(IndexConsumer consumer) {
-        if (this.swap) {this.forNonSwappedIndexes((p1, p2, p3) -> consumer.merge(p2, p1, p3));} else {this.forNonSwappedIndexes(consumer);}
+        if (this.swap) { this.forNonSwappedIndexes((p1, p2, p3) -> consumer.merge(p2, p1, p3)); }
+        else {this.forNonSwappedIndexes(consumer);}
     }
 
     private void forNonSwappedIndexes(IndexConsumer consumer) {

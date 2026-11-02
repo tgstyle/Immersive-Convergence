@@ -82,9 +82,7 @@ public final class IEWireView implements IICWireNetwork {
 
     @Nullable @Override public ICConnectionPoint pointFor(@Nonnull BlockPos pos, @Nonnull ICWireType type, @Nonnull ICTargetingInfo target) { return IEWireBridge.coilWiring().point(world, pos, type, target); }
 
-    @Nonnull @Override public ICConnectResult connect(@Nonnull ICConnectionPoint first, @Nonnull ICTargetingInfo firstTarget, @Nonnull ICConnectionPoint second, @Nonnull ICTargetingInfo secondTarget, @Nonnull ICWireType type) {
-        return ICWireWriter.connect(world, IEWireBridge.coilWiring(), first, firstTarget, second, secondTarget, type);
-    }
+    @Nonnull @Override public ICConnectResult connect(@Nonnull ICConnectionPoint first, @Nonnull ICTargetingInfo firstTarget, @Nonnull ICConnectionPoint second, @Nonnull ICTargetingInfo secondTarget, @Nonnull ICWireType type) { return ICWireWriter.connect(world, IEWireBridge.coilWiring(), first, firstTarget, second, secondTarget, type); }
 
     @Override public boolean cut(@Nonnull ICWire wire, @Nonnull ICWireCause cause) {
         requireServer();

@@ -14,8 +14,7 @@ import net.minecraft.tileentity.TileEntity;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@SuppressWarnings("unused")
-public class ICContainerBase<T extends TileEntity> extends Container {
+@SuppressWarnings("unused") public class ICContainerBase<T extends TileEntity> extends Container {
     public T tile;
     @Nullable public IInventory inv;
     public int slotCount;

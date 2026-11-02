@@ -15,8 +15,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-@SuppressWarnings("unused")
-public class TileSyncMessage implements IMessage {
+@SuppressWarnings("unused") public class TileSyncMessage implements IMessage {
     BlockPos pos;
     NBTTagCompound nbt;
 
@@ -51,8 +50,7 @@ public class TileSyncMessage implements IMessage {
         }
     }
 
-    @SideOnly(Side.CLIENT)
-    public static class HandlerClient implements IMessageHandler<TileSyncMessage, IMessage> {
+    @SideOnly(Side.CLIENT) public static class HandlerClient implements IMessageHandler<TileSyncMessage, IMessage> {
         @Override public IMessage onMessage(TileSyncMessage message, MessageContext ctx) {
             Minecraft.getMinecraft().addScheduledTask(() -> {
                 World world = Minecraft.getMinecraft().world;

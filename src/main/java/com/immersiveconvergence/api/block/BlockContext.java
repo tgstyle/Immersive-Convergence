@@ -10,8 +10,7 @@ import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import org.apache.logging.log4j.Logger;
 
-@SuppressWarnings("unused")
-public class BlockContext {
+@SuppressWarnings("unused") public class BlockContext {
     public final String modid;
     public final CreativeTabs creativeTab;
     public final List<Block> registeredBlocks;

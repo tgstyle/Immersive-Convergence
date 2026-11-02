@@ -9,8 +9,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 
-@SuppressWarnings("unused")
-public class ICItemBase extends Item {
+@SuppressWarnings("unused") public class ICItemBase extends Item {
     public String itemName;
     protected String[] subNames;
     boolean[] isMetaHidden;
@@ -29,8 +28,7 @@ public class ICItemBase extends Item {
 
     public String[] getSubNames() { return subNames; }
 
-    @SideOnly(Side.CLIENT)
-    @Override public void getSubItems(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> list) {
+    @SideOnly(Side.CLIENT) @Override public void getSubItems(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> list) {
         if (this.isInCreativeTab(tab)) {
             if (getSubNames() != null) {
                 for (int i = 0; i < getSubNames().length; i++) { if (!isMetaHidden(i)) { list.add(new ItemStack(this, 1, i)); } }

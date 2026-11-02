@@ -1,6 +1,6 @@
 package com.immersiveconvergence.api.petroleum;
 
-import com.immersiveconvergence.core.ICCommonConfig;
+import com.immersiveconvergence.core.config.ICCommonConfig;
 
 import blusunrize.immersiveengineering.api.DimensionChunkCoords;
 import flaxbeard.immersivepetroleum.api.crafting.PumpjackHandler;
@@ -9,8 +9,7 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
-@SuppressWarnings("unused")
-public final class ICPumpjackHandler {
+@SuppressWarnings("unused") public final class ICPumpjackHandler {
     private ICPumpjackHandler() {}
 
     @Nullable public static PumpjackHandler.ReservoirType reservoirUnder(World world, BlockPos pos) {

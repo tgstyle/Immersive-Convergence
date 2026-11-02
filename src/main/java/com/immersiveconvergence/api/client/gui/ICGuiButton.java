@@ -7,9 +7,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
+import javax.annotation.Nonnull;
 
-@SuppressWarnings("unused")
-public class ICGuiButton extends GuiButton {
+@SuppressWarnings("unused") public class ICGuiButton extends GuiButton {
     protected final String texture;
     protected final int texU;
     protected final int texV;
@@ -27,13 +27,11 @@ public class ICGuiButton extends GuiButton {
         return this;
     }
 
-    public boolean canClick(Minecraft mc, int mouseX, int mouseY) {
-        return this.enabled && this.visible && mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
-    }
+    public boolean canClick(Minecraft mc, int mouseX, int mouseY) { return this.enabled && this.visible && mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height; }
 
-    @Override public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) { return canClick(mc, mouseX, mouseY); }
+    @Override public boolean mousePressed(@Nonnull Minecraft mc, int mouseX, int mouseY) { return canClick(mc, mouseX, mouseY); }
 
-    @Override public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
+    @Override public void drawButton(@Nonnull Minecraft mc, int mouseX, int mouseY, float partialTicks) {
         if (!this.visible) { return; }
         ICClientUtils.bindTexture(texture);
         FontRenderer fontRenderer = mc.fontRenderer;

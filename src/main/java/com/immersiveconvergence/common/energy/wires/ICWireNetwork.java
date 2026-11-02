@@ -34,8 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@SuppressWarnings("unused")
-public final class ICWireNetwork implements ICWireGraph, IICWireNetwork {
+@SuppressWarnings("unused") public final class ICWireNetwork implements ICWireGraph, IICWireNetwork {
     private final Map<ICConnectionPoint, Map<ICConnectionPoint, ICWire>> byPoint = new HashMap<>();
     private final Map<ICConnectionPoint, Map<ICConnectionPoint, Double>> links = new HashMap<>();
     private final Map<ChunkPos, Set<ICWire>> byChunk = new HashMap<>();

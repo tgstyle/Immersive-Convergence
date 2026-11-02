@@ -34,8 +34,7 @@ import org.lwjgl.opengl.GL11;
 import java.util.ArrayList;
 import java.util.List;
 
-@SideOnly(Side.CLIENT)
-public class ICClientEventHandler {
+@SideOnly(Side.CLIENT) public class ICClientEventHandler {
     private static BlockPos cachedPos;
     private static long cachedMask;
     private static int cachedBoundsHash;
@@ -55,10 +54,12 @@ public class ICClientEventHandler {
         boolean nixie = overlay.useNixieFont(player, mc.objectMouseOver) && ICMods.immersiveEngineering();
         FontRenderer font = nixie ? IEClientBridge.nixieFont() : mc.fontRenderer;
         int colour = nixie ? IEClientBridge.nixieColour() : 0xffffff;
+        int halfWidth = event.getResolution().getScaledWidth() / 2;
+        int halfHeight = event.getResolution().getScaledHeight() / 2;
         int line = 0;
         for (String s : text) {
             if (s == null) { continue; }
-            font.drawString(s, event.getResolution().getScaledWidth() / 2 + 8, event.getResolution().getScaledHeight() / 2 + 8 + (line++) * font.FONT_HEIGHT, colour, true);
+            font.drawString(s, halfWidth + 8, halfHeight + 8 + (line++) * font.FONT_HEIGHT, colour, true);
         }
     }
 
@@ -79,10 +80,12 @@ public class ICClientEventHandler {
         else { return false; }
         if (max <= 0) { return false; }
         FontRenderer font = Minecraft.getMinecraft().fontRenderer;
+        int halfWidth = event.getResolution().getScaledWidth() / 2;
+        int halfHeight = event.getResolution().getScaledHeight() / 2;
         int line = 0;
         for (String s : IEClientBridge.energyStoredText(stored, max)) {
             if (s == null) { continue; }
-            font.drawString(s, event.getResolution().getScaledWidth() / 2 + 8, event.getResolution().getScaledHeight() / 2 + 8 + (line++) * font.FONT_HEIGHT, IEClientBridge.nixieColour(), true);
+            font.drawString(s, halfWidth + 8, halfHeight + 8 + (line++) * font.FONT_HEIGHT, IEClientBridge.nixieColour(), true);
         }
         return true;
     }
@@ -92,8 +95,7 @@ public class ICClientEventHandler {
         return mop == null ? null : mop.sideHit;
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onDrawBlockHighlight(DrawBlockHighlightEvent event) {
+    @SubscribeEvent(priority = EventPriority.HIGHEST) public void onDrawBlockHighlight(DrawBlockHighlightEvent event) {
         RayTraceResult target = event.getTarget();
         if (target.typeOfHit != RayTraceResult.Type.BLOCK) { return; }
         BlockPos pos = target.getBlockPos();

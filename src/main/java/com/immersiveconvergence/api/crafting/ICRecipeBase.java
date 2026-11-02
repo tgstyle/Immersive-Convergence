@@ -9,8 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@SuppressWarnings("unused")
-public abstract class ICRecipeBase implements ICRecipe, ICJEIRecipe {
+@SuppressWarnings("unused") public abstract class ICRecipeBase implements ICRecipe, ICJEIRecipe {
     protected List<ICIngredient> inputList;
     protected NonNullList<ItemStack> outputList;
     protected List<FluidStack> fluidInputList;
@@ -50,14 +49,12 @@ public abstract class ICRecipeBase implements ICRecipe, ICJEIRecipe {
             for (ICIngredient ingredient : inputList) {
                 List<ItemStack> list = new ArrayList<>();
                 if (ingredient.oreName != null) {
-                    for (ItemStack ore : OreDictionary.getOres(ingredient.oreName)) {
-                        list.add(copyWithAmount(ore, ingredient.inputSize));
-                    }
-                } else if (ingredient.stackList != null) {
-                    for (ItemStack entry : ingredient.stackList) {
-                        list.add(copyWithAmount(entry, ingredient.inputSize));
-                    }
-                } else {
+                    for (ItemStack ore : OreDictionary.getOres(ingredient.oreName)) { list.add(copyWithAmount(ore, ingredient.inputSize)); }
+                }
+                else if (ingredient.stackList != null) {
+                    for (ItemStack entry : ingredient.stackList) { list.add(copyWithAmount(entry, ingredient.inputSize)); }
+                }
+                else {
                     list.add(copyWithAmount(ingredient.stack, ingredient.inputSize));
                 }
                 this.jeiItemInputList.add(list);

@@ -20,8 +20,7 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-@SuppressWarnings("unused")
-public abstract class TemplateMultiblock implements ICMultiblock {
+@SuppressWarnings("unused") public abstract class TemplateMultiblock implements ICMultiblock {
     public final String uniqueName;
     public final TemplateData template;
     public final BlockPos masterPos, triggerPos;
@@ -134,9 +133,7 @@ public abstract class TemplateMultiblock implements ICMultiblock {
 
     protected void onFormed(EntityPlayer player, BlockPos pos, ItemStack hammer) { MultiblockRegistry.formationDone(player, this, pos, hammer); }
 
-    protected BlockPos originFor(BlockPos pos, EnumFacing side, BlockPos trigger, boolean mirror) {
-        return pos.offset(side, -trigger.getZ()).offset(side.rotateY(), -localX(trigger.getX(), mirror)).offset(EnumFacing.DOWN, trigger.getY());
-    }
+    protected BlockPos originFor(BlockPos pos, EnumFacing side, BlockPos trigger, boolean mirror) { return pos.offset(side, -trigger.getZ()).offset(side.rotateY(), -localX(trigger.getX(), mirror)).offset(EnumFacing.DOWN, trigger.getY()); }
 
     protected boolean isValid(World world, BlockPos pos, EnumFacing side, BlockPos trigger, boolean mirror) {
         int width = template.width, height = template.height, length = template.length;

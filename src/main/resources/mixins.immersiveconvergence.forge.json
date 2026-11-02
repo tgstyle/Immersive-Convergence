@@ -5,7 +5,7 @@
   "refmap": "mixins.immersiveconvergence.refmap.json",
   "compatibilityLevel": "JAVA_8",
   "client": [
-    "forge.MixinForgeOBJModel"
+    "client.model.obj.MixinOBJModel"
   ],
   "injectors": {
     "defaultRequire": 1

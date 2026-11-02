@@ -25,8 +25,7 @@ public interface ICMultiblock {
 
     float getManualScale();
 
-    @SuppressWarnings({"unused", "deprecation"})
-    default IBlockState getBlockstateFromStack(int index, ItemStack stack) {
+    @SuppressWarnings({"unused", "deprecation"}) default IBlockState getBlockstateFromStack(int index, ItemStack stack) {
         if (!stack.isEmpty() && stack.getItem() instanceof ItemBlock) { return ((ItemBlock)stack.getItem()).getBlock().getStateFromMeta(stack.getItemDamage()); }
         return null;
     }

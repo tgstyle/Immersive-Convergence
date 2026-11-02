@@ -6,8 +6,7 @@ import net.minecraft.util.ResourceLocation;
 import java.lang.reflect.Field;
 import java.util.Map;
 
-@SuppressWarnings("unused")
-public class ICConveyors {
+@SuppressWarnings("unused") public class ICConveyors {
     private static Map<ResourceLocation, Class<?>> classRegistry;
     private static Map<Class<?>, ResourceLocation> reverseClassRegistry;
 
@@ -18,8 +17,7 @@ public class ICConveyors {
         reverseClassRegistry.put(beltClass, rl);
     }
 
-    @SuppressWarnings("unchecked")
-    private static void resolveRegistries() throws ReflectiveOperationException {
+    @SuppressWarnings("unchecked") private static void resolveRegistries() throws ReflectiveOperationException {
         Field classRegistryField = ConveyorHandler.class.getDeclaredField("classRegistry");
         Field reverseClassRegistryField = ConveyorHandler.class.getDeclaredField("reverseClassRegistry");
         classRegistryField.setAccessible(true);

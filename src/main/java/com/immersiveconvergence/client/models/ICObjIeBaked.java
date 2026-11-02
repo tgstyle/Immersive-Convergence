@@ -45,7 +45,7 @@ import java.util.function.Function;
     @Nonnull @Override public List<BakedQuad> getQuads(@Nullable IBlockState s, @Nullable EnumFacing side, long rand) {
         if (s instanceof IExtendedBlockState && ((IExtendedBlockState) s).getUnlistedNames().contains(Properties.AnimationProperty)) {
             IModelState v = ((IExtendedBlockState) s).getValue(Properties.AnimationProperty);
-            if (v instanceof OBJModel.OBJState) return cache.getUnchecked(ImmutableList.copyOf(((OBJModel.OBJState) v).getGroupsWithVisibility(true))).getQuads(((IExtendedBlockState) s).getClean(), side, rand);
+            if (v instanceof OBJModel.OBJState) { return cache.getUnchecked(ImmutableList.copyOf(((OBJModel.OBJState) v).getGroupsWithVisibility(true))).getQuads(((IExtendedBlockState) s).getClean(), side, rand); }
         }
         return plain.getQuads(s, side, rand);
     }

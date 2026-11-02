@@ -24,8 +24,7 @@ import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Locale;
 
-@SuppressWarnings("unused")
-public abstract class ICBlockMultiblock<E extends Enum<E> & ICBlockBase.IBlockEnum> extends ICBlockTileProvider<E> {
+@SuppressWarnings("unused") public abstract class ICBlockMultiblock<E extends Enum<E> & ICBlockBase.IBlockEnum> extends ICBlockTileProvider<E> {
 
     protected final boolean[] hasMultiblockTile;
 
@@ -42,9 +41,7 @@ public abstract class ICBlockMultiblock<E extends Enum<E> & ICBlockBase.IBlockEn
         return array;
     }
 
-    @Override @Nonnull public IBlockState getExtendedState(@Nonnull IBlockState state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos) {
-        return SplitModelProperties.withOffset(super.getExtendedState(state, world, pos), world, pos);
-    }
+    @Override @Nonnull public IBlockState getExtendedState(@Nonnull IBlockState state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos) { return SplitModelProperties.withOffset(super.getExtendedState(state, world, pos), world, pos); }
 
     @Override public boolean removedByPlayer(@Nonnull IBlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull EntityPlayer player, boolean willHarvest) {
         if (!willHarvest) {
@@ -63,26 +60,26 @@ public abstract class ICBlockMultiblock<E extends Enum<E> & ICBlockBase.IBlockEn
         if (tileEntity instanceof TileEntityTemplateMultiblock) {
             TileEntityTemplateMultiblock<?, ?, ?> tile = (TileEntityTemplateMultiblock<?, ?, ?>) tileEntity;
             if (tile.shouldDropInventory) { MultiblockDrops.dropMasterInventory(world, pos, tile); }
-            if (world.getGameRules().getBoolean("doTileDrops") && tile.shouldDropOriginal) if (!tile.formed && tile.pos == -1 && !tile.getOriginalBlock().isEmpty()) world.spawnEntity(new EntityItem(world, pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5, tile.getOriginalBlock().copy()));
+            if (world.getGameRules().getBoolean("doTileDrops") && tile.shouldDropOriginal) if (!tile.formed && tile.pos == -1 && !tile.getOriginalBlock().isEmpty()) { world.spawnEntity(new EntityItem(world, pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5, tile.getOriginalBlock().copy())); }
         }
-        if (tileEntity instanceof ICTileEntityMultiblockPart) ((ICTileEntityMultiblockPart<?>) tileEntity).disassemble();
+        if (tileEntity instanceof ICTileEntityMultiblockPart) { ((ICTileEntityMultiblockPart<?>) tileEntity).disassemble(); }
         super.breakBlock(world, pos, state);
     }
 
     @Override public void getDrops(@Nonnull NonNullList<ItemStack> drops, @Nonnull IBlockAccess world, @Nonnull BlockPos pos, @Nonnull IBlockState state, int fortune) {
         int meta = this.getMetaFromState(state);
-        if (meta >= 0 && meta < this.hasMultiblockTile.length && !this.hasMultiblockTile[meta]) super.getDrops(drops, world, pos, state, fortune);
+        if (meta >= 0 && meta < this.hasMultiblockTile.length && !this.hasMultiblockTile[meta]) { super.getDrops(drops, world, pos, state, fortune); }
     }
 
     @Override @Nonnull public ItemStack getPickBlock(@Nonnull IBlockState state, @Nonnull RayTraceResult target, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull EntityPlayer player) {
         ItemStack stack = getOriginalBlock(world, pos);
-        if (!stack.isEmpty()) return stack;
+        if (!stack.isEmpty()) { return stack; }
         return super.getPickBlock(state, target, world, pos, player);
     }
 
     public ItemStack getOriginalBlock(World world, BlockPos pos) {
         TileEntity te = world.getTileEntity(pos);
-        if (te instanceof ICTileEntityMultiblockPart) return ((ICTileEntityMultiblockPart<?>) te).getOriginalBlock();
+        if (te instanceof ICTileEntityMultiblockPart) { return ((ICTileEntityMultiblockPart<?>) te).getOriginalBlock(); }
         return ItemStack.EMPTY;
     }
 

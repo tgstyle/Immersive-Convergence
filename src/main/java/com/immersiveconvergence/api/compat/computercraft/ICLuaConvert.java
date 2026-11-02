@@ -15,9 +15,7 @@ import java.util.Map;
 public final class ICLuaConvert {
     private ICLuaConvert() {}
 
-    @Nullable public static Object[] toLua(@Nullable Object[] values) {
-        return values == null ? null : convertAll(values);
-    }
+    @Nullable public static Object[] toLua(@Nullable Object[] values) { return values == null ? null : convertAll(values); }
 
     private static Object[] convertAll(Object[] values) {
         Object[] converted = new Object[values.length];

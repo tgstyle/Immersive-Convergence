@@ -6,8 +6,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("unused")
-public final class Group<Texture> {
+@SuppressWarnings("unused") public final class Group<Texture> {
     private final List<Polygon<Texture>> faces;
 
     public Group(List<Polygon<Texture>> faces) { this.faces = ImmutableList.copyOf(faces); }
@@ -17,9 +16,7 @@ public final class Group<Texture> {
     public Map<EpsilonMath.Sign, Group<Texture>> split(ModPlane p) {
         Map<EpsilonMath.Sign, List<Polygon<Texture>>> splitFaces = new EnumMap<>(EpsilonMath.Sign.class);
         for (Polygon<Texture> f : this.faces) {
-            for (Map.Entry<EpsilonMath.Sign, Polygon<Texture>> e : f.splitAlong(p).entrySet()) {
-                splitFaces.computeIfAbsent(e.getKey(), k -> new ArrayList<>(4)).add(e.getValue());
-            }
+            for (Map.Entry<EpsilonMath.Sign, Polygon<Texture>> e : f.splitAlong(p).entrySet()) { splitFaces.computeIfAbsent(e.getKey(), k -> new ArrayList<>(4)).add(e.getValue()); }
         }
         Map<EpsilonMath.Sign, Group<Texture>> result = new EnumMap<>(EpsilonMath.Sign.class);
         for (Map.Entry<EpsilonMath.Sign, List<Polygon<Texture>>> e : splitFaces.entrySet()) { result.put(e.getKey(), new Group<>(e.getValue())); }

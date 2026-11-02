@@ -25,8 +25,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@SideOnly(Side.CLIENT)
-public final class OverridesResourcePack implements IResourcePack {
+@SideOnly(Side.CLIENT) public final class OverridesResourcePack implements IResourcePack {
     private static OverridesResourcePack instance;
     private final Path root;
 

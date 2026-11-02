@@ -7,7 +7,6 @@ public final class ICReservoirNBT {
     public static final String PUMP_SPEED = "ic_pumpSpeed";
     public static final String POWER_TIER = "ic_powerTier";
     public static final String DRAIN_CHANCE = "ic_drainChance";
-
     private static final String FOREIGN_CONTENT = "reservoirContent";
     private static final String FOREIGN_PUMP_SPEED = "pumpSpeed";
     private static final String FOREIGN_POWER_TIER = "powerTier";

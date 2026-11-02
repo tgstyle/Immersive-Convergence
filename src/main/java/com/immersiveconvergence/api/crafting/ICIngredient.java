@@ -20,8 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-@SuppressWarnings("unused")
-public class ICIngredient {
+@SuppressWarnings("unused") public class ICIngredient {
     public ItemStack stack = ItemStack.EMPTY;
     public List<ItemStack> stackList;
     public String oreName;
@@ -59,8 +58,7 @@ public class ICIngredient {
         this.useNBT = other.useNBT;
     }
 
-    @SuppressWarnings("unchecked")
-    public static ICIngredient create(Object input) {
+    @SuppressWarnings("unchecked") public static ICIngredient create(Object input) {
         if (input instanceof ICIngredient) { return (ICIngredient)input; }
         if (input instanceof ItemStack) { return new ICIngredient((ItemStack)input); }
         if (input instanceof Item) { return new ICIngredient(new ItemStack((Item)input)); }
@@ -140,8 +138,7 @@ public class ICIngredient {
 
     private static boolean hasUniversalBucket() { return ForgeModContainer.getInstance().universalBucket != null; }
 
-    @SuppressWarnings("deprecation")
-    private static ItemStack filledBucket(FluidStack fluid) { return UniversalBucket.getFilledBucket(ForgeModContainer.getInstance().universalBucket, fluid.getFluid()); }
+    @SuppressWarnings("deprecation") private static ItemStack filledBucket(FluidStack fluid) { return UniversalBucket.getFilledBucket(ForgeModContainer.getInstance().universalBucket, fluid.getFluid()); }
 
     public List<ItemStack> getStackList() {
         if (stackList != null) { return stackList; }

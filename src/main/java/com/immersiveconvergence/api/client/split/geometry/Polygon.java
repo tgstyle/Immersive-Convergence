@@ -89,12 +89,8 @@ public final class Polygon<Texture> {
     public List<Polygon<Texture>> quadify() {
         List<Polygon<Texture>> quads = new ArrayList<>((this.points.size() / 2) + 1);
         int secondVertex;
-        for (secondVertex = 1; secondVertex + 2 < this.points.size(); secondVertex += 2) {
-            quads.add(new Polygon<>(ImmutableList.of(this.points.get(0), this.points.get(secondVertex), this.points.get(secondVertex + 1), this.points.get(secondVertex + 2)), this.texture));
-        }
-        if (secondVertex + 1 < this.points.size()) {
-            quads.add(new Polygon<>(ImmutableList.of(this.points.get(0), this.points.get(secondVertex), this.points.get(secondVertex + 1), this.points.get(secondVertex + 1)), this.texture));
-        }
+        for (secondVertex = 1; secondVertex + 2 < this.points.size(); secondVertex += 2) { quads.add(new Polygon<>(ImmutableList.of(this.points.get(0), this.points.get(secondVertex), this.points.get(secondVertex + 1), this.points.get(secondVertex + 2)), this.texture)); }
+        if (secondVertex + 1 < this.points.size()) { quads.add(new Polygon<>(ImmutableList.of(this.points.get(0), this.points.get(secondVertex), this.points.get(secondVertex + 1), this.points.get(secondVertex + 1)), this.texture)); }
         return quads;
     }
 }

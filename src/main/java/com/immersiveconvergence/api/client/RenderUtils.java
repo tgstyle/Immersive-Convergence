@@ -1,7 +1,10 @@
 package com.immersiveconvergence.api.client;
 
-import com.immersiveconvergence.core.ICClientConfig;
+import com.immersiveconvergence.core.config.ICClientConfig;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.vertex.VertexFormat;
@@ -11,13 +14,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.util.vector.Vector3f;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-@SuppressWarnings("unused")
-@SideOnly(Side.CLIENT)
-public class RenderUtils {
+@SuppressWarnings("unused") @SideOnly(Side.CLIENT) public class RenderUtils {
     private static final int LIGHT_REFRESH_TICKS = 4;
     private static final int LIGHT_CACHE_LIMIT = 256;
     private static final Map<Long, CachedLight> LIGHT_CACHE = new HashMap<>();
@@ -56,13 +54,7 @@ public class RenderUtils {
             normal.normalise();
             int l1 = getLightValue(cached.brightness[0], cached.normalization[0], (localBrightness >> 16) & 255);
             int l2 = getLightValue(cached.brightness[1], cached.normalization[1], localBrightness & 255);
-            for (int i = 0; i < 4; ++i) {
-                renderer.pos(quadCoords[i][0], quadCoords[i][1], quadCoords[i][2])
-                        .color(255, 255, 255, 255)
-                        .tex(Float.intBitsToFloat(vData[size * i + uv]), Float.intBitsToFloat(vData[size * i + uv + 1]))
-                        .lightmap(l1, l2)
-                        .endVertex();
-            }
+            for (int i = 0; i < 4; ++i) { renderer.pos(quadCoords[i][0], quadCoords[i][1], quadCoords[i][2]) .color(255, 255, 255, 255) .tex(Float.intBitsToFloat(vData[size * i + uv]), Float.intBitsToFloat(vData[size * i + uv + 1])) .lightmap(l1, l2) .endVertex(); }
         }
     }
 

@@ -3,8 +3,7 @@ package com.immersiveconvergence.api.util;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
-@SuppressWarnings("unused")
-public interface IICInventory {
+@SuppressWarnings("unused") public interface IICInventory {
     NonNullList<ItemStack> getInventory();
 
     boolean isStackValid(int slot, ItemStack stack);

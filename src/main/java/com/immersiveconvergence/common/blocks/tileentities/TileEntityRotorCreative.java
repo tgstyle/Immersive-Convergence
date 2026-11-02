@@ -1,18 +1,16 @@
 package com.immersiveconvergence.common.blocks.tileentities;
 import com.immersiveconvergence.ImmersiveConvergence;
+import com.immersiveconvergence.api.block.ICTileEntityBase;
 import com.immersiveconvergence.api.capability.IMechanicalEnergyProvider;
 import com.immersiveconvergence.api.client.MechanicalEnergyAnimation;
-import com.immersiveconvergence.api.block.ICTileEntityBase;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IBlockBounds;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IDirectionalTile;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IPlayerInteraction;
-import com.immersiveconvergence.api.util.ICUtils;
 import com.immersiveconvergence.api.network.ITileSyncReceiver;
 import com.immersiveconvergence.api.network.TileSyncMessage;
-import com.immersiveconvergence.client.gui.GuiRotorCreative;
-import com.immersiveconvergence.core.ICCommonConfig;
+import com.immersiveconvergence.api.util.ICUtils;
+import com.immersiveconvergence.core.config.ICCommonConfig;
 import javax.annotation.Nonnull;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -30,7 +28,7 @@ public class TileEntityRotorCreative extends ICTileEntityBase implements ITickab
     public int rpm = maxSpeed();
     private final MechanicalEnergyAnimation animation = new MechanicalEnergyAnimation();
     @Override public void update() {
-        if (!world.isRemote) return;
+        if (!world.isRemote) { return; }
         float step = Math.abs(rpm) / (float)maxSpeed() * 72f * Math.signum(rpm);
         animation.setAnimationMomentum(step);
         animation.setAnimationRotation((animation.getAnimationRotation() + step) % 360f);
@@ -61,15 +59,14 @@ public class TileEntityRotorCreative extends ICTileEntityBase implements ITickab
         }
         return false;
     }
-    @SideOnly(Side.CLIENT)
-    @Override public void receiveMessageFromServer(@Nonnull NBTTagCompound message) {
+    @SideOnly(Side.CLIENT) @Override public void receiveMessageFromServer(@Nonnull NBTTagCompound message) {
         if (message.hasKey("rpm")) {
             rpm = message.getInteger("rpm");
-            Minecraft.getMinecraft().displayGuiScreen(new GuiRotorCreative(this));
+            ImmersiveConvergence.proxy.openRotorCreativeGui(this);
         }
     }
     @Override public void receiveMessageFromClient(@Nonnull NBTTagCompound message) {
-        if (!message.hasKey("rpm")) return;
+        if (!message.hasKey("rpm")) { return; }
         rpm = Math.max(Math.min(message.getInteger("rpm"), maxSpeed()), -maxSpeed());
         markDirty();
         markContainingBlockForUpdate(null);

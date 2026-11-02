@@ -1,7 +1,6 @@
 package com.immersiveconvergence.api;
 
-@SuppressWarnings("unused")
-public class ICLib {
+@SuppressWarnings("unused") public class ICLib {
     public static final String CHAT_INFO = "chat.immersiveconvergence.info.";
     public static final String DESC_INFO = "desc.immersiveconvergence.info.";
     public static final String DESC_INFO_IE = "desc.immersiveengineering.info.";

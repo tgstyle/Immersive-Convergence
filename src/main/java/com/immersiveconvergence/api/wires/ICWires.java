@@ -12,8 +12,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@SuppressWarnings("unused")
-public class ICWires {
+@SuppressWarnings("unused") public class ICWires {
     private static IICWireService service;
     private static IICWireClientView clientView;
 

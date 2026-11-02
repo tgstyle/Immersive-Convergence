@@ -22,13 +22,9 @@ public final class ICConnectionModel implements IModel {
 
     @Nonnull @Override public Collection<ResourceLocation> getDependencies() { return base.getDependencies(); }
 
-    @Nonnull @Override public Collection<ResourceLocation> getTextures() {
-        return ImmutableSet.<ResourceLocation>builder().addAll(base.getTextures()).add(WIRE_TEXTURE).build();
-    }
+    @Nonnull @Override public Collection<ResourceLocation> getTextures() { return ImmutableSet.<ResourceLocation>builder().addAll(base.getTextures()).add(WIRE_TEXTURE).build(); }
 
-    @Nonnull @Override public IBakedModel bake(@Nonnull IModelState state, @Nonnull VertexFormat format, @Nonnull Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
-        return new ICConnectionBaked(base.bake(state, format, bakedTextureGetter), format, bakedTextureGetter.apply(WIRE_TEXTURE));
-    }
+    @Nonnull @Override public IBakedModel bake(@Nonnull IModelState state, @Nonnull VertexFormat format, @Nonnull Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) { return new ICConnectionBaked(base.bake(state, format, bakedTextureGetter), format, bakedTextureGetter.apply(WIRE_TEXTURE)); }
 
     @Nonnull @Override public IModelState getDefaultState() { return base.getDefaultState(); }
 

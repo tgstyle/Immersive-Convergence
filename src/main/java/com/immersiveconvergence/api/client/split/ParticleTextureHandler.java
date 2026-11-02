@@ -24,9 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("unused")
-@Mod.EventBusSubscriber(modid = ImmersiveConvergence.MODID, value = Side.CLIENT)
-public class ParticleTextureHandler {
+@SuppressWarnings("unused") @Mod.EventBusSubscriber(modid = ImmersiveConvergence.MODID, value = Side.CLIENT) public class ParticleTextureHandler {
     private static final Map<String, Map<String, Map<String, String>>> SPRITES = new HashMap<>();
 
     public static void register(String namespace, String stateFile, String type, String texture) { SPRITES.computeIfAbsent(namespace, key -> new HashMap<>()).computeIfAbsent(stateFile, key -> new HashMap<>()).put(type, texture); }

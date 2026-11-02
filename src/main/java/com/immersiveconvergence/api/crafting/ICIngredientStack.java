@@ -5,8 +5,7 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import javax.annotation.Nullable;
 
-@SuppressWarnings("unused")
-public class ICIngredientStack extends ICIngredient {
+@SuppressWarnings("unused") public class ICIngredientStack extends ICIngredient {
     public ICIngredientStack(ICIngredient ingredient) { super(ingredient); }
 
     public ICIngredientStack(ItemStack stack) { super(stack); }

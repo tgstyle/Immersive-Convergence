@@ -15,8 +15,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-@SuppressWarnings("unused")
-public abstract class ManagedEnvironmentIC<T extends ICTileEntityBase> extends AbstractManagedEnvironment implements NamedBlock {
+@SuppressWarnings("unused") public abstract class ManagedEnvironmentIC<T extends ICTileEntityBase> extends AbstractManagedEnvironment implements NamedBlock {
     final World world;
     final BlockPos pos;
     final Class<? extends ICTileEntityBase> tileClass;
@@ -28,8 +27,7 @@ public abstract class ManagedEnvironmentIC<T extends ICTileEntityBase> extends A
         setNode(Network.newNode(this, Visibility.Network).withComponent(preferredName(), Visibility.Network).create());
     }
 
-    @SuppressWarnings("unchecked")
-    protected T getTileEntity() {
+    @SuppressWarnings("unchecked") protected T getTileEntity() {
         TileEntity te = world.getTileEntity(pos);
         if (te != null && tileClass.isAssignableFrom(te.getClass())) { return (T)te; }
         return null;

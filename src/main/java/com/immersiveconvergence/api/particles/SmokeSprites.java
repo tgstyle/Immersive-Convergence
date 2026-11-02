@@ -13,9 +13,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Random;
 
-@EventBusSubscriber(modid = ImmersiveConvergence.MODID, value = Side.CLIENT)
-@SideOnly(Side.CLIENT)
-public final class SmokeSprites {
+@EventBusSubscriber(modid = ImmersiveConvergence.MODID, value = Side.CLIENT) @SideOnly(Side.CLIENT) public final class SmokeSprites {
     private static final int SPRITE_COUNT = 12;
     private static final ResourceLocation[] SPRITE_NAMES = new ResourceLocation[SPRITE_COUNT];
 
@@ -29,7 +27,5 @@ public final class SmokeSprites {
         for (ResourceLocation name : SPRITE_NAMES) { event.getMap().registerSprite(name); }
     }
 
-    public static TextureAtlasSprite random(Random random) {
-        return Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(SPRITE_NAMES[random.nextInt(SPRITE_COUNT)].toString());
-    }
+    public static TextureAtlasSprite random(Random random) { return Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(SPRITE_NAMES[random.nextInt(SPRITE_COUNT)].toString()); }
 }

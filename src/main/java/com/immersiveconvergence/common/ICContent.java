@@ -17,12 +17,9 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("unused")
-@Mod.EventBusSubscriber(modid = ImmersiveConvergence.MODID)
-public class ICContent {
+@SuppressWarnings("unused") @Mod.EventBusSubscriber(modid = ImmersiveConvergence.MODID) public class ICContent {
     public static final List<Block> registeredICBlocks = new ArrayList<>();
     public static final List<Item> registeredICItems = new ArrayList<>();
-
     public static ICBlockDevice blockDevice;
 
     public static void preInit() {

@@ -1,7 +1,7 @@
 package com.immersiveconvergence.common.bridge;
 
 import com.immersiveconvergence.api.bridge.IICTileBridge;
-import com.immersiveconvergence.common.block.IETileBridge;
+import com.immersiveconvergence.common.blocks.IETileBridge;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
@@ -12,9 +12,9 @@ import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.items.IItemHandler;
 
+import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Set;
 
 public final class ICTileBridge implements IICTileBridge {
     @Override @Nonnull public IUnlistedProperty<?> objCallbackProperty() { return IETileBridge.objCallbackProperty(); }

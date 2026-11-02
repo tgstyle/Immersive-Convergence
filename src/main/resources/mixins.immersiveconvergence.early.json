@@ -5,13 +5,12 @@
   "refmap": "mixins.immersiveconvergence.refmap.json",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "mc.common.MixinMCMinecraftServer",
-    "mc.common.MixinMCTileEntity",
-    "mc.common.MixinMCWorldCMEFix",
-    "mc.common.MixinMCWorldCMELog"
+    "server.MixinMinecraftServer",
+    "tileentity.MixinTileEntity",
+    "world.MixinWorld"
   ],
   "client": [
-    "mc.client.MixinMCSimpleReloadableResourceManager"
+    "client.resources.MixinSimpleReloadableResourceManager"
   ],
   "injectors": {
     "defaultRequire": 1

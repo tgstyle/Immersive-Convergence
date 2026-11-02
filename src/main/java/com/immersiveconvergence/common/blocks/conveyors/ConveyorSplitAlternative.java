@@ -27,22 +27,18 @@ import org.lwjgl.util.vector.Vector3f;
 import javax.annotation.Nullable;
 import java.util.List;
 
-@SuppressWarnings("unused")
-public class ConveyorSplitAlternative extends ConveyorBasicAlternative {
+@SuppressWarnings("unused") public class ConveyorSplitAlternative extends ConveyorBasicAlternative {
     private enum SplitMode { SPLIT, ALL_LEFT, ALL_RIGHT, STOP }
     private SplitMode mode = SplitMode.SPLIT;
     private EnumFacing nextOutput = null;
     private transient String nbtKeyCache = null;
     private int prevRedstone = 0;
-
     private static final ResourceLocation texture_on = new ResourceLocation("immersiveengineering", "blocks/conveyor_split");
     private static final ResourceLocation texture_off = new ResourceLocation("immersiveengineering", "blocks/conveyor_split_off");
     private static final ResourceLocation texture_casing = new ResourceLocation("immersiveengineering", "blocks/conveyor_split_wall");
-
     private static final double FORWARD_SPEED = 0.100D;
     private static final double SIDE_SPEED = 0.10D;
     private static final double INITIAL_OFFSET = 0.04D;
-
     private static final float HORIZONTAL_HEIGHT_LIMIT = 0.25F;
     private static final double CONTACT_DIST = 0.9D;
     private static final float MAX_FALL_RESET = 3.0F;
@@ -50,7 +46,7 @@ public class ConveyorSplitAlternative extends ConveyorBasicAlternative {
     public ConveyorSplitAlternative() {}
 
     private String getNBTKey(TileEntity tile) {
-        if (nbtKeyCache == null) nbtKeyCache = "it_split_dir_" + Integer.toHexString(tile.getPos().hashCode());
+        if (nbtKeyCache == null) { nbtKeyCache = "it_split_dir_" + Integer.toHexString(tile.getPos().hashCode()); }
         return nbtKeyCache;
     }
 
@@ -61,12 +57,12 @@ public class ConveyorSplitAlternative extends ConveyorBasicAlternative {
     @Override public boolean setConveyorDirection(ConveyorDirection dir) { return false; }
 
     @Override public void afterRotation(EnumFacing oldDir, EnumFacing newDir) {
-        if (nextOutput != null) nextOutput = nextOutput == oldDir.rotateY() ? newDir.rotateY() : newDir.rotateYCCW();
+        if (nextOutput != null) { nextOutput = nextOutput == oldDir.rotateY() ? newDir.rotateY() : newDir.rotateYCCW(); }
         nbtKeyCache = null;
     }
 
     @Override public boolean isActive(TileEntity tile) {
-        if (tile == null) return true;
+        if (tile == null) { return true; }
         return runTimer > 0 && mode != SplitMode.STOP;
     }
 
@@ -86,13 +82,13 @@ public class ConveyorSplitAlternative extends ConveyorBasicAlternative {
     }
 
     @Override public void onEntityCollision(TileEntity tile, Entity entity, EnumFacing facing) {
-        if (mode == SplitMode.STOP) return;
+        if (mode == SplitMode.STOP) { return; }
 
         World world = tile.getWorld();
         BlockPos pos = tile.getPos();
         double height = entity.posY - pos.getY();
         boolean onBelt = height >= 0D && height < HORIZONTAL_HEIGHT_LIMIT && !(entity instanceof EntityPlayer && entity.isSneaking());
-        if (onBelt) assignRedirect(tile, entity, facing);
+        if (onBelt) { assignRedirect(tile, entity, facing); }
 
         super.onEntityCollision(tile, entity, facing);
 
@@ -101,13 +97,13 @@ public class ConveyorSplitAlternative extends ConveyorBasicAlternative {
             tile.markDirty();
         }
 
-        if (!onBelt) return;
+        if (!onBelt) { return; }
 
         Vec3d vec = getDirection(tile, entity, facing);
         entity.motionX = vec.x;
         entity.motionY = vec.y;
         entity.motionZ = vec.z;
-        if (entity.fallDistance < MAX_FALL_RESET) entity.fallDistance = 0.0F;
+        if (entity.fallDistance < MAX_FALL_RESET) { entity.fallDistance = 0.0F; }
         entity.onGround = false;
 
         double nextCenterX = pos.getX() + 0.5D + facing.getXOffset();
@@ -118,23 +114,24 @@ public class ConveyorSplitAlternative extends ConveyorBasicAlternative {
 
         if (contact) {
             TileEntity te = Utils.getExistingTileEntity(world, pos.offset(facing));
-            if (!(te instanceof IConveyorTile)) ConveyorHandler.revertMagnetSupression(entity, (IConveyorTile)tile);
-        } else {
+            if (!(te instanceof IConveyorTile)) { ConveyorHandler.revertMagnetSupression(entity, (IConveyorTile)tile); }
+        }
+        else {
             ConveyorHandler.applyMagnetSupression(entity, (IConveyorTile)tile);
         }
     }
 
     private void assignRedirect(TileEntity tile, Entity entity, EnumFacing facing) {
         String nbtKey = getNBTKey(tile);
-        if (entity.getEntityData().hasKey(nbtKey)) return;
+        if (entity.getEntityData().hasKey(nbtKey)) { return; }
         EnumFacing output;
         if (mode == SplitMode.SPLIT) {
-            if (nextOutput == null) nextOutput = facing.rotateYCCW();
+            if (nextOutput == null) { nextOutput = facing.rotateYCCW(); }
             output = nextOutput;
             nextOutput = nextOutput.getOpposite();
-        } else if (mode == SplitMode.ALL_LEFT) {
-            output = facing.rotateYCCW();
-        } else {
+        }
+        else if (mode == SplitMode.ALL_LEFT) { output = facing.rotateYCCW(); }
+        else {
             output = facing.rotateY();
         }
         entity.getEntityData().setInteger(nbtKey, output.ordinal());
@@ -142,7 +139,7 @@ public class ConveyorSplitAlternative extends ConveyorBasicAlternative {
     }
 
     @Override public void onItemDeployed(TileEntity tile, EntityItem entity, EnumFacing facing) {
-        if (mode == SplitMode.STOP) return;
+        if (mode == SplitMode.STOP) { return; }
 
         runTimer = IDLE_TIME_TICKS;
         assignRedirect(tile, entity, facing);
@@ -154,13 +151,14 @@ public class ConveyorSplitAlternative extends ConveyorBasicAlternative {
     }
 
     @Override public void handleInsertion(TileEntity tile, EntityItem entity, EnumFacing facing, ConveyorDirection conDir, double distX, double distZ) {
-        if (mode == SplitMode.STOP) return;
+        if (mode == SplitMode.STOP) { return; }
 
         String nbtKey = getNBTKey(tile);
         if (entity.getEntityData().hasKey(nbtKey)) {
             EnumFacing redirect = EnumFacing.values()[entity.getEntityData().getInteger(nbtKey)];
             super.handleInsertion(tile, entity, redirect, conDir, distX, distZ);
-        } else {
+        }
+        else {
             super.handleInsertion(tile, entity, facing, conDir, distX, distZ);
         }
     }
@@ -172,9 +170,7 @@ public class ConveyorSplitAlternative extends ConveyorBasicAlternative {
     }
 
     @Override public Vec3d getDirection(TileEntity conveyorTile, Entity entity, EnumFacing facing) {
-        if (mode == SplitMode.STOP) {
-            return new Vec3d(0, entity.motionY, 0);
-        }
+        if (mode == SplitMode.STOP) { return new Vec3d(0, entity.motionY, 0); }
 
         String nbtKey = getNBTKey(conveyorTile);
         if (entity.getEntityData().hasKey(nbtKey)) {
@@ -202,7 +198,7 @@ public class ConveyorSplitAlternative extends ConveyorBasicAlternative {
 
     @Override public NBTTagCompound writeConveyorNBT() {
         NBTTagCompound nbt = super.writeConveyorNBT();
-        if (nextOutput != null) nbt.setInteger("nextOutput", nextOutput.ordinal());
+        if (nextOutput != null) { nbt.setInteger("nextOutput", nextOutput.ordinal()); }
         nbt.setInteger("mode", mode.ordinal());
         nbt.setInteger("prevRedstone", prevRedstone);
         return nbt;
@@ -220,8 +216,7 @@ public class ConveyorSplitAlternative extends ConveyorBasicAlternative {
 
     @Override public ResourceLocation getInactiveTexture() { return texture_off; }
 
-    @SideOnly(Side.CLIENT)
-    @Override public List<BakedQuad> modifyQuads(List<BakedQuad> baseModel, @Nullable TileEntity tile, EnumFacing facing) {
+    @SideOnly(Side.CLIENT) @Override public List<BakedQuad> modifyQuads(List<BakedQuad> baseModel, @Nullable TileEntity tile, EnumFacing facing) {
         TextureAtlasSprite tex_casing0 = ClientUtils.getSprite(texture_casing);
         Matrix4 matrix = new Matrix4(facing);
         float[] colour = new float[]{1.0F, 1.0F, 1.0F, 1.0F};

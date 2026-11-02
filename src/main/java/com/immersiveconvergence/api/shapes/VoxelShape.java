@@ -8,8 +8,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import java.util.List;
 
-@SuppressWarnings("unused")
-public abstract class VoxelShape {
+@SuppressWarnings("unused") public abstract class VoxelShape {
     protected final DiscreteVoxelShape shape;
 
     VoxelShape(DiscreteVoxelShape shape) { this.shape = shape; }
@@ -26,9 +25,7 @@ public abstract class VoxelShape {
         return avoxelshape[0];
     }
 
-    public void forAllEdges(Shapes.DoubleLineConsumer pAction) {
-        this.shape.forAllEdges((p1, p2, p3, p4, p5, p6) -> pAction.consume(this.get(EnumFacing.Axis.X, p1), this.get(EnumFacing.Axis.Y, p2), this.get(EnumFacing.Axis.Z, p3), this.get(EnumFacing.Axis.X, p4), this.get(EnumFacing.Axis.Y, p5), this.get(EnumFacing.Axis.Z, p6)), true);
-    }
+    public void forAllEdges(Shapes.DoubleLineConsumer pAction) { this.shape.forAllEdges((p1, p2, p3, p4, p5, p6) -> pAction.consume(this.get(EnumFacing.Axis.X, p1), this.get(EnumFacing.Axis.Y, p2), this.get(EnumFacing.Axis.Z, p3), this.get(EnumFacing.Axis.X, p4), this.get(EnumFacing.Axis.Y, p5), this.get(EnumFacing.Axis.Z, p6)), true); }
 
     public void forAllBoxes(Shapes.DoubleLineConsumer action) {
         DoubleList xCoords = this.getCoords(EnumFacing.Axis.X);

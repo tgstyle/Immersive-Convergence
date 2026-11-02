@@ -19,12 +19,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.jar.JarFile;
 
-@IFMLLoadingPlugin.Name("ICMixin")
-@IFMLLoadingPlugin.SortingIndex(1001)
-@IFMLLoadingPlugin.MCVersion("1.12.2")
-public class ICMixin implements IFMLLoadingPlugin, IEarlyMixinLoader {
+@IFMLLoadingPlugin.Name("ICMixin") @IFMLLoadingPlugin.SortingIndex(1001) @IFMLLoadingPlugin.MCVersion("1.12.2") public class ICMixin implements IFMLLoadingPlugin, IEarlyMixinLoader {
     public static final Logger LOGGER = LogManager.getLogger("Immersive Convergence Mixin");
-
     private static final String IE_EARLY_CONFIG = "mixins.immersiveconvergence.ie.early.json";
     private static final String IP_EARLY_CONFIG = "mixins.immersiveconvergence.ip.early.json";
     private static final String IE_PROBE_CLASS = "blusunrize/immersiveengineering/common/blocks/BlockIEBase.class";

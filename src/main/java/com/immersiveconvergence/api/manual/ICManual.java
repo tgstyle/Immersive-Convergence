@@ -5,8 +5,7 @@ import com.immersiveconvergence.api.bridge.ICBridges;
 
 import net.minecraftforge.fml.common.Loader;
 
-@SuppressWarnings("unused")
-public class ICManual {
+@SuppressWarnings("unused") public class ICManual {
     public static final String CAT_GENERAL = "general";
     public static final String CAT_CONSTRUCTION = "construction";
     public static final String CAT_ENERGY = "energy";

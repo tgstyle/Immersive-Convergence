@@ -12,8 +12,7 @@ import java.util.LinkedHashSet;
 import java.util.Random;
 import java.util.Set;
 
-@SuppressWarnings("unused")
-public class BlockMatcher {
+@SuppressWarnings("unused") public class BlockMatcher {
     private static final Set<String> genericOreNames = new LinkedHashSet<>();
     private static final Set<Block> wildcardBlocks = new LinkedHashSet<>();
     private static final Random RANDOM = new Random();

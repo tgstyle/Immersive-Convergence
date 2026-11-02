@@ -4,8 +4,7 @@ import com.immersiveconvergence.api.wires.ICWireCategory;
 
 import javax.annotation.Nonnull;
 
-@SuppressWarnings("unused")
-public final class ICConnectorTier {
+@SuppressWarnings("unused") public final class ICConnectorTier {
     public static final ICConnectorTier LV = new ICConnectorTier(ICWireCategory.LV, 2048, 0, 0);
     public static final ICConnectorTier MV = new ICConnectorTier(ICWireCategory.MV, 8192, 0.0625, 0.0625);
     public static final ICConnectorTier HV = new ICConnectorTier(ICWireCategory.HV, 32768, 0.25, 0.375);

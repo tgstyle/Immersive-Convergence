@@ -4,8 +4,7 @@ import com.immersiveconvergence.api.client.MechanicalEnergyAnimation;
 
 import net.minecraft.util.EnumFacing;
 
-@SuppressWarnings("unused")
-public interface IMechanicalEnergyConsumer {
+@SuppressWarnings("unused") public interface IMechanicalEnergyConsumer {
     double getMass();
     double getFriction();
     int getMaxSpeed();

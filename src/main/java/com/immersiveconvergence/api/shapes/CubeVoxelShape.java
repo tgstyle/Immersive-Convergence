@@ -5,13 +5,9 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.MathHelper;
 
 public final class CubeVoxelShape extends VoxelShape {
-    CubeVoxelShape(DiscreteVoxelShape pShape) {
-        super(pShape);
-    }
+    CubeVoxelShape(DiscreteVoxelShape pShape) { super(pShape); }
 
-    protected DoubleList getCoords(EnumFacing.Axis pAxis) {
-        return new CubePointRange(this.shape.getSize(pAxis));
-    }
+    protected DoubleList getCoords(EnumFacing.Axis pAxis) { return new CubePointRange(this.shape.getSize(pAxis)); }
 
     protected int findIndex(EnumFacing.Axis pAxis, double pPosition) {
         int i = this.shape.getSize(pAxis);

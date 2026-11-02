@@ -4,7 +4,7 @@ import com.immersiveconvergence.api.ICConveyors;
 import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.client.ICModels;
 import com.immersiveconvergence.api.util.ICLogger;
-import com.immersiveconvergence.core.ICMixinConfig;
+import com.immersiveconvergence.core.config.ICMixinConfig;
 
 import net.minecraftforge.fml.common.FMLCommonHandler;
 

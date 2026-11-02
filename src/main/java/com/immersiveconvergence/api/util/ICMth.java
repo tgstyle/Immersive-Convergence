@@ -9,9 +9,8 @@ public class ICMth {
         while (i > 0) {
             int j = i / 2;
             int k = pMin + j;
-            if (pIsTargetBeforeOrAt.test(k)) {
-                i = j;
-            } else {
+            if (pIsTargetBeforeOrAt.test(k)) { i = j; }
+            else {
                 pMin = k + 1;
                 i -= j + 1;
             }
@@ -31,7 +30,7 @@ public class ICMth {
     }
 
     public static long lcm(int a, int b) {
-        if (a == 0 || b == 0) return 0;
+        if (a == 0 || b == 0) { return 0; }
         return Math.abs((long) a * (long) b) / gcd(a, b);
     }
 

@@ -13,8 +13,7 @@ import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
-@SuppressWarnings("unused")
-public class ICWireType {
+@SuppressWarnings("unused") public class ICWireType {
     private static final Map<String, ICWireType> REGISTRY = new ConcurrentHashMap<>();
     private final String uniqueName;
     @Nullable private final ICWireCategory category;
@@ -27,9 +26,7 @@ public class ICWireType {
     private final Supplier<ItemStack> coil;
     private final float shockDamage;
 
-    public ICWireType(String uniqueName, @Nullable ICWireCategory category, IntSupplier transferRate, int maxLength, double lossPerBlock, DoubleSupplier renderDiameter, double slack, int color, Supplier<ItemStack> coil) {
-        this(uniqueName, category, transferRate, maxLength, lossPerBlock, renderDiameter, slack, color, coil, category == null ? 0 : category.getDefaultShock());
-    }
+    public ICWireType(String uniqueName, @Nullable ICWireCategory category, IntSupplier transferRate, int maxLength, double lossPerBlock, DoubleSupplier renderDiameter, double slack, int color, Supplier<ItemStack> coil) { this(uniqueName, category, transferRate, maxLength, lossPerBlock, renderDiameter, slack, color, coil, category == null ? 0 : category.getDefaultShock()); }
 
     public ICWireType(String uniqueName, @Nullable ICWireCategory category, IntSupplier transferRate, int maxLength, double lossPerBlock, DoubleSupplier renderDiameter, double slack, int color, Supplier<ItemStack> coil, float shockDamage) {
         this.uniqueName = uniqueName;

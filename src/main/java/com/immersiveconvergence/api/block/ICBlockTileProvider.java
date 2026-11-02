@@ -63,14 +63,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@SuppressWarnings({"deprecation", "unused"})
-@Mod.EventBusSubscriber(modid = ImmersiveConvergence.MODID)
-public abstract class ICBlockTileProvider<E extends Enum<E> & ICBlockBase.IBlockEnum> extends ICBlockBase<E> {
+@SuppressWarnings({"deprecation", "unused"}) @Mod.EventBusSubscriber(modid = ImmersiveConvergence.MODID) public abstract class ICBlockTileProvider<E extends Enum<E> & ICBlockBase.IBlockEnum> extends ICBlockBase<E> {
     private static final Map<ICDimensionBlockPos, TileEntity> tempTile = new HashMap<>();
 
-    public ICBlockTileProvider(BlockContext context, String name, Material material, PropertyEnum<E> mainProperty, Class<? extends ItemBlock> itemBlock, Object... additionalProperties) {
-        super(context, name, material, mainProperty, itemBlock, additionalProperties);
-    }
+    public ICBlockTileProvider(BlockContext context, String name, Material material, PropertyEnum<E> mainProperty, Class<? extends ItemBlock> itemBlock, Object... additionalProperties) { super(context, name, material, mainProperty, itemBlock, additionalProperties); }
 
     @SubscribeEvent public static void onTick(TickEvent.ServerTickEvent ev) {
         if (ev.phase == TickEvent.Phase.END) { tempTile.clear(); }
@@ -130,7 +126,8 @@ public abstract class ICBlockTileProvider<E extends Enum<E> & ICBlockBase.IBlock
                     : ICMods.immersiveEngineering() ? ICBridges.tile().droppedItems(tile) : null;
             if (dropped != null) {
                 for (ItemStack s : dropped) { if (!s.isEmpty()) { drops.add(s); } }
-            } else if (tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)) {
+            }
+            else if (tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)) {
                 IItemHandler h = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
                 if (h != null && (h instanceof ICInventoryHandler || (ICMods.immersiveEngineering() && ICBridges.tile().isInventoryHandler(h)))) {
                     for (int i = 0; i < h.getSlots(); i++) {
@@ -145,7 +142,8 @@ public abstract class ICBlockTileProvider<E extends Enum<E> & ICBlockBase.IBlock
         if (tile instanceof ITileDrop) {
             NonNullList<ItemStack> s = ((ITileDrop)tile).getTileDrops(harvesters.get(), state);
             drops.addAll(s);
-        } else { super.getDrops(drops, world, pos, state, fortune); }
+        }
+        else { super.getDrops(drops, world, pos, state, fortune); }
         tempTile.remove(dpos);
     }
 
@@ -200,14 +198,13 @@ public abstract class ICBlockTileProvider<E extends Enum<E> & ICBlockBase.IBlock
         state = super.getActualState(state, world, pos);
         TileEntity tile = world.getTileEntity(pos);
         if (tile instanceof IAttachedIntegerProperties) {
-            for (String s : ((IAttachedIntegerProperties)tile).getIntPropertyNames()) {
-                state = applyProperty(state, ((IAttachedIntegerProperties)tile).getIntProperty(s), ((IAttachedIntegerProperties)tile).getIntPropertyValue(s));
-            }
+            for (String s : ((IAttachedIntegerProperties)tile).getIntPropertyNames()) { state = applyProperty(state, ((IAttachedIntegerProperties)tile).getIntProperty(s), ((IAttachedIntegerProperties)tile).getIntPropertyValue(s)); }
         }
         if (tile instanceof IDirectionalTile && (state.getPropertyKeys().contains(ICProperties.FACING_ALL) || state.getPropertyKeys().contains(ICProperties.FACING_HORIZONTAL))) {
             PropertyDirection prop = state.getPropertyKeys().contains(ICProperties.FACING_HORIZONTAL) ? ICProperties.FACING_HORIZONTAL : ICProperties.FACING_ALL;
             state = applyProperty(state, prop, ((IDirectionalTile)tile).getFacing());
-        } else if (state.getPropertyKeys().contains(ICProperties.FACING_HORIZONTAL)) { state = state.withProperty(ICProperties.FACING_HORIZONTAL, getDefaultFacing()); }
+        }
+        else if (state.getPropertyKeys().contains(ICProperties.FACING_HORIZONTAL)) { state = state.withProperty(ICProperties.FACING_HORIZONTAL, getDefaultFacing()); }
         else if (state.getPropertyKeys().contains(ICProperties.FACING_ALL)) { state = state.withProperty(ICProperties.FACING_ALL, getDefaultFacing()); }
         if (tile instanceof IActiveState) {
             IProperty<?> boolProp = ((IActiveState)tile).getBoolProperty(IActiveState.class);
@@ -255,9 +252,7 @@ public abstract class ICBlockTileProvider<E extends Enum<E> & ICBlockBase.IBlock
             if (te != null) {
                 if (te instanceof IConfigurableSides) {
                     for (int i = 0; i < 6; i++) {
-                        if (extended.getUnlistedNames().contains(ICProperties.SIDECONFIG[i])) {
-                            extended = extended.withProperty(ICProperties.SIDECONFIG[i], ((IConfigurableSides)te).sideConfig(i));
-                        }
+                        if (extended.getUnlistedNames().contains(ICProperties.SIDECONFIG[i])) { extended = extended.withProperty(ICProperties.SIDECONFIG[i], ((IConfigurableSides)te).sideConfig(i)); }
                     }
                 }
                 if (extended.getUnlistedNames().contains(Properties.AnimationProperty) && te instanceof IAdvancedHasObjProperty) { extended = extended.withProperty(Properties.AnimationProperty, ((IAdvancedHasObjProperty)te).getOBJState()); }
@@ -353,8 +348,7 @@ public abstract class ICBlockTileProvider<E extends Enum<E> & ICBlockBase.IBlock
         return super.getBoundingBox(state, world, pos);
     }
 
-    @SideOnly(Side.CLIENT)
-    @Override @Nonnull public AxisAlignedBB getSelectedBoundingBox(@Nonnull IBlockState state, @Nonnull World world, @Nonnull BlockPos pos) {
+    @SideOnly(Side.CLIENT) @Override @Nonnull public AxisAlignedBB getSelectedBoundingBox(@Nonnull IBlockState state, @Nonnull World world, @Nonnull BlockPos pos) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof ISelectionBounds) {
             List<AxisAlignedBB> list = ((ISelectionBounds)te).getAdvancedSelectionBounds();

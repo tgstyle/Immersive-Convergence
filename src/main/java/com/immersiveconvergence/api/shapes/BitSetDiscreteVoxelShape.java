@@ -31,9 +31,8 @@ public final class BitSetDiscreteVoxelShape extends DiscreteVoxelShape {
 
     public BitSetDiscreteVoxelShape(DiscreteVoxelShape shape) {
         super(shape.xSize, shape.ySize, shape.zSize);
-        if (shape instanceof BitSetDiscreteVoxelShape) {
-            this.storage = (BitSet)((BitSetDiscreteVoxelShape)shape).storage.clone();
-        } else {
+        if (shape instanceof BitSetDiscreteVoxelShape) { this.storage = (BitSet)((BitSetDiscreteVoxelShape)shape).storage.clone(); }
+        else {
             this.storage = new BitSet(this.xSize * this.ySize * this.zSize);
             for (int i = 0; i < this.xSize; i++) for (int j = 0; j < this.ySize; j++) for (int k = 0; k < this.zSize; k++) { if (shape.isFull(i, j, k)) { this.storage.set(this.getIndex(i, j, k)); } }
         }
@@ -115,8 +114,10 @@ public final class BitSetDiscreteVoxelShape extends DiscreteVoxelShape {
                 if (bitSetShape.isFullWide(x, y, z)) {
                     if (combine) {
                         if (zStart == -1) { zStart = z; }
-                    } else { consumer.consume(x, y, z, x + 1, y + 1, z + 1); }
-                } else if (zStart != -1) {
+                    }
+                    else { consumer.consume(x, y, z, x + 1, y + 1, z + 1); }
+                }
+                else if (zStart != -1) {
                     int xEnd = x, yEnd = y;
                     bitSetShape.clearZStrip(zStart, z, x, y);
                     while (bitSetShape.isZStripFull(zStart, z, xEnd + 1, y)) {

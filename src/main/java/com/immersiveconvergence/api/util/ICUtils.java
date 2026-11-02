@@ -52,8 +52,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
 
-@SuppressWarnings("unused")
-public class ICUtils {
+@SuppressWarnings("unused") public class ICUtils {
     public static void addFutureServerTask(World world, Runnable task) {
         MinecraftServer server = world.getMinecraftServer();
         if (server == null) { return; }
@@ -234,8 +233,7 @@ public class ICUtils {
         return true;
     }
 
-    @SuppressWarnings("deprecation")
-    public static IBlockState getStateFromItemStack(ItemStack stack) {
+    @SuppressWarnings("deprecation") public static IBlockState getStateFromItemStack(ItemStack stack) {
         if (stack.isEmpty()) { return null; }
         Block block = Block.getBlockFromItem(stack.getItem());
         return block != Blocks.AIR ? block.getStateFromMeta(stack.getItemDamage()) : null;

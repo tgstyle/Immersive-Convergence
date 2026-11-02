@@ -6,8 +6,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 
-@SuppressWarnings("unused")
-public class ICInventoryHandler implements IItemHandlerModifiable {
+@SuppressWarnings("unused") public class ICInventoryHandler implements IItemHandlerModifiable {
     protected final int slots;
     protected final IICInventory inv;
     protected final int slotOffset;

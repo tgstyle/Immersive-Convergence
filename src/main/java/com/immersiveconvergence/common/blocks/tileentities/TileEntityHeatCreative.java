@@ -2,7 +2,7 @@ package com.immersiveconvergence.common.blocks.tileentities;
 
 import com.immersiveconvergence.api.block.ICTileEntityBase;
 import com.immersiveconvergence.api.capability.IHeatProvider;
-import com.immersiveconvergence.core.ICCommonConfig;
+import com.immersiveconvergence.core.config.ICCommonConfig;
 
 import net.minecraft.nbt.NBTTagCompound;
 

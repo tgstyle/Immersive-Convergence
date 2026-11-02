@@ -4,8 +4,7 @@ import net.minecraft.util.EnumFacing;
 
 import javax.annotation.Nullable;
 
-@SuppressWarnings("unused")
-public interface IICFluxProvider extends IICFluxConnection {
+@SuppressWarnings("unused") public interface IICFluxProvider extends IICFluxConnection {
     int extractEnergy(@Nullable EnumFacing from, int energy, boolean simulate);
 
     int getEnergyStored(@Nullable EnumFacing from);

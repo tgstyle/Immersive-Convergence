@@ -26,15 +26,13 @@ import net.minecraft.util.math.Vec3d;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@SuppressWarnings("unused")
-public class ICTileEntityConnectorRedstone extends ICTileEntityConnectable
+@SuppressWarnings("unused") public class ICTileEntityConnectorRedstone extends ICTileEntityConnectable
         implements ITickable, IDirectionalTile, IRedstoneOutput, IHammerInteraction, IBlockBounds, IBlockOverlayText, IICOBJModelCallback<IBlockState> {
 
     public EnumFacing facing = EnumFacing.DOWN;
     public int ioMode = 0;
     public int redstoneChannel = 0;
     public boolean rsDirty = false;
-
     protected int outputClient = -1;
     private boolean refreshNetwork = false;
 

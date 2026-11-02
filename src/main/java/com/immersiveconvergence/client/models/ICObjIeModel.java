@@ -23,9 +23,7 @@ public final class ICObjIeModel implements IModel {
 
     @Nonnull @Override public Collection<ResourceLocation> getTextures() { return base.getTextures(); }
 
-    @Nonnull @Override public IBakedModel bake(@Nonnull IModelState state, @Nonnull VertexFormat format, @Nonnull Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
-        return new ICObjIeBaked(base, state, format, bakedTextureGetter);
-    }
+    @Nonnull @Override public IBakedModel bake(@Nonnull IModelState state, @Nonnull VertexFormat format, @Nonnull Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) { return new ICObjIeBaked(base, state, format, bakedTextureGetter); }
 
     @Nonnull @Override public IModelState getDefaultState() { return base.getDefaultState(); }
 

@@ -15,8 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@SuppressWarnings("unused")
-public final class ShapeData extends GenericShape {
+@SuppressWarnings("unused") public final class ShapeData extends GenericShape {
     private static final Gson GSON = new Gson();
     public final MultiblockJSONSchema data;
     public final TemplateData template;

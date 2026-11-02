@@ -3,8 +3,8 @@ package com.immersiveconvergence.common.bridge;
 import com.immersiveconvergence.api.bridge.IICIntegrationBridge;
 import com.immersiveconvergence.api.manual.ICManualPage;
 import com.immersiveconvergence.common.IEIntegrationBridge;
-import com.immersiveconvergence.common.manual.IEManualBridge;
-import com.immersiveconvergence.common.util.IEChatBridge;
+import com.immersiveconvergence.core.integration.immersiveengineering.IEChatBridge;
+import com.immersiveconvergence.core.integration.immersiveengineering.IEManualBridge;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;

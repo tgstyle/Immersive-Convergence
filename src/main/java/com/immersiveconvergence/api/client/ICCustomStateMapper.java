@@ -15,9 +15,7 @@ import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 
-@SideOnly(Side.CLIENT)
-@SuppressWarnings("unused")
-public class ICCustomStateMapper extends StateMapperBase {
+@SideOnly(Side.CLIENT) @SuppressWarnings("unused") public class ICCustomStateMapper extends StateMapperBase {
     public static final Map<String, StateMapperBase> stateMappers = new HashMap<>();
 
     public static StateMapperBase getStateMapper(IMetaBlock metaBlock) {

@@ -29,8 +29,7 @@ import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@SuppressWarnings("unused")
-public abstract class ICTileEntityMultiblockPart<T extends ICTileEntityMultiblockPart<T>> extends ICTileEntityBase implements ITickable, IDirectionalTile, IBlockBounds, IGeneralMultiblock, ICMultiblockPart {
+@SuppressWarnings("unused") public abstract class ICTileEntityMultiblockPart<T extends ICTileEntityMultiblockPart<T>> extends ICTileEntityBase implements ITickable, IDirectionalTile, IBlockBounds, IGeneralMultiblock, ICMultiblockPart {
     public boolean formed = false;
     public int pos = -1;
     public int[] offset = {0, 0, 0};
@@ -38,7 +37,6 @@ public abstract class ICTileEntityMultiblockPart<T extends ICTileEntityMultibloc
     public EnumFacing facing = EnumFacing.NORTH;
     public long onlyLocalDisassembly = -1;
     protected final int[] structureDimensions;
-
     private T masterCache;
     private MultiblockFluidWrapper[] fluidWrappers;
 
@@ -102,8 +100,7 @@ public abstract class ICTileEntityMultiblockPart<T extends ICTileEntityMultibloc
         return super.hasCapability(capability, facing);
     }
 
-    @SuppressWarnings("unchecked")
-    @Override public <C> C getCapability(@Nonnull Capability<C> capability, @Nullable EnumFacing facing) {
+    @SuppressWarnings("unchecked") @Override public <C> C getCapability(@Nonnull Capability<C> capability, @Nullable EnumFacing facing) {
         if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && this.getAccessibleFluidTanks(facing).length > 0) { return (C)fluidWrapper(facing); }
         return super.getCapability(capability, facing);
     }
@@ -209,8 +206,7 @@ public abstract class ICTileEntityMultiblockPart<T extends ICTileEntityMultibloc
 
     public static boolean _Immovable() { return true; }
 
-    @SuppressWarnings("unchecked")
-    @Nullable public T master() {
+    @SuppressWarnings("unchecked") @Nullable public T master() {
         if (offset[0] == 0 && offset[1] == 0 && offset[2] == 0) { return (T)this; }
         T cached = masterCache;
         if (cached != null && !cached.isInvalid()) { return cached; }

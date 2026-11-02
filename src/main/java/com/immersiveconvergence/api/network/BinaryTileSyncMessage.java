@@ -16,8 +16,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-@SuppressWarnings("unused")
-public class BinaryTileSyncMessage implements IMessage {
+@SuppressWarnings("unused") public class BinaryTileSyncMessage implements IMessage {
     BlockPos pos;
     ByteBuf buffer;
 
@@ -62,8 +61,7 @@ public class BinaryTileSyncMessage implements IMessage {
         }
     }
 
-    @SideOnly(Side.CLIENT)
-    public static class HandlerClient implements IMessageHandler<BinaryTileSyncMessage, IMessage> {
+    @SideOnly(Side.CLIENT) public static class HandlerClient implements IMessageHandler<BinaryTileSyncMessage, IMessage> {
         @Override public IMessage onMessage(BinaryTileSyncMessage message, MessageContext ctx) {
             Minecraft.getMinecraft().addScheduledTask(() -> {
                 try {

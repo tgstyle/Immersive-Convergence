@@ -7,8 +7,7 @@ import it.unimi.dsi.fastutil.doubles.DoubleList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 
-@SuppressWarnings("unused")
-public final class Shapes {
+@SuppressWarnings("unused") public final class Shapes {
     private static final VoxelShape BLOCK = makeBlock();
 
     private static VoxelShape makeBlock() {
@@ -143,7 +142,8 @@ public final class Shapes {
                 temp = minX;
                 minX = 1 - maxX;
                 maxX = 1 - temp;
-            } else {
+            }
+            else {
                 temp = minZ;
                 minZ = 1 - maxZ;
                 maxZ = 1 - temp;

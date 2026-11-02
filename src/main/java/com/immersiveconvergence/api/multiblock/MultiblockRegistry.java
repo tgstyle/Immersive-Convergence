@@ -14,8 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
-@SuppressWarnings("unused")
-public class MultiblockRegistry {
+@SuppressWarnings("unused") public class MultiblockRegistry {
     private static final List<ICMultiblock> MULTIBLOCKS = new ArrayList<>();
 
     public static boolean immersiveEngineering() { return Loader.isModLoaded("immersiveengineering"); }
@@ -46,9 +45,7 @@ public class MultiblockRegistry {
         return false;
     }
 
-    public static boolean formationCancelled(EntityPlayer player, ICMultiblock multiblock, BlockPos pos, ItemStack hammer) {
-        return immersiveEngineering() && ICBridges.multiblock().formationCancelled(player, multiblock, pos, hammer);
-    }
+    public static boolean formationCancelled(EntityPlayer player, ICMultiblock multiblock, BlockPos pos, ItemStack hammer) { return immersiveEngineering() && ICBridges.multiblock().formationCancelled(player, multiblock, pos, hammer); }
 
     public static void formationDone(EntityPlayer player, ICMultiblock multiblock, BlockPos pos, ItemStack hammer) {
         if (immersiveEngineering()) { ICBridges.multiblock().formationDone(player, multiblock, pos, hammer); }

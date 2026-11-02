@@ -25,8 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-@SuppressWarnings("unused")
-public abstract class ICTileEntityTransformer extends ICTileEntityConnector {
+@SuppressWarnings("unused") public abstract class ICTileEntityTransformer extends ICTileEntityConnector {
     private static final String TOP = "top";
     private static final String MIDDLE = "middle";
     private static final String[] CABLE = {"lowCable", "highCable"};

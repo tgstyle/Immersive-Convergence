@@ -12,8 +12,7 @@ import net.minecraft.util.text.TextComponentString;
 import javax.annotation.Nonnull;
 import java.util.Collections;
 
-@SuppressWarnings("unused")
-public class ICInventoryTile implements IInventory {
+@SuppressWarnings("unused") public class ICInventoryTile implements IInventory {
     private static final String TILE_ENTITY_PREFIX = "TileEntity";
     private final TileEntity tile;
     private final IICInventory inv;
@@ -83,7 +82,5 @@ public class ICInventoryTile implements IInventory {
 
     @Override public int getFieldCount() { return 0; }
 
-    @Override public void clear() {
-        Collections.fill(inv.getInventory(), ItemStack.EMPTY);
-    }
+    @Override public void clear() { Collections.fill(inv.getInventory(), ItemStack.EMPTY); }
 }

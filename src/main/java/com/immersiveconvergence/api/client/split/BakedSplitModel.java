@@ -19,8 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@SuppressWarnings("unused")
-public class BakedSplitModel implements IBakedModel {
+@SuppressWarnings("unused") public class BakedSplitModel implements IBakedModel {
     private final IBakedModel base;
     private final Set<BlockPos> parts;
     private final Map<BlockPos, List<BakedQuad>>[] splitByLayer;

@@ -4,8 +4,7 @@ import net.minecraft.util.DamageSource;
 
 import javax.annotation.Nonnull;
 
-@SuppressWarnings("unused")
-public final class ICWireDamage {
+@SuppressWarnings("unused") public final class ICWireDamage {
     public static final DamageSource SHOCK = new DamageSource("immersiveconvergence.wire_shock").setDamageBypassesArmor();
     private static final String IE_SHOCK = "ieWireShock";
 

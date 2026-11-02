@@ -1,11 +1,11 @@
 package com.immersiveconvergence.api.client;
 
 import com.immersiveconvergence.api.ICMods;
+import com.immersiveconvergence.api.bridge.ICBridges;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IMetaBlock;
-import com.immersiveconvergence.client.ICClientWires;
 import com.immersiveconvergence.client.models.ICConnectionLoader;
 import com.immersiveconvergence.client.models.ICObjIeLoader;
-import com.immersiveconvergence.api.bridge.ICBridges;
+import com.immersiveconvergence.client.util.ICClientWires;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.FontRenderer;
@@ -14,11 +14,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 
-import javax.annotation.Nullable;
 import java.util.Set;
+import javax.annotation.Nullable;
 
-@SuppressWarnings("unused")
-public class ICModels {
+@SuppressWarnings("unused") public class ICModels {
     public static void registerOBJLoader() {
         if (ICMods.immersiveEngineering()) { ICBridges.client().registerOBJLoader(); }
         else { ModelLoaderRegistry.registerLoader(ICObjIeLoader.INSTANCE); }

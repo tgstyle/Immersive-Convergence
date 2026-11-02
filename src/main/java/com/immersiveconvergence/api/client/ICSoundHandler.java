@@ -9,8 +9,7 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import java.util.HashMap;
 
-@SuppressWarnings("unused")
-public class ICSoundHandler extends PositionedSound implements ITickableSound {
+@SuppressWarnings("unused") public class ICSoundHandler extends PositionedSound implements ITickableSound {
     private static final HashMap<BlockPos, ICSoundHandler> playingSounds = new HashMap<>();
     private final BlockPos pos;
 

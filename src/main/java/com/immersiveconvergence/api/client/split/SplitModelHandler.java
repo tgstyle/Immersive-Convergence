@@ -21,18 +21,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
-@SuppressWarnings("unused")
-@Mod.EventBusSubscriber(modid = ImmersiveConvergence.MODID, value = Side.CLIENT)
-public class SplitModelHandler {
+@SuppressWarnings("unused") @Mod.EventBusSubscriber(modid = ImmersiveConvergence.MODID, value = Side.CLIENT) public class SplitModelHandler {
     private static final Map<String, List<Machine>> machinesByNamespace = new HashMap<>();
 
     public static void register(String namespace, String masterFile, Supplier<TemplateMultiblock> instance) { register(namespace, masterFile, false, instance); }
 
     public static void register(String namespace, String masterFile, boolean mirrorFromBase, Supplier<TemplateMultiblock> instance) { register(namespace, masterFile, null, masterFile + "_slave", null, false, mirrorFromBase, instance); }
 
-    public static void register(String namespace, String masterFile, String masterType, String slaveFile, String slaveType, boolean splitDynamicRender, boolean mirrorFromBase, Supplier<TemplateMultiblock> instance) {
-        machinesByNamespace.computeIfAbsent(namespace, key -> new ArrayList<>()).add(new Machine(masterFile, masterType, slaveFile, slaveType, splitDynamicRender, mirrorFromBase, instance));
-    }
+    public static void register(String namespace, String masterFile, String masterType, String slaveFile, String slaveType, boolean splitDynamicRender, boolean mirrorFromBase, Supplier<TemplateMultiblock> instance) { machinesByNamespace.computeIfAbsent(namespace, key -> new ArrayList<>()).add(new Machine(masterFile, masterType, slaveFile, slaveType, splitDynamicRender, mirrorFromBase, instance)); }
 
     @SubscribeEvent public static void onModelBake(ModelBakeEvent event) {
         IRegistry<ModelResourceLocation, IBakedModel> registry = event.getModelRegistry();

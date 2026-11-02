@@ -3,21 +3,16 @@ package com.immersiveconvergence.api.multiblock;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 
-@SuppressWarnings("unused")
-public class PoICache {
+@SuppressWarnings("unused") public class PoICache {
     public EnumFacing facing;
     public BlockPos position;
 
-    public PoICache(EnumFacing facing, PoIJSONSchema poi, boolean isMirrored) {
-        this(poi.localFacing == null ? null : poi.localFacing.LocalToGlobal(facing), poi.position, poi.localFacing, isMirrored);
-    }
+    public PoICache(EnumFacing facing, PoIJSONSchema poi, boolean isMirrored) { this(poi.localFacing == null ? null : poi.localFacing.LocalToGlobal(facing), poi.position, poi.localFacing, isMirrored); }
 
     public PoICache(EnumFacing facing, BlockPos position, LocalFacing localFacing, boolean isMirrored) {
         this.position = position;
         this.facing = isMirrored && (localFacing == LocalFacing.LEFT || localFacing == LocalFacing.RIGHT) ? facing.getOpposite() : facing;
     }
 
-    public boolean isPoI(EnumFacing facing, BlockPos posInMultiblock) {
-        return this.position.equals(posInMultiblock) && this.facing == facing;
-    }
+    public boolean isPoI(EnumFacing facing, BlockPos posInMultiblock) { return this.position.equals(posInMultiblock) && this.facing == facing; }
 }

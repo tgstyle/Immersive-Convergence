@@ -39,8 +39,7 @@ import javax.annotation.Nonnull;
 import java.util.*;
 
 
-@SuppressWarnings({"rawtypes", "unused"})
-public class ICBlockBase<E extends Enum<E> & ICBlockBase.IBlockEnum> extends Block implements ICBlockInterfaces.IMetaBlock {
+@SuppressWarnings({"rawtypes", "unused"}) public class ICBlockBase<E extends Enum<E> & ICBlockBase.IBlockEnum> extends Block implements ICBlockInterfaces.IMetaBlock {
     protected static IProperty[] tempProperties;
     protected static IUnlistedProperty[] tempUnlistedProperties;
     public final String name;
@@ -74,10 +73,10 @@ public class ICBlockBase<E extends Enum<E> & ICBlockBase.IBlockEnum> extends Blo
         ArrayList<IProperty> propList = new ArrayList<>();
         ArrayList<IUnlistedProperty> unlistedPropList = new ArrayList<>();
         for (Object o : additionalProperties) {
-            if (o instanceof IProperty) propList.add((IProperty)o);
-            if (o instanceof IProperty[]) propList.addAll(Arrays.asList((IProperty[])o));
-            if (o instanceof IUnlistedProperty) unlistedPropList.add((IUnlistedProperty)o);
-            if (o instanceof IUnlistedProperty[]) unlistedPropList.addAll(Arrays.asList((IUnlistedProperty[])o));
+            if (o instanceof IProperty) { propList.add((IProperty)o); }
+            if (o instanceof IProperty[]) { propList.addAll(Arrays.asList((IProperty[])o)); }
+            if (o instanceof IUnlistedProperty) { unlistedPropList.add((IUnlistedProperty)o); }
+            if (o instanceof IUnlistedProperty[]) { unlistedPropList.addAll(Arrays.asList((IUnlistedProperty[])o)); }
         }
         if (unlistedPropList.contains(IICOBJModelCallback.PROPERTY) && ICMods.immersiveEngineering()) { unlistedPropList.add(ICBridges.tile().objCallbackProperty()); }
         this.additionalProperties = propList.toArray(new IProperty[0]);
@@ -120,10 +119,10 @@ public class ICBlockBase<E extends Enum<E> & ICBlockBase.IBlockEnum> extends Blo
         ArrayList<IUnlistedProperty> unlistedPropList = new ArrayList<>();
         propList.add(property);
         for (Object o : additionalProperties) {
-            if (o instanceof IProperty) propList.add((IProperty)o);
-            if (o instanceof IProperty[]) propList.addAll(Arrays.asList((IProperty[])o));
-            if (o instanceof IUnlistedProperty) unlistedPropList.add((IUnlistedProperty)o);
-            if (o instanceof IUnlistedProperty[]) unlistedPropList.addAll(Arrays.asList((IUnlistedProperty[])o));
+            if (o instanceof IProperty) { propList.add((IProperty)o); }
+            if (o instanceof IProperty[]) { propList.addAll(Arrays.asList((IProperty[])o)); }
+            if (o instanceof IUnlistedProperty) { unlistedPropList.add((IUnlistedProperty)o); }
+            if (o instanceof IUnlistedProperty[]) { unlistedPropList.addAll(Arrays.asList((IUnlistedProperty[])o)); }
         }
         if (unlistedPropList.contains(IICOBJModelCallback.PROPERTY) && ICMods.immersiveEngineering()) { unlistedPropList.add(ICBridges.tile().objCallbackProperty()); }
         tempProperties = propList.toArray(new IProperty[0]);
@@ -141,7 +140,7 @@ public class ICBlockBase<E extends Enum<E> & ICBlockBase.IBlockEnum> extends Blo
 
     public boolean hasFlavour(ItemStack stack) {
         int meta = stack.getItemDamage();
-        if (meta < 0 || meta >= this.hasFlavour.length) return false;
+        if (meta < 0 || meta >= this.hasFlavour.length) { return false; }
         return this.hasFlavour[meta];
     }
 
@@ -149,7 +148,7 @@ public class ICBlockBase<E extends Enum<E> & ICBlockBase.IBlockEnum> extends Blo
 
     @Override public boolean canRenderInLayer(@Nonnull IBlockState state, @Nonnull BlockRenderLayer layer) {
         int meta = this.getMetaFromState(state);
-        if (meta >= 0 && meta < metaRenderLayers.length && metaRenderLayers[meta] != null) return metaRenderLayers[meta].contains(layer);
+        if (meta >= 0 && meta < metaRenderLayers.length && metaRenderLayers[meta] != null) { return metaRenderLayers[meta].contains(layer); }
         return renderLayers.contains(layer);
     }
 
@@ -159,8 +158,7 @@ public class ICBlockBase<E extends Enum<E> & ICBlockBase.IBlockEnum> extends Blo
         return super.getLightOpacity(state, w, pos);
     }
 
-    @SuppressWarnings("deprecation")
-    @Override public float getBlockHardness(@Nonnull IBlockState state, @Nonnull World world, @Nonnull BlockPos pos) {
+    @SuppressWarnings("deprecation") @Override public float getBlockHardness(@Nonnull IBlockState state, @Nonnull World world, @Nonnull BlockPos pos) {
         Float hardness = metaHardness.get(getMetaFromState(state));
         if (hardness != null) { return hardness; }
         return super.getBlockHardness(state, world, pos);
@@ -178,27 +176,23 @@ public class ICBlockBase<E extends Enum<E> & ICBlockBase.IBlockEnum> extends Blo
     }
 
     public void setAllNotNormalBlock() {
-        if (metaNotNormalBlock == null) metaNotNormalBlock = new boolean[this.enumValues.length];
+        if (metaNotNormalBlock == null) { metaNotNormalBlock = new boolean[this.enumValues.length]; }
         Arrays.fill(metaNotNormalBlock, true);
     }
 
     protected boolean normalBlockCheck(IBlockState state) {
-        if (metaNotNormalBlock == null) return true;
+        if (metaNotNormalBlock == null) { return true; }
         int meta = getMetaFromState(state);
         return (meta < 0 || meta >= metaNotNormalBlock.length) || !metaNotNormalBlock[meta];
     }
 
-    @SuppressWarnings("deprecation")
-    @Override public boolean isFullBlock(@Nonnull IBlockState state) { return normalBlockCheck(state); }
+    @SuppressWarnings("deprecation") @Override public boolean isFullBlock(@Nonnull IBlockState state) { return normalBlockCheck(state); }
 
-    @SuppressWarnings("deprecation")
-    @Override public boolean isFullCube(@Nonnull IBlockState state) { return normalBlockCheck(state); }
+    @SuppressWarnings("deprecation") @Override public boolean isFullCube(@Nonnull IBlockState state) { return normalBlockCheck(state); }
 
-    @SuppressWarnings("deprecation")
-    @Override public boolean isOpaqueCube(@Nonnull IBlockState state) { return normalBlockCheck(state); }
+    @SuppressWarnings("deprecation") @Override public boolean isOpaqueCube(@Nonnull IBlockState state) { return normalBlockCheck(state); }
 
-    @SuppressWarnings("deprecation")
-    @Override public boolean causesSuffocation(@Nonnull IBlockState state) { return normalBlockCheck(state); }
+    @SuppressWarnings("deprecation") @Override public boolean causesSuffocation(@Nonnull IBlockState state) { return normalBlockCheck(state); }
 
     @Override public boolean isNormalCube(@Nonnull IBlockState state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos) { return normalBlockCheck(state); }
 
@@ -206,29 +200,26 @@ public class ICBlockBase<E extends Enum<E> & ICBlockBase.IBlockEnum> extends Blo
         IProperty[] array = new IProperty[1 + this.additionalProperties.length];
         array[0] = this.property;
         System.arraycopy(this.additionalProperties, 0, array, 1, this.additionalProperties.length);
-        if (this.additionalUnlistedProperties.length > 0) return new ExtendedBlockState(this, array, additionalUnlistedProperties);
+        if (this.additionalUnlistedProperties.length > 0) { return new ExtendedBlockState(this, array, additionalUnlistedProperties); }
         return new BlockStateContainer(this, array);
     }
 
-    @SuppressWarnings("unchecked")
-    protected IBlockState getInitDefaultState() {
+    @SuppressWarnings("unchecked") protected IBlockState getInitDefaultState() {
         IBlockState state = this.blockState.getBaseState().withProperty(this.property, enumValues[0]);
         for (IProperty additionalProperty : this.additionalProperties)
-            if (additionalProperty != null && !additionalProperty.getAllowedValues().isEmpty())
-                state = applyProperty(state, additionalProperty, additionalProperty.getAllowedValues().iterator().next());
+            if (additionalProperty != null && !additionalProperty.getAllowedValues().isEmpty()) { state = applyProperty(state, additionalProperty, additionalProperty.getAllowedValues().iterator().next()); }
         return state;
     }
 
-    @SuppressWarnings("unchecked")
-    protected <V extends Comparable<V>> IBlockState applyProperty(IBlockState in, IProperty<V> prop, Object val) { return in.withProperty(prop, (V)val); }
+    @SuppressWarnings("unchecked") protected <V extends Comparable<V>> IBlockState applyProperty(IBlockState in, IProperty<V> prop, Object val) { return in.withProperty(prop, (V)val); }
 
     public void onITBlockPlacedBy(World world, BlockPos pos, IBlockState state, EnumFacing side, float hitX, float hitY, float hitZ, EntityLivingBase placer, ItemStack stack) {}
 
     public boolean canITBlockBePlaced(World world, BlockPos pos, IBlockState newState, EnumFacing side, float hitX, float hitY, float hitZ, EntityPlayer player, ItemStack stack) { return true; }
 
     @Override @Nonnull protected BlockStateContainer createBlockState() {
-        if (this.property != null) return createNotTempBlockState();
-        if (tempUnlistedProperties.length > 0) return new ExtendedBlockState(this, tempProperties, tempUnlistedProperties);
+        if (this.property != null) { return createNotTempBlockState(); }
+        if (tempUnlistedProperties.length > 0) { return new ExtendedBlockState(this, tempProperties, tempUnlistedProperties); }
         return new BlockStateContainer(this, tempProperties);
     }
 
@@ -240,43 +231,39 @@ public class ICBlockBase<E extends Enum<E> & ICBlockBase.IBlockEnum> extends Blo
             metaCache = cache;
         }
         Integer meta = cache.get(state);
-        if (meta != null) return meta;
-        if (!this.equals(state.getBlock())) return 0;
+        if (meta != null) { return meta; }
+        if (!this.equals(state.getBlock())) { return 0; }
         return state.getValue(this.property).getMeta();
     }
 
     protected E fromMeta(int meta) {
-        if (meta < 0 || meta >= enumValues.length) meta = 0;
+        if (meta < 0 || meta >= enumValues.length) { meta = 0; }
         return enumValues[meta];
     }
 
-    @SuppressWarnings("deprecation")
-    @Override @Nonnull public IBlockState getStateFromMeta(int meta) { return this.getDefaultState().withProperty(this.property, fromMeta(meta)); }
+    @SuppressWarnings("deprecation") @Override @Nonnull public IBlockState getStateFromMeta(int meta) { return this.getDefaultState().withProperty(this.property, fromMeta(meta)); }
 
     @Override public int damageDropped(@Nonnull IBlockState state) { return getMetaFromState(state); }
 
-    @SideOnly(Side.CLIENT)
-    @Override public void getSubBlocks(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> list) {
+    @SideOnly(Side.CLIENT) @Override public void getSubBlocks(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> list) {
         for (E type : this.enumValues)
-            if (type.listForCreative() && !this.isMetaHidden[type.getMeta()])
-                list.add(new ItemStack(this, 1, type.getMeta()));
+            if (type.listForCreative() && !this.isMetaHidden[type.getMeta()]) { list.add(new ItemStack(this, 1, type.getMeta())); }
     }
 
     void adjustSound() {
-        if (this.material == Material.ANVIL) this.blockSoundType = SoundType.ANVIL;
-        else if (this.material == Material.CARPET || this.material == Material.CLOTH) this.blockSoundType = SoundType.CLOTH;
-        else if (this.material == Material.GLASS || this.material == Material.ICE) this.blockSoundType = SoundType.GLASS;
-        else if (this.material == Material.GRASS || this.material == Material.TNT || this.material == Material.PLANTS || this.material == Material.VINE) this.blockSoundType = SoundType.PLANT;
-        else if (this.material == Material.GROUND) this.blockSoundType = SoundType.GROUND;
-        else if (this.material == Material.IRON) this.blockSoundType = SoundType.METAL;
-        else if (this.material == Material.SAND) this.blockSoundType = SoundType.SAND;
-        else if (this.material == Material.SNOW) this.blockSoundType = SoundType.SNOW;
-        else if (this.material == Material.ROCK) this.blockSoundType = SoundType.STONE;
-        else if (this.material == Material.WOOD || this.material == Material.CACTUS) this.blockSoundType = SoundType.WOOD;
+        if (this.material == Material.ANVIL) { this.blockSoundType = SoundType.ANVIL; }
+        else if (this.material == Material.CARPET || this.material == Material.CLOTH) { this.blockSoundType = SoundType.CLOTH; }
+        else if (this.material == Material.GLASS || this.material == Material.ICE) { this.blockSoundType = SoundType.GLASS; }
+        else if (this.material == Material.GRASS || this.material == Material.TNT || this.material == Material.PLANTS || this.material == Material.VINE) { this.blockSoundType = SoundType.PLANT; }
+        else if (this.material == Material.GROUND) { this.blockSoundType = SoundType.GROUND; }
+        else if (this.material == Material.IRON) { this.blockSoundType = SoundType.METAL; }
+        else if (this.material == Material.SAND) { this.blockSoundType = SoundType.SAND; }
+        else if (this.material == Material.SNOW) { this.blockSoundType = SoundType.SNOW; }
+        else if (this.material == Material.ROCK) { this.blockSoundType = SoundType.STONE; }
+        else if (this.material == Material.WOOD || this.material == Material.CACTUS) { this.blockSoundType = SoundType.WOOD; }
     }
 
-    @SuppressWarnings("deprecation")
-    @Override public boolean eventReceived(@Nonnull IBlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos, int eventID, int eventParam) {
+    @SuppressWarnings("deprecation") @Override public boolean eventReceived(@Nonnull IBlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos, int eventID, int eventParam) {
         if (worldIn.isRemote && eventID == 255) {
             worldIn.notifyBlockUpdate(pos, state, state, 3);
             return true;
@@ -286,15 +273,15 @@ public class ICBlockBase<E extends Enum<E> & ICBlockBase.IBlockEnum> extends Blo
 
     public boolean allowHammerHarvest(IBlockState blockState) {
         int meta = getMetaFromState(blockState);
-        if (meta >= 0 && meta < canHammerHarvest.length) return canHammerHarvest[meta];
+        if (meta >= 0 && meta < canHammerHarvest.length) { return canHammerHarvest[meta]; }
         return false;
     }
 
     public boolean allowWirecutterHarvest() { return false; }
 
     @Override public boolean isToolEffective(@Nonnull String type, @Nonnull IBlockState state) {
-        if (allowHammerHarvest(state) && type.equals(ICLib.TOOL_HAMMER)) return true;
-        if (allowWirecutterHarvest() && type.equals(ICLib.TOOL_WIRECUTTER)) return true;
+        if (allowHammerHarvest(state) && type.equals(ICLib.TOOL_HAMMER)) { return true; }
+        if (allowWirecutterHarvest() && type.equals(ICLib.TOOL_WIRECUTTER)) { return true; }
         return super.isToolEffective(type, state);
     }
 
@@ -305,6 +292,5 @@ public class ICBlockBase<E extends Enum<E> & ICBlockBase.IBlockEnum> extends Blo
         boolean listForCreative();
     }
 
-    @SideOnly(Side.CLIENT)
-    @Override @Nullable public StateMapperBase getCustomMapper() { return null; }
+    @SideOnly(Side.CLIENT) @Override @Nullable public StateMapperBase getCustomMapper() { return null; }
 }

@@ -5,8 +5,7 @@ import zone.rong.mixinbooter.ILateMixinLoader;
 import java.util.Arrays;
 import java.util.List;
 
-@SuppressWarnings("unused")
-public class ICLateMixinLoader implements ILateMixinLoader {
+@SuppressWarnings("unused") public class ICLateMixinLoader implements ILateMixinLoader {
     private static final String IE_CONFIG = "mixins.immersiveconvergence.json";
     private static final String IP_CONFIG = "mixins.immersiveconvergence.ip.json";
     private static final String IP_PUMPJACK_CONFIG = "mixins.immersiveconvergence.ip.pumpjack.json";

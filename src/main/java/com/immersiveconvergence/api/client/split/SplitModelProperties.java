@@ -22,8 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-@SuppressWarnings("unused")
-public final class SplitModelProperties {
+@SuppressWarnings("unused") public final class SplitModelProperties {
     public static final IUnlistedProperty<BlockPos> SUBMODEL_OFFSET = new IUnlistedProperty<BlockPos>() {
         @Override public String getName() { return "ic_submodel_offset"; }
 
@@ -39,15 +38,10 @@ public final class SplitModelProperties {
 
     private SplitModelProperties() {}
 
-    public static boolean missingOffset(@Nullable IBlockState state) {
-        return !(state instanceof IExtendedBlockState) || !((IExtendedBlockState)state).getUnlistedNames().contains(SUBMODEL_OFFSET);
-    }
+    public static boolean missingOffset(@Nullable IBlockState state) { return !(state instanceof IExtendedBlockState) || !((IExtendedBlockState)state).getUnlistedNames().contains(SUBMODEL_OFFSET); }
 
     public static void warnMissingOffset(IBlockState state) {
-        if (WARNED.add(state.getBlock())) {
-            ICLogger.error("Split model bound to " + state.getBlock().getRegistryName() + ", which carries no " + SUBMODEL_OFFSET.getName()
-                    + " property - drawing it unsplit. Its createBlockState was probably already loaded before the late mixin config was queued.");
-        }
+        if (WARNED.add(state.getBlock())) { ICLogger.error("Split model bound to " + state.getBlock().getRegistryName() + ", which carries no " + SUBMODEL_OFFSET.getName() + " property - drawing it unsplit. Its createBlockState was probably already loaded before the late mixin config was queued."); }
     }
 
     public static BlockStateContainer withOffset(Block block, BlockStateContainer container) {
@@ -70,9 +64,7 @@ public final class SplitModelProperties {
     }
 
     private static void warnUnformedPart(IBlockState state, BlockPos pos, @Nullable TileEntity te) {
-        if (te != null && ICMods.immersiveEngineering() && ICBridges.client().unformedMultiblockPart(te) && WARNED_POSITIONS.add(pos.toImmutable())) {
-            ICLogger.error("IC split model: unformed multiblock part at " + pos + " on " + state.getBlock().getRegistryName() + " (" + te.getClass().getName() + "), so the block draws nothing");
-        }
+        if (te != null && ICMods.immersiveEngineering() && ICBridges.client().unformedMultiblockPart(te) && WARNED_POSITIONS.add(pos.toImmutable())) { ICLogger.error("IC split model: unformed multiblock part at " + pos + " on " + state.getBlock().getRegistryName() + " (" + te.getClass().getName() + "), so the block draws nothing"); }
     }
 
     @Nullable public static BlockPos modelOffset(@Nullable TileEntity te) {

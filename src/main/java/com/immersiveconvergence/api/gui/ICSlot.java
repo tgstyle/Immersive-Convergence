@@ -11,8 +11,7 @@ import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
 import javax.annotation.Nonnull;
 
-@SuppressWarnings("unused")
-public abstract class ICSlot extends Slot {
+@SuppressWarnings("unused") public abstract class ICSlot extends Slot {
     public final Container container;
 
     public ICSlot(Container container, IInventory inv, int id, int x, int y) {

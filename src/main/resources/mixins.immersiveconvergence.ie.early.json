@@ -5,12 +5,11 @@
   "refmap": "mixins.immersiveconvergence.refmap.json",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "ie.common.MixinICConnectableWires",
-    "ie.common.MixinICConnectorRedstoneWires",
-    "ie.common.MixinIEBlockLightTile",
-    "ie.common.MixinIEBlockSplitContainer",
-    "ie.common.MixinIEBlockSplitOffset",
-    "ie.common.MixinIEConnectorLightTile"
+    "integration.immersiveengineering.api.wires.connectors.MixinICTileEntityConnectable",
+    "integration.immersiveengineering.api.wires.connectors.MixinICTileEntityConnectorRedstone",
+    "integration.immersiveengineering.common.blocks.MixinBlockIETileProvider",
+    "integration.immersiveengineering.common.blocks.MixinBlockIEBase",
+    "integration.immersiveengineering.common.blocks.metal.MixinBlockConnector"
   ],
   "injectors": {
     "defaultRequire": 1

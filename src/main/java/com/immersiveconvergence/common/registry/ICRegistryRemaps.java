@@ -11,11 +11,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-@SuppressWarnings("unused")
-public final class ICRegistryRemaps {
+@SuppressWarnings("unused") public final class ICRegistryRemaps {
     public static final ResourceLocation BLOCKS = new ResourceLocation("minecraft:blocks");
     public static final ResourceLocation ITEMS = new ResourceLocation("minecraft:items");
-
     private static final Map<ResourceLocation, Map<ResourceLocation, ResourceLocation>> REMAPS = new HashMap<>();
 
     private ICRegistryRemaps() {}
@@ -41,8 +39,7 @@ public final class ICRegistryRemaps {
         return null;
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    @SubscribeEvent public static void onMissingMappings(RegistryEvent.MissingMappings event) {
+    @SuppressWarnings({"rawtypes", "unchecked"}) @SubscribeEvent public static void onMissingMappings(RegistryEvent.MissingMappings event) {
         Map<ResourceLocation, ResourceLocation> target = REMAPS.get(event.getName());
         if (target == null) { return; }
         for (Object raw : event.getAllMappings()) {

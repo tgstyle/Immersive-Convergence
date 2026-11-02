@@ -17,8 +17,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-@SuppressWarnings("unused")
-public class ICItemWireCoil extends ICItemBase implements IICWireCoil {
+@SuppressWarnings("unused") public class ICItemWireCoil extends ICItemBase implements IICWireCoil {
     private final List<ICWireType> types;
 
     public ICItemWireCoil(BlockContext context, String name, List<ICWireType> types) {

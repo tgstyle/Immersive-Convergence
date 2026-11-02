@@ -26,8 +26,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = ImmersiveConvergence.MODID)
-public final class ICWireWorldEvents {
+@Mod.EventBusSubscriber(modid = ImmersiveConvergence.MODID) public final class ICWireWorldEvents {
     private static final int SHOCK_INTERVAL = 10;
     private static final int RECONCILE_INTERVAL = 20;
 
