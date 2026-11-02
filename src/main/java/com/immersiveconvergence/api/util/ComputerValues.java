@@ -38,6 +38,26 @@ public final class ComputerValues {
         return result;
     }
 
+    public static Map<String, Object> item(ItemStack stack) {
+        Map<String, Object> info = new HashMap<>();
+        if (stack.isEmpty()) { return info; }
+        info.put("size", stack.getCount());
+        info.put("name", BuiltInRegistries.ITEM.getKey(stack.getItem()).toString());
+        info.put("nameUnlocalized", stack.getDescriptionId());
+        info.put("label", stack.getHoverName().getString());
+        info.put("damage", stack.getDamageValue());
+        info.put("maxDamage", stack.getMaxDamage());
+        info.put("maxSize", stack.getMaxStackSize());
+        info.put("hasTag", !stack.getComponentsPatch().isEmpty());
+        return info;
+    }
+
+    public static Map<String, Object> fluid(FluidStack stack) {
+        Map<String, Object> info = new HashMap<>();
+        putFluid(info, stack);
+        return info;
+    }
+
     public static String fluidName(Fluid fluid) { return BuiltInRegistries.FLUID.getKey(fluid).getPath(); }
 
     public static ItemStack slot(IItemHandler handler, int slot, int slots, String error) {

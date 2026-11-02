@@ -15,6 +15,10 @@ import blusunrize.immersiveengineering.common.blocks.metal.TurretGunBlockEntity;
 import blusunrize.immersiveengineering.common.blocks.multiblocks.logic.AdvBlastFurnaceLogic;
 import blusunrize.immersiveengineering.common.blocks.multiblocks.logic.AssemblerLogic;
 import blusunrize.immersiveengineering.common.blocks.multiblocks.logic.BlastFurnaceLogic;
+import blusunrize.immersiveengineering.common.blocks.multiblocks.logic.CrusherLogic;
+import blusunrize.immersiveengineering.common.blocks.multiblocks.logic.DieselGeneratorLogic;
+import blusunrize.immersiveengineering.common.blocks.multiblocks.logic.ExcavatorLogic;
+import blusunrize.immersiveengineering.common.blocks.multiblocks.logic.bottling_machine.BottlingMachineLogic;
 import blusunrize.immersiveengineering.common.blocks.multiblocks.logic.FermenterLogic;
 import blusunrize.immersiveengineering.common.blocks.multiblocks.logic.MetalPressLogic;
 import blusunrize.immersiveengineering.common.blocks.multiblocks.logic.RefineryLogic;
@@ -56,6 +60,13 @@ public final class IEComputerIntegration {
         IEComputerCallbacks.extendMultiblock(IEMultiblockLogic.MIXER, new ICMixerCallbacks(), "mixer", MixerLogic.REDSTONE_POS);
         IEComputerCallbacks.extendMultiblock(IEMultiblockLogic.REFINERY, new ICRefineryCallbacks(), "refinery", RefineryLogic.REDSTONE_POS);
         IEComputerCallbacks.extendMultiblock(IEMultiblockLogic.ASSEMBLER, new ICAssemblerCallbacks(), "assembler", AssemblerLogic.REDSTONE_PORTS);
+        IEComputerCallbacks.extendMultiblock(IEMultiblockLogic.CRUSHER, new ICCrusherCallbacks(), "crusher", CrusherLogic.REDSTONE_POS);
+        IEComputerCallbacks.extendMultiblock(IEMultiblockLogic.BOTTLING_MACHINE, new ICBottlingMachineCallbacks(), "bottling_machine", BottlingMachineLogic.REDSTONE_POS);
+        IEComputerCallbacks.extendMultiblock(IEMultiblockLogic.DIESEL_GENERATOR, new ICDieselGeneratorCallbacks(), "diesel_generator", DieselGeneratorLogic.REDSTONE_POS);
+        IEComputerCallbacks.extendMultiblock(IEMultiblockLogic.EXCAVATOR, new ICExcavatorCallbacks(), "exavator", ExcavatorLogic.REDSTONE_POS);
+        registerDummied(IEBlockEntities.ENERGY_METER, new ICEnergyMeterCallbacks());
+        registerDummied(IEBlockEntities.SAMPLE_DRILL, new ICSampleDrillCallbacks());
+        IEComputerCallbacks.register(IEBlockEntities.FLOODLIGHT.getId(), new ICFloodlightCallbacks());
     }
 
     private static void registerDummied(MultiblockBEType<?> type, CallbackOwner<?> owner) {

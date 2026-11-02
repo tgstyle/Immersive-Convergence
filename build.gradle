@@ -65,6 +65,7 @@ ext {
     version_jade_curse = versionProps['version_jade_curse']
     version_top_curse = versionProps['version_top_curse']
     version_ip_curse = versionProps['version_ip_curse']
+    version_oc_curse = versionProps['version_oc_curse']
     version_engineered_schematics_curse = versionProps['version_engineered_schematics_curse']
     version_cctweaked = versionProps['version_cctweaked']
     mod_license = gradleProps['mod_license']
@@ -186,6 +187,8 @@ dependencies {
     compileOnly "malte0811:DualCodecs:${version_dualcodecs}"
     compileOnly "curse.maven:${version_ip_curse}"
     runtimeOnly "curse.maven:${version_ip_curse}"
+    compileOnly "curse.maven:${version_oc_curse}"
+    runtimeOnly "curse.maven:${version_oc_curse}"
     compileOnly "mezz.jei:jei-${version_minecraft}-neoforge-api:${version_jei}"
     runtimeOnly "mezz.jei:jei-${version_minecraft}-neoforge:${version_jei}"
     runtimeOnly "curse.maven:${version_engineered_schematics_curse}"

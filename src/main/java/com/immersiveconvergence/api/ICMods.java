@@ -15,6 +15,7 @@ public final class ICMods {
     public static final String IMMERSIVE_FABRICATION = "immersivefabrication";
     public static final String IMMERSIVE_PETROLEUM = "immersivepetroleum";
     public static final String COMPUTERCRAFT = "computercraft";
+    public static final String OPENCOMPUTERS = "opencomputers";
     private static final String DISABLE_IMMERSIVE_ENGINEERING = "experimental.disable_immersive_engineering";
     private static boolean immersiveEngineering;
     private static boolean ieContent;
@@ -52,6 +53,8 @@ public final class ICMods {
     public static boolean immersivePetroleum() { ensureInitialized(); return immersivePetroleum; }
 
     public static boolean computerCraft() { return ModList.get().isLoaded(COMPUTERCRAFT); }
+
+    public static boolean openComputers() { return ModList.get().isLoaded(OPENCOMPUTERS); }
 
     public static ResourceLocation ie(String path) { return ResourceLocation.fromNamespaceAndPath(IMMERSIVE_ENGINEERING, path); }
 

@@ -6,13 +6,13 @@ import blusunrize.immersiveengineering.api.multiblocks.blocks.env.IMultiblockBEH
 import blusunrize.immersiveengineering.api.multiblocks.blocks.logic.IMultiblockState;
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.Callback;
 import blusunrize.immersiveengineering.common.util.compat.computers.generic.CallbackOwner;
-import blusunrize.immersiveengineering.common.util.compat.computers.generic.owners.MultiblockCallbackWrapper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 
 public final class IEComputerCallbacks {
@@ -24,7 +24,7 @@ public final class IEComputerCallbacks {
 
     public static <S extends IMultiblockState> void registerMultiblock(MultiblockRegistration<S> multiblock, Callback<S> callback, Callback<IMultiblockBEHelper<S>> helperCallback, String name, Predicate<BlockPos> attach) { putMultiblock(multiblock.id(), new MultiblockComputerOwner<>(callback, helperCallback, multiblock, name, attach)); }
 
-    public static <S extends IMultiblockState> void extendMultiblock(MultiblockRegistration<S> multiblock, Callback<S> callback, String name, BlockPos... valid) { putMultiblock(multiblock.id(), new MultiblockCallbackWrapper<>(callback, multiblock, name, valid)); }
+    public static <S extends IMultiblockState> void extendMultiblock(MultiblockRegistration<S> multiblock, Callback<S> callback, String name, BlockPos... valid) { registerMultiblock(multiblock, callback, name, Set.of(valid)::contains); }
 
     public static void register(ResourceLocation blockEntityType, CallbackOwner<?> owner) { CALLBACKS.put(blockEntityType, owner); }
 

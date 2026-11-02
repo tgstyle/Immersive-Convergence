@@ -33,6 +33,13 @@ versionRange="[${version_ie_min},)"
 ordering="AFTER"
 side="BOTH"
 
+[[dependencies.immersiveconvergence]]
+modId="opencomputers"
+type="optional"
+versionRange="[0,)"
+ordering="AFTER"
+side="BOTH"
+
 [[accessTransformers]]
 file="META-INF/accesstransformer.cfg"
 

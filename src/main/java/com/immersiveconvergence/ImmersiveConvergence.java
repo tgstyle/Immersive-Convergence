@@ -14,6 +14,7 @@ import com.immersiveconvergence.common.ie.IEWireBridge;
 import com.immersiveconvergence.core.compat.IEClearTanks;
 import com.immersiveconvergence.core.compat.IPClearTanks;
 import com.immersiveconvergence.core.compat.computercraft.ICComputerCraft;
+import com.immersiveconvergence.core.compat.opencomputers.ICOpenComputers;
 import com.immersiveconvergence.core.ICClientConfig;
 import com.immersiveconvergence.core.ICCommonConfig;
 import com.immersiveconvergence.core.lib.ICLib;
@@ -69,6 +70,7 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
             event.enqueueWork(IEWireBridge::registerWireTypes);
         }
         if (ICMods.immersivePetroleum()) { IPClearTanks.register(); }
+        if (ICMods.openComputers()) { event.enqueueWork(ICOpenComputers::register); }
     }
 
     private void loadComplete(final FMLLoadCompleteEvent event) {
@@ -80,6 +82,7 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
     private void enqueueIMC(final InterModEnqueueEvent event) {
         if (ModList.get().isLoaded(ProbeIntegration.MODID)) { ProbeIntegration.enqueueIMC(); }
+        if (ICMods.openComputers()) { ICOpenComputers.enqueueIMC(); }
     }
 
     @SubscribeEvent public static void onServerStarting(ServerStartingEvent event) {}
