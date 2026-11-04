@@ -374,7 +374,7 @@ build.dependsOn devJar
 
 def devSyncScript = null
 for (def dir = rootDir; dir != null && devSyncScript == null; dir = dir.parentFile) {
-    def candidate = new File(dir, '#scripts/mods-devsync.gradle')
+    def candidate = new File(dir, '#scripts/gradle/mods-devsync.gradle')
     if (candidate.isFile()) { devSyncScript = candidate }
 }
 if (devSyncScript != null) {
