@@ -1,6 +1,6 @@
 package com.immersiveconvergence.common.util;
 
-import mctmods.resourcedatapackloader.pack.PackManager;
+import mctmods.resourcedatapackloader.common.pack.loading.PackManager;
 
 import java.io.IOException;
 import java.io.InputStream;

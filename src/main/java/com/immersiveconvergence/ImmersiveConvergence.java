@@ -27,7 +27,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 
-@SuppressWarnings("unused") @Mod(modid = ImmersiveConvergence.MODID, name = ImmersiveConvergence.NAME, acceptedMinecraftVersions = "[1.12.2,1.13)", dependencies = "after:immersiveengineering@[0.12-92,);" + "required-after:mixinbooter@[10.7,);" + "required-after:forge@[14.23.3.2655,);") public class ImmersiveConvergence {
+@SuppressWarnings("unused") @Mod(modid = ImmersiveConvergence.MODID, name = ImmersiveConvergence.NAME, acceptedMinecraftVersions = "[1.12.2,1.13)", dependencies = "after:immersiveengineering@[0.12-92,);" + "after:resourcedatapackloader@[1.0.130,);" + "required-after:mixinbooter@[10.7,);" + "required-after:forge@[14.23.3.2655,);") public class ImmersiveConvergence {
 
     public static final String MODID = "immersiveconvergence";
     public static final String NAME = "Immersive Convergence";
