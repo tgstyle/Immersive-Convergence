@@ -29,6 +29,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -37,6 +38,7 @@ import java.util.Set;
 
 public final class IEWireEvents {
     private static final Map<Connection, ICWire> PENDING = new IdentityHashMap<>();
+    private static final ArrayDeque<Clear> CLEARING = new ArrayDeque<>();
     private static boolean announced;
     private static ICWireCause cause;
     private static int depth;
@@ -60,6 +62,7 @@ public final class IEWireEvents {
         cause = null;
         announced = false;
         PENDING.clear();
+        CLEARING.clear();
     }
 
     @Nonnull public static ICWireCause cause() { return cause == null ? ICWireCause.UNKNOWN : cause; }
@@ -96,16 +99,77 @@ public final class IEWireEvents {
         if (bridge(world, wire)) { MinecraftForge.EVENT_BUS.post(new ICWireEvent.ComponentChanged(world, wire.getA(), wire.getB(), true)); }
     }
 
+    public static boolean cuttable(@Nonnull World world, @Nonnull BlockPos node) { return ApiUtils.toIIC(node, world) != null && ImmersiveNetHandler.INSTANCE.getConnections(world, node) != null; }
+
+    public static void beginClear(@Nonnull World world, @Nonnull BlockPos node, @Nonnull ICWireCause entered) {
+        long tick = world.getTotalWorldTime();
+        Clear stale = null;
+        while (!CLEARING.isEmpty() && CLEARING.peekFirst().tick != tick) { stale = CLEARING.pollFirst(); }
+        if (stale != null) {
+            depth = stale.depth;
+            cause = stale.cause;
+        }
+        Clear clear = new Clear(node, tick, depth, cause);
+        enter(entered);
+        Set<Connection> connections = ImmersiveNetHandler.INSTANCE.getConnections(world, node);
+        if (connections != null) {
+            for (Connection connection : connections) {
+                ICWire wire = claimed(connection) ? null : tracked(world, connection);
+                if (wire != null) { clear.wires.put(connection, wire); }
+            }
+        }
+        CLEARING.push(clear);
+    }
+
+    public static void endClear(@Nonnull World world, @Nonnull BlockPos node) {
+        Clear clear = null;
+        for (Clear open : CLEARING) {
+            if (open.node.equals(node)) {
+                clear = open;
+                break;
+            }
+        }
+        if (clear == null) { return; }
+        Clear top = CLEARING.pop();
+        while (top != clear) { top = CLEARING.pop(); }
+        for (Map.Entry<Connection, ICWire> entry : clear.wires.entrySet()) {
+            if (gone(world, entry.getKey())) { post(world, entry.getValue()); }
+        }
+        depth = clear.depth;
+        cause = clear.cause;
+    }
+
     public static void removing(World world, Connection connection) {
-        if (world == null || connection == null || world.isRemote || IEWireBridge.linking() || !present(world, connection) || uninvolved(world, connection.start, connection.end)) { return; }
-        ICWire wire = IEWireView.wireOf(world, connection);
+        if (world == null || connection == null || world.isRemote || claimed(connection)) { return; }
+        ICWire wire = tracked(world, connection);
         if (wire != null) { PENDING.put(connection, wire); }
     }
 
     public static void removed(World world, Connection connection) {
         if (world == null || world.isRemote) { return; }
         ICWire wire = PENDING.remove(connection);
-        if (wire == null) { return; }
+        if (wire != null) { post(world, wire); }
+    }
+
+    @Nullable private static ICWire tracked(World world, Connection connection) {
+        if (IEWireBridge.linking() || orphaned(world, connection) || gone(world, connection) || uninvolved(world, connection.start, connection.end)) { return null; }
+        return IEWireView.wireOf(world, connection);
+    }
+
+    private static boolean claimed(Connection connection) {
+        for (Clear clear : CLEARING) {
+            for (Connection held : clear.wires.keySet()) {
+                if (held.hasSameConnectors(connection)) { return true; }
+            }
+        }
+        return false;
+    }
+
+    private static boolean orphaned(World world, Connection connection) { return cause == null && (unbacked(world, connection.start) || unbacked(world, connection.end)); }
+
+    private static boolean unbacked(World world, BlockPos pos) { return world.isBlockLoaded(pos) && !(world.getTileEntity(pos) instanceof IImmersiveConnectable); }
+
+    private static void post(World world, ICWire wire) {
         MinecraftForge.EVENT_BUS.post(new ICWireEvent.Removed(world, wire, cause()));
         if (bridge(world, wire)) { MinecraftForge.EVENT_BUS.post(new ICWireEvent.ComponentChanged(world, wire.getA(), wire.getB(), false)); }
     }
@@ -120,13 +184,13 @@ public final class IEWireEvents {
         return MinecraftForge.EVENT_BUS.post(shock) ? 0 : shock.getDamage();
     }
 
-    private static boolean present(World world, Connection connection) {
+    private static boolean gone(World world, Connection connection) {
         Set<Connection> connections = ImmersiveNetHandler.INSTANCE.getConnections(world, connection.start);
-        if (connections == null) { return false; }
+        if (connections == null) { return true; }
         for (Connection known : connections) {
-            if (known.hasSameConnectors(connection)) { return true; }
+            if (known.hasSameConnectors(connection)) { return false; }
         }
-        return false;
+        return true;
     }
 
     private static boolean uninvolved(World world, BlockPos first, BlockPos second) { return lacksConnector(world, first) && lacksConnector(world, second); }
@@ -168,5 +232,20 @@ public final class IEWireEvents {
         if (other.contains(next)) { return true; }
         if (seen.add(next)) { queue.add(next); }
         return false;
+    }
+
+    private static final class Clear {
+        private final Map<Connection, ICWire> wires = new IdentityHashMap<>();
+        private final BlockPos node;
+        private final long tick;
+        private final int depth;
+        private final ICWireCause cause;
+
+        private Clear(BlockPos node, long tick, int depth, ICWireCause cause) {
+            this.node = node;
+            this.tick = tick;
+            this.depth = depth;
+            this.cause = cause;
+        }
     }
 }

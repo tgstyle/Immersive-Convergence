@@ -29,19 +29,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
     @Inject(method = "removeConnection(Lnet/minecraft/world/World;Lblusunrize/immersiveengineering/api/energy/wires/ImmersiveNetHandler$Connection;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;)V", at = @At("TAIL")) private void immersiveconvergence$removed(World world, Connection con, Vec3d vecStart, Vec3d vecEnd, CallbackInfo ci) { IEWireEvents.removed(world, con); }
 
     @Inject(method = "clearAllConnectionsFor(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/World;Lblusunrize/immersiveengineering/api/energy/wires/IImmersiveConnectable;Z)V", at = @At("HEAD")) private void immersiveconvergence$blockBroken(BlockPos node, World world, IImmersiveConnectable iic, boolean doDrops, CallbackInfo ci) {
-        if (!world.isRemote) { IEWireEvents.enter(ICWireCause.BLOCK_BROKEN); }
+        if (!world.isRemote) { IEWireEvents.beginClear(world, node, ICWireCause.BLOCK_BROKEN); }
     }
 
     @Inject(method = "clearAllConnectionsFor(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/World;Lblusunrize/immersiveengineering/api/energy/wires/IImmersiveConnectable;Z)V", at = @At("RETURN")) private void immersiveconvergence$blockBrokenDone(BlockPos node, World world, IImmersiveConnectable iic, boolean doDrops, CallbackInfo ci) {
-        if (!world.isRemote) { IEWireEvents.exit(); }
+        if (!world.isRemote) { IEWireEvents.endClear(world, node); }
     }
 
     @Inject(method = "clearAllConnectionsFor(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/World;Lblusunrize/immersiveengineering/api/TargetingInfo;)Z", at = @At("HEAD")) private void immersiveconvergence$cutNode(BlockPos node, World world, TargetingInfo target, CallbackInfoReturnable<Boolean> cir) {
-        if (!world.isRemote) { IEWireEvents.enter(ICWireCause.PLAYER_CUT); }
+        if (!world.isRemote && IEWireEvents.cuttable(world, node)) { IEWireEvents.beginClear(world, node, ICWireCause.PLAYER_CUT); }
     }
 
     @Inject(method = "clearAllConnectionsFor(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/World;Lblusunrize/immersiveengineering/api/TargetingInfo;)Z", at = @At("RETURN")) private void immersiveconvergence$cutNodeDone(BlockPos node, World world, TargetingInfo target, CallbackInfoReturnable<Boolean> cir) {
-        if (!world.isRemote) { IEWireEvents.exit(); }
+        if (!world.isRemote && IEWireEvents.cuttable(world, node)) { IEWireEvents.endClear(world, node); }
     }
 
     @Inject(method = "removeConnectionAndDrop", at = @At("HEAD")) private void immersiveconvergence$cutWire(Connection conn, World world, BlockPos dropPos, CallbackInfo ci) {

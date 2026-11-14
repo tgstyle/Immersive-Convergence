@@ -42,12 +42,6 @@ public final class IEWireBridge {
 
     public static boolean linking() { return linking; }
 
-    public static void quietly(@Nonnull Runnable change) {
-        linking = true;
-        try { change.run(); }
-        finally { linking = false; }
-    }
-
     public static boolean prune(@Nonnull World world, @Nonnull BlockPos first, @Nonnull BlockPos second) {
         linking = true;
         try { return unlink(world, first, second); }
