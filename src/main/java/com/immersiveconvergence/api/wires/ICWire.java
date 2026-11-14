@@ -16,6 +16,7 @@ import java.util.List;
     private final ICWireType type;
     private final double length;
     private final List<ChunkPos> chunks;
+    private final int hash;
 
     public ICWire(@Nonnull ICConnectionPoint first, @Nonnull Vec3d firstOffset, @Nonnull ICConnectionPoint second, @Nonnull Vec3d secondOffset, @Nonnull ICWireType type) {
         boolean ordered = first.compareTo(second) < 0;
@@ -24,6 +25,7 @@ import java.util.List;
         this.offsetA = ordered ? firstOffset : secondOffset;
         this.offsetB = ordered ? secondOffset : firstOffset;
         this.type = type;
+        this.hash = mix(this.a, this.b, type);
         this.length = getEndA().distanceTo(getEndB());
         this.chunks = Collections.unmodifiableList(crossedChunks(getEndA(), getEndB()));
     }
@@ -93,10 +95,18 @@ import java.util.List;
         if (this == other) { return true; }
         if (!(other instanceof ICWire)) { return false; }
         ICWire wire = (ICWire)other;
-        return a.equals(wire.a) && b.equals(wire.b) && type.equals(wire.type);
+        return hash == wire.hash && a.equals(wire.a) && b.equals(wire.b) && type.equals(wire.type);
     }
 
-    @Override public int hashCode() { return 31 * (31 * a.hashCode() + b.hashCode()) + type.hashCode(); }
+    @Override public int hashCode() { return hash; }
+
+    private static int mix(ICConnectionPoint first, ICConnectionPoint second, ICWireType type) {
+        long mixed = first.getPos().toLong() * 0x9E3779B97F4A7C15L + first.getIndex();
+        mixed = (mixed ^ (mixed >>> 32)) * 0xBF58476D1CE4E5B9L + second.getPos().toLong();
+        mixed = (mixed ^ (mixed >>> 29)) * 0x94D049BB133111EBL + second.getIndex();
+        mixed = (mixed ^ (mixed >>> 31)) * 0x9E3779B97F4A7C15L + type.hashCode();
+        return Long.hashCode(mixed ^ (mixed >>> 32));
+    }
 
     @Override public String toString() { return a + "-" + b + ":" + type; }
 

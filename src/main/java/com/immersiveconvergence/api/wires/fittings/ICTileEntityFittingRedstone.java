@@ -1,4 +1,4 @@
-package com.immersiveconvergence.api.wires.connectors;
+package com.immersiveconvergence.api.wires.fittings;
 
 import com.immersiveconvergence.api.client.IICOBJModelCallback;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IBlockBounds;
@@ -21,12 +21,13 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@SuppressWarnings("unused") public class ICTileEntityConnectorRedstone extends ICTileEntityConnectable
+@SuppressWarnings("unused") public class ICTileEntityFittingRedstone extends ICTileEntityConnectable
         implements ITickable, IDirectionalTile, IRedstoneOutput, IHammerInteraction, IBlockBounds, IBlockOverlayText, IICOBJModelCallback<IBlockState> {
 
     public EnumFacing facing = EnumFacing.DOWN;
@@ -71,12 +72,14 @@ import javax.annotation.Nullable;
     @Override public boolean canConnectRedstone(@Nonnull IBlockState state, @Nonnull EnumFacing side) { return true; }
 
     public void onChange() {
-        if (!isInvalid() && isRSOutput()) {
-            markDirty();
-            IBlockState stateHere = world.getBlockState(pos);
-            markContainingBlockForUpdate(stateHere);
-            markBlockForUpdate(pos.offset(facing), stateHere);
-        }
+        if (!isInvalid() && isRSOutput()) { notifyOutput(); }
+    }
+
+    protected final void notifyOutput() {
+        markDirty();
+        IBlockState stateHere = world.getBlockState(pos);
+        markContainingBlockForUpdate(stateHere);
+        markBlockForUpdate(pos.offset(facing), stateHere);
     }
 
     public boolean isRSInput() { return ioMode == 0; }
@@ -102,10 +105,8 @@ import javax.annotation.Nullable;
     @Override public boolean hammerUseSide(@Nonnull EnumFacing side, @Nonnull EntityPlayer player, float hitX, float hitY, float hitZ) {
         if (player.isSneaking()) { redstoneChannel = (redstoneChannel + 1) % 16; }
         else { ioMode = ioMode == 0 ? 1 : 0; }
-        markDirty();
         networkUpdateValues();
-        onChange();
-        markContainingBlockForUpdate(null);
+        notifyOutput();
         world.addBlockEvent(getPos(), getBlockType(), 254, 0);
         return true;
     }
@@ -161,7 +162,7 @@ import javax.annotation.Nullable;
         super.readCustomNBT(nbt, descPacket);
         facing = EnumFacing.byIndex(nbt.getInteger("facing"));
         ioMode = nbt.getInteger("ioMode");
-        redstoneChannel = nbt.getInteger("redstoneChannel");
+        redstoneChannel = MathHelper.clamp(nbt.getInteger("redstoneChannel"), 0, 15);
         outputClient = nbt.getInteger("output");
     }
 

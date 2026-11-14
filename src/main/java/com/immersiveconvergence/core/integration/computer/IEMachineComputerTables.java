@@ -7,7 +7,6 @@ import blusunrize.immersiveengineering.api.crafting.BlueprintCraftingRecipe;
 import blusunrize.immersiveengineering.common.blocks.metal.TileEntityAutoWorkbench;
 import blusunrize.immersiveengineering.common.blocks.metal.TileEntityLightningrod;
 import blusunrize.immersiveengineering.common.blocks.metal.TileEntityMetalPress;
-import blusunrize.immersiveengineering.common.blocks.metal.TileEntityMultiblockMetal;
 import blusunrize.immersiveengineering.common.blocks.metal.TileEntitySheetmetalTank;
 import blusunrize.immersiveengineering.common.blocks.metal.TileEntitySilo;
 import blusunrize.immersiveengineering.common.blocks.stone.TileEntityAlloySmelter;
@@ -22,13 +21,13 @@ public final class IEMachineComputerTables {
     public static final ICComputerTable<TileEntityMetalPress> METAL_PRESS = IEComputerLocators.metal("ie_metal_press", TileEntityMetalPress.class, true)
             .add("getEnergyStored", te -> te.energyStorage.getEnergyStored())
             .add("getMaxEnergyStored", te -> te.energyStorage.getMaxEnergyStored())
-            .add("isActive", TileEntityMultiblockMetal::shouldRenderAsActive)
+            .add("isActive", TileEntityMetalPress::shouldRenderAsActive)
             .add("getMold", te -> te.mold)
             .add("getInputQueue", te -> IEComputerTables.inputQueue(te.processQueue, recipe -> recipe.output));
     public static final ICComputerTable<TileEntityAutoWorkbench> AUTO_WORKBENCH = IEComputerLocators.metal("ie_auto_workbench", TileEntityAutoWorkbench.class, true)
             .add("getEnergyStored", te -> te.energyStorage.getEnergyStored())
             .add("getMaxEnergyStored", te -> te.energyStorage.getMaxEnergyStored())
-            .add("isRunning", TileEntityMultiblockMetal::shouldRenderAsActive)
+            .add("isRunning", TileEntityAutoWorkbench::shouldRenderAsActive)
             .call("selectRecipe", (te, args) -> {
                 int selected = ICComputerArgs.checkInteger(args, 0) - 1;
                 int available = recipes(te).length;

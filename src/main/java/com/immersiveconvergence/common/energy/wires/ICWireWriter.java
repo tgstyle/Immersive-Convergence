@@ -6,7 +6,7 @@ import com.immersiveconvergence.api.wires.ICTargetingInfo;
 import com.immersiveconvergence.api.wires.ICWire;
 import com.immersiveconvergence.api.wires.ICWireEvent;
 import com.immersiveconvergence.api.wires.ICWireType;
-import com.immersiveconvergence.api.wires.IICConnector;
+import com.immersiveconvergence.api.wires.IICFitting;
 import com.immersiveconvergence.common.util.ICWireCollision;
 
 import net.minecraft.block.state.IBlockState;
@@ -17,10 +17,10 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Set;
 import java.util.function.IntPredicate;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public final class ICWireWriter {
     private ICWireWriter() {}
@@ -34,11 +34,11 @@ public final class ICWireWriter {
         if (world.isRemote) { throw new IllegalStateException("Wires are written on the server"); }
         if (first.getPos().equals(second.getPos())) { return ICConnectResult.SELF; }
         if (!world.isBlockLoaded(first.getPos()) || !world.isBlockLoaded(second.getPos())) { return ICConnectResult.UNLOADED; }
-        if (wiring.missing(world, first.getPos()) || wiring.missing(world, second.getPos())) { return ICConnectResult.NO_CONNECTOR; }
+        if (wiring.missing(world, first.getPos()) || wiring.missing(world, second.getPos())) { return ICConnectResult.NO_FITTING; }
         if (!wiring.accepts(world, first, type, firstTarget) || !wiring.accepts(world, second, type, secondTarget)) { return ICConnectResult.WRONG_TYPE; }
         if (wiring.wired(world, first, second)) { return ICConnectResult.DUPLICATE; }
         ICWire wire = wiring.wireBetween(world, first, firstTarget, second, secondTarget, type);
-        if (wire == null) { return ICConnectResult.NO_CONNECTOR; }
+        if (wire == null) { return ICConnectResult.NO_FITTING; }
         if (wire.getLength() > type.getMaxLength()) { return ICConnectResult.TOO_LONG; }
         if (!affordable.test((int)Math.ceil(wire.getLength()))) { return null; }
         ICConnectResult blocked = obstruction(world, wire, wiring.ignored(world, first, second));
@@ -48,8 +48,8 @@ public final class ICWireWriter {
     }
 
     private static boolean refused(World world, ICWire wire, @Nullable EntityPlayer placer) {
-        boolean carriesConnector = world.getTileEntity(wire.getA().getPos()) instanceof IICConnector || world.getTileEntity(wire.getB().getPos()) instanceof IICConnector;
-        return carriesConnector && MinecraftForge.EVENT_BUS.post(new ICWireEvent.Placed(world, wire, placer, true));
+        boolean carriesFitting = world.getTileEntity(wire.getA().getPos()) instanceof IICFitting || world.getTileEntity(wire.getB().getPos()) instanceof IICFitting;
+        return carriesFitting && MinecraftForge.EVENT_BUS.post(new ICWireEvent.Placed(world, wire, placer, true));
     }
 
     @Nullable private static ICConnectResult obstruction(World world, ICWire wire, Set<BlockPos> ignored) {

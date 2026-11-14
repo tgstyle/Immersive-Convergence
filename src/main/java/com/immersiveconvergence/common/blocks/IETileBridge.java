@@ -1,8 +1,5 @@
 package com.immersiveconvergence.common.blocks;
 
-import com.immersiveconvergence.ImmersiveConvergence;
-import com.immersiveconvergence.api.client.IICOBJModelCallback;
-import com.immersiveconvergence.api.wires.connectors.ICTileEntityConnectable;
 import blusunrize.immersiveengineering.ImmersiveEngineering;
 import blusunrize.immersiveengineering.api.energy.wires.IImmersiveConnectable;
 import blusunrize.immersiveengineering.api.energy.wires.ImmersiveNetHandler;
@@ -13,6 +10,9 @@ import blusunrize.immersiveengineering.common.Config;
 import blusunrize.immersiveengineering.common.blocks.TileEntityIEBase;
 import blusunrize.immersiveengineering.common.util.inventory.IEInventoryHandler;
 import blusunrize.immersiveengineering.common.util.inventory.IIEInventory;
+import com.immersiveconvergence.ImmersiveConvergence;
+import com.immersiveconvergence.api.client.IICOBJModelCallback;
+import com.immersiveconvergence.api.wires.fittings.ICTileEntityConnectable;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
@@ -22,8 +22,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.items.IItemHandler;
 
-import javax.annotation.Nullable;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 public final class IETileBridge {
     private IETileBridge() {}

@@ -1,19 +1,19 @@
 package com.immersiveconvergence.api.block;
 
 import com.immersiveconvergence.ImmersiveConvergence;
+import com.immersiveconvergence.api.ICMods;
+import com.immersiveconvergence.api.bridge.ICBridges;
+import com.immersiveconvergence.api.client.ICModels;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces;
+import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.*;
 import com.immersiveconvergence.api.multiblock.ICTileEntityMultiblockMetal;
 import com.immersiveconvergence.api.multiblock.ICTileEntityMultiblockPart;
-import com.immersiveconvergence.api.util.ICInventoryHandler;
-import com.immersiveconvergence.api.ICMods;
-import com.immersiveconvergence.api.client.ICModels;
 import com.immersiveconvergence.api.util.ICDimensionBlockPos;
+import com.immersiveconvergence.api.util.ICInventoryHandler;
 import com.immersiveconvergence.api.util.ICUtils;
-import com.immersiveconvergence.api.bridge.ICBridges;
 import com.immersiveconvergence.api.util.IICInventory;
-import com.immersiveconvergence.api.wires.IICConnector;
+import com.immersiveconvergence.api.wires.IICFitting;
 import com.immersiveconvergence.api.wires.IICWireCoil;
-import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.*;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -55,13 +55,13 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 @SuppressWarnings({"deprecation", "unused"}) @Mod.EventBusSubscriber(modid = ImmersiveConvergence.MODID) public abstract class ICBlockTileProvider<E extends Enum<E> & ICBlockBase.IBlockEnum> extends ICBlockBase<E> {
     private static final Map<ICDimensionBlockPos, TileEntity> tempTile = new HashMap<>();
@@ -311,7 +311,7 @@ import java.util.Set;
             boolean b = ((IPlayerInteraction)tile).interact(side, player, hand, heldItem, hitX, hitY, hitZ);
             if (b) { return true; }
         }
-        if (tile instanceof IICConnector && player.getHeldItem(hand).getItem() instanceof IICWireCoil) { return false; }
+        if (tile instanceof IICFitting && player.getHeldItem(hand).getItem() instanceof IICWireCoil) { return false; }
         if (tile instanceof IGuiTile && hand == EnumHand.MAIN_HAND && !player.isSneaking()) {
             TileEntity master = ((IGuiTile)tile).getGuiMaster();
             if (!world.isRemote && master != null && ((IGuiTile)master).canOpenGui(player)) { context.guiOpener.open(player, (TileEntity & IGuiTile)master); }

@@ -1,6 +1,6 @@
 package com.immersiveconvergence.api.wires;
 
-import com.immersiveconvergence.api.wires.connectors.ICTileEntityConnectable;
+import com.immersiveconvergence.api.wires.fittings.ICTileEntityConnectable;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumActionResult;

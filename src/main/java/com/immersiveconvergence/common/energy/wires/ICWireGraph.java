@@ -2,16 +2,17 @@ package com.immersiveconvergence.common.energy.wires;
 
 import com.immersiveconvergence.api.wires.ICConnectionPoint;
 import com.immersiveconvergence.api.wires.ICWire;
-import com.immersiveconvergence.api.wires.IICEnergyConnector;
+import com.immersiveconvergence.api.wires.IICEnergyFitting;
 
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public interface ICWireGraph {
     @Nonnull Set<ICConnectionPoint> pointsAt(@Nonnull BlockPos pos);
@@ -28,13 +29,15 @@ public interface ICWireGraph {
 
     @Nullable ICEnergyNode node(@Nonnull World world, @Nonnull ICConnectionPoint point);
 
-    @Nonnull static ICEnergyNode energyNode(@Nonnull IICEnergyConnector connector, @Nonnull ICConnectionPoint point) {
+    @Nonnull static ICEnergyNode energyNode(@Nonnull IICEnergyFitting fitting, @Nonnull ICConnectionPoint point) {
         return new ICEnergyNode() {
-            @Override public boolean isEnergyOutput() { return connector.demand(point) > 0; }
+            @Override public boolean valid() { return !(fitting instanceof TileEntity) || !((TileEntity)fitting).isInvalid(); }
 
-            @Override public int outputEnergy(int amount, boolean simulate) { return connector.accept(point, amount, simulate); }
+            @Override public boolean isEnergyOutput() { return fitting.demand(point) > 0; }
 
-            @Override public void onEnergyPassthrough(int amount) { connector.onPassthrough(point, amount); }
+            @Override public int outputEnergy(int amount, boolean simulate) { return fitting.accept(point, amount, simulate); }
+
+            @Override public void onEnergyPassthrough(int amount) { fitting.onPassthrough(point, amount); }
         };
     }
 
@@ -43,8 +46,6 @@ public interface ICWireGraph {
     @Nonnull default ICConnectionPoint flowPoint(@Nonnull ICConnectionPoint point) { return point; }
 
     default boolean sameHop(@Nonnull ICConnectionPoint wanted, @Nullable ICConnectionPoint hop) { return wanted.equals(hop); }
-
-    default boolean intact(@Nonnull ICWire wire) { return true; }
 
     default int reserved(@Nonnull ICWire wire) { return 0; }
 

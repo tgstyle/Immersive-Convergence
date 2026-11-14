@@ -5,7 +5,7 @@ import com.immersiveconvergence.api.wires.IICEnergyNetwork;
 import com.immersiveconvergence.api.wires.IICWireCollision;
 import com.immersiveconvergence.api.wires.IICWireNetwork;
 import com.immersiveconvergence.api.wires.IICWireService;
-import com.immersiveconvergence.api.wires.connectors.ICTileEntityConnectable;
+import com.immersiveconvergence.api.wires.fittings.ICTileEntityConnectable;
 import com.immersiveconvergence.common.energy.IEWireBridge;
 import com.immersiveconvergence.common.energy.IEWireGraph;
 import com.immersiveconvergence.common.energy.IEWireView;
@@ -24,7 +24,7 @@ import javax.annotation.Nullable;
 public final class ICWireService implements IICWireService {
     private final IICWireCollision collision = new ICWireCollision();
 
-    @Nonnull public static ICWireGraph graph(@Nonnull World world) { return ICMods.immersiveEngineering() ? new IEWireGraph(world) : ICWireSavedData.get(world); }
+    @Nonnull public static ICWireGraph graph(@Nonnull World world) { return ICMods.immersiveEngineering() ? IEWireGraph.of(world) : ICWireSavedData.get(world); }
 
     @Nonnull @Override public IICWireNetwork network(@Nonnull World world) { return ICMods.immersiveEngineering() ? new IEWireView(world) : ICWireSavedData.get(world); }
 
@@ -40,12 +40,18 @@ public final class ICWireService implements IICWireService {
     }
 
     @Override public void syncConnectionPoints(@Nonnull ICTileEntityConnectable tile) {
-        if (tile.hasWorld() && !tile.getWorld().isRemote && !ICMods.immersiveEngineering()) { ICWireSavedData.get(tile.getWorld()).sync(tile); }
+        if (ICMods.immersiveEngineering()) {
+            if (tile.hasWorld()) { IEWireGraph.invalidate(tile.getWorld()); }
+        }
+        else if (tile.hasWorld() && !tile.getWorld().isRemote) { ICWireSavedData.get(tile.getWorld()).sync(tile); }
     }
 
     @Override public void connectableLoaded(@Nonnull ICTileEntityConnectable tile) {
         if (ICMods.immersiveEngineering()) { IEWireBridge.onConnectableLoad(tile); }
-        else if (tile.hasWorld() && !tile.getWorld().isRemote) { ICWireSavedData.get(tile.getWorld()).syncLoaded(tile); }
+        else if (tile.hasWorld() && !tile.getWorld().isRemote) {
+            ICWireSavedData.get(tile.getWorld()).syncLoaded(tile);
+            tile.wiresLoaded();
+        }
     }
 
     @Override public void connectableInvalidated(@Nonnull ICTileEntityConnectable tile) {

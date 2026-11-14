@@ -1,4 +1,4 @@
-package com.immersiveconvergence.api.wires.connectors;
+package com.immersiveconvergence.api.wires.fittings;
 
 import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.block.BlockContext;
@@ -18,11 +18,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
-public abstract class ICBlockConnector extends ICBlockTileProvider<ICConnectorType> {
+public abstract class ICBlockFitting extends ICBlockTileProvider<ICFittingType> {
     private final Supplier<? extends ICTileEntityConnectable> tile;
 
-    protected ICBlockConnector(BlockContext context, String name, Supplier<? extends ICTileEntityConnectable> tile, Object... extraProperties) {
-        super(context, name, Material.IRON, PropertyEnum.create("type", ICConnectorType.class), ICItemBlockBase.class, properties(extraProperties));
+    protected ICBlockFitting(BlockContext context, String name, Supplier<? extends ICTileEntityConnectable> tile, Object... extraProperties) {
+        super(context, name, Material.IRON, PropertyEnum.create("type", ICFittingType.class), ICItemBlockBase.class, properties(extraProperties));
         this.tile = tile;
         setAllNotNormalBlock();
         lightOpacity = 0;
@@ -40,5 +40,5 @@ public abstract class ICBlockConnector extends ICBlockTileProvider<ICConnectorTy
 
     @Override @Nonnull protected EnumFacing getDefaultFacing() { return EnumFacing.DOWN; }
 
-    @Override @Nonnull public TileEntity createBasicTE(World world, ICConnectorType type) { return tile.get(); }
+    @Override @Nonnull public TileEntity createBasicTE(World world, ICFittingType type) { return tile.get(); }
 }

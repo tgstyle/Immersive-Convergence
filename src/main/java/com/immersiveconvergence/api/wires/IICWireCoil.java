@@ -12,7 +12,7 @@ public interface IICWireCoil {
 
     @Nonnull ICWireType getWireType(@Nonnull ItemStack stack);
 
-    default boolean canConnect(@Nonnull ItemStack stack, @Nonnull IICConnector connector, @Nonnull ICConnectionPoint point) { return connector.accepts(point, getWireType(stack)); }
+    default boolean canConnect(@Nonnull ItemStack stack, @Nonnull IICFitting fitting, @Nonnull ICConnectionPoint point) { return fitting.accepts(point, getWireType(stack)); }
 
     default int maxLength(@Nonnull ItemStack stack) { return getWireType(stack).getMaxLength(); }
 

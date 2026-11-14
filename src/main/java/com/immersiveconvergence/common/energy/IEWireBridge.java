@@ -8,7 +8,7 @@ import com.immersiveconvergence.api.wires.ICWire;
 import com.immersiveconvergence.api.wires.ICWireCategory;
 import com.immersiveconvergence.api.wires.ICWireRole;
 import com.immersiveconvergence.api.wires.ICWireType;
-import com.immersiveconvergence.api.wires.connectors.ICTileEntityConnectable;
+import com.immersiveconvergence.api.wires.fittings.ICTileEntityConnectable;
 import com.immersiveconvergence.common.energy.wires.ICWireCoils;
 
 import blusunrize.immersiveengineering.api.ApiUtils;
@@ -24,8 +24,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -33,6 +31,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public final class IEWireBridge {
     private static final Map<String, ICWireType> LATE = new ConcurrentHashMap<>();
@@ -57,15 +57,8 @@ public final class IEWireBridge {
     public static void mirrorWireTypes() {
         adoptWireTypes();
         for (ICWireType type : ICWireType.values()) {
-            if (!hasIEType(type.getUniqueName())) { WireApi.registerWireType(new ICIEWireType(type)); }
+            if (toIE(type) == null) { WireApi.registerWireType(new ICIEWireType(type)); }
         }
-    }
-
-    private static boolean hasIEType(String name) {
-        for (WireType wire : WireType.getValues()) {
-            if (wire != null && wire.getUniqueName().equals(name)) { return true; }
-        }
-        return false;
     }
 
     @Nullable public static ICWireType of(@Nullable WireType wire) { return wire == null ? null : required(wire); }
@@ -92,7 +85,13 @@ public final class IEWireBridge {
         return ICWireCategory.register(name, wire.isEnergyWire() ? ICWireRole.ENERGY : ICWireRole.STRUCTURE, 0);
     }
 
-    @Nullable public static WireType toIE(@Nullable ICWireType type) { return type == null ? null : WireType.getValue(type.getUniqueName()); }
+    @Nullable public static WireType toIE(@Nullable ICWireType type) {
+        if (type == null) { return null; }
+        for (WireType wire : WireType.getValues()) {
+            if (wire != null && wire.getUniqueName().equals(type.getUniqueName())) { return wire; }
+        }
+        return null;
+    }
 
     public static ICTargetingInfo targeting(@Nonnull TargetingInfo target) { return new ICTargetingInfo(target.side, target.hitX, target.hitY, target.hitZ); }
 

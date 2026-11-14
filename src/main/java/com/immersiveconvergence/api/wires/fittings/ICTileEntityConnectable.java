@@ -1,4 +1,4 @@
-package com.immersiveconvergence.api.wires.connectors;
+package com.immersiveconvergence.api.wires.fittings;
 
 import com.immersiveconvergence.api.block.ICTileEntityBase;
 import com.immersiveconvergence.api.wires.ICConnectionPoint;
@@ -8,19 +8,20 @@ import com.immersiveconvergence.api.wires.ICWire;
 import com.immersiveconvergence.api.wires.ICWireCause;
 import com.immersiveconvergence.api.wires.ICWireType;
 import com.immersiveconvergence.api.wires.ICWires;
-import com.immersiveconvergence.api.wires.IICConnector;
+import com.immersiveconvergence.api.wires.IICFitting;
+import com.immersiveconvergence.api.wires.IICWireNetwork;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-@SuppressWarnings("unused") public abstract class ICTileEntityConnectable extends ICTileEntityBase implements IICConnector {
+@SuppressWarnings("unused") public abstract class ICTileEntityConnectable extends ICTileEntityBase implements IICFitting {
 
     protected ICWireType limitType = null;
 
@@ -40,7 +41,10 @@ import java.util.Set;
 
     @Override public boolean passes(@Nonnull ICConnectionPoint point) { return true; }
 
-    @Override public void onWireAdded(@Nonnull ICConnectionPoint point, @Nonnull ICWire wire) { limitType = wire.getType(); }
+    @Override public void onWireAdded(@Nonnull ICConnectionPoint point, @Nonnull ICWire wire) {
+        limitType = wire.getType();
+        wiresChanged();
+    }
 
     @Override public void onWireRemoved(@Nonnull ICConnectionPoint point, @Nonnull ICWire wire, @Nonnull ICWireCause cause) { forget(wire.getType()); }
 
@@ -65,6 +69,14 @@ import java.util.Set;
     private int connectionCount() { return ICWires.connectionCount(world, pos); }
 
     public void syncConnectionPoints() { ICWires.syncConnectionPoints(this); }
+
+    public void wiresLoaded() {
+        limitType = null;
+        IICWireNetwork network = ICWires.network(world);
+        for (ICConnectionPoint point : points()) {
+            for (ICWire wire : network.wiresAt(point)) { limitType = wire.getType(); }
+        }
+    }
 
     @Override public void onLoad() {
         super.onLoad();

@@ -1,12 +1,12 @@
-package com.immersiveconvergence.mixin.integration.immersiveengineering.api.wires.connectors;
+package com.immersiveconvergence.mixin.integration.immersiveengineering.api.wires.fittings;
 
 import com.immersiveconvergence.ImmersiveConvergence;
 import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.wires.ICConnectionPoint;
 import com.immersiveconvergence.api.wires.ICWire;
 import com.immersiveconvergence.api.wires.ICWireType;
-import com.immersiveconvergence.api.wires.IICEnergyConnector;
-import com.immersiveconvergence.api.wires.connectors.ICTileEntityConnectable;
+import com.immersiveconvergence.api.wires.IICEnergyFitting;
+import com.immersiveconvergence.api.wires.fittings.ICTileEntityConnectable;
 import com.immersiveconvergence.common.energy.ICIEWireType;
 import com.immersiveconvergence.common.energy.IEWireBridge;
 import com.immersiveconvergence.common.energy.IEWireEvents;
@@ -36,19 +36,21 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 @Mixin(value = ICTileEntityConnectable.class, remap = false) public abstract class MixinICTileEntityConnectable extends net.minecraft.tileentity.TileEntity implements IImmersiveConnectable {
 
     @Unique private final List<Pair<Float, Consumer<Float>>> immersiveconvergence$sources = new ArrayList<>();
     @Unique private long immersiveconvergence$lastSourceUpdate = 0;
+    @Unique @Nullable private Connection immersiveconvergence$removing = null;
+    @Unique private long immersiveconvergence$removingTick = Long.MIN_VALUE;
 
     @SuppressWarnings("ConstantConditions") @Unique private ICTileEntityConnectable immersiveconvergence$self() { return (ICTileEntityConnectable)(Object)this; }
 
@@ -58,9 +60,9 @@ import java.util.function.Consumer;
 
     @Unique private ICWire immersiveconvergence$wire(ICConnectionPoint point, BlockPos otherEnd, ICWireType type) { return new ICWire(point, Vec3d.ZERO, new ICConnectionPoint(otherEnd, 0), Vec3d.ZERO, type); }
 
-    @Unique @Nullable private IICEnergyConnector immersiveconvergence$energy() {
+    @Unique @Nullable private IICEnergyFitting immersiveconvergence$energy() {
         Object self = this;
-        return self instanceof IICEnergyConnector ? (IICEnergyConnector)self : null;
+        return self instanceof IICEnergyFitting ? (IICEnergyFitting)self : null;
     }
 
     @Override public boolean canConnect() { return !immersiveconvergence$self().points().isEmpty(); }
@@ -68,12 +70,12 @@ import java.util.function.Consumer;
     @Override public boolean isEnergyOutput() { return immersiveconvergence$energy() != null; }
 
     @Override public int outputEnergy(int amount, boolean simulate, int energyType) {
-        IICEnergyConnector energy = immersiveconvergence$energy();
+        IICEnergyFitting energy = immersiveconvergence$energy();
         return energy == null ? 0 : energy.accept(new ICConnectionPoint(pos, 0), amount, simulate);
     }
 
     @Override public void onEnergyPassthrough(int amount) {
-        IICEnergyConnector energy = immersiveconvergence$energy();
+        IICEnergyFitting energy = immersiveconvergence$energy();
         if (energy != null) { energy.onPassthrough(new ICConnectionPoint(pos, 0), amount); }
     }
 
@@ -105,12 +107,22 @@ import java.util.function.Consumer;
             IEWireGraph.invalidate(world);
             return;
         }
+        if (immersiveconvergence$repeats(connection)) { return; }
         BlockPos otherEnd = immersiveconvergence$otherEnd(connection);
         ICWireType type = IEWireBridge.required(connection.cableType);
         ICConnectionPoint point = immersiveconvergence$pointOf(connection);
         immersiveconvergence$self().onWireRemoved(point, immersiveconvergence$wire(point, otherEnd, type), IEWireEvents.cause());
         ICWireSavedData.ieWireRemoved(world, pos, otherEnd, type);
         IEWireGraph.invalidate(world);
+    }
+
+    @Unique private boolean immersiveconvergence$repeats(Connection connection) {
+        Connection last = immersiveconvergence$removing;
+        long tick = world.getTotalWorldTime();
+        boolean reverse = last != null && immersiveconvergence$removingTick == tick && last.start.equals(connection.end) && last.end.equals(connection.start);
+        immersiveconvergence$removing = reverse ? null : connection;
+        immersiveconvergence$removingTick = tick;
+        return reverse;
     }
 
     @Override @Nonnull public Vec3d getConnectionOffset(@Nonnull Connection con) { return immersiveconvergence$self().offset(immersiveconvergence$pointOf(con), IEWireBridge.required(con.cableType)); }
@@ -216,12 +228,15 @@ import java.util.function.Consumer;
     @Override public void onChunkUnload() {
         super.onChunkUnload();
         if (!ICMods.immersiveEngineering()) { return; }
-        if (!world.isRemote) { ImmersiveNetHandler.INSTANCE.addProxy(new IICProxy(this)); }
+        if (!world.isRemote) {
+            ImmersiveNetHandler.INSTANCE.addProxy(new IICProxy(this));
+            IEWireGraph.invalidate(world);
+        }
     }
 
     @Override public void validate() {
         super.validate();
         if (!ICMods.immersiveEngineering()) { return; }
-        if (!world.isRemote) { ApiUtils.addFutureServerTask(world, () -> ImmersiveNetHandler.INSTANCE.onTEValidated(this)); }
+        if (!world.isRemote) { ApiUtils.addFutureServerTask(world, () -> { ImmersiveNetHandler.INSTANCE.onTEValidated(this); IEWireGraph.invalidate(world); }); }
     }
 }

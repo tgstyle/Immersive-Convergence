@@ -1,7 +1,7 @@
-package com.immersiveconvergence.mixin.integration.immersiveengineering.api.wires.connectors;
+package com.immersiveconvergence.mixin.integration.immersiveengineering.api.wires.fittings;
 
 import com.immersiveconvergence.api.ICMods;
-import com.immersiveconvergence.api.wires.connectors.ICTileEntityConnectorRedstone;
+import com.immersiveconvergence.api.wires.fittings.ICTileEntityFittingRedstone;
 
 import blusunrize.immersiveengineering.api.ApiUtils;
 import blusunrize.immersiveengineering.api.energy.wires.IImmersiveConnectable;
@@ -22,15 +22,15 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import javax.annotation.Nonnull;
 import java.lang.ref.WeakReference;
 import java.util.Set;
+import javax.annotation.Nonnull;
 
-@Mixin(value = ICTileEntityConnectorRedstone.class, remap = false) public abstract class MixinICTileEntityConnectorRedstone extends MixinICTileEntityConnectable implements IRedstoneConnector {
+@Mixin(value = ICTileEntityFittingRedstone.class, remap = false) public abstract class MixinICTileEntityFittingRedstone extends MixinICTileEntityConnectable implements IRedstoneConnector {
 
     @Unique private RedstoneWireNetwork immersiveconvergence$wireNetwork = null;
 
-    @SuppressWarnings("ConstantConditions") @Unique private ICTileEntityConnectorRedstone immersiveconvergence$connector() { return (ICTileEntityConnectorRedstone)(Object)this; }
+    @SuppressWarnings("ConstantConditions") @Unique private ICTileEntityFittingRedstone immersiveconvergence$fitting() { return (ICTileEntityFittingRedstone)(Object)this; }
 
     @Unique private RedstoneWireNetwork immersiveconvergence$network() {
         if (immersiveconvergence$wireNetwork == null) { immersiveconvergence$wireNetwork = new RedstoneWireNetwork().add(this); }
@@ -100,7 +100,7 @@ import java.util.Set;
         RedstoneWireNetwork.updateConnectors(getPos(), getWorld(), immersiveconvergence$network());
     }
 
-    @Override public void onConnectivityUpdate(BlockPos pos, int dimension) { immersiveconvergence$connector().resetNetworkRefresh(); }
+    @Override public void onConnectivityUpdate(BlockPos pos, int dimension) { immersiveconvergence$fitting().resetNetworkRefresh(); }
 
     @SideOnly(Side.CLIENT) @Override @Nonnull public AxisAlignedBB getRenderBoundingBox() {
         int inc = WireType.REDSTONE.getMaxLength();

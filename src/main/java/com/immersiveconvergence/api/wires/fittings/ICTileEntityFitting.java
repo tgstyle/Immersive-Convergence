@@ -1,10 +1,10 @@
-package com.immersiveconvergence.api.wires.connectors;
+package com.immersiveconvergence.api.wires.fittings;
 
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IBlockBounds;
 import com.immersiveconvergence.api.multiblock.ICBlockInterfaces.IDirectionalTile;
 import com.immersiveconvergence.api.wires.ICConnectionPoint;
 import com.immersiveconvergence.api.wires.ICWireType;
-import com.immersiveconvergence.api.wires.IICEnergyConnector;
+import com.immersiveconvergence.api.wires.IICEnergyFitting;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -16,19 +16,21 @@ import net.minecraftforge.energy.CapabilityEnergy;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public abstract class ICTileEntityConnector extends ICTileEntityConnectable implements IICEnergyConnector, IDirectionalTile, IBlockBounds {
+public abstract class ICTileEntityFitting extends ICTileEntityConnectable implements IICEnergyFitting, IDirectionalTile, IBlockBounds {
     private static final String FACING = "facing";
     protected static final float WIDTH_MIN = 0.3125F;
     protected static final float WIDTH_MAX = 0.6875F;
-    private final ICConnectorTier tier;
+    private static final float DEVICE_MIN = 0.1875F;
+    private static final float DEVICE_MAX = 0.8125F;
+    private final ICFittingTier tier;
     private final boolean relay;
-    @Nullable private final ICConnectorEnergy energy;
+    @Nullable private final ICFittingEnergy energy;
     private EnumFacing facing = EnumFacing.DOWN;
 
-    protected ICTileEntityConnector(ICConnectorTier tier, boolean relay) {
+    protected ICTileEntityFitting(ICFittingTier tier, boolean relay) {
         this.tier = tier;
         this.relay = relay;
-        this.energy = relay || tier.getRate() == 0 ? null : new ICConnectorEnergy(this, tier.getRate());
+        this.energy = relay || tier.getRate() == 0 ? null : new ICFittingEnergy(this, tier.getRate());
     }
 
     @Override protected boolean isRelay() { return relay; }
@@ -45,9 +47,9 @@ public abstract class ICTileEntityConnector extends ICTileEntityConnectable impl
 
     @Override public void onPassthrough(@Nonnull ICConnectionPoint point, int amount) {}
 
-    @Override @Nonnull public Vec3d offset(@Nonnull ICConnectionPoint point, @Nonnull ICWireType type) { return offset(tier.inset(relay) - type.getRenderDiameter() / 2); }
+    @Override @Nonnull public Vec3d offset(@Nonnull ICConnectionPoint point, @Nonnull ICWireType type) { return offset(tier.deviceInset() - type.getRenderDiameter() / 2); }
 
-    @Override public float[] getBlockBounds() { return bounds(0.5F + (float)tier.inset(relay), WIDTH_MIN, WIDTH_MAX); }
+    @Override public float[] getBlockBounds() { return bounds(0.5F + (float)tier.deviceInset(), DEVICE_MIN, DEVICE_MAX); }
 
     protected final Vec3d offset(double reach) {
         EnumFacing side = facing.getOpposite();

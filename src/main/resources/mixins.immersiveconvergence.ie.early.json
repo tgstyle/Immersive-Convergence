@@ -5,8 +5,8 @@
   "refmap": "mixins.immersiveconvergence.refmap.json",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "integration.immersiveengineering.api.wires.connectors.MixinICTileEntityConnectable",
-    "integration.immersiveengineering.api.wires.connectors.MixinICTileEntityConnectorRedstone",
+    "integration.immersiveengineering.api.wires.fittings.MixinICTileEntityConnectable",
+    "integration.immersiveengineering.api.wires.fittings.MixinICTileEntityFittingRedstone",
     "integration.immersiveengineering.common.blocks.MixinBlockIETileProvider",
     "integration.immersiveengineering.common.blocks.MixinBlockIEBase",
     "integration.immersiveengineering.common.blocks.metal.MixinBlockConnector"

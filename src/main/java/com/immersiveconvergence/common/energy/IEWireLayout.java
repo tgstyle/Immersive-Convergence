@@ -3,7 +3,7 @@ package com.immersiveconvergence.common.energy;
 import com.immersiveconvergence.api.wires.ICConnectionPoint;
 import com.immersiveconvergence.api.wires.ICInternalLink;
 import com.immersiveconvergence.api.wires.ICWire;
-import com.immersiveconvergence.api.wires.IICConnector;
+import com.immersiveconvergence.api.wires.IICFitting;
 
 import blusunrize.immersiveengineering.api.energy.wires.ImmersiveNetHandler;
 import blusunrize.immersiveengineering.api.energy.wires.ImmersiveNetHandler.Connection;
@@ -11,8 +11,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,6 +20,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 final class IEWireLayout {
     private final Map<ChunkPos, Set<ICWire>> byChunk = new HashMap<>();
@@ -39,8 +39,8 @@ final class IEWireLayout {
             join(wire.getA(), wire.getB());
         }
         for (TileEntity tile : new ArrayList<>(world.loadedTileEntityList)) {
-            if (!(tile instanceof IICConnector) || tile.isInvalid()) { continue; }
-            for (ICInternalLink link : ((IICConnector)tile).links()) { join(link.getFirst(), link.getSecond()); }
+            if (!(tile instanceof IICFitting) || tile.isInvalid()) { continue; }
+            for (ICInternalLink link : ((IICFitting)tile).links()) { join(link.getFirst(), link.getSecond()); }
         }
         label();
     }

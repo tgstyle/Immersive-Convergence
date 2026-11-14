@@ -50,7 +50,7 @@ public final class IEComputerTables {
     public static final ICComputerTable<TileEntityArcFurnace> ARC_FURNACE = IEComputerLocators.metal("ie_arc_furnace", TileEntityArcFurnace.class, true)
             .add("getMaxEnergyStored", te -> te.energyStorage.getMaxEnergyStored())
             .add("getEnergyStored", te -> te.energyStorage.getEnergyStored())
-            .add("isActive", TileEntityMultiblockMetal::shouldRenderAsActive)
+            .add("isActive", TileEntityArcFurnace::shouldRenderAsActive)
             .call("getInputStack", (te, args) -> new Object[] {inputWithProgress(te, te.inventory, ICComputerArgs.checkRange(args, 0, 12, "Input slots are 1-12"))})
             .call("getOutputStack", (te, args) -> new Object[] {te.inventory.get(ICComputerArgs.checkRange(args, 0, 6, "Output slots are 1-6") + 16)})
             .call("getAdditiveStack", (te, args) -> new Object[] {te.inventory.get(ICComputerArgs.checkRange(args, 0, 4, "Additive slots are 1-4") + 12)})
@@ -77,7 +77,7 @@ public final class IEComputerTables {
                 return null;
             });
     public static final ICComputerTable<TileEntityBottlingMachine> BOTTLING_MACHINE = IEComputerLocators.metal("ie_bottling_machine", TileEntityBottlingMachine.class, true)
-            .add("isActive", TileEntityMultiblockMetal::shouldRenderAsActive)
+            .add("isActive", TileEntityBottlingMachine::shouldRenderAsActive)
             .add("getEnergyStored", te -> te.energyStorage.getEnergyStored())
             .add("getMaxEnergyStored", te -> te.energyStorage.getMaxEnergyStored())
             .add("getTank", te -> te.tanks[0].getInfo());
@@ -88,7 +88,7 @@ public final class IEComputerTables {
     public static final ICComputerTable<TileEntityCrusher> CRUSHER = IEComputerLocators.metal("ie_crusher", TileEntityCrusher.class, true)
             .add("getEnergyStored", te -> te.energyStorage.getEnergyStored())
             .add("getMaxEnergyStored", te -> te.energyStorage.getMaxEnergyStored())
-            .add("isActive", TileEntityMultiblockMetal::shouldRenderAsActive)
+            .add("isActive", TileEntityCrusher::shouldRenderAsActive)
             .add("getInputQueue", te -> inputQueue(te.processQueue, recipe -> recipe.output));
     public static final ICComputerTable<TileEntityDieselGenerator> DIESEL_GENERATOR = IEComputerLocators.metal("ie_diesel_generator", TileEntityDieselGenerator.class, true)
             .add("isActive", te -> te.active)
@@ -108,7 +108,7 @@ public final class IEComputerTables {
             .add("getFilledCannisters", te -> te.inventory.get(10))
             .add("getMaxEnergyStored", te -> te.energyStorage.getMaxEnergyStored())
             .add("getEnergyStored", te -> te.energyStorage.getEnergyStored())
-            .add("isActive", TileEntityMultiblockMetal::shouldRenderAsActive);
+            .add("isActive", TileEntityFermenter::shouldRenderAsActive);
     public static final ICComputerTable<TileEntityFloodlight> FLOODLIGHT = IEComputerLocators.only("ie_floodlight", TileEntityFloodlight.class, te -> true)
             .add("getMaxEnergyStored", te -> 80)
             .add("getEnergyStored", te -> te.energyStorage)
@@ -133,7 +133,7 @@ public final class IEComputerTables {
     public static final ICComputerTable<TileEntityMixer> MIXER = IEComputerLocators.metal("ie_mixer", TileEntityMixer.class, true)
             .add("getMaxEnergyStored", te -> te.energyStorage.getMaxEnergyStored())
             .add("getEnergyStored", te -> te.energyStorage.getEnergyStored())
-            .add("isActive", TileEntityMultiblockMetal::shouldRenderAsActive)
+            .add("isActive", TileEntityMixer::shouldRenderAsActive)
             .call("getInputStack", (te, args) -> new Object[] {inputWithProgress(te, te.inventory, ICComputerArgs.checkRange(args, 0, 12, "Input slots are 1-12"))})
             .add("getTank", te -> te.tank.getInfo())
             .add("isValidRecipe", te -> te.processQueue.get(0).recipe != null);
@@ -170,7 +170,7 @@ public final class IEComputerTables {
             .add("getFilledCannisters", te -> te.inventory.get(10))
             .add("getMaxEnergyStored", te -> te.energyStorage.getMaxEnergyStored())
             .add("getEnergyStored", te -> te.energyStorage.getEnergyStored())
-            .add("isActive", TileEntityMultiblockMetal::shouldRenderAsActive);
+            .add("isActive", TileEntitySqueezer::shouldRenderAsActive);
     public static final ICComputerTable<TileEntityTeslaCoil> TESLA_COIL = IEComputerLocators.only("ie_tesla_coil", TileEntityTeslaCoil.class, te -> !te.isDummy())
             .add("isActive", IEComputerTables::teslaCanRun)
             .call("setRSMode", (te, args) -> {

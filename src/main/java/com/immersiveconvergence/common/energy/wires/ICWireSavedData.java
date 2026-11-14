@@ -1,14 +1,14 @@
 package com.immersiveconvergence.common.energy.wires;
 
 import com.immersiveconvergence.api.ICMods;
+import com.immersiveconvergence.api.util.ICLogger;
 import com.immersiveconvergence.api.wires.ICConnectionPoint;
 import com.immersiveconvergence.api.wires.ICWire;
 import com.immersiveconvergence.api.wires.ICWireCategory;
 import com.immersiveconvergence.api.wires.ICWireType;
-import com.immersiveconvergence.api.wires.connectors.ICTileEntityConnectable;
+import com.immersiveconvergence.api.wires.fittings.ICTileEntityConnectable;
 import com.immersiveconvergence.common.energy.IEWireBridge;
 import com.immersiveconvergence.common.energy.IEWireGraph;
-import com.immersiveconvergence.api.util.ICLogger;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagDouble;
@@ -22,8 +22,6 @@ import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.util.Constants;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,6 +30,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 @SuppressWarnings("unused") public class ICWireSavedData extends WorldSavedData {
     public static final String NAME = "immersiveconvergence_wires";

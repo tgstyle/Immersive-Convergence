@@ -8,7 +8,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 
-public interface IICConnector {
+public interface IICFitting {
     @Nonnull Collection<ICConnectionPoint> points();
 
     @Nullable ICConnectionPoint pointAt(@Nonnull ICTargetingInfo target, @Nonnull Vec3i offset);

@@ -2,13 +2,13 @@ package com.immersiveconvergence.common.energy.wires;
 
 import com.immersiveconvergence.api.ICLib;
 import com.immersiveconvergence.api.ICMods;
+import com.immersiveconvergence.api.wires.ICConnectResult;
 import com.immersiveconvergence.api.wires.ICConnectionPoint;
 import com.immersiveconvergence.api.wires.ICTargetingInfo;
 import com.immersiveconvergence.api.wires.ICWire;
 import com.immersiveconvergence.api.wires.ICWireLink;
 import com.immersiveconvergence.api.wires.ICWireType;
-import com.immersiveconvergence.api.wires.ICConnectResult;
-import com.immersiveconvergence.api.wires.IICConnector;
+import com.immersiveconvergence.api.wires.IICFitting;
 import com.immersiveconvergence.api.wires.IICWireCoil;
 import com.immersiveconvergence.common.energy.IEWireBridge;
 
@@ -23,9 +23,9 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
+import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Set;
 
 public final class ICWireCoils {
     private ICWireCoils() {}
@@ -63,10 +63,10 @@ public final class ICWireCoils {
     @Nonnull private static Wiring wiring() { return ICMods.immersiveEngineering() ? IEWireBridge.coilWiring() : ICWiring.INSTANCE; }
 
     private static boolean coilAllows(IICWireCoil coil, ItemStack stack, World world, ICConnectionPoint point, ICTargetingInfo target) {
-        IICConnector connector = ICWireRemoval.connectable(world, point.getPos());
-        if (connector == null) { return true; }
-        ICConnectionPoint targeted = connector.pointAt(target, Vec3i.NULL_VECTOR);
-        return targeted == null || coil.canConnect(stack, connector, targeted);
+        IICFitting fitting = ICWireRemoval.connectable(world, point.getPos());
+        if (fitting == null) { return true; }
+        ICConnectionPoint targeted = fitting.pointAt(target, Vec3i.NULL_VECTOR);
+        return targeted == null || coil.canConnect(stack, fitting, targeted);
     }
 
     @Nullable private static String connect(EntityPlayer player, World world, ItemStack stack, Wiring wiring, IICWireCoil coil, ICWireType type, ICWireLink link, ICConnectionPoint point, ICTargetingInfo target) {

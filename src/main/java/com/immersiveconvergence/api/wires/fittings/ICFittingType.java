@@ -1,12 +1,12 @@
-package com.immersiveconvergence.api.wires.connectors;
+package com.immersiveconvergence.api.wires.fittings;
 
 import com.immersiveconvergence.api.block.ICBlockBase.IBlockEnum;
 
 import javax.annotation.Nonnull;
 import java.util.Locale;
 
-@SuppressWarnings("unused") public enum ICConnectorType implements IBlockEnum {
-    CONNECTOR;
+@SuppressWarnings("unused") public enum ICFittingType implements IBlockEnum {
+    FITTING;
 
     @Override public int getMeta() { return ordinal(); }
 

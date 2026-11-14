@@ -1,7 +1,8 @@
-package com.immersiveconvergence.api.wires.connectors;
+package com.immersiveconvergence.api.wires.fittings;
 
 import com.immersiveconvergence.api.energy.IICFluxAcceptor;
 import com.immersiveconvergence.api.util.ICUtils;
+import com.immersiveconvergence.api.wires.ICConnectionPoint;
 import com.immersiveconvergence.api.wires.ICWires;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -11,22 +12,30 @@ import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 
 import javax.annotation.Nullable;
+import java.util.function.IntConsumer;
+import java.util.function.IntSupplier;
 
-public final class ICConnectorEnergy implements IEnergyStorage {
+public final class ICFittingEnergy implements IEnergyStorage {
     private static final String KEY = "energy";
-    private final ICTileEntityConnector owner;
+    private final ICTileEntityFitting owner;
     private final int rate;
     private int stored;
     private int output;
     private long outputTime = -1;
+    private final IntSupplier available = () -> stored;
+    private final IntConsumer onMoved = this::moved;
+    @Nullable private ICConnectionPoint point;
 
-    public ICConnectorEnergy(ICTileEntityConnector owner, int rate) {
+    public ICFittingEnergy(ICTileEntityFitting owner, int rate) {
         this.owner = owner;
         this.rate = rate;
     }
 
     public void update() {
-        if (stored > 0) { ICWires.energy(owner.getWorld()).offer(owner.points().iterator().next(), null, () -> stored, this::moved); }
+        if (stored <= 0) { return; }
+        ICConnectionPoint at = point;
+        if (at == null || !at.getPos().equals(owner.getPos())) { at = owner.points().iterator().next(); point = at; }
+        ICWires.energy(owner.getWorld()).offer(at, null, available, onMoved);
     }
 
     private boolean canOutput(EnumFacing facing) {

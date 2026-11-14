@@ -8,6 +8,7 @@ import net.minecraftforge.common.config.Config;
     public static Multiblocks multiblocks = new Multiblocks();
     public static Mechanical mechanical = new Mechanical();
     public static Heat heat = new Heat();
+    public static Wires wires = new Wires();
     public static Pipes pipes = new Pipes();
     public static Petroleum petroleum = new Petroleum();
     public static Experimental experimental = new Experimental();
@@ -17,7 +18,7 @@ import net.minecraftforge.common.config.Config;
     public static class Experimental {
         @Config.Comment({
                 "EXPERIMENTAL. Run as though Immersive Engineering were not installed, even when it is.",
-                "Every Immersive Engineering path in Immersive Convergence and Immersive Technology gates off: no wires, no conveyors, no connectors, no IE multiblock templates, and none of the content built out of IE blocks or items. Immersive Petroleum gates off with it, because it cannot work without Immersive Engineering.",
+                "Every Immersive Engineering path in Immersive Convergence and Immersive Technology gates off: no wires, no conveyors, no fittings, no IE multiblock templates, and none of the content built out of IE blocks or items. Immersive Petroleum gates off with it, because it cannot work without Immersive Engineering.",
                 "Recipes that name IE items will have no valid ingredients, multiblocks whose templates are built from IE blocks cannot be assembled, and anything already placed from them will not come back.",
                 "Turning this on means: I know what I am doing, and I can replace the needed recipes, and NBT data myself.",
                 "[Default=false]"})
@@ -34,6 +35,12 @@ import net.minecraftforge.common.config.Config;
 
     public static class Heat {
         @Config.Comment("The maximum heat level any heat device can provide or require [Default=2000.0]") public double maxHeat = 2000.0;
+    }
+
+    public static class Wires {
+        @Config.Comment("The most energy per tick an Immersive Convergence low voltage terminal holds and passes on to the block it faces, in IF [Default=2048]") @Config.RangeInt(min = 1) @Config.RequiresMcRestart public int lvRate = 2048;
+        @Config.Comment("The most energy per tick an Immersive Convergence medium voltage terminal holds and passes on to the block it faces, in IF [Default=8192]") @Config.RangeInt(min = 1) @Config.RequiresMcRestart public int mvRate = 8192;
+        @Config.Comment("The most energy per tick an Immersive Convergence high voltage terminal holds and passes on to the block it faces, in IF [Default=32768]") @Config.RangeInt(min = 1) @Config.RequiresMcRestart public int hvRate = 32768;
     }
 
     public static class Pipes {

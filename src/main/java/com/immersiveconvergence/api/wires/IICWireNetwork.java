@@ -23,7 +23,7 @@ import java.util.Set;
 
     int version(int component);
 
-    @Nullable IICConnector connector(@Nonnull ICConnectionPoint point);
+    @Nullable IICFitting fitting(@Nonnull ICConnectionPoint point);
 
     @Nullable ICConnectionPoint pointFor(@Nonnull BlockPos pos, @Nonnull ICWireType type, @Nonnull ICTargetingInfo target);
 

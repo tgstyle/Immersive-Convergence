@@ -7,9 +7,9 @@ import com.immersiveconvergence.api.wires.ICTargetingInfo;
 import com.immersiveconvergence.api.wires.ICWire;
 import com.immersiveconvergence.api.wires.ICWireCause;
 import com.immersiveconvergence.api.wires.ICWireType;
-import com.immersiveconvergence.api.wires.IICConnector;
+import com.immersiveconvergence.api.wires.IICFitting;
 import com.immersiveconvergence.api.wires.IICWireNetwork;
-import com.immersiveconvergence.api.wires.connectors.ICTileEntityConnectable;
+import com.immersiveconvergence.api.wires.fittings.ICTileEntityConnectable;
 import com.immersiveconvergence.common.energy.wires.ICWireWriter;
 
 import blusunrize.immersiveengineering.api.ApiUtils;
@@ -22,8 +22,6 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public final class IEWireView implements IICWireNetwork {
     private static final Map<World, IEWireLayout> LAYOUTS = Collections.synchronizedMap(new WeakHashMap<>());
@@ -44,9 +44,9 @@ public final class IEWireView implements IICWireNetwork {
         for (Connection connection : connections(pos)) {
             if (connection.cableType != null) { points.add(pointOf(world, pos, connection.start.equals(pos) ? connection.end : connection.start, IEWireBridge.required(connection.cableType))); }
         }
-        IICConnector connector = connectorAt(world, pos);
-        if (connector != null) {
-            for (ICInternalLink link : connector.links()) {
+        IICFitting fitting = fittingAt(world, pos);
+        if (fitting != null) {
+            for (ICInternalLink link : fitting.links()) {
                 points.add(link.getFirst());
                 points.add(link.getSecond());
             }
@@ -78,7 +78,7 @@ public final class IEWireView implements IICWireNetwork {
 
     @Override public int version(int component) { return IEWireGraph.stamp(world); }
 
-    @Nullable @Override public IICConnector connector(@Nonnull ICConnectionPoint point) { return connectorAt(world, point.getPos()); }
+    @Nullable @Override public IICFitting fitting(@Nonnull ICConnectionPoint point) { return fittingAt(world, point.getPos()); }
 
     @Nullable @Override public ICConnectionPoint pointFor(@Nonnull BlockPos pos, @Nonnull ICWireType type, @Nonnull ICTargetingInfo target) { return IEWireBridge.coilWiring().point(world, pos, type, target); }
 
@@ -121,10 +121,10 @@ public final class IEWireView implements IICWireNetwork {
         return connectable == null ? Vec3d.ZERO : connectable.getConnectionOffset(connection);
     }
 
-    @Nullable private static IICConnector connectorAt(World world, BlockPos pos) {
+    @Nullable private static IICFitting fittingAt(World world, BlockPos pos) {
         IImmersiveConnectable connectable = ApiUtils.toIIC(pos, world, false);
-        boolean valid = connectable instanceof IICConnector && !(connectable instanceof TileEntity && ((TileEntity)connectable).isInvalid());
-        return valid ? (IICConnector)connectable : null;
+        boolean valid = connectable instanceof IICFitting && !(connectable instanceof TileEntity && ((TileEntity)connectable).isInvalid());
+        return valid ? (IICFitting)connectable : null;
     }
 
     @Nonnull private Set<Connection> connections(BlockPos pos) {

@@ -6,7 +6,7 @@ import com.immersiveconvergence.api.wires.ICInternalLink;
 import com.immersiveconvergence.api.wires.ICWire;
 import com.immersiveconvergence.api.wires.ICWireCause;
 import com.immersiveconvergence.api.wires.ICWireEvent;
-import com.immersiveconvergence.api.wires.IICConnector;
+import com.immersiveconvergence.api.wires.IICFitting;
 
 import blusunrize.immersiveengineering.api.ApiUtils;
 import blusunrize.immersiveengineering.api.TargetingInfo;
@@ -28,13 +28,13 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public final class IEWireEvents {
     private static final Map<Connection, ICWire> PENDING = new IdentityHashMap<>();
@@ -193,9 +193,9 @@ public final class IEWireEvents {
         return true;
     }
 
-    private static boolean uninvolved(World world, BlockPos first, BlockPos second) { return lacksConnector(world, first) && lacksConnector(world, second); }
+    private static boolean uninvolved(World world, BlockPos first, BlockPos second) { return lacksFitting(world, first) && lacksFitting(world, second); }
 
-    private static boolean lacksConnector(World world, BlockPos pos) { return !(ApiUtils.toIIC(pos, world, false) instanceof IICConnector); }
+    private static boolean lacksFitting(World world, BlockPos pos) { return !(ApiUtils.toIIC(pos, world, false) instanceof IICFitting); }
 
     private static boolean bridge(World world, ICWire wire) {
         IEWireView view = new IEWireView(world);
@@ -219,9 +219,9 @@ public final class IEWireEvents {
             if (near.getA().equals(skipped.getA()) && near.getB().equals(skipped.getB())) { continue; }
             if (reach(near.other(point), queue, seen, other)) { return true; }
         }
-        IICConnector connector = view.connector(point);
-        if (connector == null) { return false; }
-        for (ICInternalLink link : connector.links()) {
+        IICFitting fitting = view.fitting(point);
+        if (fitting == null) { return false; }
+        for (ICInternalLink link : fitting.links()) {
             if (link.getFirst().equals(point) && reach(link.getSecond(), queue, seen, other)) { return true; }
             if (link.getSecond().equals(point) && reach(link.getFirst(), queue, seen, other)) { return true; }
         }

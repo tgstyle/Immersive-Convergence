@@ -1,10 +1,11 @@
 package com.immersiveconvergence.common.energy.wires;
 
 import com.immersiveconvergence.ImmersiveConvergence;
+import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.wires.ICConnectionPoint;
 import com.immersiveconvergence.api.wires.ICWire;
 import com.immersiveconvergence.api.wires.ICWireRole;
-import com.immersiveconvergence.api.wires.ICWireType;
+import com.immersiveconvergence.common.energy.IEWireGraph;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -47,13 +48,14 @@ import java.util.function.IntSupplier;
 
     public static boolean energized(@Nonnull World world, @Nonnull ICWire wire) {
         State state = STATES.get(world.provider.getDimension());
-        Long last = state == null || state.graph == null ? null : state.active.get(new WireKey(state.graph, wire));
-        return last != null && world.getTotalWorldTime() - last <= ACTIVE_TICKS;
+        WireState wireState = state == null || state.graph == null ? null : state.wires.get(normal(state.graph, wire));
+        return wireState != null && wireState.active >= 0 && world.getTotalWorldTime() - wireState.active <= ACTIVE_TICKS;
     }
 
     public static int throughput(@Nonnull World world, @Nonnull ICWire wire) {
         State state = STATES.get(world.provider.getDimension());
-        return state == null || state.graph == null ? 0 : state.flow.getOrDefault(new WireKey(state.graph, wire), 0);
+        WireState wireState = state == null || state.graph == null ? null : state.wires.get(normal(state.graph, wire));
+        return wireState == null ? 0 : wireState.flow;
     }
 
     public static int throughput(@Nonnull World world, @Nonnull ICConnectionPoint point) {
@@ -70,38 +72,64 @@ import java.util.function.IntSupplier;
     }
 
     @SubscribeEvent public static void onWorldUnload(WorldEvent.Unload event) {
-        if (!event.getWorld().isRemote) { STATES.remove(event.getWorld().provider.getDimension()); }
+        if (!event.getWorld().isRemote) {
+            STATES.remove(event.getWorld().provider.getDimension());
+            if (ICMods.immersiveEngineering()) { IEWireGraph.forget(event.getWorld()); }
+        }
     }
 
     private static final class State {
         private final List<Offer> offers = new ArrayList<>();
-        private final Map<ICWire, Integer> used = new HashMap<>();
+        private final Map<ICWire, WireState> wires = new HashMap<>();
+        private final List<WireState> touched = new ArrayList<>();
+        private final List<WireState> flowing = new ArrayList<>();
         private final Map<ICConnectionPoint, Integer> usedPoints = new HashMap<>();
-        private final Map<WireKey, Long> active = new HashMap<>();
-        private final Map<WireKey, Integer> flow = new HashMap<>();
         private final Map<ICConnectionPoint, Integer> pointFlow = new HashMap<>();
         private final Map<ICConnectionPoint, RouteSet> routes = new HashMap<>();
         private final Map<ICConnectionPoint, Map<ICConnectionPoint, Double>> carry = new HashMap<>();
         private ICWireGraph graph;
 
         private void idle() {
-            flow.clear();
+            for (WireState wireState : flowing) { wireState.flow = 0; }
+            flowing.clear();
             pointFlow.clear();
         }
 
         private void run(World world) {
+            long now = world.getTotalWorldTime();
             List<Offer> pending = new ArrayList<>(offers);
             offers.clear();
-            used.clear();
+            for (WireState wireState : touched) {
+                wireState.used = 0;
+                wireState.ready = false;
+            }
+            touched.clear();
             usedPoints.clear();
-            active.values().removeIf(last -> world.getTotalWorldTime() - last > ACTIVE_TICKS);
+            wires.values().removeIf(wireState -> wireState.flow == 0 && (wireState.active < 0 || now - wireState.active > ACTIVE_TICKS));
             pending.sort(Comparator.comparing((Offer offer) -> offer.point));
             graph = ICWireService.graph(world);
             for (Offer offer : pending) { transfer(world, graph, offer); }
+            Map<ICWire, Integer> used = new HashMap<>();
+            for (WireState wireState : touched) {
+                if (wireState.used > 0) { used.put(wireState.wire, wireState.used); }
+            }
             graph.settle(used);
             idle();
-            for (Map.Entry<ICWire, Integer> entry : used.entrySet()) { flow.merge(new WireKey(graph, entry.getKey()), entry.getValue(), Integer::sum); }
+            for (WireState wireState : touched) {
+                if (wireState.used <= 0) { continue; }
+                wireState.flow = wireState.used;
+                flowing.add(wireState);
+            }
             pointFlow.putAll(usedPoints);
+        }
+
+        private WireState ready(ICWire wire) {
+            WireState wireState = wires.computeIfAbsent(wire, WireState::new);
+            if (!wireState.ready) {
+                wireState.ready = true;
+                touched.add(wireState);
+            }
+            return wireState;
         }
 
         private void transfer(World world, ICWireGraph network, Offer offer) {
@@ -110,11 +138,16 @@ import java.util.function.IntSupplier;
             if (budget <= 0) { return; }
             List<Demand> demands = new ArrayList<>();
             long total = 0;
+            long now = world.getTotalWorldTime();
             for (Route route : candidates(network, offer)) {
+                if (route.wake > now) { continue; }
                 ICEnergyNode sink = network.node(world, route.sink);
-                if (sink == null || !sink.isEnergyOutput()) { continue; }
-                int request = sink.outputEnergy(Integer.MAX_VALUE, true);
-                if (request <= 0) { continue; }
+                int request = sink == null || !sink.isEnergyOutput() ? 0 : sink.outputEnergy(Integer.MAX_VALUE, true);
+                if (request <= 0) {
+                    route.sleep(now);
+                    continue;
+                }
+                route.dormant = 0;
                 double held = carryOf(route);
                 int cost = (int)Math.min(residual(route), Math.ceil((request - held) / route.keep));
                 if (cost <= 0) { continue; }
@@ -134,36 +167,27 @@ import java.util.function.IntSupplier;
         }
 
         private List<Route> candidates(ICWireGraph network, Offer offer) {
-            List<Route> all = new ArrayList<>();
-            for (Route route : routesFrom(network, offer.point)) {
-                if (route.sink.getPos().equals(offer.point.getPos())) { continue; }
-                if (offer.firstHop == null || network.sameHop(offer.firstHop, route.firstHop)) { all.add(route); }
-            }
-            all.sort(ROUTE_ORDER);
+            RouteSet set = routesFrom(network, offer.point);
+            if (set == null) { return Collections.emptyList(); }
+            if (offer.firstHop == null) { return set.unique; }
             Map<BlockPos, Route> bySink = new LinkedHashMap<>();
-            for (Route route : all) { bySink.putIfAbsent(route.sink.getPos(), route); }
+            for (Route route : set.ordered) {
+                if (network.sameHop(offer.firstHop, route.firstHop)) { bySink.putIfAbsent(route.sink.getPos(), route); }
+            }
             return new ArrayList<>(bySink.values());
         }
 
-        private List<Route> routesFrom(ICWireGraph network, ICConnectionPoint source) {
+        @Nullable private RouteSet routesFrom(ICWireGraph network, ICConnectionPoint source) {
             Integer component = network.component(source);
             if (component == null) {
                 routes.remove(source);
-                return Collections.emptyList();
+                return null;
             }
             int version = network.version(component);
             RouteSet cached = routes.get(source);
-            if (cached != null && cached.component == component && cached.version == version) {
-                List<Route> intact = new ArrayList<>();
-                for (Route route : cached.routes) {
-                    if (route.wires.stream().allMatch(network::intact)) { intact.add(route); }
-                }
-                if (intact.size() == cached.routes.size()) { return cached.routes; }
-                routes.put(source, new RouteSet(component, version, intact));
-                return intact;
-            }
-            List<Route> found = search(network, source);
-            routes.put(source, new RouteSet(component, version, found));
+            if (cached != null && cached.component == component && cached.version == version) { return cached; }
+            RouteSet found = new RouteSet(source, component, version, search(network, source));
+            routes.put(source, found);
             return found;
         }
 
@@ -177,11 +201,13 @@ import java.util.function.IntSupplier;
             int charged = accepted >= due ? amount : (accepted <= 0 ? 0 : Math.min(amount, (int)Math.ceil((accepted - held) / route.keep)));
             if (charged <= 0) { return 0; }
             setCarry(route, charged * route.keep + held - Math.min(accepted, due));
-            for (ICWire wire : route.wires) {
-                used.merge(wire, charged, Integer::sum);
-                active.put(new WireKey(graph, wire), world.getTotalWorldTime());
+            long now = world.getTotalWorldTime();
+            for (ICWire key : route.keys) {
+                WireState wireState = ready(key);
+                wireState.used += charged;
+                wireState.active = now;
             }
-            for (ICConnectionPoint point : route.points) { usedPoints.merge(graph.flowPoint(point), charged, Integer::sum); }
+            for (ICConnectionPoint point : route.points) { usedPoints.merge(point, charged, Integer::sum); }
             for (int i = 0; i < route.relays.size(); i++) {
                 ICEnergyNode relay = graph.node(world, route.relays.get(i));
                 if (relay != null) { relay.onEnergyPassthrough((int)Math.floor(charged * route.relayKeep.get(i))); }
@@ -192,7 +218,10 @@ import java.util.function.IntSupplier;
 
         private int residual(Route route) {
             int residual = Integer.MAX_VALUE;
-            for (ICWire wire : route.wires) { residual = Math.min(residual, wire.getType().getTransferRate() - used.getOrDefault(wire, 0) - graph.reserved(wire)); }
+            for (int i = 0; i < route.wires.size(); i++) {
+                ICWire wire = route.wires.get(i);
+                residual = Math.min(residual, wire.getType().getTransferRate() - ready(route.keys.get(i)).used - graph.reserved(wire));
+            }
             return Math.max(0, residual);
         }
 
@@ -219,7 +248,7 @@ import java.util.function.IntSupplier;
             Node node = queue.poll();
             if (best.get(node.point) != node || !settled.add(node.point)) { continue; }
             if (node.parent != null) {
-                found.add(route(source, node));
+                found.add(route(network, source, node));
                 if (!network.passes(node.point)) { continue; }
             }
             for (ICWire wire : network.wiresAt(node.point)) {
@@ -240,27 +269,37 @@ import java.util.function.IntSupplier;
         }
     }
 
-    private static Route route(ICConnectionPoint source, Node end) {
+    private static ICWire normal(ICWireGraph network, ICWire wire) {
+        ICConnectionPoint first = network.flowPoint(wire.getA());
+        ICConnectionPoint second = network.flowPoint(wire.getB());
+        return first.equals(wire.getA()) && second.equals(wire.getB()) ? wire : new ICWire(first, wire.getOffsetA(), second, wire.getOffsetB(), wire.getType());
+    }
+
+    private static Route route(ICWireGraph network, ICConnectionPoint source, Node end) {
         List<Node> path = new ArrayList<>();
         path.add(end);
         for (Node node = end.parent; node != null; node = node.parent) { path.add(node); }
         Collections.reverse(path);
         List<ICWire> wires = new ArrayList<>();
+        List<ICWire> keys = new ArrayList<>();
         Map<ICConnectionPoint, Double> relayKeep = new LinkedHashMap<>();
         List<ICConnectionPoint> points = new ArrayList<>();
-        points.add(source);
+        points.add(network.flowPoint(source));
         ICConnectionPoint firstHop = null;
         double keep = 1;
         for (int i = 1; i < path.size(); i++) {
             Node node = path.get(i);
-            if (node.via != null) { wires.add(node.via); }
+            if (node.via != null) {
+                wires.add(node.via);
+                keys.add(normal(network, node.via));
+            }
             keep *= 1 - node.loss;
             BlockPos at = node.point.getPos();
-            points.add(node.point);
+            points.add(network.flowPoint(node.point));
             if (firstHop == null && !at.equals(source.getPos())) { firstHop = node.point; }
             if (i < path.size() - 1 && !at.equals(source.getPos()) && !at.equals(end.point.getPos())) { relayKeep.put(node.point, keep); }
         }
-        return new Route(source, end.point, firstHop, end.cost, end.length, keep, wires, points, new ArrayList<>(relayKeep.keySet()), new ArrayList<>(relayKeep.values()));
+        return new Route(source, end.point, firstHop, end.cost, end.length, keep, wires, keys, points, new ArrayList<>(relayKeep.keySet()), new ArrayList<>(relayKeep.values()));
     }
 
     private static final class Offer {
@@ -303,11 +342,20 @@ import java.util.function.IntSupplier;
         private final double length;
         private final double keep;
         private final List<ICWire> wires;
+        private final List<ICWire> keys;
         private final List<ICConnectionPoint> points;
         private final List<ICConnectionPoint> relays;
         private final List<Double> relayKeep;
+        private int dormant = 0;
+        private long wake = 0;
 
-        private Route(ICConnectionPoint source, ICConnectionPoint sink, ICConnectionPoint firstHop, double cost, double length, double keep, List<ICWire> wires, List<ICConnectionPoint> points, List<ICConnectionPoint> relays, List<Double> relayKeep) {
+        private void sleep(long now) {
+            wake = now + Math.min(ACTIVE_TICKS, 2L << dormant);
+            dormant = Math.min(dormant + 1, 4);
+        }
+
+        private Route(ICConnectionPoint source, ICConnectionPoint sink, ICConnectionPoint firstHop, double cost, double length, double keep, List<ICWire> wires, List<ICWire> keys, List<ICConnectionPoint> points, List<ICConnectionPoint> relays, List<Double> relayKeep) {
+            this.keys = keys;
             this.source = source;
             this.sink = sink;
             this.firstHop = firstHop;
@@ -321,39 +369,32 @@ import java.util.function.IntSupplier;
         }
     }
 
-    private static final class WireKey {
-        private final ICConnectionPoint low;
-        private final ICConnectionPoint high;
-        private final ICWireType type;
+    private static final class WireState {
+        private final ICWire wire;
+        private int used = 0;
+        private int flow = 0;
+        private long active = -1;
+        private boolean ready = false;
 
-        private WireKey(ICWireGraph graph, ICWire wire) {
-            ICConnectionPoint a = graph.flowPoint(wire.getA());
-            ICConnectionPoint b = graph.flowPoint(wire.getB());
-            boolean ordered = a.compareTo(b) <= 0;
-            this.low = ordered ? a : b;
-            this.high = ordered ? b : a;
-            this.type = wire.getType();
-        }
-
-        @Override public boolean equals(Object other) {
-            if (this == other) { return true; }
-            if (!(other instanceof WireKey)) { return false; }
-            WireKey key = (WireKey)other;
-            return low.equals(key.low) && high.equals(key.high) && type.equals(key.type);
-        }
-
-        @Override public int hashCode() { return 31 * (31 * low.hashCode() + high.hashCode()) + type.hashCode(); }
+        private WireState(ICWire wire) { this.wire = wire; }
     }
 
     private static final class RouteSet {
         private final int component;
         private final int version;
-        private final List<Route> routes;
+        private final List<Route> ordered = new ArrayList<>();
+        private final List<Route> unique;
 
-        private RouteSet(int component, int version, List<Route> routes) {
+        private RouteSet(ICConnectionPoint source, int component, int version, List<Route> routes) {
             this.component = component;
             this.version = version;
-            this.routes = routes;
+            for (Route route : routes) {
+                if (!route.sink.getPos().equals(source.getPos())) { ordered.add(route); }
+            }
+            ordered.sort(ROUTE_ORDER);
+            Map<BlockPos, Route> bySink = new LinkedHashMap<>();
+            for (Route route : ordered) { bySink.putIfAbsent(route.sink.getPos(), route); }
+            this.unique = new ArrayList<>(bySink.values());
         }
     }
 

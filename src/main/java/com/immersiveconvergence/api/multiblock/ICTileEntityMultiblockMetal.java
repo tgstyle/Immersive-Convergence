@@ -38,12 +38,14 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.ItemHandlerHelper;
+import org.apache.commons.lang3.ArrayUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.ToIntFunction;
 
 @SuppressWarnings("unused") public abstract class ICTileEntityMultiblockMetal<T extends ICTileEntityMultiblockMetal<T, R>, R extends ICRecipe> extends ICTileEntityMultiblockPart<T> implements IICInventory, IICInternalFluxHandler, IHammerInteraction, IMirrorAble, IProcessTile, IComparatorOverride {
     public final ICFluxStorageAdvanced energyStorage;
@@ -53,6 +55,12 @@ import java.util.List;
     @Nullable public Boolean computerOn = null;
     public List<MultiblockProcess<R>> processQueue = new ArrayList<>();
     public int tickedProcesses = 0;
+    private int[] energyPosCache;
+    private int[] redstonePosCache;
+    private T redstoneTileCache;
+    private static final int[] EMPTY_POS = new int[0];
+    ICFluxWrapper wrapper = new ICFluxWrapper(this, null);
+    protected boolean lastRenderedActive;
 
     public ICTileEntityMultiblockMetal(ICMultiblock multiblockInstance, int[] structureDimensions, int energyCapacity, boolean redstoneControl) {
         super(structureDimensions);
@@ -120,16 +128,7 @@ import java.util.List;
 
     public abstract int[] getEnergyPos();
 
-    public boolean isEnergyPos() {
-        for (int i : cachedEnergyPos()) {
-            if (pos == i) { return true; }
-        }
-        return false;
-    }
-
-    private int[] energyPosCache;
-    private int[] redstonePosCache;
-    private T redstoneTileCache;
+    public boolean isEnergyPos() { return ArrayUtils.contains(cachedEnergyPos(), pos); }
 
     private int[] cachedEnergyPos() {
         if (energyPosCache == null) { energyPosCache = getEnergyPos(); }
@@ -140,8 +139,6 @@ import java.util.List;
         if (redstonePosCache == null) { redstonePosCache = getRedstonePos(); }
         return redstonePosCache == null ? EMPTY_POS : redstonePosCache;
     }
-
-    private static final int[] EMPTY_POS = new int[0];
 
     @Override public void invalidateStructureCaches() {
         super.invalidateStructureCaches();
@@ -157,8 +154,6 @@ import java.util.List;
     }
 
     @Override @Nonnull public ICSideConfig getSideConfig(@Nullable EnumFacing facing) { return this.formed && this.isEnergyPos() ? ICSideConfig.INPUT : ICSideConfig.NONE; }
-
-    ICFluxWrapper wrapper = new ICFluxWrapper(this, null);
 
     @Override public ICFluxWrapper getCapabilityWrapper(EnumFacing facing) {
         if (this.formed && this.isEnergyPos()) { return wrapper; }
@@ -183,13 +178,7 @@ import java.util.List;
 
     public abstract int[] getRedstonePos();
 
-    public boolean isRedstonePos() {
-        if (!hasRedstoneControl) { return false; }
-        for (int i : cachedRedstonePos()) {
-            if (pos == i) { return true; }
-        }
-        return false;
-    }
+    public boolean isRedstonePos() { return hasRedstoneControl && ArrayUtils.contains(cachedRedstonePos(), pos); }
 
     @Override public int getComparatorInputOverride() {
         if (!this.isRedstonePos()) { return 0; }
@@ -251,8 +240,6 @@ import java.util.List;
 
     @Override @Nonnull public PropertyBoolInverted getBoolProperty(@Nonnull Class<? extends IUsesBooleanProperty> inf) { return ICProperties.BOOLEANS[0]; }
 
-    protected boolean lastRenderedActive;
-
     protected void tickPendingNotifications() {}
 
     private boolean syncParity() { return ((world.getTotalWorldTime() + getPos().getX() + getPos().getZ()) & 1L) == 0L; }
@@ -281,7 +268,6 @@ import java.util.List;
         int max = getMaxProcessPerTick();
         int i = 0;
         Iterator<MultiblockProcess<R>> processIterator = processQueue.iterator();
-        tickedProcesses = 0;
         while (processIterator.hasNext() && i++ < max) {
             MultiblockProcess<R> process = processIterator.next();
             if (process.canProcess(this)) {
@@ -315,21 +301,16 @@ import java.util.List;
     public abstract float getMinProcessDistance(MultiblockProcess<R> process);
 
     public boolean addProcessToQueue(MultiblockProcess<R> process, boolean simulate) {
-        if (getProcessQueueMaxLength() < 0 || processQueue.size() < getProcessQueueMaxLength()) {
-            float dist = 1;
-            MultiblockProcess<R> p = null;
-            if (!processQueue.isEmpty()) {
-                p = processQueue.get(processQueue.size() - 1);
-                if (p != null) { dist = p.processTick / (float)p.maxTicks; }
-            }
-            if (p != null && dist < getMinProcessDistance(p)) { return false; }
-            if (!simulate) {
-                processQueue.add(process);
-                assignDisplaySlot(process);
-            }
-            return true;
+        if (getProcessQueueMaxLength() >= 0 && processQueue.size() >= getProcessQueueMaxLength()) { return false; }
+        if (!processQueue.isEmpty()) {
+            MultiblockProcess<R> p = processQueue.get(processQueue.size() - 1);
+            if (p != null && p.processTick / (float)p.maxTicks < getMinProcessDistance(p)) { return false; }
         }
-        return false;
+        if (!simulate) {
+            processQueue.add(process);
+            assignDisplaySlot(process);
+        }
+        return true;
     }
 
     private int displaySlotCount() {
@@ -357,21 +338,20 @@ import java.util.List;
     @Override public int[] getCurrentProcessesStep() {
         T master = master();
         if (master != this && master != null) { return master.getCurrentProcessesStep(); }
-        if (processQueue.isEmpty()) { return EMPTY_POS; }
-        int[] ia = new int[displaySlotCount()];
-        for (MultiblockProcess<R> process : processQueue) {
-            if (process.displaySlot >= 0 && process.displaySlot < ia.length) { ia[process.displaySlot] = process.processTick; }
-        }
-        return ia;
+        return processValues(p -> p.processTick);
     }
 
     @Override public int[] getCurrentProcessesMax() {
         T master = master();
         if (master != this && master != null) { return master.getCurrentProcessesMax(); }
+        return processValues(p -> p.maxTicks);
+    }
+
+    private int[] processValues(ToIntFunction<MultiblockProcess<R>> value) {
         if (processQueue.isEmpty()) { return EMPTY_POS; }
         int[] ia = new int[displaySlotCount()];
         for (MultiblockProcess<R> process : processQueue) {
-            if (process.displaySlot >= 0 && process.displaySlot < ia.length) { ia[process.displaySlot] = process.maxTicks; }
+            if (process.displaySlot >= 0 && process.displaySlot < ia.length) { ia[process.displaySlot] = value.applyAsInt(process); }
         }
         return ia;
     }
@@ -397,51 +377,43 @@ import java.util.List;
 
         protected List<FluidStack> getRecipeFluidOutputs(ICTileEntityMultiblockMetal<?, ?> multiblock) { return recipe.getActualFluidOutputs(multiblock); }
 
-        public boolean canProcess(ICTileEntityMultiblockMetal<?, ?> multiblock) {
-            if (multiblock.energyStorage.extractEnergy(energyPerTick, true) == energyPerTick) {
-                List<ItemStack> outputs = recipe.getItemOutputs();
-                if (outputs != null && !outputs.isEmpty()) {
-                    int[] outputSlots = multiblock.getOutputSlots();
-                    for (ItemStack output : outputs) {
-                        if (!output.isEmpty()) {
-                            boolean canOutput = false;
-                            if (outputSlots == null) { canOutput = true; }
-                            else {
-                                for (int iOutputSlot : outputSlots) {
-                                    ItemStack s = multiblock.getInventory().get(iOutputSlot);
-                                    if (s.isEmpty() || (ItemHandlerHelper.canItemStacksStack(s, output) && s.getCount() + output.getCount() <= multiblock.getSlotLimit(iOutputSlot))) {
-                                        canOutput = true;
-                                        break;
-                                    }
-                                }
-                            }
-                            if (!canOutput) { return false; }
-                        }
-                    }
-                }
-                List<FluidStack> fluidOutputs = recipe.getFluidOutputs();
-                if (fluidOutputs != null && !fluidOutputs.isEmpty()) {
-                    IFluidTank[] tanks = multiblock.getInternalTanks();
-                    int[] outputTanks = multiblock.getOutputTanks();
-                    for (FluidStack output : fluidOutputs) {
-                        if (output != null && output.amount > 0) {
-                            boolean canOutput = false;
-                            if (tanks == null || outputTanks == null) { canOutput = true; }
-                            else {
-                                for (int iOutputTank : outputTanks) {
-                                    if (iOutputTank >= 0 && iOutputTank < tanks.length && tanks[iOutputTank] != null && tanks[iOutputTank].fill(output, false) == output.amount) {
-                                        canOutput = true;
-                                        break;
-                                    }
-                                }
-                            }
-                            if (!canOutput) { return false; }
-                        }
-                    }
-                }
-                return multiblock.additionalCanProcessCheckGeneric(this);
+        private static int outputSlot(ICTileEntityMultiblockMetal<?, ?> multiblock, int[] outputSlots, ItemStack output) {
+            for (int iOutputSlot : outputSlots) {
+                ItemStack s = multiblock.getInventory().get(iOutputSlot);
+                if (s.isEmpty() || (ItemHandlerHelper.canItemStacksStack(s, output) && s.getCount() + output.getCount() <= multiblock.getSlotLimit(iOutputSlot))) { return iOutputSlot; }
             }
-            return false;
+            return -1;
+        }
+
+        private static int outputTank(IFluidTank[] tanks, int[] outputTanks, FluidStack output) {
+            for (int iOutputTank : outputTanks) {
+                if (iOutputTank >= 0 && iOutputTank < tanks.length && tanks[iOutputTank] != null && tanks[iOutputTank].fill(output, false) == output.amount) { return iOutputTank; }
+            }
+            return -1;
+        }
+
+        public boolean canProcess(ICTileEntityMultiblockMetal<?, ?> multiblock) {
+            if (multiblock.energyStorage.extractEnergy(energyPerTick, true) != energyPerTick) { return false; }
+            List<ItemStack> outputs = recipe.getItemOutputs();
+            if (outputs != null && !outputs.isEmpty()) {
+                int[] outputSlots = multiblock.getOutputSlots();
+                if (outputSlots != null) {
+                    for (ItemStack output : outputs) {
+                        if (!output.isEmpty() && outputSlot(multiblock, outputSlots, output) < 0) { return false; }
+                    }
+                }
+            }
+            List<FluidStack> fluidOutputs = recipe.getFluidOutputs();
+            if (fluidOutputs != null && !fluidOutputs.isEmpty()) {
+                IFluidTank[] tanks = multiblock.getInternalTanks();
+                int[] outputTanks = multiblock.getOutputTanks();
+                if (tanks != null && outputTanks != null) {
+                    for (FluidStack output : fluidOutputs) {
+                        if (output != null && output.amount > 0 && outputTank(tanks, outputTanks, output) < 0) { return false; }
+                    }
+                }
+            }
+            return multiblock.additionalCanProcessCheckGeneric(this);
         }
 
         public void doProcessTick(ICTileEntityMultiblockMetal<?, ?> multiblock) {
@@ -469,20 +441,15 @@ import java.util.List;
             List<ItemStack> outputs = getRecipeItemOutputs(multiblock);
             if (outputs != null && !outputs.isEmpty()) {
                 int[] outputSlots = multiblock.getOutputSlots();
+                NonNullList<ItemStack> inv = multiblock.getInventory();
                 for (ItemStack output : outputs) {
                     if (!output.isEmpty()) {
-                        if (outputSlots == null || multiblock.getInventory() == null) { multiblock.doProcessOutput(output.copy()); }
+                        if (outputSlots == null || inv == null) { multiblock.doProcessOutput(output.copy()); }
                         else {
-                            for (int iOutputSlot : outputSlots) {
-                                ItemStack s = multiblock.getInventory().get(iOutputSlot);
-                                if (s.isEmpty()) {
-                                    multiblock.getInventory().set(iOutputSlot, output.copy());
-                                    break;
-                                }
-                                else if (ItemHandlerHelper.canItemStacksStack(s, output) && s.getCount() + output.getCount() <= multiblock.getSlotLimit(iOutputSlot)) {
-                                    multiblock.getInventory().get(iOutputSlot).grow(output.getCount());
-                                    break;
-                                }
+                            int slot = outputSlot(multiblock, outputSlots, output);
+                            if (slot >= 0) {
+                                if (inv.get(slot).isEmpty()) { inv.set(slot, output.copy()); }
+                                else { inv.get(slot).grow(output.getCount()); }
                             }
                         }
                     }
@@ -496,12 +463,8 @@ import java.util.List;
                     if (output != null && output.amount > 0) {
                         if (tanks == null || outputTanks == null) { multiblock.doProcessFluidOutput(output); }
                         else {
-                            for (int iOutputTank : outputTanks) {
-                                if (iOutputTank >= 0 && iOutputTank < tanks.length && tanks[iOutputTank] != null && tanks[iOutputTank].fill(output, false) == output.amount) {
-                                    tanks[iOutputTank].fill(output, true);
-                                    break;
-                                }
-                            }
+                            int tank = outputTank(tanks, outputTanks, output);
+                            if (tank >= 0) { tanks[tank].fill(output, true); }
                         }
                     }
                 }
