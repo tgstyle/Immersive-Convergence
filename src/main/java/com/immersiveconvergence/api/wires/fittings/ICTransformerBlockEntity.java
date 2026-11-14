@@ -1,4 +1,4 @@
-package com.immersiveconvergence.api.wires.connectors;
+package com.immersiveconvergence.api.wires.fittings;
 
 import com.immersiveconvergence.api.block.FacingLimitation;
 import com.immersiveconvergence.api.block.ModProperties;
@@ -30,56 +30,49 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-@SuppressWarnings("unused") public abstract class ICTransformerBlockEntity extends ICConnectorBlockEntity {
-    private static final String TOP = "top";
-    private static final String MIDDLE = "middle";
+@SuppressWarnings("unused") public abstract class ICTransformerBlockEntity extends ICFittingBlockEntity {
+    private static final String CELL = "cell";
     private static final String[] CABLE = {"lowCable", "highCable"};
     private static final String[] END = {"lowEnd", "highEnd"};
     private static final String MORE = "morePorts";
     private static final String MORE_CABLE = "cable";
     private static final String MORE_END = "end";
-    private static final double SPREAD = 0.3125;
-    private final ICConnectorTier[] tiers;
+    private final ICTransformerLayout layout;
+    private final ICFittingTier[] tiers;
     private final ICWireType[] cables;
     private final BlockPos[] ends;
-    private boolean top;
-    private boolean middle;
+    private int cell;
 
-    protected ICTransformerBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, ICConnectorTier first, ICConnectorTier second, ICConnectorTier... more) {
+    protected ICTransformerBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, ICTransformerLayout layout, ICFittingTier first, ICFittingTier second, ICFittingTier... more) {
         super(type, pos, state, first, true);
-        tiers = new ICConnectorTier[2 + more.length];
+        tiers = new ICFittingTier[2 + more.length];
         tiers[0] = first;
         tiers[1] = second;
         System.arraycopy(more, 0, tiers, 2, more.length);
+        if (layout.terminalCount() != tiers.length) { throw new IllegalArgumentException("A transformer needs one terminal per port: " + layout.terminalCount() + " terminals, " + tiers.length + " ports"); }
+        this.layout = layout;
         cables = new ICWireType[tiers.length];
         ends = new BlockPos[tiers.length];
     }
 
-    public final boolean isTop() { return top; }
+    public final boolean isTop() { return cell == layout.cells() - 1; }
 
-    public final boolean isUpperCell() { return top || middle; }
+    public final boolean isUpperCell() { return cell > 0; }
 
-    @Override public BlockPos getModelOffset(BlockState state, Vec3i size) {
-        if (top) { return new BlockPos(0, 2, 0); }
-        return middle ? new BlockPos(0, 1, 0) : BlockPos.ZERO;
-    }
+    public final int cell() { return cell; }
 
-    public final void raise(@Nonnull Direction facing) {
-        top = true;
+    @Override public BlockPos getModelOffset(BlockState state, Vec3i size) { return new BlockPos(0, cell, 0); }
+
+    public final void assemble(@Nonnull Direction facing, int index) {
+        cell = index;
         setFacing(facing);
-        syncConnectionPoints();
+        if (isTop()) { syncConnectionPoints(); }
         wiresChanged();
-    }
-
-    public final void fill(@Nonnull Direction facing) {
-        middle = true;
-        setFacing(facing);
-        setChanged();
     }
 
     public final int portCount() { return tiers.length; }
 
-    @Nonnull public final ICConnectorTier portTier(int port) { return tiers[port]; }
+    @Nonnull public final ICFittingTier portTier(int port) { return tiers[port]; }
 
     @Nullable public final ICWireType portCable(int port) {
         if (savedState()) { return cables[port]; }
@@ -106,21 +99,21 @@ import java.util.Set;
     private boolean isPort(int port) { return port >= 0 && port < tiers.length; }
 
     @Override @Nonnull public Collection<ICConnectionPoint> points() {
-        if (!top) { return List.of(); }
+        if (!isTop()) { return List.of(); }
         List<ICConnectionPoint> points = new ArrayList<>(tiers.length);
         for (int port = 0; port < tiers.length; port++) { points.add(point(port)); }
         return points;
     }
 
-    @Override @Nullable public ICConnectionPoint pointAt(@Nonnull ICTargetingInfo target, @Nonnull Vec3i offset) { return top ? point(index(target)) : null; }
+    @Override @Nullable public ICConnectionPoint pointAt(@Nonnull ICTargetingInfo target, @Nonnull Vec3i offset) { return isTop() ? point(index(target)) : null; }
 
     @Override public boolean accepts(@Nonnull ICConnectionPoint point, @Nonnull ICWireType type) {
         int port = point.index();
-        return top && isPort(port) && tiers[port].getCategory() == type.getCategory() && portCable(port) == null;
+        return isTop() && isPort(port) && tiers[port].getCategory() == type.getCategory() && portCable(port) == null;
     }
 
     @Override @Nonnull public Collection<ICInternalLink> links() {
-        if (!top) { return Set.of(); }
+        if (!isTop()) { return Set.of(); }
         List<ICInternalLink> links = new ArrayList<>(tiers.length - 1);
         for (int port = 1; port < tiers.length; port++) { links.add(new ICInternalLink(point(port - 1), point(port), 0)); }
         return links;
@@ -131,7 +124,7 @@ import java.util.Set;
         if (!isPort(port)) { return; }
         cables[port] = wire.getType();
         ends[port] = wire.other(point).position();
-        setChanged();
+        wiresChanged();
     }
 
     @Override public void onWireRemoved(@Nonnull ICConnectionPoint point, @Nonnull ICWire wire, @Nonnull ICWireCause cause) {
@@ -143,12 +136,19 @@ import java.util.Set;
         wiresChanged();
     }
 
+    @Override public void wiresLoaded() {
+        for (int port = 0; port < tiers.length; port++) {
+            cables[port] = portCable(port);
+            ends[port] = portEnd(port);
+        }
+    }
+
     @Override @Nonnull public Vec3 offset(@Nonnull ICConnectionPoint point, @Nonnull ICWireType type) {
         int port = point.index();
         Direction right = right();
-        double side = SPREAD - 2 * SPREAD * port / (tiers.length - 1);
-        double height = 0.5 + tiers[port].inset(false) - type.getRenderDiameter() / 2;
-        return new Vec3(0.5 + right.getStepX() * side, height, 0.5 + right.getStepZ() * side);
+        double along = layout.along(port);
+        double height = layout.height(port) - cell - type.getRenderDiameter() / 2;
+        return new Vec3(0.5 + right.getStepX() * along, height, 0.5 + right.getStepZ() * along);
     }
 
     private int index(ICTargetingInfo target) {
@@ -158,16 +158,8 @@ import java.util.Set;
     }
 
     @Override @Nonnull public VoxelShape getBlockBounds(@Nullable CollisionContext context) {
-        if (!top) { return Shapes.block(); }
-        float height = 0.5F + (float)highestInset();
-        if (right().getAxis() == Direction.Axis.X) { return Shapes.box(0, 0, WIDTH_MIN, 1, height, WIDTH_MAX); }
-        return Shapes.box(WIDTH_MIN, 0, 0, WIDTH_MAX, height, 1);
-    }
-
-    private double highestInset() {
-        double highest = 0;
-        for (ICConnectorTier tier : tiers) { highest = Math.max(highest, tier.inset(false)); }
-        return highest;
+        if (right().getAxis() == Direction.Axis.X) { return Shapes.box(0, 0, layout.depthMin(), 1, 1, layout.depthMax()); }
+        return Shapes.box(layout.depthMin(), 0, 0, layout.depthMax(), 1, 1);
     }
 
     @Override public FacingLimitation getFacingLimitation() { return FacingLimitation.HORIZONTAL_PREFER_SIDE; }
@@ -186,8 +178,7 @@ import java.util.Set;
 
     @Override public void readCustomNBT(@Nonnull CompoundTag nbt, boolean descPacket) {
         super.readCustomNBT(nbt, descPacket);
-        top = nbt.getBoolean(TOP);
-        middle = nbt.getBoolean(MIDDLE);
+        cell = nbt.getInt(CELL);
         for (int port = 0; port < CABLE.length; port++) {
             cables[port] = ICWireType.readFromNBT(nbt, CABLE[port]);
             ends[port] = nbt.contains(END[port]) ? BlockPos.of(nbt.getLong(END[port])) : null;
@@ -202,8 +193,7 @@ import java.util.Set;
 
     @Override public void writeCustomNBT(@Nonnull CompoundTag nbt, boolean descPacket) {
         super.writeCustomNBT(nbt, descPacket);
-        nbt.putBoolean(TOP, top);
-        nbt.putBoolean(MIDDLE, middle);
+        nbt.putInt(CELL, cell);
         for (int port = 0; port < CABLE.length; port++) {
             if (cables[port] != null) { cables[port].writeToNBT(nbt, CABLE[port]); }
             if (ends[port] != null) { nbt.putLong(END[port], ends[port].asLong()); }

@@ -7,7 +7,7 @@ import com.immersiveconvergence.api.wires.ICTargetingInfo;
 import com.immersiveconvergence.api.wires.ICWire;
 import com.immersiveconvergence.api.wires.ICWireLink;
 import com.immersiveconvergence.api.wires.ICWireType;
-import com.immersiveconvergence.api.wires.IICConnector;
+import com.immersiveconvergence.api.wires.IICFitting;
 import com.immersiveconvergence.api.wires.IICWireCoil;
 import com.immersiveconvergence.core.integration.immersiveengineering.IEWireBridge;
 import com.immersiveconvergence.core.lib.ICLib;
@@ -65,10 +65,10 @@ public final class ICWireCoils {
     }
 
     private static boolean coilAllows(IICWireCoil coil, ItemStack stack, ServerLevel level, ICConnectionPoint point, ICTargetingInfo target) {
-        IICConnector connector = ICWireRemoval.connectable(level, point.position());
-        if (connector == null) { return true; }
-        ICConnectionPoint targeted = connector.pointAt(target, Vec3i.ZERO);
-        return targeted == null || coil.canConnect(stack, connector, targeted);
+        IICFitting fitting = ICWireRemoval.connectable(level, point.position());
+        if (fitting == null) { return true; }
+        ICConnectionPoint targeted = fitting.pointAt(target, Vec3i.ZERO);
+        return targeted == null || coil.canConnect(stack, fitting, targeted);
     }
 
     @Nullable private static String connect(ServerPlayer player, ServerLevel level, ItemStack stack, Wiring wiring, IICWireCoil coil, ICWireType type, ICWireLink link, ICConnectionPoint point) {

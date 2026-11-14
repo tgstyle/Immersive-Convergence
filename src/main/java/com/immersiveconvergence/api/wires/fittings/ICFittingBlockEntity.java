@@ -1,13 +1,15 @@
-package com.immersiveconvergence.api.wires.connectors;
+package com.immersiveconvergence.api.wires.fittings;
 
 import com.immersiveconvergence.api.block.BlockInterfaces;
 import com.immersiveconvergence.api.block.FacingLimitation;
 import com.immersiveconvergence.api.multiblock.util.CapabilityUtils;
 import com.immersiveconvergence.api.wires.ICConnectionPoint;
 import com.immersiveconvergence.api.wires.ICWireType;
-import com.immersiveconvergence.api.wires.IICEnergyConnector;
+import com.immersiveconvergence.api.wires.IICEnergyFitting;
 import com.immersiveconvergence.api.wires.IICEnergySource;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -25,24 +27,25 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.IEnergyStorage;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
-public abstract class ICConnectorBlockEntity extends ICConnectableBlockEntity implements IICEnergyConnector, IICEnergySource, BlockInterfaces.IDirectionalBE, BlockInterfaces.IBlockBounds {
+public abstract class ICFittingBlockEntity extends ICConnectableBlockEntity implements IICEnergyFitting, IICEnergySource, BlockInterfaces.IDirectionalBE, BlockInterfaces.IBlockBounds {
     private static final String FACING = "facing";
     protected static final float WIDTH_MIN = 0.3125F;
     protected static final float WIDTH_MAX = 0.6875F;
-    private final ICConnectorTier tier;
+    private static final float DEVICE_MIN = 0.1875F;
+    private static final float DEVICE_MAX = 0.8125F;
+    private final ICFittingTier tier;
     private final boolean relay;
-    @Nullable private final ICConnectorEnergy energy;
+    @Nullable private final ICFittingEnergy energy;
     private final LazyOptional<IEnergyStorage> energyCapability;
-    private Direction facing = Direction.DOWN;
+    private Direction facing;
 
-    protected ICConnectorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, ICConnectorTier tier, boolean relay) {
+    protected ICFittingBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, ICFittingTier tier, boolean relay) {
         super(type, pos, state);
         this.tier = tier;
         this.relay = relay;
-        this.energy = relay || tier.getRate() == 0 ? null : new ICConnectorEnergy(this, tier.getRate());
+        this.facing = state.hasProperty(BlockStateProperties.FACING) ? state.getValue(BlockStateProperties.FACING) : Direction.DOWN;
+        this.energy = relay || tier.getRate() == 0 ? null : new ICFittingEnergy(this, tier.getRate());
         this.energyCapability = energy == null ? LazyOptional.empty() : CapabilityUtils.constantOptional(energy);
     }
 
@@ -68,9 +71,9 @@ public abstract class ICConnectorBlockEntity extends ICConnectableBlockEntity im
 
     @Override public void extracted(int amount) { if (energy != null) { energy.moved(amount); } }
 
-    @Override @Nonnull public Vec3 offset(@Nonnull ICConnectionPoint point, @Nonnull ICWireType type) { return offset(tier.inset(relay) - type.getRenderDiameter() / 2); }
+    @Override @Nonnull public Vec3 offset(@Nonnull ICConnectionPoint point, @Nonnull ICWireType type) { return offset(tier.deviceInset() - type.getRenderDiameter() / 2); }
 
-    @Override @Nonnull public VoxelShape getBlockBounds(@Nullable CollisionContext context) { return bounds(0.5F + (float)tier.inset(relay), WIDTH_MIN, WIDTH_MAX); }
+    @Override @Nonnull public VoxelShape getBlockBounds(@Nullable CollisionContext context) { return bounds(0.5F + (float)tier.deviceInset(), DEVICE_MIN, DEVICE_MAX); }
 
     protected final Vec3 offset(double reach) {
         Direction side = facing.getOpposite();

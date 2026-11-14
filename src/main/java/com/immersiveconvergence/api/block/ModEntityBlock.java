@@ -2,12 +2,14 @@ package com.immersiveconvergence.api.block;
 
 import com.immersiveconvergence.api.multiblock.util.DirectionUtils;
 import com.immersiveconvergence.api.wires.ICWires;
-import com.immersiveconvergence.api.wires.IICConnector;
+import com.immersiveconvergence.api.wires.IICFitting;
 
+import com.google.common.collect.ImmutableList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.BiFunction;
-import com.google.common.collect.ImmutableList;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -35,8 +37,6 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.network.NetworkHooks;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 @SuppressWarnings("deprecation") public class ModEntityBlock<T extends BlockEntity> extends BaseBlock implements EntityBlock {
     private final BiFunction<BlockPos, BlockState, T> makeEntity;
@@ -180,7 +180,7 @@ import javax.annotation.Nullable;
             boolean b = ((BlockInterfaces.IPlayerInteraction) tile).interact(side, player, hand, heldItem, hitX, hitY, hitZ);
             if (b) { return InteractionResult.SUCCESS; }
         }
-        if (tile instanceof IICConnector && ICWires.isWireCoil(heldItem)) { return InteractionResult.PASS; }
+        if (tile instanceof IICFitting && ICWires.isWireCoil(heldItem)) { return InteractionResult.PASS; }
         if (tile instanceof MenuProvider menuProvider && hand == InteractionHand.MAIN_HAND && !player.isShiftKeyDown()) {
             if (player instanceof ServerPlayer serverPlayer) {
                 if (menuProvider instanceof IMasterMenuProvider<?> interaction) {

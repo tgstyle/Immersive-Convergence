@@ -6,7 +6,7 @@ import com.immersiveconvergence.api.wires.ICTargetingInfo;
 import com.immersiveconvergence.api.wires.ICWire;
 import com.immersiveconvergence.api.wires.ICWireCause;
 import com.immersiveconvergence.api.wires.ICWireType;
-import com.immersiveconvergence.api.wires.IICConnector;
+import com.immersiveconvergence.api.wires.IICFitting;
 import com.immersiveconvergence.api.wires.IICWireNetwork;
 import com.immersiveconvergence.common.energy.wires.ICWireNetwork;
 import com.immersiveconvergence.common.energy.wires.ICWireWriter;
@@ -20,8 +20,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public final class IEWireView implements IICWireNetwork {
     private static final Map<GlobalWireNetwork, Components> COMPONENTS = Collections.synchronizedMap(new WeakHashMap<>());
@@ -91,7 +91,7 @@ public final class IEWireView implements IICWireNetwork {
         return local == null ? 0 : local.getVersion();
     }
 
-    @Nullable @Override public IICConnector connector(@Nonnull ICConnectionPoint point) { return ICWireNetwork.connectorAt(level, point.position()); }
+    @Nullable @Override public IICFitting fitting(@Nonnull ICConnectionPoint point) { return ICWireNetwork.fittingAt(level, point.position()); }
 
     @Nullable @Override public ICConnectionPoint pointFor(@Nonnull BlockPos pos, @Nonnull ICWireType type, @Nonnull ICTargetingInfo target) { return IEWireBridge.coilWiring().point(level, pos, type, target); }
 

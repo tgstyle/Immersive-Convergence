@@ -1,7 +1,7 @@
-package com.immersiveconvergence.mixin.integration.immersiveengineering.api.wires.connectors;
+package com.immersiveconvergence.mixin.integration.immersiveengineering.api.wires.fittings;
 
 import com.immersiveconvergence.api.wires.ICConnectionPoint;
-import com.immersiveconvergence.api.wires.connectors.ICConnectorRedstoneBlockEntity;
+import com.immersiveconvergence.api.wires.fittings.ICFittingRedstoneBlockEntity;
 import com.immersiveconvergence.core.integration.immersiveengineering.IEWireBridge;
 
 import blusunrize.immersiveengineering.api.wires.ConnectionPoint;
@@ -14,7 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(value = ICConnectorRedstoneBlockEntity.class, remap = false) public abstract class ICConnectorRedstoneBlockEntityMixin implements IRedstoneConnector {
+@Mixin(value = ICFittingRedstoneBlockEntity.class, remap = false) public abstract class ICFittingRedstoneBlockEntityMixin implements IRedstoneConnector {
     @Shadow(remap = false) public abstract void redstoneInput(byte[] signals, @Nonnull ICConnectionPoint cp);
     @Shadow(remap = false) public abstract void redstoneChanged();
 

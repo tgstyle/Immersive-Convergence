@@ -56,7 +56,7 @@ import java.util.function.UnaryOperator;
         ICTargetingInfo worldSecondTarget = targetToWorld.apply(secondTarget);
         ICConnectionPoint firstPoint = network.pointFor(toWorld.apply(first), wire, worldFirstTarget);
         ICConnectionPoint secondPoint = network.pointFor(toWorld.apply(second), wire, worldSecondTarget);
-        if (firstPoint == null || secondPoint == null) { return ICConnectResult.NO_CONNECTOR; }
+        if (firstPoint == null || secondPoint == null) { return ICConnectResult.NO_FITTING; }
         return network.connect(firstPoint, worldFirstTarget, secondPoint, worldSecondTarget, wire);
     }
 

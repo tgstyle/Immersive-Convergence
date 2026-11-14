@@ -1,4 +1,4 @@
-package com.immersiveconvergence.api.wires.connectors;
+package com.immersiveconvergence.api.wires.fittings;
 
 import com.immersiveconvergence.api.wires.ICWireType;
 import com.immersiveconvergence.api.wires.ICWires;

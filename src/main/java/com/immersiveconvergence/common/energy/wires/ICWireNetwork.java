@@ -8,8 +8,8 @@ import com.immersiveconvergence.api.wires.ICWire;
 import com.immersiveconvergence.api.wires.ICWireCause;
 import com.immersiveconvergence.api.wires.ICWireEvent;
 import com.immersiveconvergence.api.wires.ICWireType;
-import com.immersiveconvergence.api.wires.IICConnector;
-import com.immersiveconvergence.api.wires.IICEnergyConnector;
+import com.immersiveconvergence.api.wires.IICEnergyFitting;
+import com.immersiveconvergence.api.wires.IICFitting;
 import com.immersiveconvergence.api.wires.IICWireNetwork;
 import com.immersiveconvergence.core.network.ICWireDeltaPacket;
 
@@ -21,8 +21,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,6 +31,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 @SuppressWarnings("unused") public final class ICWireNetwork implements IICWireNetwork {
     private final Map<ICConnectionPoint, Map<ICConnectionPoint, ICWire>> byPoint = new HashMap<>();
@@ -43,6 +43,7 @@ import java.util.Set;
     private final Map<Integer, Set<ICConnectionPoint>> components = new HashMap<>();
     private final Map<Integer, Integer> versions = new HashMap<>();
     private final Set<ICConnectionPoint> closed = new HashSet<>();
+    private final ICNodeMemo nodes = new ICNodeMemo();
     private final Runnable onChange;
     private int nextComponent = 0;
     private boolean loading;
@@ -55,7 +56,7 @@ import java.util.Set;
     public boolean addWire(@Nonnull ICWire wire) {
         if (wire.getA().equals(wire.getB()) || wire(wire.getA(), wire.getB()) != null) { return false; }
         boolean joined = insert(wire);
-        onChange.run();
+        changed();
         if (joined) { post(new ICWireEvent.ComponentChanged(level, wire.getA(), wire.getB(), true)); }
         return true;
     }
@@ -68,7 +69,7 @@ import java.util.Set;
     private boolean disconnect(ICWire wire) {
         unlink(wire);
         boolean split = separate(wire.getA(), wire.getB());
-        onChange.run();
+        changed();
         return split;
     }
 
@@ -77,7 +78,7 @@ import java.util.Set;
         if (!changed) { return; }
         Integer component = componentOf.get(point);
         if (component != null) { bump(component); }
-        onChange.run();
+        changed();
     }
 
     public boolean passes(@Nonnull ICConnectionPoint point) { return !closed.contains(point); }
@@ -95,7 +96,7 @@ import java.util.Set;
             links.get(second).put(first, loss);
             bump(componentOf.get(first));
         }
-        onChange.run();
+        changed();
     }
 
     public void removeLink(@Nonnull ICConnectionPoint first, @Nonnull ICConnectionPoint second) {
@@ -104,7 +105,7 @@ import java.util.Set;
         dropEnd(links, second, first);
         boolean bothWired = byPoint.containsKey(first) && byPoint.containsKey(second);
         if (separate(first, second) && bothWired) { post(new ICWireEvent.ComponentChanged(level, first, second, false)); }
-        onChange.run();
+        changed();
     }
 
     @Nullable public Double getLinkLoss(@Nonnull ICConnectionPoint first, @Nonnull ICConnectionPoint second) {
@@ -137,7 +138,7 @@ import java.util.Set;
         for (ICConnectionPoint point : new ArrayList<>(pointsAt(pos))) {
             for (ICConnectionPoint linked : new ArrayList<>(getLinks(point).keySet())) { removeLink(point, linked); }
         }
-        if (closed.removeIf(point -> point.position().equals(pos))) { onChange.run(); }
+        if (closed.removeIf(point -> point.position().equals(pos))) { changed(); }
     }
 
     @Nullable @Override public ICWire wire(@Nonnull ICConnectionPoint first, @Nonnull ICConnectionPoint second) {
@@ -179,7 +180,7 @@ import java.util.Set;
 
     @Override public int version(int component) { return versions.getOrDefault(component, 0); }
 
-    @Nullable @Override public IICConnector connector(@Nonnull ICConnectionPoint point) { return connectorAt(level, point.position()); }
+    @Nullable @Override public IICFitting fitting(@Nonnull ICConnectionPoint point) { return fittingAt(level, point.position()); }
 
     @Nullable @Override public ICConnectionPoint pointFor(@Nonnull BlockPos pos, @Nonnull ICWireType type, @Nonnull ICTargetingInfo target) { return ICWiring.INSTANCE.point(level, pos, type, target); }
 
@@ -206,22 +207,31 @@ import java.util.Set;
         forgetBlock(pos);
     }
 
-    @Nullable public static IICConnector connectorAt(@Nullable Level level, @Nonnull BlockPos pos) {
+    @Nullable public static IICFitting fittingAt(@Nullable Level level, @Nonnull BlockPos pos) {
         if (level == null || !level.isLoaded(pos)) { return null; }
         BlockEntity entity = level.getBlockEntity(pos);
-        return entity instanceof IICConnector connector && !entity.isRemoved() ? connector : null;
+        return entity instanceof IICFitting fitting && !entity.isRemoved() ? fitting : null;
     }
 
-    @Nullable public ICEnergyNode node(@Nonnull Level level, @Nonnull ICConnectionPoint point) {
+    private void changed() {
+        nodes.clear();
+        onChange.run();
+    }
+
+    @Nullable public ICEnergyNode node(@Nonnull Level level, @Nonnull ICConnectionPoint point) { return nodes.resolve(level, point, ICWireNetwork::load); }
+
+    @Nullable private static ICEnergyNode load(Level level, ICConnectionPoint point) {
         if (!level.isLoaded(point.position())) { return null; }
         BlockEntity entity = level.getBlockEntity(point.position());
-        if (!(entity instanceof IICEnergyConnector connector) || entity.isRemoved()) { return null; }
+        if (!(entity instanceof IICEnergyFitting fitting) || entity.isRemoved()) { return null; }
         return new ICEnergyNode() {
-            @Override public boolean isEnergyOutput() { return connector.demand(point) > 0; }
+            @Override public boolean valid() { return !entity.isRemoved(); }
 
-            @Override public int outputEnergy(int amount, boolean simulate) { return connector.accept(point, amount, simulate); }
+            @Override public boolean isEnergyOutput() { return fitting.demand(point) > 0; }
 
-            @Override public void onEnergyPassthrough(int amount) { connector.onPassthrough(point, amount); }
+            @Override public int outputEnergy(int amount, boolean simulate) { return fitting.accept(point, amount, simulate); }
+
+            @Override public void onEnergyPassthrough(int amount) { fitting.onPassthrough(point, amount); }
         };
     }
 
@@ -233,6 +243,7 @@ import java.util.Set;
 
     void load(int next, @Nonnull Map<ICConnectionPoint, Integer> savedComponents, @Nonnull Collection<ICConnectionPoint> savedClosed,
               @Nonnull Collection<ICWire> wires, @Nonnull Map<ICConnectionPoint[], Double> savedLinks, @Nonnull Collection<ICConnectionPoint[]> dropped) {
+        nodes.clear();
         nextComponent = next;
         for (Map.Entry<ICConnectionPoint, Integer> entry : savedComponents.entrySet()) {
             int component = entry.getValue();
@@ -270,8 +281,8 @@ import java.util.Set;
     }
 
     private void release(ServerLevel server, ICConnectionPoint end, ICWire wire, ICWireCause cause) {
-        IICConnector connector = server.isLoaded(end.position()) ? ICWireRemoval.connectable(server, end.position()) : null;
-        if (connector != null) { connector.onWireRemoved(end, wire, cause); }
+        IICFitting fitting = server.isLoaded(end.position()) ? ICWireRemoval.connectable(server, end.position()) : null;
+        if (fitting != null) { fitting.onWireRemoved(end, wire, cause); }
     }
 
     private void post(ICWireEvent event) {

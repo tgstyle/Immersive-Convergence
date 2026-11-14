@@ -1,4 +1,4 @@
-package com.immersiveconvergence.api.wires.connectors;
+package com.immersiveconvergence.api.wires.fittings;
 
 import com.immersiveconvergence.api.wires.ICConnectionPoint;
 import com.immersiveconvergence.api.wires.ICWires;
@@ -8,8 +8,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import javax.annotation.Nonnull;
 
-@SuppressWarnings("unused") public abstract class ICConnectorRedstoneBlockEntity extends ICConnectableBlockEntity {
-    public ICConnectorRedstoneBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) { super(type, pos, state); }
+@SuppressWarnings("unused") public abstract class ICFittingRedstoneBlockEntity extends ICConnectableBlockEntity {
+    public ICFittingRedstoneBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) { super(type, pos, state); }
 
     @Override public boolean canConnect() { return true; }
 

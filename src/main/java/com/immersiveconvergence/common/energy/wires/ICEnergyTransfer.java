@@ -49,13 +49,14 @@ import java.util.function.IntSupplier;
 
     public static boolean energized(@Nonnull Level level, @Nonnull ICWire wire) {
         State state = STATES.get(level.dimension());
-        Long last = state == null ? null : state.active.get(wire);
-        return last != null && level.getGameTime() - last <= ACTIVE_TICKS;
+        WireState wireState = state == null ? null : state.wires.get(wire);
+        return wireState != null && wireState.active >= 0 && level.getGameTime() - wireState.active <= ACTIVE_TICKS;
     }
 
     public static int throughput(@Nonnull Level level, @Nonnull ICWire wire) {
         State state = STATES.get(level.dimension());
-        return state == null ? 0 : state.flow.getOrDefault(wire, 0);
+        WireState wireState = state == null ? null : state.wires.get(wire);
+        return wireState == null ? 0 : wireState.flow;
     }
 
     public static int throughput(@Nonnull Level level, @Nonnull ICConnectionPoint point) {
@@ -77,31 +78,50 @@ import java.util.function.IntSupplier;
 
     private static final class State {
         private final List<Offer> offers = new ArrayList<>();
-        private final Map<ICWire, Integer> used = new HashMap<>();
+        private final Map<ICWire, WireState> wires = new HashMap<>();
+        private final List<WireState> touched = new ArrayList<>();
+        private final List<WireState> flowing = new ArrayList<>();
         private final Map<ICConnectionPoint, Integer> usedPoints = new HashMap<>();
-        private final Map<ICWire, Long> active = new HashMap<>();
-        private final Map<ICWire, Integer> flow = new HashMap<>();
         private final Map<ICConnectionPoint, Integer> pointFlow = new HashMap<>();
         private final Map<ICConnectionPoint, RouteSet> routes = new HashMap<>();
         private final Map<ICConnectionPoint, Map<ICConnectionPoint, Double>> carry = new HashMap<>();
 
         private void idle() {
-            flow.clear();
+            for (WireState wireState : flowing) { wireState.flow = 0; }
+            flowing.clear();
             pointFlow.clear();
         }
 
         private void run(ServerLevel level) {
+            long now = level.getGameTime();
             List<Offer> pending = new ArrayList<>(offers);
             offers.clear();
-            used.clear();
+            for (WireState wireState : touched) {
+                wireState.used = 0;
+                wireState.ready = false;
+            }
+            touched.clear();
             usedPoints.clear();
-            active.values().removeIf(last -> level.getGameTime() - last > ACTIVE_TICKS);
+            wires.values().removeIf(wireState -> wireState.flow == 0 && (wireState.active < 0 || now - wireState.active > ACTIVE_TICKS));
             pending.sort(Comparator.comparing(Offer::point));
             ICWireNetwork network = ICWireSavedData.get(level);
             for (Offer offer : pending) { transfer(level, network, offer); }
             idle();
-            flow.putAll(used);
+            for (WireState wireState : touched) {
+                if (wireState.used <= 0) { continue; }
+                wireState.flow = wireState.used;
+                flowing.add(wireState);
+            }
             pointFlow.putAll(usedPoints);
+        }
+
+        private WireState ready(ICWire wire) {
+            WireState wireState = wires.computeIfAbsent(wire, key -> new WireState());
+            if (!wireState.ready) {
+                wireState.ready = true;
+                touched.add(wireState);
+            }
+            return wireState;
         }
 
         private void transfer(ServerLevel level, ICWireNetwork network, Offer offer) {
@@ -110,11 +130,16 @@ import java.util.function.IntSupplier;
             if (budget <= 0) { return; }
             List<Demand> demands = new ArrayList<>();
             long total = 0;
+            long now = level.getGameTime();
             for (Route route : candidates(network, offer)) {
+                if (route.wake > now) { continue; }
                 ICEnergyNode sink = network.node(level, route.sink);
-                if (sink == null || !sink.isEnergyOutput()) { continue; }
-                int request = sink.outputEnergy(Integer.MAX_VALUE, true);
-                if (request <= 0) { continue; }
+                int request = sink == null || !sink.isEnergyOutput() ? 0 : sink.outputEnergy(Integer.MAX_VALUE, true);
+                if (request <= 0) {
+                    route.sleep(now);
+                    continue;
+                }
+                route.dormant = 0;
                 double held = carryOf(route);
                 int cost = (int)Math.min(residual(route), Math.ceil((request - held) / route.keep));
                 if (cost <= 0) { continue; }
@@ -134,28 +159,27 @@ import java.util.function.IntSupplier;
         }
 
         private List<Route> candidates(ICWireNetwork network, Offer offer) {
-            List<Route> all = new ArrayList<>();
-            for (Route route : routesFrom(network, offer.point)) {
-                if (route.sink.position().equals(offer.point.position())) { continue; }
-                if (offer.firstHop == null || offer.firstHop.equals(route.firstHop)) { all.add(route); }
-            }
-            all.sort(ROUTE_ORDER);
+            RouteSet set = routesFrom(network, offer.point);
+            if (set == null) { return Collections.emptyList(); }
+            if (offer.firstHop == null) { return set.unique; }
             Map<BlockPos, Route> bySink = new LinkedHashMap<>();
-            for (Route route : all) { bySink.putIfAbsent(route.sink.position(), route); }
+            for (Route route : set.ordered) {
+                if (offer.firstHop.equals(route.firstHop)) { bySink.putIfAbsent(route.sink.position(), route); }
+            }
             return new ArrayList<>(bySink.values());
         }
 
-        private List<Route> routesFrom(ICWireNetwork network, ICConnectionPoint source) {
+        @Nullable private RouteSet routesFrom(ICWireNetwork network, ICConnectionPoint source) {
             Integer component = network.component(source);
             if (component == null) {
                 routes.remove(source);
-                return Collections.emptyList();
+                return null;
             }
             int version = network.version(component);
             RouteSet cached = routes.get(source);
-            if (cached != null && cached.component == component && cached.version == version) { return cached.routes; }
-            List<Route> found = search(network, source);
-            routes.put(source, new RouteSet(component, version, found));
+            if (cached != null && cached.component == component && cached.version == version) { return cached; }
+            RouteSet found = new RouteSet(source, component, version, search(network, source));
+            routes.put(source, found);
             return found;
         }
 
@@ -169,9 +193,11 @@ import java.util.function.IntSupplier;
             int charged = accepted >= due ? amount : (accepted <= 0 ? 0 : Math.min(amount, (int)Math.ceil((accepted - held) / route.keep)));
             if (charged <= 0) { return 0; }
             setCarry(route, charged * route.keep + held - Math.min(accepted, due));
+            long now = level.getGameTime();
             for (ICWire wire : route.wires) {
-                used.merge(wire, charged, Integer::sum);
-                active.put(wire, level.getGameTime());
+                WireState wireState = ready(wire);
+                wireState.used += charged;
+                wireState.active = now;
             }
             for (ICConnectionPoint point : route.points) { usedPoints.merge(point, charged, Integer::sum); }
             for (int i = 0; i < route.relays.size(); i++) {
@@ -184,7 +210,7 @@ import java.util.function.IntSupplier;
 
         private int residual(Route route) {
             int residual = Integer.MAX_VALUE;
-            for (ICWire wire : route.wires) { residual = Math.min(residual, wire.getType().getTransferRate() - used.getOrDefault(wire, 0)); }
+            for (ICWire wire : route.wires) { residual = Math.min(residual, wire.getType().getTransferRate() - ready(wire).used); }
             return Math.max(0, residual);
         }
 
@@ -261,9 +287,64 @@ import java.util.function.IntSupplier;
 
     private record Node(ICConnectionPoint point, @Nullable Node parent, @Nullable ICWire via, double loss, double cost, double length) {}
 
-    private record Route(ICConnectionPoint source, ICConnectionPoint sink, ICConnectionPoint firstHop, double cost, double length, double keep, List<ICWire> wires, List<ICConnectionPoint> points, List<ICConnectionPoint> relays, List<Double> relayKeep) {}
+    private static final class Route {
+        private final ICConnectionPoint source;
+        private final ICConnectionPoint sink;
+        private final ICConnectionPoint firstHop;
+        private final double cost;
+        private final double length;
+        private final double keep;
+        private final List<ICWire> wires;
+        private final List<ICConnectionPoint> points;
+        private final List<ICConnectionPoint> relays;
+        private final List<Double> relayKeep;
+        private int dormant = 0;
+        private long wake = 0;
 
-    private record RouteSet(int component, int version, List<Route> routes) {}
+        private Route(ICConnectionPoint source, ICConnectionPoint sink, ICConnectionPoint firstHop, double cost, double length, double keep, List<ICWire> wires, List<ICConnectionPoint> points, List<ICConnectionPoint> relays, List<Double> relayKeep) {
+            this.source = source;
+            this.sink = sink;
+            this.firstHop = firstHop;
+            this.cost = cost;
+            this.length = length;
+            this.keep = keep;
+            this.wires = wires;
+            this.points = points;
+            this.relays = relays;
+            this.relayKeep = relayKeep;
+        }
+
+        private void sleep(long now) {
+            wake = now + Math.min(ACTIVE_TICKS, 2L << dormant);
+            dormant = Math.min(dormant + 1, 4);
+        }
+    }
+
+    private static final class WireState {
+        private int used = 0;
+        private int flow = 0;
+        private long active = -1;
+        private boolean ready = false;
+    }
+
+    private static final class RouteSet {
+        private final int component;
+        private final int version;
+        private final List<Route> ordered = new ArrayList<>();
+        private final List<Route> unique;
+
+        private RouteSet(ICConnectionPoint source, int component, int version, List<Route> routes) {
+            this.component = component;
+            this.version = version;
+            for (Route route : routes) {
+                if (!route.sink.position().equals(source.position())) { ordered.add(route); }
+            }
+            ordered.sort(ROUTE_ORDER);
+            Map<BlockPos, Route> bySink = new LinkedHashMap<>();
+            for (Route route : ordered) { bySink.putIfAbsent(route.sink.position(), route); }
+            this.unique = new ArrayList<>(bySink.values());
+        }
+    }
 
     private static final class Demand {
         private final Route route;

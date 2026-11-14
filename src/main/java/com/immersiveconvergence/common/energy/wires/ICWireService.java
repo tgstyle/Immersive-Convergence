@@ -7,7 +7,7 @@ import com.immersiveconvergence.api.wires.IICEnergyNetwork;
 import com.immersiveconvergence.api.wires.IICWireCollision;
 import com.immersiveconvergence.api.wires.IICWireNetwork;
 import com.immersiveconvergence.api.wires.IICWireService;
-import com.immersiveconvergence.api.wires.connectors.ICConnectableBlockEntity;
+import com.immersiveconvergence.api.wires.fittings.ICConnectableBlockEntity;
 import com.immersiveconvergence.common.util.ICWireCollision;
 import com.immersiveconvergence.core.integration.immersiveengineering.IEWireBridge;
 import com.immersiveconvergence.core.integration.immersiveengineering.IEWireView;
@@ -64,7 +64,10 @@ public final class ICWireService implements IICWireService {
 
     @Override public void connectableLoaded(@Nonnull ICConnectableBlockEntity tile) {
         ICWireNetwork network = nativeNetwork(tile.getLevel());
-        if (network != null) { network.syncLoaded(tile::syncConnectionPoints); }
+        if (network != null) {
+            network.syncLoaded(tile::syncConnectionPoints);
+            tile.wiresLoaded();
+        }
     }
 
     @Override public void connectableInvalidated(@Nonnull ICConnectableBlockEntity tile) {

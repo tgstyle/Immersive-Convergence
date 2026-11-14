@@ -4,7 +4,7 @@ import com.immersiveconvergence.api.wires.ICConnectionPoint;
 import com.immersiveconvergence.api.wires.ICTargetingInfo;
 import com.immersiveconvergence.api.wires.ICWire;
 import com.immersiveconvergence.api.wires.ICWireType;
-import com.immersiveconvergence.api.wires.connectors.ICConnectableBlockEntity;
+import com.immersiveconvergence.api.wires.fittings.ICConnectableBlockEntity;
 import com.immersiveconvergence.core.network.ICWireDeltaPacket;
 
 import net.minecraft.core.BlockPos;
@@ -12,10 +12,10 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 enum ICWiring implements ICWireCoils.Wiring {
     INSTANCE;
