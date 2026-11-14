@@ -2,7 +2,7 @@ package com.immersiveconvergence.api.wires;
 
 import javax.annotation.Nonnull;
 
-public interface IICEnergySource extends IICConnector {
+public interface IICEnergySource extends IICFitting {
     boolean isSource(@Nonnull ICConnectionPoint point);
 
     default boolean isSink(@Nonnull ICConnectionPoint point) { return !isSource(point); }

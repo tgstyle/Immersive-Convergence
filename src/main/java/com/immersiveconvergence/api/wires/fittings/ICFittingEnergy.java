@@ -1,6 +1,7 @@
-package com.immersiveconvergence.api.wires.connectors;
+package com.immersiveconvergence.api.wires.fittings;
 
 import com.immersiveconvergence.api.multiblock.util.SafeChunkUtils;
+import com.immersiveconvergence.api.wires.ICConnectionPoint;
 import com.immersiveconvergence.api.wires.ICWires;
 
 import net.minecraft.core.BlockPos;
@@ -11,22 +12,30 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import javax.annotation.Nullable;
+import java.util.function.IntConsumer;
+import java.util.function.IntSupplier;
 
-public final class ICConnectorEnergy implements IEnergyStorage {
+public final class ICFittingEnergy implements IEnergyStorage {
     private static final String KEY = "energy";
-    private final ICConnectorBlockEntity owner;
+    private final ICFittingBlockEntity owner;
     private final int rate;
     private int stored;
     private int output;
     private long outputTime = -1;
+    private final IntSupplier available = () -> stored;
+    private final IntConsumer onMoved = this::moved;
+    @Nullable private ICConnectionPoint point;
 
-    public ICConnectorEnergy(ICConnectorBlockEntity owner, int rate) {
+    public ICFittingEnergy(ICFittingBlockEntity owner, int rate) {
         this.owner = owner;
         this.rate = rate;
     }
 
     public void update() {
-        if (stored > 0) { ICWires.energy(owner.getLevelNonnull()).offer(owner.points().iterator().next(), null, () -> stored, this::moved); }
+        if (stored <= 0) { return; }
+        ICConnectionPoint at = point;
+        if (at == null || !at.position().equals(owner.getBlockPos())) { at = owner.points().iterator().next(); point = at; }
+        ICWires.energy(owner.getLevelNonnull()).offer(at, null, available, onMoved);
     }
 
     public boolean canOutput(Direction facing) {

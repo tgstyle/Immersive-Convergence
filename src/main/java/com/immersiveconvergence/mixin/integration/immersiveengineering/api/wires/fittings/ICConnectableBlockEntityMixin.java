@@ -1,13 +1,13 @@
-package com.immersiveconvergence.mixin.integration.immersiveengineering.api.wires.connectors;
+package com.immersiveconvergence.mixin.integration.immersiveengineering.api.wires.fittings;
 
 import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.block.BaseBlockEntity;
 import com.immersiveconvergence.api.wires.ICConnectionPoint;
 import com.immersiveconvergence.api.wires.ICWire;
 import com.immersiveconvergence.api.wires.ICWireType;
-import com.immersiveconvergence.api.wires.IICEnergyConnector;
+import com.immersiveconvergence.api.wires.IICEnergyFitting;
 import com.immersiveconvergence.api.wires.IICEnergySource;
-import com.immersiveconvergence.api.wires.connectors.ICConnectableBlockEntity;
+import com.immersiveconvergence.api.wires.fittings.ICConnectableBlockEntity;
 import com.immersiveconvergence.common.energy.wires.ICWireSavedData;
 import com.immersiveconvergence.core.integration.immersiveengineering.IEWireBridge;
 import com.immersiveconvergence.core.integration.immersiveengineering.IEWireEvents;
@@ -38,7 +38,7 @@ import org.spongepowered.asm.mixin.Unique;
 
     @SuppressWarnings("ConstantConditions") @Unique private ICConnectableBlockEntity immersiveconvergence$self() { return (ICConnectableBlockEntity) (Object) this; }
 
-    @Unique @Nullable private IICEnergyConnector immersiveconvergence$energy() { return (Object) this instanceof IICEnergyConnector energy ? energy : null; }
+    @Unique @Nullable private IICEnergyFitting immersiveconvergence$energy() { return (Object) this instanceof IICEnergyFitting energy ? energy : null; }
 
     @Unique @Nullable private IICEnergySource immersiveconvergence$source() { return (Object) this instanceof IICEnergySource source ? source : null; }
 
@@ -102,13 +102,13 @@ import org.spongepowered.asm.mixin.Unique;
     }
 
     @Override public int getRequestedEnergy() {
-        IICEnergyConnector energy = immersiveconvergence$energy();
+        IICEnergyFitting energy = immersiveconvergence$energy();
         ICConnectionPoint point = immersiveconvergence$sinkPoint();
         return energy != null && point != null ? energy.demand(point) : 0;
     }
 
     @Override public void insertEnergy(int amount) {
-        IICEnergyConnector energy = immersiveconvergence$energy();
+        IICEnergyFitting energy = immersiveconvergence$energy();
         ICConnectionPoint point = immersiveconvergence$sinkPoint();
         if (energy != null && point != null) { energy.accept(point, amount, false); }
     }
@@ -119,7 +119,7 @@ import org.spongepowered.asm.mixin.Unique;
     }
 
     @Override public void onEnergyPassedThrough(double amount) {
-        IICEnergyConnector energy = immersiveconvergence$energy();
+        IICEnergyFitting energy = immersiveconvergence$energy();
         ICConnectionPoint point = immersiveconvergence$sinkPoint();
         if (energy != null && point != null) { energy.onPassthrough(point, (int) amount); }
     }

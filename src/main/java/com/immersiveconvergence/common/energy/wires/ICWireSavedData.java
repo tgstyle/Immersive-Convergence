@@ -5,7 +5,7 @@ import com.immersiveconvergence.api.wires.ICConnectionPoint;
 import com.immersiveconvergence.api.wires.ICWire;
 import com.immersiveconvergence.api.wires.ICWireCategory;
 import com.immersiveconvergence.api.wires.ICWireType;
-import com.immersiveconvergence.api.wires.connectors.ICConnectableBlockEntity;
+import com.immersiveconvergence.api.wires.fittings.ICConnectableBlockEntity;
 import com.immersiveconvergence.core.integration.immersiveengineering.IEWireBridge;
 import com.immersiveconvergence.core.lib.ICLib;
 

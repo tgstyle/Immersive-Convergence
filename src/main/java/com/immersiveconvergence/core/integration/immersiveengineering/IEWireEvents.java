@@ -3,7 +3,7 @@ package com.immersiveconvergence.core.integration.immersiveengineering;
 import com.immersiveconvergence.api.wires.ICWire;
 import com.immersiveconvergence.api.wires.ICWireCause;
 import com.immersiveconvergence.api.wires.ICWireEvent;
-import com.immersiveconvergence.api.wires.IICConnector;
+import com.immersiveconvergence.api.wires.IICFitting;
 import com.immersiveconvergence.common.energy.wires.ICWireEventBus;
 import com.immersiveconvergence.core.lib.ICLib;
 
@@ -28,12 +28,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public final class IEWireEvents {
     private static final Map<Connection, ICWire> PENDING = new IdentityHashMap<>();
@@ -143,11 +143,11 @@ public final class IEWireEvents {
         return local != null && local.getConnections(connection.getEndA()).contains(connection);
     }
 
-    private static boolean uninvolved(GlobalWireNetwork network, Connection connection) { return lacksConnector(network, connection.getEndA()) && lacksConnector(network, connection.getEndB()); }
+    private static boolean uninvolved(GlobalWireNetwork network, Connection connection) { return lacksFitting(network, connection.getEndA()) && lacksFitting(network, connection.getEndB()); }
 
-    private static boolean lacksConnector(GlobalWireNetwork network, ConnectionPoint point) {
+    private static boolean lacksFitting(GlobalWireNetwork network, ConnectionPoint point) {
         LocalWireNetwork local = network.getNullableLocalNet(point);
-        return local == null || !(local.getConnector(point) instanceof IICConnector);
+        return local == null || !(local.getConnector(point) instanceof IICFitting);
     }
 
     private static ConnectionPoint linked(ItemStack stack) { WireLink link = stack.get(IEApiDataComponents.WIRE_LINK); return link == null ? null : link.cp(); }

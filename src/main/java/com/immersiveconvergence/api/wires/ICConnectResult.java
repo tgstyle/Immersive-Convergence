@@ -4,12 +4,12 @@ import javax.annotation.Nullable;
 
 public enum ICConnectResult {
     OK(null),
-    NO_CONNECTOR("invalidPoint"),
+    NO_FITTING("invalidPoint"),
     WRONG_TYPE("wrongCable"),
     TOO_LONG("tooFar"),
     OBSTRUCTED("obstructed"),
     DUPLICATE("duplicate"),
-    SELF("sameConnector"),
+    SELF("sameFitting"),
     UNLOADED("unloaded"),
     CANCELED("canceled");
 

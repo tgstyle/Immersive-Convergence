@@ -4,7 +4,7 @@ import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.wires.ICWire;
 import com.immersiveconvergence.api.wires.ICWireCause;
 import com.immersiveconvergence.api.wires.ICWires;
-import com.immersiveconvergence.api.wires.connectors.ICConnectableBlockEntity;
+import com.immersiveconvergence.api.wires.fittings.ICConnectableBlockEntity;
 import com.immersiveconvergence.core.lib.ICLib;
 
 import net.minecraft.core.BlockPos;
@@ -21,13 +21,13 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 @EventBusSubscriber(modid = ICLib.MODID) public final class ICWireRemoval {
     private static final Map<ResourceKey<Level>, Set<BlockPos>> PENDING = new HashMap<>();

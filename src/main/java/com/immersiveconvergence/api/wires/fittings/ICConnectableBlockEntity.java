@@ -1,4 +1,4 @@
-package com.immersiveconvergence.api.wires.connectors;
+package com.immersiveconvergence.api.wires.fittings;
 
 import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.block.BaseBlockEntity;
@@ -9,20 +9,21 @@ import com.immersiveconvergence.api.wires.ICWire;
 import com.immersiveconvergence.api.wires.ICWireCause;
 import com.immersiveconvergence.api.wires.ICWireType;
 import com.immersiveconvergence.api.wires.ICWires;
-import com.immersiveconvergence.api.wires.IICConnector;
+import com.immersiveconvergence.api.wires.IICFitting;
+import com.immersiveconvergence.api.wires.IICWireNetwork;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
 
-@SuppressWarnings("unused") public abstract class ICConnectableBlockEntity extends BaseBlockEntity implements IICConnector {
+@SuppressWarnings("unused") public abstract class ICConnectableBlockEntity extends BaseBlockEntity implements IICFitting {
     protected ICWireType limitType = null;
 
     public ICConnectableBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) { super(type, pos, state); }
@@ -47,7 +48,7 @@ import java.util.Set;
 
     @Override public void onWireAdded(@Nonnull ICConnectionPoint point, @Nonnull ICWire wire) {
         limitType = wire.getType();
-        setChanged();
+        wiresChanged();
     }
 
     @Override public void onWireRemoved(@Nonnull ICConnectionPoint point, @Nonnull ICWire wire, @Nonnull ICWireCause cause) { forget(wire.getType()); }
@@ -76,6 +77,15 @@ import java.util.Set;
     protected boolean hasNoExternalConnections(@Nonnull ICConnectionPoint cp) { return ICWires.hasNoExternalConnections(level, cp); }
 
     public void syncConnectionPoints() { ICWires.syncConnectionPoints(this); }
+
+    public void wiresLoaded() {
+        limitType = null;
+        if (level == null) { return; }
+        IICWireNetwork network = ICWires.network(level);
+        for (ICConnectionPoint point : points()) {
+            for (ICWire wire : network.wiresAt(point)) { limitType = wire.getType(); }
+        }
+    }
 
     @Override public void onLoad() {
         super.onLoad();

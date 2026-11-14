@@ -2,7 +2,7 @@ package com.immersiveconvergence.api.wires;
 
 import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.bridge.ICBridges;
-import com.immersiveconvergence.api.wires.connectors.ICConnectableBlockEntity;
+import com.immersiveconvergence.api.wires.fittings.ICConnectableBlockEntity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;

@@ -1,4 +1,4 @@
-package com.immersiveconvergence.api.wires.connectors;
+package com.immersiveconvergence.api.wires.fittings;
 
 import com.immersiveconvergence.api.block.ModEntityBlock;
 
@@ -14,8 +14,8 @@ import net.minecraft.world.level.material.MapColor;
 import javax.annotation.Nonnull;
 import java.util.function.BiFunction;
 
-public abstract class ICConnectorBlock<T extends ICConnectableBlockEntity> extends ModEntityBlock<T> {
-    protected ICConnectorBlock(BiFunction<BlockPos, BlockState, T> makeEntity) { super(makeEntity, connectorProperties()); }
+public abstract class ICFittingBlock<T extends ICConnectableBlockEntity> extends ModEntityBlock<T> {
+    protected ICFittingBlock(BiFunction<BlockPos, BlockState, T> makeEntity) { super(makeEntity, fittingProperties()); }
 
     @Override protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
@@ -24,6 +24,6 @@ public abstract class ICConnectorBlock<T extends ICConnectableBlockEntity> exten
 
     @Override protected Direction getDefaultFacing() { return Direction.DOWN; }
 
-    private static BlockBehaviour.Properties connectorProperties() { return BlockBehaviour.Properties.of().mapColor(MapColor.METAL).sound(SoundType.METAL).strength(3.0F, 9.0F).requiresCorrectToolForDrops().noOcclusion().dynamicShape(); }
+    private static BlockBehaviour.Properties fittingProperties() { return BlockBehaviour.Properties.of().mapColor(MapColor.METAL).sound(SoundType.METAL).strength(3.0F, 9.0F).requiresCorrectToolForDrops().noOcclusion().dynamicShape(); }
 
 }

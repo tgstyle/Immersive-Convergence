@@ -5,7 +5,7 @@ import com.immersiveconvergence.api.wires.ICConnectionPoint;
 import com.immersiveconvergence.api.wires.ICWire;
 import com.immersiveconvergence.api.wires.ICWireEvent;
 import com.immersiveconvergence.api.wires.ICWireType;
-import com.immersiveconvergence.api.wires.IICConnector;
+import com.immersiveconvergence.api.wires.IICFitting;
 import com.immersiveconvergence.common.util.ICWireCollision;
 
 import net.minecraft.core.BlockPos;
@@ -16,10 +16,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Set;
 import java.util.function.IntPredicate;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public final class ICWireWriter {
     private ICWireWriter() {}
@@ -33,11 +33,11 @@ public final class ICWireWriter {
     @Nullable public static ICConnectResult attempt(@Nonnull ServerLevel level, @Nonnull ICWireCoils.Wiring wiring, @Nonnull ICConnectionPoint first, @Nonnull ICConnectionPoint second, @Nonnull ICWireType type, @Nullable Player placer, @Nonnull IntPredicate affordable) {
         if (first.position().equals(second.position())) { return ICConnectResult.SELF; }
         if (!level.isLoaded(first.position()) || !level.isLoaded(second.position())) { return ICConnectResult.UNLOADED; }
-        if (wiring.missing(level, first.position()) || wiring.missing(level, second.position())) { return ICConnectResult.NO_CONNECTOR; }
+        if (wiring.missing(level, first.position()) || wiring.missing(level, second.position())) { return ICConnectResult.NO_FITTING; }
         if (wiring.refuses(level, first, type) || wiring.refuses(level, second, type)) { return ICConnectResult.WRONG_TYPE; }
         if (wiring.wired(level, first, second)) { return ICConnectResult.DUPLICATE; }
         ICWire wire = wiring.wireBetween(level, first, second, type);
-        if (wire == null) { return ICConnectResult.NO_CONNECTOR; }
+        if (wire == null) { return ICConnectResult.NO_FITTING; }
         if (wire.getLength() > type.getMaxLength()) { return ICConnectResult.TOO_LONG; }
         if (!affordable.test((int)Math.ceil(wire.getLength()))) { return null; }
         ICConnectResult blocked = obstruction(level, wire, wiring.ignored(level, first, second));
@@ -47,8 +47,8 @@ public final class ICWireWriter {
     }
 
     private static boolean refused(ServerLevel level, ICWire wire, @Nullable Player placer) {
-        boolean carriesConnector = level.getBlockEntity(wire.getA().position()) instanceof IICConnector || level.getBlockEntity(wire.getB().position()) instanceof IICConnector;
-        return carriesConnector && ICWireEventBus.canceled(new ICWireEvent.Placed(level, wire, placer, true));
+        boolean carriesFitting = level.getBlockEntity(wire.getA().position()) instanceof IICFitting || level.getBlockEntity(wire.getB().position()) instanceof IICFitting;
+        return carriesFitting && ICWireEventBus.canceled(new ICWireEvent.Placed(level, wire, placer, true));
     }
 
     @Nullable private static ICConnectResult obstruction(ServerLevel level, ICWire wire, Set<BlockPos> ignored) {
