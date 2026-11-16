@@ -84,7 +84,7 @@ public final class IEWireBridge {
     @Nullable private static ICWireCategory category(@Nonnull WireType wire) {
         String name = wire.getCategory();
         ICWireCategory known = ICWireCategory.byName(name);
-        if (known != null || name == null || ICWireType.frozen()) { return known; }
+        if (known != null || ICWireType.frozen()) { return known; }
         return ICWireCategory.register(name, wire instanceof IEnergyWire ? ICWireRole.ENERGY : ICWireRole.STRUCTURE, 0);
     }
 

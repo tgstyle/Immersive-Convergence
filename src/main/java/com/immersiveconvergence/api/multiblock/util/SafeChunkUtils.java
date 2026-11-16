@@ -25,6 +25,11 @@ public final class SafeChunkUtils {
         return chunk == null ? null : chunk.getBlockEntity(pos);
     }
 
+    @Nullable public static BlockEntity getExistingBlockEntity(LevelAccessor level, BlockPos pos) {
+        LevelChunk chunk = getSafeChunk(level, pos);
+        return chunk == null ? null : chunk.getBlockEntity(pos, LevelChunk.EntityCreationType.CHECK);
+    }
+
     @Nonnull public static BlockState getBlockState(LevelAccessor level, BlockPos pos) {
         LevelChunk chunk = getSafeChunk(level, pos);
         return chunk == null ? Blocks.AIR.defaultBlockState() : chunk.getBlockState(pos);

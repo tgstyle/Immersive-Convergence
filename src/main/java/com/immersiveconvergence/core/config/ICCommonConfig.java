@@ -16,6 +16,12 @@ import net.minecraftforge.fml.event.config.ModConfigEvent;
     public static final ForgeConfigSpec.IntValue LV_RATE;
     public static final ForgeConfigSpec.IntValue MV_RATE;
     public static final ForgeConfigSpec.IntValue HV_RATE;
+    public static final ForgeConfigSpec.IntValue PIPE_TRANSFER_RATE;
+    public static final ForgeConfigSpec.IntValue PIPE_PRESSURIZED_TRANSFER_RATE;
+    public static final ForgeConfigSpec.BooleanValue PIPE_LAST_SERVED;
+    public static int pipeTransferRate = 100;
+    public static int pipePressurizedTransferRate = 2500;
+    public static boolean pipeLastServed = false;
     public static int lvRate = 2048;
     public static int mvRate = 8192;
     public static int hvRate = 32768;
@@ -51,6 +57,18 @@ import net.minecraftforge.fml.event.config.ModConfigEvent;
                 .defineInRange("hv_rate", 32768, 1, Integer.MAX_VALUE);
         BUILDER.pop();
 
+        BUILDER.comment("Fluid pipe settings").push("pipes");
+        PIPE_TRANSFER_RATE = BUILDER
+                .comment("How much a fluid pipe can move per operation, in mB. Default 100.")
+                .defineInRange("transferRate", 100, 1, Integer.MAX_VALUE);
+        PIPE_PRESSURIZED_TRANSFER_RATE = BUILDER
+                .comment("How much a fluid pipe can move per operation while pressurized, in mB. Default 2500.")
+                .defineInRange("pressurizedTransferRate", 2500, 1, Integer.MAX_VALUE);
+        PIPE_LAST_SERVED = BUILDER
+                .comment("Pipes remember the last path they served (cheaper) instead of round-robining every destination. Default false.")
+                .define("lastServed", false);
+        BUILDER.pop();
+
         BUILDER.comment("Multiblock settings shared by every machine built on Immersive Convergence, Immersive Engineering's and Immersive Petroleum's included").push("multiblocks");
         DISASSEMBLY_MODE = BUILDER
                 .comment("How a machine comes apart. PROCESS_QUEUE breaks it down block by block over a few ticks and drops all its materials at the broken block; TEMPLATE_BLOCKS instantly reverts it to its placed blocks. Sneaking while breaking always uses TEMPLATE_BLOCKS.")
@@ -80,6 +98,9 @@ import net.minecraftforge.fml.event.config.ModConfigEvent;
             maxRpm = MAX_RPM.get();
             maxHeat = MAX_HEAT.get();
             disassemblyMode = DISASSEMBLY_MODE.get();
+            pipeTransferRate = PIPE_TRANSFER_RATE.get();
+            pipePressurizedTransferRate = PIPE_PRESSURIZED_TRANSFER_RATE.get();
+            pipeLastServed = PIPE_LAST_SERVED.get();
         }
     }
 }

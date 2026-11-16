@@ -10,16 +10,21 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.TickTask;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.JsonUtils;
@@ -65,6 +70,13 @@ public class ICUtils {
     }
 
     public static boolean isHammer(ItemStack stack) { return stack.is(HAMMERS); }
+
+    public static void addFutureServerTask(Level level, Runnable task) {
+        MinecraftServer server = level.getServer();
+        if (server != null) { server.tell(new TickTask(server.getTickCount(), task)); }
+    }
+
+    public static void updateObservers(Level level, BlockPos pos) { level.getBlockState(pos).updateNeighbourShapes(level, pos, Block.UPDATE_ALL); }
 
     public static <T> CapabilityReference<T> forNeighbor(BlockEntity local, Capability<T> cap, @Nonnull Direction side) { return CapabilityReference.forBlockEntityAt(local, () -> new DirectionalBlockPos(local.getBlockPos().relative(side), side.getOpposite()), cap); }
 }

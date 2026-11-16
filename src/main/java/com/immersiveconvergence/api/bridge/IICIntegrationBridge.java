@@ -39,4 +39,6 @@ public interface IICIntegrationBridge {
     void refreshFluidPipe(@Nonnull BlockEntity tile, @Nonnull Direction side);
 
     @Nonnull ItemStack preferredStack(@Nonnull ItemStack[] stacks);
+
+    int heatExternal(@Nonnull BlockEntity target, int energyAvailable, boolean redstone);
 }

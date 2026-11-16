@@ -1,5 +1,7 @@
 package com.immersiveconvergence.api.util;
 
+import com.immersiveconvergence.api.fluid.IICFluidPipe;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -19,6 +21,12 @@ public class ICFluidUtils {
     public static FluidStack copyFluidStackWithAmount(FluidStack stack, int amount) {
         if (stack.isEmpty()) { return FluidStack.EMPTY; }
         return new FluidStack(stack, amount);
+    }
+
+    public static FluidStack copyFluidStackWithAmount(FluidStack stack, int amount, boolean stripPressure) {
+        FluidStack copy = copyFluidStackWithAmount(stack, amount);
+        if (stripPressure) { IICFluidPipe.stripPressure(copy); }
+        return copy;
     }
 
     public static Component formatFluidStack(FluidStack fluid) {
