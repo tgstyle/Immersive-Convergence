@@ -4,9 +4,14 @@ import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.crafting.builders.ICIEContent;
 import com.immersiveconvergence.api.bridge.ICBridges;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.TickTask;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Random;
@@ -16,6 +21,13 @@ public class ICUtils {
     public static final RandomSource RANDOM_SOURCE = RandomSource.createNewThreadLocalInstance();
 
     public static boolean isHammer(ItemStack stack) { return stack.is(ICIEContent.HAMMERS); }
+
+    public static void addFutureServerTask(Level level, Runnable task) {
+        MinecraftServer server = level.getServer();
+        if (server != null) { server.tell(new TickTask(server.getTickCount(), task)); }
+    }
+
+    public static void updateObservers(Level level, BlockPos pos) { level.getBlockState(pos).updateNeighbourShapes(level, pos, Block.UPDATE_ALL); }
 
     public static ItemStack preferredStack(ItemStack[] stacks) {
         if (ICMods.immersiveEngineering()) { return ICBridges.integration().preferredStack(stacks); }

@@ -21,4 +21,8 @@ public final class IEFluidPipeBridge {
     }
 
     public static void markPressurized(FluidStack stack) { stack.set(IEApiDataComponents.FLUID_PRESSURIZED.get(), Unit.INSTANCE); }
+
+    public static boolean isPressurized(FluidStack stack) { return stack.has(IEApiDataComponents.FLUID_PRESSURIZED.get()); }
+
+    public static void stripPressure(FluidStack stack) { stack.remove(IEApiDataComponents.FLUID_PRESSURIZED.get()); }
 }

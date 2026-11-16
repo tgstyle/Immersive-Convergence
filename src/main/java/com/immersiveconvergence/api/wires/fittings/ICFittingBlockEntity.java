@@ -26,14 +26,14 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 
 public abstract class ICFittingBlockEntity extends ICConnectableBlockEntity implements IICEnergyFitting, IICEnergySource, BlockInterfaces.IDirectionalBE, BlockInterfaces.IBlockBounds {
     private static final String FACING = "facing";
-    protected static final float WIDTH_MIN = 0.3125F;
-    protected static final float WIDTH_MAX = 0.6875F;
+    private static final String PLATE = "plate";
     private static final float DEVICE_MIN = 0.1875F;
     private static final float DEVICE_MAX = 0.8125F;
     private final ICFittingTier tier;
     private final boolean relay;
     @Nullable private final ICFittingEnergy energy;
     private Direction facing;
+    private boolean plateOn = true;
 
     protected ICFittingBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, ICFittingTier tier, boolean relay) {
         super(type, pos, state);
@@ -97,13 +97,25 @@ public abstract class ICFittingBlockEntity extends ICConnectableBlockEntity impl
         if (level instanceof ServerLevel server && modelState(getBlockState()) != getBlockState()) { server.getServer().tell(new TickTask(server.getServer().getTickCount(), this::syncModelState)); }
     }
 
-    protected BlockState modelState(BlockState state) { return state.hasProperty(BlockStateProperties.FACING) ? state.setValue(BlockStateProperties.FACING, facing) : state; }
+    protected BlockState modelState(BlockState state) {
+        BlockState faced = state.hasProperty(BlockStateProperties.FACING) ? state.setValue(BlockStateProperties.FACING, facing) : state;
+        return faced.hasProperty(ICPlatedFittingBlock.PLATE) ? faced.setValue(ICPlatedFittingBlock.PLATE, plateOn) : faced;
+    }
 
     protected final void syncModelState() {
         if (level == null || level.isClientSide || isRemoved()) { return; }
         BlockState state = getBlockState();
         BlockState wanted = modelState(state);
         if (wanted != state) { level.setBlock(worldPosition, wanted, Block.UPDATE_CLIENTS); }
+    }
+
+    public boolean platable() { return getBlockState().hasProperty(ICPlatedFittingBlock.PLATE); }
+
+    public void togglePlate() {
+        plateOn = !plateOn;
+        setChanged();
+        if (level != null) { level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS); }
+        syncModelState();
     }
 
     @Override public FacingLimitation getFacingLimitation() { return FacingLimitation.SIDE_CLICKED; }
@@ -117,12 +129,14 @@ public abstract class ICFittingBlockEntity extends ICConnectableBlockEntity impl
     @Override public void readCustomNBT(@Nonnull CompoundTag nbt, boolean descPacket) {
         super.readCustomNBT(nbt, descPacket);
         facing = Direction.from3DDataValue(nbt.getInt(FACING));
+        plateOn = !nbt.contains(PLATE) || nbt.getBoolean(PLATE);
         if (energy != null) { energy.read(nbt); }
     }
 
     @Override public void writeCustomNBT(@Nonnull CompoundTag nbt, boolean descPacket) {
         super.writeCustomNBT(nbt, descPacket);
         nbt.putInt(FACING, facing.get3DDataValue());
+        nbt.putBoolean(PLATE, plateOn);
         if (energy != null) { energy.write(nbt); }
     }
 }

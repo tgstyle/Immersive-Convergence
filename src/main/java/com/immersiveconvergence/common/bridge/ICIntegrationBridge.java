@@ -1,11 +1,13 @@
 package com.immersiveconvergence.common.bridge;
 
+import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.bridge.IICIntegrationBridge;
 import com.immersiveconvergence.api.crafting.ICCokeOvenRecipe;
 import com.immersiveconvergence.api.crafting.ICRecipeType;
 import com.immersiveconvergence.api.manual.ICManualCategory;
 import com.immersiveconvergence.core.integration.immersiveengineering.IECokeOvenBridge;
 import com.immersiveconvergence.core.integration.immersiveengineering.IEFluidPipeBridge;
+import com.immersiveconvergence.core.integration.immersiveengineering.IEHeaterBridge;
 import com.immersiveconvergence.core.integration.immersiveengineering.IEManualBridge;
 import com.immersiveconvergence.core.integration.immersiveengineering.IERecipeBridge;
 import com.immersiveconvergence.core.integration.immersiveengineering.IEWireBridge;
@@ -48,5 +50,11 @@ public final class ICIntegrationBridge implements IICIntegrationBridge {
 
     @Override public void markPressurized(@Nonnull FluidStack stack) { IEFluidPipeBridge.markPressurized(stack); }
 
+    @Override public boolean isPressurized(@Nonnull FluidStack stack) { return IEFluidPipeBridge.isPressurized(stack); }
+
+    @Override public void stripPressure(@Nonnull FluidStack stack) { IEFluidPipeBridge.stripPressure(stack); }
+
     @Override @Nonnull public ItemStack preferredStack(@Nonnull ItemStack[] stacks) { return IERecipeBridge.preferredStack(stacks); }
+
+    @Override public int heatExternal(@Nonnull BlockEntity target, int energyAvailable, boolean redstone) { return ICMods.immersiveEngineering() ? IEHeaterBridge.heatExternal(target, energyAvailable, redstone) : 0; }
 }

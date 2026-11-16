@@ -41,5 +41,11 @@ public interface IICIntegrationBridge {
 
     void markPressurized(@Nonnull FluidStack stack);
 
+    boolean isPressurized(@Nonnull FluidStack stack);
+
+    void stripPressure(@Nonnull FluidStack stack);
+
     @Nonnull ItemStack preferredStack(@Nonnull ItemStack[] stacks);
+
+    int heatExternal(@Nonnull BlockEntity target, int energyAvailable, boolean redstone);
 }
