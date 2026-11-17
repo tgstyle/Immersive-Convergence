@@ -7,6 +7,7 @@ import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.block.ICBlockBase;
 import com.immersiveconvergence.api.crafting.ICIngredient;
 import com.immersiveconvergence.api.energy.IICFluxAcceptor;
+import com.immersiveconvergence.api.fluid.IICFluidPipe;
 import com.immersiveconvergence.api.bridge.ICBridges;
 
 import net.minecraft.block.Block;
@@ -59,6 +60,8 @@ import java.util.Set;
         synchronized (server.futureTaskQueue) { server.futureTaskQueue.add(ListenableFutureTask.create(task, null)); }
     }
 
+    public static void updateObservers(World world, BlockPos pos) { world.updateObservingBlocksAt(pos, world.getBlockState(pos).getBlock()); }
+
     public static TileEntity getExistingTileEntity(World world, BlockPos pos) { return getExistingTileEntity((IBlockAccess)world, pos); }
 
     public static TileEntity getExistingTileEntity(IBlockAccess access, BlockPos pos) {
@@ -73,10 +76,7 @@ import java.util.Set;
     public static FluidStack copyFluidStackWithAmount(FluidStack stack, int amount, boolean stripPressure) {
         if (stack == null) { return null; }
         FluidStack copy = new FluidStack(stack, amount);
-        if (stripPressure && copy.tag != null && copy.tag.hasKey("pressurized")) {
-            copy.tag.removeTag("pressurized");
-            if (copy.tag.isEmpty()) { copy.tag = null; }
-        }
+        if (stripPressure) { IICFluidPipe.stripPressure(copy); }
         return copy;
     }
 

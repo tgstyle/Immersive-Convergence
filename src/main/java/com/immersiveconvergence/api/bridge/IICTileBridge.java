@@ -33,4 +33,6 @@ public interface IICTileBridge {
     @Nonnull IExtendedBlockState extendState(@Nonnull IExtendedBlockState extended, @Nonnull TileEntity tile);
 
     @Nullable Set<?> wireConnections(@Nonnull TileEntity tile);
+
+    int heatExternal(@Nonnull TileEntity target, int energyAvailable, boolean redstone);
 }

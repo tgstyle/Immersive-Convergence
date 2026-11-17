@@ -36,4 +36,6 @@ public final class ICTileBridge implements IICTileBridge {
     @Override @Nonnull public IExtendedBlockState extendState(@Nonnull IExtendedBlockState extended, @Nonnull TileEntity tile) { return IETileBridge.extendState(extended, tile); }
 
     @Override @Nullable public Set<?> wireConnections(@Nonnull TileEntity tile) { return IETileBridge.wireConnections(tile); }
+
+    @Override public int heatExternal(@Nonnull TileEntity target, int energyAvailable, boolean redstone) { return IETileBridge.heatExternal(target, energyAvailable, redstone); }
 }

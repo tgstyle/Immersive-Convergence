@@ -1,7 +1,9 @@
 package com.immersiveconvergence.api.wires.fittings;
 
 import com.immersiveconvergence.api.ICMods;
+import com.immersiveconvergence.api.client.IICOBJModelCallback;
 import com.immersiveconvergence.api.block.BlockContext;
+import com.immersiveconvergence.api.bridge.ICBridges;
 import com.immersiveconvergence.api.block.ICBlockTileProvider;
 import com.immersiveconvergence.api.block.ICItemBlockBase;
 import com.immersiveconvergence.api.block.ICProperties;
@@ -34,7 +36,8 @@ public abstract class ICBlockFitting extends ICBlockTileProvider<ICFittingType> 
     private static Object[] properties(Object[] extra) {
         List<Object> all = new ArrayList<>(Arrays.asList(extra));
         all.add(ICProperties.FACING_ALL);
-        if (!ICMods.immersiveEngineering()) { all.add(ICProperties.CONNECTIONS); }
+        all.add(IICOBJModelCallback.PROPERTY);
+        all.add(ICMods.immersiveEngineering() ? ICBridges.tile().connectionsProperty() : ICProperties.CONNECTIONS);
         return all.toArray();
     }
 

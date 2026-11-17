@@ -1,7 +1,8 @@
 package com.immersiveconvergence.common.blocks.pipes;
 
 import com.immersiveconvergence.api.util.ICUtils;
-import com.immersiveconvergence.core.config.ICCommonConfig;
+import com.immersiveconvergence.api.fluid.ICPipes;
+import com.immersiveconvergence.api.fluid.IICFluidPipe;
 
 import com.immersiveconvergence.api.ICLib;
 import com.immersiveconvergence.api.fluid.IICPipe;
@@ -138,18 +139,12 @@ public class TileEntityFluidPumpAlternative extends blusunrize.immersiveengineer
                     if (fs == null) { closedList.remove(target); }
                     else {
                         FluidStack fsCopy = fs.copy();
-                        if (fsCopy.tag != null) {
-                            fsCopy.tag.removeTag("pressurized");
-                            if (fsCopy.tag.isEmpty()) { fsCopy.tag = null; }
-                        }
+                        IICFluidPipe.stripPressure(fsCopy);
                         if (tank.fill(fsCopy, false) == fs.amount && this.energyStorage.extractEnergy(IEConfig.Machines.pump_consumption, true) >= IEConfig.Machines.pump_consumption) {
                             this.energyStorage.extractEnergy(IEConfig.Machines.pump_consumption, false);
                             fs = Utils.drainFluidBlock(world, pos, true);
                             if (IEConfig.Machines.pump_placeCobble && placeCobble) { world.setBlockState(pos, Blocks.COBBLESTONE.getDefaultState()); }
-                            if (fs.tag != null) {
-                                fs.tag.removeTag("pressurized");
-                                if (fs.tag.isEmpty()) { fs.tag = null; }
-                            }
+                            IICFluidPipe.stripPressure(fs);
                             this.tank.fill(fs, true);
                             closedList.remove(target);
                         }
@@ -179,10 +174,8 @@ public class TileEntityFluidPumpAlternative extends blusunrize.immersiveengineer
     }
 
     public void drainFromTank(IFluidHandler handler) {
-        int rate = ICCommonConfig.pipes.transferRate;
-        int pressurizedRate = ICCommonConfig.pipes.pressurizedTransferRate;
         boolean usePressurized = canPressurize();
-        int maxDrain = usePressurized ? pressurizedRate : rate;
+        int maxDrain = ICPipes.getTransferableAmount(usePressurized);
         FluidStack drain;
         int drainedAmount;
         if (!fillFirstMode) {
@@ -196,10 +189,7 @@ public class TileEntityFluidPumpAlternative extends blusunrize.immersiveengineer
             drain = handler.drain(Math.min(tank.getCapacity() - tank.getFluidAmount(), maxDrain), false);
             if (drain == null || drain.amount <= 0 || !tank.canFillFluidType(drain)) { return; }
             FluidStack drainCopy = drain.copy();
-            if (drainCopy.tag != null) {
-                drainCopy.tag.removeTag("pressurized");
-                if (drainCopy.tag.isEmpty()) { drainCopy.tag = null; }
-            }
+            IICFluidPipe.stripPressure(drainCopy);
             drainedAmount = tank.fill(drainCopy, true);
             handler.drain(drainedAmount, true);
         }
@@ -258,15 +248,9 @@ public class TileEntityFluidPumpAlternative extends blusunrize.immersiveengineer
             IFluidHandler handler = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, f.getOpposite());
             insertResource.amount = fs.amount;
             if (tile instanceof IICPipe && this.energyStorage.extractEnergy(accelPower, true) >= accelPower) {
-                if (insertResource.tag == null) { insertResource.tag = new NBTTagCompound(); }
-                insertResource.tag.setBoolean("pressurized", true);
+                IICFluidPipe.markPressurized(insertResource);
             }
-            else {
-                if (insertResource.tag != null) {
-                    insertResource.tag.removeTag("pressurized");
-                    if (insertResource.tag.isEmpty()) { insertResource.tag = null; }
-                }
-            }
+            else { IICFluidPipe.stripPressure(insertResource); }
             assert handler != null;
             int temp = handler.fill(insertResource, false);
             if (temp > 0) {
@@ -284,15 +268,9 @@ public class TileEntityFluidPumpAlternative extends blusunrize.immersiveengineer
                 insertResource.amount = amount;
                 if (output.containingTile instanceof IICPipe && this.energyStorage.extractEnergy(accelPower, true) >= accelPower) {
                     this.energyStorage.extractEnergy(accelPower, false);
-                    if (insertResource.tag == null) { insertResource.tag = new NBTTagCompound(); }
-                    insertResource.tag.setBoolean("pressurized", true);
+                    IICFluidPipe.markPressurized(insertResource);
                 }
-                else {
-                    if (insertResource.tag != null) {
-                        insertResource.tag.removeTag("pressurized");
-                        if (insertResource.tag.isEmpty()) { insertResource.tag = null; }
-                    }
-                }
+                else { IICFluidPipe.stripPressure(insertResource); }
                 int r = output.output.fill(insertResource, !simulate);
                 f += r;
                 canAccept -= r;

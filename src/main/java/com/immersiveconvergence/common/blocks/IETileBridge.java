@@ -5,6 +5,9 @@ import blusunrize.immersiveengineering.api.energy.wires.IImmersiveConnectable;
 import blusunrize.immersiveengineering.api.energy.wires.ImmersiveNetHandler;
 import blusunrize.immersiveengineering.api.energy.wires.TileEntityImmersiveConnectable;
 import blusunrize.immersiveengineering.api.shader.CapabilityShader;
+import blusunrize.immersiveengineering.api.tool.ExternalHeaterHandler;
+import blusunrize.immersiveengineering.api.tool.ExternalHeaterHandler.HeatableAdapter;
+import blusunrize.immersiveengineering.api.tool.ExternalHeaterHandler.IExternalHeatable;
 import blusunrize.immersiveengineering.client.models.IOBJModelCallback;
 import blusunrize.immersiveengineering.common.Config;
 import blusunrize.immersiveengineering.common.blocks.TileEntityIEBase;
@@ -67,5 +70,11 @@ public final class IETileBridge {
         if (tile instanceof TileEntityImmersiveConnectable) { return ((TileEntityImmersiveConnectable)tile).genConnBlockstate(); }
         if (tile instanceof ICTileEntityConnectable) { return ((ICTileEntityConnectable)tile).wireConnections(); }
         return null;
+    }
+
+    @SuppressWarnings("unchecked") public static int heatExternal(TileEntity target, int energyAvailable, boolean redstone) {
+        if (target instanceof IExternalHeatable) { return ((IExternalHeatable)target).doHeatTick(energyAvailable, redstone); }
+        HeatableAdapter<TileEntity> adapter = ExternalHeaterHandler.getHeatableAdapter(target.getClass());
+        return adapter == null ? 0 : adapter.doHeatTick(target, energyAvailable, redstone);
     }
 }

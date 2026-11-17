@@ -1,7 +1,6 @@
 package com.immersiveconvergence.common.blocks.pipes;
 
 import com.immersiveconvergence.api.fluid.IICFluidPipe;
-import com.immersiveconvergence.core.config.ICCommonConfig;
 
 import com.immersiveconvergence.api.fluid.ICPipes;
 import com.immersiveconvergence.api.fluid.IICPipe;
@@ -54,8 +53,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class TileEntityFluidPipeAlternative extends TileEntityFluidPipe implements IICPipe, IPlacementInteraction, ITileDrop, IColouredTile {
 
     private EnumDyeColor color = null;
-    private final int transferRate = ICCommonConfig.pipes.transferRate;
-    private final int transferRatePressurized = ICCommonConfig.pipes.pressurizedTransferRate;
     private final PipeFluidHandler[] sidedHandlers = {new PipeFluidHandler(EnumFacing.DOWN), new PipeFluidHandler(EnumFacing.UP), new PipeFluidHandler(EnumFacing.NORTH), new PipeFluidHandler(EnumFacing.SOUTH), new PipeFluidHandler(EnumFacing.WEST), new PipeFluidHandler(EnumFacing.EAST)};
     public static final Map<Integer, Map<BlockPos, List<ITDirectionalFluidOutput>>> indirectConnections = new HashMap<>();
 
@@ -463,7 +460,7 @@ public class TileEntityFluidPipeAlternative extends TileEntityFluidPipe implemen
 
         public PipeFluidHandler(EnumFacing facing) { this.origin = facing; }
 
-        @Override public IFluidTankProperties[] getTankProperties() { return new IFluidTankProperties[] { new FluidTankProperties(null, transferRatePressurized, true, false) }; }
+        @Override public IFluidTankProperties[] getTankProperties() { return new IFluidTankProperties[] { new FluidTankProperties(null, ICPipes.getTransferableAmount(true), true, false) }; }
 
         private int fastFill(FluidStack resource, boolean doFill) {
             int remaining = resource.amount;
@@ -477,19 +474,14 @@ public class TileEntityFluidPipeAlternative extends TileEntityFluidPipe implemen
                 if (!cc.equals(ccFrom) && world.isBlockLoaded(cc) && !TileEntityFluidPipeAlternative.this.equals(output.containingTile)) {
                     fillStack.amount = remaining;
                     FluidStack tempStack = fillStack.copy();
-                    if (!IICFluidPipe.is(output.containingTile)) {
-                        if (tempStack.tag != null) {
-                            tempStack.tag.removeTag("pressurized");
-                            if (tempStack.tag.isEmpty()) { tempStack.tag = null; }
-                        }
-                    }
+                    if (!IICFluidPipe.is(output.containingTile)) { IICFluidPipe.stripPressure(tempStack); }
                     int temp = output.output.fill(tempStack, false);
                     if (temp > 0) { candidates.add(output); }
                 }
             }
             if (candidates.isEmpty()) { return 0; }
             int f = 0;
-            if (ICCommonConfig.pipes.lastServed) {
+            if (ICPipes.lastServed()) {
                 ArrayList<ITDirectionalFluidOutput> toTry = new ArrayList<>(candidates);
                 if (lastSuccessfulOutput != null && toTry.contains(lastSuccessfulOutput)) {
                     toTry.remove(lastSuccessfulOutput);
@@ -498,12 +490,7 @@ public class TileEntityFluidPipeAlternative extends TileEntityFluidPipe implemen
                 for (ITDirectionalFluidOutput output : toTry) {
                     fillStack.amount = remaining;
                     FluidStack tempStack = fillStack.copy();
-                    if (!IICFluidPipe.is(output.containingTile)) {
-                        if (tempStack.tag != null) {
-                            tempStack.tag.removeTag("pressurized");
-                            if (tempStack.tag.isEmpty()) { tempStack.tag = null; }
-                        }
-                    }
+                    if (!IICFluidPipe.is(output.containingTile)) { IICFluidPipe.stripPressure(tempStack); }
                     int r = output.output.fill(tempStack, doFill);
                     if (r > 0 && doFill) { lastSuccessfulOutput = output; }
                     f += r;
@@ -527,12 +514,7 @@ public class TileEntityFluidPipeAlternative extends TileEntityFluidPipe implemen
                         }
                         FluidStack tempStack = fillStack.copy();
                         tempStack.amount = offer;
-                        if (!IICFluidPipe.is(output.containingTile)) {
-                            if (tempStack.tag != null) {
-                                tempStack.tag.removeTag("pressurized");
-                                if (tempStack.tag.isEmpty()) { tempStack.tag = null; }
-                            }
-                        }
+                        if (!IICFluidPipe.is(output.containingTile)) { IICFluidPipe.stripPressure(tempStack); }
                         int r = output.output.fill(tempStack, doFill);
                         f += r;
                         remaining -= r;
@@ -547,8 +529,8 @@ public class TileEntityFluidPipeAlternative extends TileEntityFluidPipe implemen
 
         @Override public int fill(FluidStack resource, boolean doFill) {
             if (resource == null || resource.amount == 0) { return 0; }
-            boolean isPressurized = resource.tag != null && resource.tag.hasKey("pressurized") || ICPipes.isNormallyPressurized(resource.getFluid());
-            int transferable = isPressurized ? transferRatePressurized : transferRate;
+            boolean isPressurized = IICFluidPipe.isPressurized(resource) || ICPipes.isNormallyPressurized(resource.getFluid());
+            int transferable = ICPipes.getTransferableAmount(isPressurized);
             int maxTransfer = Math.min(resource.amount, transferable);
             FluidStack limited = resource.copy();
             limited.amount = maxTransfer;

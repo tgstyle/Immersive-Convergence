@@ -56,9 +56,10 @@ def builtJar = layout.buildDirectory.file("libs/${gradleProps['modarchivename']}
 def needsJar = { !builtJar.get().asFile.isFile() || JarStamp.changed(stampInputs.files, stampProps, stampRoot, stampFile.get().asFile) }
 
 def building = gradle.startParameter.taskNames*.toLowerCase().findAll { !(it ==~ /(.*:)?dev(jar|sync)/) }.any { it.contains('build') || it.contains('jar') || it.contains('assemble') }
-if (building && needsJar()) {
+def devSyncing = gradle.startParameter.taskNames*.toLowerCase().any { it ==~ /(.*:)?devsync/ }
+if ((building || devSyncing) && needsJar()) {
     versionProps['build_number'] = ((versionProps.getProperty('build_number')?.toInteger() ?: 0) + 1).toString()
-    file('version.properties').withOutputStream { versionProps.store(it, null) }
+    if (building) { file('version.properties').withOutputStream { versionProps.store(it, null) } }
 }
 
 ext.modversion = versionProps.getProperty('version')
@@ -145,7 +146,7 @@ dependencies {
     clientRuntime(rfg.deobf("curse.maven:${common.bf3r_version}") as String)
 
     annotationProcessor 'org.ow2.asm:asm-debug-all:5.2'
-    annotationProcessor 'com.google.guava:guava:32.1.2-jre'
+    annotationProcessor 'com.google.guava:guava:33.8.0-jre'
     annotationProcessor 'com.google.code.gson:gson:2.8.9'
     String mixinBooter = modUtils.enableMixins('zone.rong:mixinbooter:10.7', 'mixins.immersiveconvergence.refmap.json')
     api(mixinBooter) { transitive = false }
