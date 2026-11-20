@@ -19,7 +19,7 @@ public record InitialMultiblockContext<State extends IMultiblockState>(BlockEnti
     @Override public <T, C>
     Supplier<T> getCapabilityAt(BlockCapability<T, C> capability, BlockPos posRelativeToMB, C context) { return getCapabilityAt(masterBE, orientation, masterOffset, capability, posRelativeToMB, context); }
 
-    @Override public <T> Supplier<T> getCapabilityAt(BlockCapability<T, Direction> capability, BlockPos posRelativeToMB, RelativeBlockFace face) { return getCapabilityAt(capability, posRelativeToMB, face.forFront(orientation)); }
+    @Override public <T> Supplier<T> getCapabilityAt(BlockCapability<T, @Nullable Direction> capability, BlockPos posRelativeToMB, RelativeBlockFace face) { return getCapabilityAt(capability, posRelativeToMB, face.forFront(orientation)); }
 
     @Override public Supplier<@Nullable Level> levelSupplier() { return masterBE::getLevel; }
 

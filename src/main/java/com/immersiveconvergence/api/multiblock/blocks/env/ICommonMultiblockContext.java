@@ -7,12 +7,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import org.jetbrains.annotations.ApiStatus.NonExtendable;
+import org.jetbrains.annotations.Nullable;
 import java.util.function.Supplier;
 
 @NonExtendable public interface ICommonMultiblockContext {
-    default <T> Supplier<T> getCapabilityAt(BlockCapability<T, Direction> capability, MultiblockFace face) { return getCapabilityAt(capability, face.posInMultiblock(), face.face()); }
+    default <T> Supplier<T> getCapabilityAt(BlockCapability<T, @Nullable Direction> capability, MultiblockFace face) { return getCapabilityAt(capability, face.posInMultiblock(), face.face()); }
 
-    <T> Supplier<T> getCapabilityAt(BlockCapability<T, Direction> capability, BlockPos posRelativeToMB, RelativeBlockFace face);
+    <T> Supplier<T> getCapabilityAt(BlockCapability<T, @Nullable Direction> capability, BlockPos posRelativeToMB, RelativeBlockFace face);
 
     <T, C> Supplier<T> getCapabilityAt(BlockCapability<T, C> capability, BlockPos posRelativeToMB, C context);
 }
