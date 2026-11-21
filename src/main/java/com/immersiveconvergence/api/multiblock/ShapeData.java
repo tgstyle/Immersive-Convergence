@@ -2,10 +2,13 @@ package com.immersiveconvergence.api.multiblock;
 
 import com.immersiveconvergence.api.multiblock.shape.FullblockShape;
 import com.immersiveconvergence.api.multiblock.shape.GenericShape;
+import com.immersiveconvergence.api.multiblock.shape.RedstonePortShape;
 import com.immersiveconvergence.core.lib.ICLib;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.AABB;
@@ -69,16 +72,19 @@ public final class ShapeData {
 
         BlockPos masterPos = null, triggerPos = null;
         List<BlockPos> symmetricTriggers = new ArrayList<>();
+        Set<BlockPos> redstonePorts = new HashSet<>();
         if (data.pointsOfInterest != null) {
             for (PoIJSONSchema poi : data.pointsOfInterest) {
                 switch (poi.name) {
                     case "master" -> masterPos = new BlockPos(poi.pos[0], poi.pos[1], poi.pos[2]);
                     case "trigger" -> triggerPos = new BlockPos(poi.pos[0], poi.pos[1], poi.pos[2]);
                     case "symmetric_trigger" -> symmetricTriggers.add(new BlockPos(poi.pos[0], poi.pos[1], poi.pos[2]));
+                    default -> { if (poi.name.startsWith("redstone")) { redstonePorts.add(new BlockPos(poi.pos[0], poi.pos[1], poi.pos[2])); } }
                 }
             }
         }
 
+        if (!redstonePorts.isEmpty()) { getter = new RedstonePortShape(getter, Set.copyOf(redstonePorts)); }
         return new ShapeData(getter, width, height, length, masterPos, triggerPos, data.manualScale, List.copyOf(symmetricTriggers));
     }
 }

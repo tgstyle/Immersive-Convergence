@@ -16,6 +16,7 @@ import com.immersiveconvergence.api.multiblock.blocks.util.ShapeType;
 import com.immersiveconvergence.api.multiblock.data.MultiblockOverride;
 import com.immersiveconvergence.api.multiblock.disassembly.IDisassemblingAware;
 import com.immersiveconvergence.api.multiblock.process.QueueProcessor;
+import com.immersiveconvergence.api.multiblock.shape.RedstonePortShape;
 import com.immersiveconvergence.api.multiblock.util.DirectionUtils;
 import com.immersiveconvergence.api.multiblock.util.MultiblockItemUtils;
 
@@ -24,6 +25,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -44,6 +46,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -66,7 +69,8 @@ public abstract class MultiblockBEHelperCommon<State extends IMultiblockState> i
         this.cachedShape = new EnumMap<>(ShapeType.class);
         for (final ShapeType type : ShapeType.values()) {
             this.cachedShape.put(type, new CachedValue<>((pos, orientation) -> {
-                final VoxelShape relative = multiblock.logic().shapeGetter(type).apply(pos);
+                final Function<BlockPos, VoxelShape> getter = multiblock.logic().shapeGetter(type);
+                final VoxelShape relative = type == ShapeType.BLOCK_SUPPORT && getter instanceof RedstonePortShape ports && ports.isPort(pos) ? Shapes.block() : getter.apply(pos);
                 return orientation.transformRelativeShape(relative);
             }));
         }
