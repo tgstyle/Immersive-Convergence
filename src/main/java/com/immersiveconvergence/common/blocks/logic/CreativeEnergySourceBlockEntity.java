@@ -44,6 +44,8 @@ public class CreativeEnergySourceBlockEntity extends BaseBlockEntity implements 
         return true;
     }
 
+    @Override public IEnergyStorage getEnergyStorage() { return storages[Direction.UP.ordinal()]; }
+
     @Nullable public IEnergyStorage getEnergyStorage(@Nullable Direction side) { return side == null || getSideConfig(side) == Enums.IOSideConfig.NONE ? null : storages[side.ordinal()]; }
 
     @Override public void readCustomNBT(CompoundTag nbt, boolean descPacket) {}

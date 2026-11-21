@@ -1,6 +1,7 @@
 package com.immersiveconvergence.api.block;
 
 import com.immersiveconvergence.api.client.split.ISubmodelOffsetProvider;
+import com.immersiveconvergence.api.multiblock.IDisplayContext;
 import com.immersiveconvergence.api.multiblock.util.DirectionUtils;
 import com.immersiveconvergence.api.network.ITileSyncReceiver;
 
@@ -23,7 +24,7 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public abstract class BaseBlockEntity extends BlockEntity implements BlockInterfaces.IBlockStateProvider, ISubmodelOffsetProvider, ITileSyncReceiver {
+public abstract class BaseBlockEntity extends BlockEntity implements BlockInterfaces.IBlockStateProvider, ISubmodelOffsetProvider, ITileSyncReceiver, IDisplayContext {
     @Nullable private BlockState overrideBlockState = null;
     private final EnumMap<Direction, Integer> redstoneBySide = new EnumMap<>(Direction.class);
 
