@@ -1,6 +1,7 @@
 package com.immersiveconvergence.api.block;
 
 import com.immersiveconvergence.api.multiblock.util.DirectionUtils;
+import com.immersiveconvergence.api.util.ICUtils;
 import com.immersiveconvergence.api.wires.ICWires;
 import com.immersiveconvergence.api.wires.IICFitting;
 
@@ -139,7 +140,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
         float hitZ = (float) hit.getLocation().z - pos.getZ();
         ItemStack heldItem = player.getMainHandItem();
         BlockEntity tile = world.getBlockEntity(pos);
-        if (tile instanceof BlockInterfaces.IDirectionalBE && BlockToolGates.isFormationTool.test(heldItem) && ((BlockInterfaces.IDirectionalBE) tile).canHammerRotate() &&!world.isClientSide) {
+        if (tile instanceof BlockInterfaces.IDirectionalBE && ICUtils.isHammer(heldItem) && ((BlockInterfaces.IDirectionalBE) tile).canHammerRotate() &&!world.isClientSide) {
             Direction f = ((BlockInterfaces.IDirectionalBE) tile).getFacing();
             FacingLimitation limit = ((BlockInterfaces.IDirectionalBE) tile).getFacingLimitation();
             f = switch (limit) {
@@ -159,7 +160,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
             world.blockEvent(tile.getBlockPos(), tile.getBlockState().getBlock(), 255, 0);
             return InteractionResult.SUCCESS;
         }
-        if (tile instanceof BlockInterfaces.IConfigurableSides && BlockToolGates.isFormationTool.test(heldItem) && !world.isClientSide) {
+        if (tile instanceof BlockInterfaces.IConfigurableSides && ICUtils.isHammer(heldItem) && !world.isClientSide) {
             Direction configSide = player.isShiftKeyDown() ? side.getOpposite() : side;
             if (((BlockInterfaces.IConfigurableSides) tile).toggleSide(configSide, player)) { return InteractionResult.SUCCESS; }
         }

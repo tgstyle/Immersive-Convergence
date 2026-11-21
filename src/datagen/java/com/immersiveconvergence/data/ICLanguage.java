@@ -13,6 +13,7 @@ public class ICLanguage extends LanguageProvider {
         add("itemGroup." + ICLib.MODID, "Immersive Convergence");
         add(ICBlocks.ROTOR_CREATIVE.get(), "Creative Rotor");
         add(ICBlocks.HEAT_CREATIVE.get(), "Creative Heater");
+        if (ICBlocks.CREATIVE_ENERGY_SOURCE != null) { add(ICBlocks.CREATIVE_ENERGY_SOURCE.get(), "Creative Energy Source"); }
         add("gui.immersiveconvergence.rotor_creative", "Creative Rotor");
         add("gui.immersiveconvergence.rotor_creative.rpm", "RPM");
         add("gui.immersiveconvergence.apply", "Apply");

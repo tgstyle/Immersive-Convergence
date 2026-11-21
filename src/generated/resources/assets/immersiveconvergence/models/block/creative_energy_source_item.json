@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "immersiveconvergence:block/wooden/creative_energy_source_output"
+  }
+}

@@ -36,7 +36,9 @@ public final class ICMods {
 
     public static boolean disableImmersiveEngineering() { return earlyBoolean(ICLib.MODID + "-common.toml", DISABLE_IMMERSIVE_ENGINEERING, false); }
 
-    public static boolean earlyBoolean(String fileName, String path, boolean fallback) {
+    public static boolean earlyBoolean(String fileName, String path, boolean fallback) { return earlyValue(fileName, path, fallback); }
+
+    public static <T> T earlyValue(String fileName, String path, T fallback) {
         try {
             Config config = TomlFormat.instance().createParser().parse(FMLPaths.CONFIGDIR.get().resolve(fileName), FileNotFoundAction.READ_NOTHING);
             return config.getOrElse(path, fallback);

@@ -1,0 +1,163 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source_none",
+        "x": 90
+      },
+      "when": {
+        "down": "none"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source_none",
+        "x": 270
+      },
+      "when": {
+        "up": "none"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source_none"
+      },
+      "when": {
+        "north": "none"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source_none",
+        "y": 180
+      },
+      "when": {
+        "south": "none"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source_none",
+        "y": 270
+      },
+      "when": {
+        "west": "none"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source_none",
+        "y": 90
+      },
+      "when": {
+        "east": "none"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source_input",
+        "x": 90
+      },
+      "when": {
+        "down": "input"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source_input",
+        "x": 270
+      },
+      "when": {
+        "up": "input"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source_input"
+      },
+      "when": {
+        "north": "input"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source_input",
+        "y": 180
+      },
+      "when": {
+        "south": "input"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source_input",
+        "y": 270
+      },
+      "when": {
+        "west": "input"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source_input",
+        "y": 90
+      },
+      "when": {
+        "east": "input"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source_output",
+        "x": 90
+      },
+      "when": {
+        "down": "output"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source_output",
+        "x": 270
+      },
+      "when": {
+        "up": "output"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source_output"
+      },
+      "when": {
+        "north": "output"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source_output",
+        "y": 180
+      },
+      "when": {
+        "south": "output"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source_output",
+        "y": 270
+      },
+      "when": {
+        "west": "output"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source_output",
+        "y": 90
+      },
+      "when": {
+        "east": "output"
+      }
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 package com.immersiveconvergence.core.registration;
 
+import com.immersiveconvergence.common.blocks.logic.CreativeEnergySourceBlockEntity;
 import com.immersiveconvergence.common.blocks.logic.HeatCreativeBlockEntity;
 import com.immersiveconvergence.common.blocks.logic.RotorCreativeBlockEntity;
 import com.immersiveconvergence.api.capability.HeatCapabilities;
@@ -9,9 +10,11 @@ import com.immersiveconvergence.core.lib.ICLib;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 @SuppressWarnings("DataFlowIssue") public class ICBlockEntities {
@@ -27,10 +30,16 @@ import java.util.function.Supplier;
             () -> BlockEntityType.Builder.of(HeatCreativeBlockEntity::new, ICBlocks.HEAT_CREATIVE.get()).build(null)
     );
 
+    @Nullable public static final Supplier<BlockEntityType<CreativeEnergySourceBlockEntity>> CREATIVE_ENERGY_SOURCE = ICBlocks.CREATIVE_ENERGY_SOURCE == null ? null : REGISTER.register(
+            "creative_energy_source",
+            () -> BlockEntityType.Builder.of(CreativeEnergySourceBlockEntity::new, ICBlocks.CREATIVE_ENERGY_SOURCE.get()).build(null)
+    );
+
     public static void init(IEventBus bus) { REGISTER.register(bus); }
 
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
         event.registerBlockEntity(MechanicalCapabilities.MECHANICAL_PROVIDER, ROTOR_CREATIVE.get(), RotorCreativeBlockEntity::getMechanicalProvider);
         event.registerBlockEntity(HeatCapabilities.HEAT_PROVIDER, HEAT_CREATIVE.get(), (be, side) -> be.getHeatProvider());
+        if (CREATIVE_ENERGY_SOURCE != null) { event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, CREATIVE_ENERGY_SOURCE.get(), CreativeEnergySourceBlockEntity::getEnergyStorage); }
     }
 }

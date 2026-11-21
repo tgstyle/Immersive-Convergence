@@ -1,9 +1,9 @@
 {
+  "block.immersiveconvergence.creative_energy_source": "Creative Energy Source",
   "block.immersiveconvergence.heat_creative": "Creative Heater",
   "block.immersiveconvergence.rotor_creative": "Creative Rotor",
   "chat.immersiveconvergence.info.rsControl.invertedOff": "Redstone control: Not inverted",
   "chat.immersiveconvergence.info.rsControl.invertedOn": "Redstone control: Inverted",
-  "chat.immersiveconvergence.info.wire.canceled": "This wire was refused",
   "chat.immersiveconvergence.info.wire.coilTooShort": "The coil does not hold enough wire",
   "chat.immersiveconvergence.info.wire.duplicate": "These two points are already wired",
   "chat.immersiveconvergence.info.wire.invalidPoint": "The other end is no longer a fitting",

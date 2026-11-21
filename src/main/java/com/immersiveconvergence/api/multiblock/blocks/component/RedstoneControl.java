@@ -1,11 +1,11 @@
 package com.immersiveconvergence.api.multiblock.blocks.component;
 
-import com.immersiveconvergence.api.block.BlockToolGates;
 import com.immersiveconvergence.api.multiblock.blocks.component.IMultiblockComponent.StateWrapper;
 import com.immersiveconvergence.api.multiblock.blocks.component.RedstoneControl.RSState;
 import com.immersiveconvergence.api.multiblock.blocks.env.IMultiblockContext;
 import com.immersiveconvergence.api.multiblock.blocks.logic.IMultiblockState;
 import com.immersiveconvergence.api.multiblock.util.ComputerControlState;
+import com.immersiveconvergence.api.util.ICUtils;
 import com.immersiveconvergence.core.lib.ICLib;
 
 import net.minecraft.core.BlockPos;
@@ -38,7 +38,7 @@ public class RedstoneControl<S> implements IMultiblockComponent<RSState>, StateW
 
     @Override public ItemInteractionResult click(IMultiblockContext<RSState> ctx, BlockPos posInMultiblock, Player player, InteractionHand hand, BlockHitResult absoluteHit, boolean isClient) {
         final ItemStack held = player.getItemInHand(hand);
-        if (!BlockToolGates.isScrewdriver.test(held) || !positions.contains(posInMultiblock)) { return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION; }
+        if (!ICUtils.isScrewdriver(held) || !positions.contains(posInMultiblock)) { return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION; }
         if (!isClient) {
             final boolean inverted = !ctx.getState().rsEnablesMachine;
             ctx.getState().rsEnablesMachine = inverted;

@@ -1,6 +1,7 @@
 package com.immersiveconvergence.data;
 
 import com.immersiveconvergence.core.lib.ICLib;
+import com.immersiveconvergence.core.registration.ICBlocks;
 
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -13,6 +14,7 @@ public class ICItemModels extends ItemModelProvider {
 
     @Override protected void registerModels() {
         generateBlockItem();
+        if (ICBlocks.CREATIVE_ENERGY_SOURCE != null) { generateBlockItem("creative_energy_source", "creative_energy_source_item", true, 0, 0, 0.625f); }
         generateBlockItem("rotor_creative", "dynamic/rotor_creative", false, -8, 4, 0.7f);
     }
 

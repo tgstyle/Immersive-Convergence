@@ -1,15 +1,12 @@
 package com.immersiveconvergence.api.wires.fittings;
 
-import com.immersiveconvergence.api.multiblock.util.SafeChunkUtils;
+import com.immersiveconvergence.api.multiblock.util.CapabilityUtils;
 import com.immersiveconvergence.api.wires.ICConnectionPoint;
 import com.immersiveconvergence.api.wires.ICWires;
 
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
-import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import javax.annotation.Nullable;
 import java.util.function.IntConsumer;
@@ -39,7 +36,7 @@ public final class ICFittingEnergy implements IEnergyStorage {
     }
 
     public boolean canOutput(Direction facing) {
-        IEnergyStorage outside = outside(facing);
+        IEnergyStorage outside = CapabilityUtils.neighborEnergy(owner.getLevelNonnull(), owner.getBlockPos(), facing);
         return outside != null && outside.canReceive();
     }
 
@@ -51,7 +48,7 @@ public final class ICFittingEnergy implements IEnergyStorage {
         }
         int room = Math.min(rate - output, amount);
         if (room <= 0) { return 0; }
-        IEnergyStorage outside = outside(facing);
+        IEnergyStorage outside = CapabilityUtils.neighborEnergy(owner.getLevelNonnull(), owner.getBlockPos(), facing);
         int sent = outside == null ? 0 : outside.receiveEnergy(room, simulate);
         if (!simulate) { output += sent; }
         return sent;
@@ -84,11 +81,5 @@ public final class ICFittingEnergy implements IEnergyStorage {
     void moved(int amount) {
         stored = Math.max(0, stored - amount);
         owner.setChanged();
-    }
-
-    @Nullable private IEnergyStorage outside(Direction facing) {
-        Level level = owner.getLevelNonnull();
-        BlockPos neighbor = owner.getBlockPos().relative(facing);
-        return SafeChunkUtils.isChunkUnsafe(level, neighbor) ? null : level.getCapability(Capabilities.EnergyStorage.BLOCK, neighbor, facing.getOpposite());
     }
 }

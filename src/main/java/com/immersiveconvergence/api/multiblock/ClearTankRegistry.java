@@ -41,7 +41,7 @@ public class ClearTankRegistry {
         BlockPos origin = portOrigin(multiblock, posInMultiblock);
         if (origin == null || !entry.inputPositions().contains(origin)) { return null; }
         ItemStack held = player.getItemInHand(hand);
-        if (!ICUtils.isHammer(held) && !ClearTank.additionalTool.test(held)) { return null; }
+        if (!ICUtils.isHammer(held)) { return null; }
         boolean isClient = player.level().isClientSide;
         if (!isClient) {
             int cleared = entry.clear().applyAsInt(state);

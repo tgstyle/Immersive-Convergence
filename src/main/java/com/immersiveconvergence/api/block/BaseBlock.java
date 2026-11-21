@@ -1,5 +1,7 @@
 package com.immersiveconvergence.api.block;
 
+import com.immersiveconvergence.api.util.ICUtils;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -68,8 +70,8 @@ public class BaseBlock extends Block implements IBlock, SimpleWaterloggedBlock {
 
     @Override @Nonnull public InteractionResult useWithoutItem(@Nonnull BlockState state, @Nonnull Level world, @Nonnull BlockPos pos, @Nonnull Player player, @Nonnull BlockHitResult hit) {
         ItemStack activeStack = player.getItemInHand(InteractionHand.MAIN_HAND);
-        if (BlockToolGates.isFormationTool.test(activeStack)) { return this.hammerUseSide(hit.getDirection(), player, InteractionHand.MAIN_HAND, world, pos, hit); }
-        else if (BlockToolGates.isScrewdriver.test(activeStack)) { return this.screwdriverUseSide(hit.getDirection(), player, InteractionHand.MAIN_HAND, world, pos, hit); }
+        if (ICUtils.isHammer(activeStack)) { return this.hammerUseSide(hit.getDirection(), player, InteractionHand.MAIN_HAND, world, pos, hit); }
+        else if (ICUtils.isScrewdriver(activeStack)) { return this.screwdriverUseSide(hit.getDirection(), player, InteractionHand.MAIN_HAND, world, pos, hit); }
         else { return super.useWithoutItem(state, world, pos, player, hit); }
     }
 
