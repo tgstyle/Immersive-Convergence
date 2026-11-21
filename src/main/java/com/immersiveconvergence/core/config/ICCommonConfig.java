@@ -12,8 +12,15 @@ import net.minecraftforge.common.config.Config;
     public static Pipes pipes = new Pipes();
     public static Petroleum petroleum = new Petroleum();
     public static Experimental experimental = new Experimental();
+    public static Creative creative = new Creative();
 
     public enum DisassemblyMode { PROCESS_QUEUE, TEMPLATE_BLOCKS }
+
+    public enum RegistrationMode { AUTO, TRUE, FALSE }
+
+    public static class Creative {
+        @Config.Comment("Whether the Creative Energy Source block is registered. AUTO registers it only when Immersive Engineering is not loaded, since Immersive Engineering has its own creative capacitor; TRUE always registers it and FALSE never does [Default=AUTO]") @Config.RequiresMcRestart public RegistrationMode energySource = RegistrationMode.AUTO;
+    }
 
     public static class Experimental {
         @Config.Comment({

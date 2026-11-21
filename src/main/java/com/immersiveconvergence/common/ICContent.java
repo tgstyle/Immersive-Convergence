@@ -1,9 +1,13 @@
 package com.immersiveconvergence.common;
 
 import com.immersiveconvergence.ImmersiveConvergence;
+import com.immersiveconvergence.api.ICMods;
+import com.immersiveconvergence.common.blocks.ICBlockCreativeEnergySource;
 import com.immersiveconvergence.common.blocks.ICBlockDevice;
+import com.immersiveconvergence.common.blocks.tileentities.TileEntityCreativeEnergySource;
 import com.immersiveconvergence.common.blocks.tileentities.TileEntityHeatCreative;
 import com.immersiveconvergence.common.blocks.tileentities.TileEntityRotorCreative;
+import com.immersiveconvergence.core.config.ICCommonConfig;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -21,11 +25,24 @@ import java.util.List;
     public static final List<Block> registeredICBlocks = new ArrayList<>();
     public static final List<Item> registeredICItems = new ArrayList<>();
     public static ICBlockDevice blockDevice;
+    public static ICBlockCreativeEnergySource creativeEnergySource;
 
     public static void preInit() {
         blockDevice = new ICBlockDevice();
         registerTile(TileEntityRotorCreative.class);
         registerTile(TileEntityHeatCreative.class);
+        if (creativeEnergySourceEnabled()) {
+            creativeEnergySource = new ICBlockCreativeEnergySource();
+            registerTile(TileEntityCreativeEnergySource.class);
+        }
+    }
+
+    private static boolean creativeEnergySourceEnabled() {
+        switch (ICCommonConfig.creative.energySource) {
+            case TRUE: { return true; }
+            case FALSE: { return false; }
+            default: { return !ICMods.immersiveEngineering(); }
+        }
     }
 
     private static void registerTile(Class<? extends TileEntity> tile) {

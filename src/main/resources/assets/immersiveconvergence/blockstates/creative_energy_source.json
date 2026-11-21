@@ -1,0 +1,53 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube",
+    "textures": {
+      "particle": "immersiveconvergence:block/wooden/creative_energy_source_output",
+      "down": "immersiveconvergence:block/wooden/creative_energy_source_output",
+      "up": "immersiveconvergence:block/wooden/creative_energy_source_output",
+      "north": "immersiveconvergence:block/wooden/creative_energy_source_output",
+      "south": "immersiveconvergence:block/wooden/creative_energy_source_output",
+      "west": "immersiveconvergence:block/wooden/creative_energy_source_output",
+      "east": "immersiveconvergence:block/wooden/creative_energy_source_output"
+    }
+  },
+  "variants": {
+    "inventory,type=source": [
+      {}
+    ],
+    "type": {
+      "source": {}
+    },
+    "down": {
+      "none": {"textures": {"down": "immersiveconvergence:block/wooden/creative_energy_source_none"}},
+      "input": {"textures": {"down": "immersiveconvergence:block/wooden/creative_energy_source_input"}},
+      "output": {"textures": {"down": "immersiveconvergence:block/wooden/creative_energy_source_output"}}
+    },
+    "up": {
+      "none": {"textures": {"up": "immersiveconvergence:block/wooden/creative_energy_source_none"}},
+      "input": {"textures": {"up": "immersiveconvergence:block/wooden/creative_energy_source_input"}},
+      "output": {"textures": {"up": "immersiveconvergence:block/wooden/creative_energy_source_output"}}
+    },
+    "north": {
+      "none": {"textures": {"north": "immersiveconvergence:block/wooden/creative_energy_source_none"}},
+      "input": {"textures": {"north": "immersiveconvergence:block/wooden/creative_energy_source_input"}},
+      "output": {"textures": {"north": "immersiveconvergence:block/wooden/creative_energy_source_output"}}
+    },
+    "south": {
+      "none": {"textures": {"south": "immersiveconvergence:block/wooden/creative_energy_source_none"}},
+      "input": {"textures": {"south": "immersiveconvergence:block/wooden/creative_energy_source_input"}},
+      "output": {"textures": {"south": "immersiveconvergence:block/wooden/creative_energy_source_output"}}
+    },
+    "west": {
+      "none": {"textures": {"west": "immersiveconvergence:block/wooden/creative_energy_source_none"}},
+      "input": {"textures": {"west": "immersiveconvergence:block/wooden/creative_energy_source_input"}},
+      "output": {"textures": {"west": "immersiveconvergence:block/wooden/creative_energy_source_output"}}
+    },
+    "east": {
+      "none": {"textures": {"east": "immersiveconvergence:block/wooden/creative_energy_source_none"}},
+      "input": {"textures": {"east": "immersiveconvergence:block/wooden/creative_energy_source_input"}},
+      "output": {"textures": {"east": "immersiveconvergence:block/wooden/creative_energy_source_output"}}
+    }
+  }
+}

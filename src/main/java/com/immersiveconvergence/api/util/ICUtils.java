@@ -202,7 +202,14 @@ import java.util.Set;
     public static boolean isHammer(ItemStack stack) {
         if (stack.isEmpty()) { return false; }
         Set<String> toolClasses = stack.getItem().getToolClasses(stack);
-        return toolClasses.contains(ICLib.TOOL_HAMMER) || toolClasses.contains(ICLib.TOOL_IFAB_HAMMER);
+        return toolClasses.contains(ICLib.TOOL_HAMMER);
+    }
+
+    public static boolean isToggleTool(ItemStack stack) {
+        if (stack.isEmpty()) { return false; }
+        int id = OreDictionary.getOreID(ICLib.ORE_TOOL_TOGGLE);
+        for (int oreId : OreDictionary.getOreIDs(stack)) { if (oreId == id) { return true; } }
+        return false;
     }
 
     public static void modifyInvStackSize(NonNullList<ItemStack> inv, int slot, int amount) {

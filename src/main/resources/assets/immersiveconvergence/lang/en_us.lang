@@ -1,6 +1,7 @@
 itemGroup.immersiveconvergence=Immersive Convergence
 tile.immersiveconvergence.device.rotor_creative.name=Creative Rotor
 tile.immersiveconvergence.device.heat_creative.name=Creative Heater
+tile.immersiveconvergence.creative_energy_source.name=Creative Energy Source
 gui.immersiveconvergence.rotor_creative.rpm=RPM
 gui.immersiveconvergence.apply=Apply
 gui.immersiveconvergence.input_tank_cleared=Input tank cleared

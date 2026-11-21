@@ -6,6 +6,7 @@ import com.immersiveconvergence.common.ICContent;
 import com.immersiveconvergence.common.blocks.conveyors.ICConveyorRegistry;
 import com.immersiveconvergence.common.blocks.pipes.ICPipeRegistry;
 import com.immersiveconvergence.common.energy.IEWireBridge;
+import com.immersiveconvergence.common.util.ICToggleTools;
 import com.immersiveconvergence.common.util.IEToolboxBridge;
 import com.immersiveconvergence.core.integration.ICCompatModule;
 import com.immersiveconvergence.core.integration.immersiveengineering.IEMultiblockRegistry;
@@ -49,6 +50,7 @@ import net.minecraftforge.fml.relauncher.Side;
     }
 
     @EventHandler public void init(FMLInitializationEvent event) {
+        ICToggleTools.register();
         if (ICMods.immersiveEngineering()) {
             IEWireBridge.mirrorWireTypes();
             IEMultiblocks.alignRenderLayers();
