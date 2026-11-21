@@ -1,9 +1,12 @@
 package com.immersiveconvergence.core.config;
 
+import com.immersiveconvergence.api.ICMods;
 import com.immersiveconvergence.api.multiblock.disassembly.DisassemblyMode;
 import com.immersiveconvergence.core.lib.ICLib;
 
+import com.google.common.base.Enums;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.data.loading.DatagenModLoader;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
@@ -75,6 +78,13 @@ import net.minecraftforge.fml.event.config.ModConfigEvent;
                 .defineEnum("disassembly_mode", DisassemblyMode.PROCESS_QUEUE);
         BUILDER.pop();
 
+        BUILDER.comment("Creative content settings").push("creative");
+        BUILDER
+                .comment("Whether the Creative Energy Source block is registered. AUTO registers it only when Immersive Engineering is not loaded, since Immersive Engineering has its own creative capacitor; TRUE always registers it and FALSE never does. Read once at startup; a change needs a game restart.")
+                .worldRestart()
+                .defineEnum("energySource", RegistrationMode.AUTO);
+        BUILDER.pop();
+
         BUILDER.comment("Experimental settings").push("experimental");
         BUILDER
                 .comment(
@@ -89,6 +99,18 @@ import net.minecraftforge.fml.event.config.ModConfigEvent;
     }
 
     public static final ForgeConfigSpec SPEC = BUILDER.build();
+
+    public static boolean creativeEnergySourceEnabled() {
+        if (DatagenModLoader.isRunningDataGen()) {
+            return true;
+        }
+        String mode = ICMods.earlyValue(ICLib.MODID + "-common.toml", "creative.energySource", RegistrationMode.AUTO.name());
+        return switch (Enums.getIfPresent(RegistrationMode.class, mode).or(RegistrationMode.AUTO)) {
+            case TRUE -> true;
+            case FALSE -> false;
+            case AUTO -> !ICMods.immersiveEngineering();
+        };
+    }
 
     @SubscribeEvent public static void onConfig(final ModConfigEvent event) {
         if (event.getConfig().getSpec() == SPEC) {

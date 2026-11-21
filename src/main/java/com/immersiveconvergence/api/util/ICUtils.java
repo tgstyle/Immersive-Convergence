@@ -1,6 +1,7 @@
 package com.immersiveconvergence.api.util;
 
 import com.immersiveconvergence.api.ICMods;
+import com.immersiveconvergence.core.lib.ICLib;
 import com.immersiveconvergence.api.multiblock.util.CapabilityReference;
 import com.immersiveconvergence.api.multiblock.util.DirectionalBlockPos;
 import com.immersiveconvergence.api.bridge.ICBridges;
@@ -40,7 +41,9 @@ import java.util.Random;
 public class ICUtils {
     public static final Random RANDOM = new Random();
     public static final RandomSource RANDOM_SOURCE = RandomSource.createNewThreadLocalInstance();
-    private static final TagKey<Item> HAMMERS = TagKey.create(Registries.ITEM, ICMods.ie("tools/hammers"));
+    private static final TagKey<Item> FORMATION_TOOLS = TagKey.create(Registries.ITEM, ICLib.rl("tools/formation"));
+    private static final TagKey<Item> TOGGLE_TOOLS = TagKey.create(Registries.ITEM, ICLib.rl("tools/toggle"));
+    private static final TagKey<Item> SCREWDRIVERS = TagKey.create(Registries.ITEM, ICLib.rl("tools/screwdrivers"));
     private static final Gson GSON = new Gson();
 
     public static FluidStack fluidStack(JsonObject json, String key) { return jsonDeserializeFluidStack(GsonHelper.getAsJsonObject(json, key)); }
@@ -69,7 +72,11 @@ public class ICUtils {
         return Arrays.stream(stacks).min(Comparator.comparing(stack -> Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(stack.getItem())))).orElseThrow(() -> new IllegalArgumentException("Empty array?"));
     }
 
-    public static boolean isHammer(ItemStack stack) { return stack.is(HAMMERS); }
+    public static boolean isHammer(ItemStack stack) { return stack.is(FORMATION_TOOLS); }
+
+    public static boolean isScrewdriver(ItemStack stack) { return stack.is(SCREWDRIVERS); }
+
+    public static boolean isToggleTool(ItemStack stack) { return stack.is(TOGGLE_TOOLS); }
 
     public static void addFutureServerTask(Level level, Runnable task) {
         MinecraftServer server = level.getServer();

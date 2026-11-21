@@ -13,6 +13,7 @@ public class ICItemModels extends ItemModelProvider {
 
     @Override protected void registerModels() {
         generateBlockItem();
+        generateBlockItem("creative_energy_source", "creative_energy_source", true, 0, 0, 0.625f);
         generateBlockItem("rotor_creative", "dynamic/rotor_creative", false, -8, 4, 0.7f);
     }
 

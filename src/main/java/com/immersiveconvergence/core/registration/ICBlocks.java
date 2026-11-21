@@ -2,10 +2,13 @@ package com.immersiveconvergence.core.registration;
 
 import com.immersiveconvergence.api.block.ModBlockItem;
 import com.immersiveconvergence.api.registration.BlockEntry;
+import com.immersiveconvergence.common.blocks.CreativeEnergySourceBlock;
 import com.immersiveconvergence.common.blocks.HeatCreativeBlock;
 import com.immersiveconvergence.common.blocks.RotorCreativeBlock;
+import com.immersiveconvergence.common.blocks.logic.CreativeEnergySourceBlockEntity;
 import com.immersiveconvergence.common.blocks.logic.HeatCreativeBlockEntity;
 import com.immersiveconvergence.common.blocks.logic.RotorCreativeBlockEntity;
+import com.immersiveconvergence.core.config.ICCommonConfig;
 import com.immersiveconvergence.core.lib.ICLib;
 
 import net.minecraft.world.level.block.Block;
@@ -19,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
 
 public class ICBlocks {
     public static final DeferredRegister<Block> REGISTER = DeferredRegister.create(ForgeRegistries.BLOCKS, ICLib.MODID);
@@ -41,6 +45,12 @@ public class ICBlocks {
             METAL_PROPERTIES_NO_OCCLUSION,
             p -> new HeatCreativeBlock(HeatCreativeBlockEntity::new, p)
     );
+
+    @Nullable public static final ICBlockEntry<CreativeEnergySourceBlock> CREATIVE_ENERGY_SOURCE = ICCommonConfig.creativeEnergySourceEnabled() ? new ICBlockEntry<>(
+            "creative_energy_source",
+            () -> BlockBehaviour.Properties.of().mapColor(MapColor.METAL).sound(SoundType.METAL).strength(3.0F, 15.0F),
+            p -> new CreativeEnergySourceBlock(CreativeEnergySourceBlockEntity::new, p)
+    ) : null;
 
     public static void init(IEventBus bus) {
         REGISTER.register(bus);

@@ -1,5 +1,7 @@
 package com.immersiveconvergence.api.block;
 
+import com.immersiveconvergence.api.util.ICUtils;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -70,8 +72,8 @@ import javax.annotation.Nullable;
 
     @Override @Nonnull public InteractionResult use(@Nonnull BlockState state, @Nonnull Level world, @Nonnull BlockPos pos, Player player, @Nonnull InteractionHand hand, @Nonnull BlockHitResult hit) {
         ItemStack activeStack = player.getItemInHand(hand);
-        if (BlockToolGates.isFormationTool.test(activeStack)) { return this.hammerUseSide(hit.getDirection(), player, hand, world, pos, hit); }
-        else if (BlockToolGates.isScrewdriver.test(activeStack)) { return this.screwdriverUseSide(hit.getDirection(), player, hand, world, pos, hit); }
+        if (ICUtils.isHammer(activeStack)) { return this.hammerUseSide(hit.getDirection(), player, hand, world, pos, hit); }
+        else if (ICUtils.isScrewdriver(activeStack)) { return this.screwdriverUseSide(hit.getDirection(), player, hand, world, pos, hit); }
         else { return super.use(state, world, pos, player, hand, hit); }
     }
 

@@ -1,0 +1,26 @@
+{
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "cullface": "down",
+          "texture": "#face"
+        }
+      },
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ]
+    }
+  ],
+  "textures": {
+    "face": "immersiveconvergence:block/wooden/creative_energy_source_none",
+    "particle": "immersiveconvergence:block/wooden/creative_energy_source_none"
+  }
+}

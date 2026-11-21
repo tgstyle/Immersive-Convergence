@@ -274,7 +274,9 @@ dependencies {
     modImplementation "mezz.jei:jei-${version_minecraft}-forge:${version_jei}"
     modImplementation "curse.maven:${version_engineered_schematics_curse}"
     modCompileOnly "curse.maven:${version_jade_curse}"
+    modRuntimeOnly "curse.maven:${version_jade_curse}"
     modCompileOnly "curse.maven:${version_top_curse}"
+    modRuntimeOnly "curse.maven:${version_top_curse}"
     modCompileOnly "cc.tweaked:cc-tweaked-${version_minecraft}-forge:${version_cctweaked}"
 
     datagenImplementation sourceSets.main.output

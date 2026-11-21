@@ -1,0 +1,148 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source/down_none"
+      },
+      "when": {
+        "down": "none"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source/down_input"
+      },
+      "when": {
+        "down": "input"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source/down_output"
+      },
+      "when": {
+        "down": "output"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source/up_none"
+      },
+      "when": {
+        "up": "none"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source/up_input"
+      },
+      "when": {
+        "up": "input"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source/up_output"
+      },
+      "when": {
+        "up": "output"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source/north_none"
+      },
+      "when": {
+        "north": "none"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source/north_input"
+      },
+      "when": {
+        "north": "input"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source/north_output"
+      },
+      "when": {
+        "north": "output"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source/south_none"
+      },
+      "when": {
+        "south": "none"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source/south_input"
+      },
+      "when": {
+        "south": "input"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source/south_output"
+      },
+      "when": {
+        "south": "output"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source/west_none"
+      },
+      "when": {
+        "west": "none"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source/west_input"
+      },
+      "when": {
+        "west": "input"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source/west_output"
+      },
+      "when": {
+        "west": "output"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source/east_none"
+      },
+      "when": {
+        "east": "none"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source/east_input"
+      },
+      "when": {
+        "east": "input"
+      }
+    },
+    {
+      "apply": {
+        "model": "immersiveconvergence:block/creative_energy_source/east_output"
+      },
+      "when": {
+        "east": "output"
+      }
+    }
+  ]
+}

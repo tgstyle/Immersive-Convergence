@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "immersiveengineering:hammer",
+      "required": false
+    },
+    {
+      "id": "immersivetechnology:formation_tool",
+      "required": false
+    }
+  ]
+}
