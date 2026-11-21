@@ -74,6 +74,8 @@ public class CreativeEnergySourceBlockEntity extends BaseBlockEntity implements 
         if (level != null && !level.isClientSide) { ICUtils.addFutureServerTask(level, this::syncState); }
     }
 
+    @Override public IEnergyStorage getEnergyStorage() { return new SideEnergy(Direction.UP); }
+
     @Override @Nonnull public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (cap == ForgeCapabilities.ENERGY && side != null && sides.get(side) != Enums.IOSideConfig.NONE) { return capabilities.get(side).cast(); }
         return super.getCapability(cap, side);
