@@ -150,6 +150,7 @@ runs {
         systemProperties = ['neoforge.enabledGameTestNamespaces': project.mod_id as String]
         arguments = ['--username', 'tgstyle', '--width', '1920', '--height', '1080']
         jvmArguments.addAll '-XX:StartFlightRecording=maxsize=512M,dumponexit=true,filename=logs/profile.jfr,settings=profile'
+        environmentVariables.put 'LD_LIBRARY_PATH', '/usr/lib64'
     }
 
     server {
